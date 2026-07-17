@@ -19,4 +19,5 @@ class Ticket(Base):
     content = Column(String, nullable=False)
     kb = Column(Integer, nullable=True)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    date = Column(String, nullable=True)
     

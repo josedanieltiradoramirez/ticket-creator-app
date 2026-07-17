@@ -13,7 +13,7 @@ from starlette import status
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from jose import jwt
 from datetime import timedelta, datetime, timezone
-from fastapi.templating import Jinja2Templates
+## from fastapi.templating import Jinja2Templates
 from typing import Optional
 from app.core.database import get_db
 
@@ -46,7 +46,7 @@ class Token(BaseModel):
 
 db_dependency = Annotated[Session, Depends(get_db)]
 
-templates = Jinja2Templates(directory="templates")
+## templates = Jinja2Templates(directory="templates")
 
 
 ### Endpoints ###
