@@ -47,7 +47,8 @@ async def get_all_tickets(user : user_dependency, db: db_dependency):
     result = []
     for ticket in tickets:
         result.append({
-            "id": ticket.ticket_number,
+            "id": ticket.id,
+            "ticket_number": ticket.ticket_number,
             "title": ticket.title,
             "content": ticket.content,
             "employee": ticket.user_name,
@@ -65,7 +66,10 @@ async def create_ticket(user : user_dependency, ticket: TicketSchema, db: db_dep
         user_name=ticket.user_name,
         location=ticket.location,
         date=ticket.date,
-        user_id = user.id
+        user_id = user.id,
+        issue_description = ticket.issue_description,
+        issue = ticket.issue,
+        troubleshooting_steps = ticket.troubleshooting_steps,
     )
 
     db.add(new_ticket)
@@ -79,9 +83,19 @@ async def edit_note(user: user_dependency, id: int, note: TicketSchema, db: db_d
     existing_ticket = db.query(Ticket).filter(Ticket.id == id, Ticket.user_id == user.id).first()
     if not existing_ticket:
         raise HTTPException(status_code=404, detail="Ticket not found")
+    existing_ticket.ticket_number = note.ticket_number
     existing_ticket.title = note.title
     existing_ticket.content = note.content
-    existing_ticket.type = note.type
+    existing_ticket.location = note.location
+    existing_ticket.user_name = note.user_name
+    existing_ticket.user_type = note.user_type
+    existing_ticket.user_best_contact_number = note.user_best_contact_number
+    existing_ticket.user_email = note.user_email
+    existing_ticket.issue_description = note.issue_description
+    existing_ticket.issue = note.issue
+    existing_ticket.troubleshooting_steps = note.troubleshooting_steps
+    existing_ticket.kb = note.kb
+    existing_ticket.date = note.date
 
     db.commit()
     db.refresh(existing_ticket)
