@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from typing import Annotated
 
 from app.core.database import get_db
-from app.models.tickets import Ticket
+from app.models.tickets import Tickets
 from app.models.users import Users
 from app.routers.auth import get_current_user
 
@@ -43,7 +43,7 @@ class TicketSchema(BaseModel):
 
 @router.get("/")
 async def get_all_tickets(user : user_dependency, db: db_dependency):
-    tickets = db.query(Ticket).all()
+    tickets = db.query(Tickets).all()
     result = []
     for ticket in tickets:
         result.append({
@@ -59,7 +59,7 @@ async def get_all_tickets(user : user_dependency, db: db_dependency):
 
 @router.post("/")
 async def create_ticket(user : user_dependency, ticket: TicketSchema, db: db_dependency):
-    new_ticket = Ticket(
+    new_ticket = Tickets(
         ticket_number=ticket.ticket_number,
         title=ticket.title,
         content=ticket.content,
@@ -80,7 +80,7 @@ async def create_ticket(user : user_dependency, ticket: TicketSchema, db: db_dep
 
 @router.put("/{id}")
 async def edit_note(user: user_dependency, id: int, note: TicketSchema, db: db_dependency):
-    existing_ticket = db.query(Ticket).filter(Ticket.id == id, Ticket.user_id == user.id).first()
+    existing_ticket = db.query(Tickets).filter(Tickets.id == id, Tickets.user_id == user.id).first()
     if not existing_ticket:
         raise HTTPException(status_code=404, detail="Ticket not found")
     existing_ticket.ticket_number = note.ticket_number
@@ -105,7 +105,7 @@ async def edit_note(user: user_dependency, id: int, note: TicketSchema, db: db_d
 
 @router.delete("/{id}")
 async def delete_note(user: user_dependency, id: int, db: db_dependency):
-    note = db.query(Ticket).filter(Ticket.id == id, Ticket.user_id == user.id).first()
+    note = db.query(Tickets).filter(Tickets.id == id, Tickets.user_id == user.id).first()
     if not note:
         raise HTTPException(status_code=404, detail="Ticket not found")
     db.delete(note)
