@@ -6,7 +6,7 @@ class Tickets(Base):
     __tablename__ = 'tickets'
 
     id = Column(Integer, primary_key=True, index=True)
-    ticket_number = Column(String, unique=True, index=True)
+    ticket_number = Column(String, nullable=False)
     title = Column(String, nullable=False)
     location = Column(String, nullable=True)
     user_name = Column(String, nullable=True)
