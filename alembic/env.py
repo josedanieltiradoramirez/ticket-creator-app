@@ -10,6 +10,22 @@ from dotenv import load_dotenv
 from app.core.database import Base
 from app.models.users import Users
 from app.models.tickets import Tickets
+from app.models.knowledge_base import KnowledgeBase
+from app.models.ticket_status import TicketStatus
+from app.models.tools import Tools
+from app.models.issue_types import IssueTypes
+from app.models.troubleshooting_templates import TroubleshootingTemplates
+from app.models.forms import Forms
+from app.models.relation_issue_types_tools import RelationIssueTypesTools
+from app.models.relation_issue_types_troubleshooting_templates import RelationIssueTypesTroubleshootingTemplates
+from app.models.relation_knowledge_base_tools import RelationKnowledgeBaseTools
+from app.models.relation_troubleshooting_templates_tools import RelationTroubleshootingTemplatesTools
+from app.models.relation_troubleshooting_templates_knowledge_base import RelationTroubleshootingTemplatesKnowledgeBase
+from app.models.form_fields import FormFields
+from app.models.locations import Locations
+from app.models.priorities import Priorities
+from app.models.queues import Queues
+
 
 load_dotenv()
 

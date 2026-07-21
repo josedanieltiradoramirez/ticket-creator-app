@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, Integer, String, ForeignKey, func, Boolean
+from sqlalchemy import Column, DateTime, Integer, String, ForeignKey, func, Boolean, Text
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 
@@ -14,18 +14,18 @@ class Tickets(Base):
     user_type = Column(String, nullable=True)
     user_best_contact_number = Column(String, nullable=True)
     user_email = Column(String, nullable=True)
-    issue_description = Column(String, nullable=False)
+    issue_description = Column(Text, nullable=False)
     short_issue = Column(String, nullable=False)
-    troubleshooting_steps = Column(String, nullable=False)
+    troubleshooting_steps = Column(Text, nullable=False)
     location_id = Column(Integer, ForeignKey('locations.id'), nullable=False)
     priority_id = Column(Integer, ForeignKey('priorities.id'), nullable=False)
     
     ## Ticket generation
-    generated_ticket = Column(String, nullable=False)
-    generated_time_entry = Column(String, nullable=False)
+    generated_ticket = Column(Text, nullable=False)
+    generated_time_entry = Column(Text, nullable=False)
     is_routed = Column(Boolean, default=False)
     is_status = Column(Boolean, default=False)
-    generated_status_time_entry = Column(String, nullable=False)
+    generated_status_time_entry = Column(Text, nullable=False)
     issue_type_id = Column(Integer, ForeignKey('issue_types.id'), nullable=False)
     kb_article_id = Column(Integer, ForeignKey('knowledge_base.id'), nullable=True)
     

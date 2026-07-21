@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, Integer, String, ForeignKey
+from sqlalchemy import Boolean, Column, Integer, String, ForeignKey, Text
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 
@@ -6,11 +6,8 @@ class TroubleshootingTemplates(Base):
     __tablename__ = 'troubleshooting_templates'
 
     id = Column(Integer, primary_key=True, index=True)
-    issue_type_id = Column(ForeignKey('issue_types.id'), nullable=False)
-    form_id = Column(ForeignKey('forms.id'), nullable=False)
-    steps = Column(String, nullable=False)
-    generated_description = Column(String, nullable=False)
-    kb_article_id = Column(ForeignKey('kb_articles.id'), nullable=True)
+    steps = Column(Text, nullable=False)
+    generated_description = Column(Text, nullable=False)
     is_active = Column(Boolean, default=True)
 
     ## Relationships

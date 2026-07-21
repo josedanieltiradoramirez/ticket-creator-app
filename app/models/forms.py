@@ -5,8 +5,7 @@ from app.core.database import Base
 class Forms(Base):
     __tablename__ = 'forms'
 
-    id = Column(Integer, primary_key=True, index=True)
-    issue_type_id = Column(ForeignKey('issue_types.id'), nullable=False)
+    id = Column(Integer, primary_key=True, index=True) 
     name = Column(String, nullable=False)
     description = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
