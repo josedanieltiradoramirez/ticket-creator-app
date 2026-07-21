@@ -9,15 +9,13 @@ class IssueTypes(Base):
     name = Column(String, nullable=False)
     description = Column(String, nullable=False)
     form_template_id = Column(Integer, ForeignKey('forms.id'), nullable=True)
-    tool = Column(Integer, ForeignKey('tools.id'), nullable=True)
-    troubleshooting_template_id = Column(Integer, ForeignKey('troubleshooting_templates.id'), nullable=True)
     category = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
     display_name = Column(String, nullable=True)
     search_keywords = Column(String, nullable=True)
 
     ## Relationships
-    troubleshooting_templates = relationship("TroubleshootingTemplates", secondary="relation_issue_types_troubleshooting", back_populates ="issue_types")
+    troubleshooting_templates = relationship("TroubleshootingTemplates", secondary="relation_issue_types_troubleshooting_templates", back_populates ="issue_types")
     tools = relationship("Tools", secondary="relation_issue_types_tools", back_populates="issue_types")
     
 
