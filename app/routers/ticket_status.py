@@ -11,7 +11,7 @@ from app.models.ticket_status import TicketStatus
 from app.models.users import Users
 from app.routers.auth import get_current_user
 
-from app.schemas.tickets import TicketCreate, TicketUpdate, TicketResponse
+from app.schemas.ticket_status import TicketStatusCreate, TicketStatusUpdate, TicketStatusResponse
 
 
 
@@ -23,20 +23,20 @@ router = APIRouter(
 db_dependency = Annotated[Session, Depends(get_db)]
 user_dependency = Annotated[Users, Depends(get_current_user)]
     
-@router.get("/", response_model=List[TicketResponse])
+@router.get("/", response_model=List[TicketStatusResponse])
 async def get_all_ticket_status(user : user_dependency, db: db_dependency):
     ticket_status = db.query(TicketStatus).filter(TicketStatus.created_by == user.id).all()
     return ticket_status
 
-@router.get("/{id}", response_model=TicketResponse)
+@router.get("/{id}", response_model=TicketStatusResponse)
 async def get_ticket_status_by_id(user : user_dependency, id: int, db: db_dependency):
     ticket_status = db.query(TicketStatus).filter(TicketStatus.id == id, TicketStatus.created_by == user.id).first()
     if not ticket_status:
         raise HTTPException(status_code=404, detail="Ticket status not found")
     return ticket_status
 
-@router.post("/", response_model=TicketResponse, status_code=201)
-async def create_ticket_status(user : user_dependency, ticket_status: TicketCreate, db: db_dependency):
+@router.post("/", response_model=TicketStatusResponse, status_code=201)
+async def create_ticket_status(user : user_dependency, ticket_status: TicketStatusCreate, db: db_dependency):
     ticket_status_data = ticket_status.model_dump()
     new_ticket_status = TicketStatus(**ticket_status_data, created_by=user.id)
     db.add(new_ticket_status)
@@ -46,8 +46,8 @@ async def create_ticket_status(user : user_dependency, ticket_status: TicketCrea
 
 
 
-@router.put("/{id}", response_model=TicketResponse)
-async def edit_ticket_status(user: user_dependency, id: int, ticket_status: TicketUpdate, db: db_dependency):
+@router.put("/{id}", response_model=TicketStatusResponse)
+async def edit_ticket_status(user: user_dependency, id: int, ticket_status: TicketStatusUpdate, db: db_dependency):
     existing_ticket_status = db.query(TicketStatus).filter(TicketStatus.id == id, TicketStatus.created_by == user.id).first()
     if not existing_ticket_status:
         raise HTTPException(status_code=404, detail="Ticket status not found")

@@ -10,7 +10,7 @@ from app.models.locations import Locations
 from app.models.users import Users
 from app.routers.auth import get_current_user
 
-from app.schemas.tickets import TicketCreate, TicketUpdate, TicketResponse
+from app.schemas.locations import LocationCreate, LocationUpdate, LocationResponse
 
 
 
@@ -22,20 +22,20 @@ router = APIRouter(
 db_dependency = Annotated[Session, Depends(get_db)]
 user_dependency = Annotated[Users, Depends(get_current_user)]
     
-@router.get("/", response_model=List[TicketResponse])
+@router.get("/", response_model=List[LocationResponse])
 async def get_all_locations(user : user_dependency, db: db_dependency):
     locations = db.query(Locations).filter(Locations.created_by == user.id).all()
     return locations
 
-@router.get("/{id}", response_model=TicketResponse)
+@router.get("/{id}", response_model=LocationResponse)
 async def get_location_by_id(user : user_dependency, id: int, db: db_dependency):
     location = db.query(Locations).filter(Locations.id == id, Locations.created_by == user.id).first()
     if not location:
         raise HTTPException(status_code=404, detail="Location not found")
     return location
 
-@router.post("/", response_model=TicketResponse, status_code=201)
-async def create_location(user : user_dependency, location: TicketCreate, db: db_dependency):
+@router.post("/", response_model=LocationResponse, status_code=201)
+async def create_location(user : user_dependency, location: LocationCreate, db: db_dependency):
     location_data = location.model_dump()
     new_location = Locations(**location_data, created_by=user.id)
     db.add(new_location)
@@ -45,8 +45,8 @@ async def create_location(user : user_dependency, location: TicketCreate, db: db
 
 
 
-@router.put("/{id}", response_model=TicketResponse)
-async def edit_location(user: user_dependency, id: int, location: TicketUpdate, db: db_dependency):
+@router.put("/{id}", response_model=LocationResponse)
+async def edit_location(user: user_dependency, id: int, location: LocationUpdate, db: db_dependency):
     existing_location = db.query(Locations).filter(Locations.id == id, Locations.created_by == user.id).first()
     if not existing_location:
         raise HTTPException(status_code=404, detail="Location not found")

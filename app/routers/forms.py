@@ -10,7 +10,7 @@ from app.models.forms import Forms
 from app.models.users import Users
 from app.routers.auth import get_current_user
 
-from app.schemas.tickets import TicketCreate, TicketUpdate, TicketResponse
+from app.schemas.forms import FormCreate, FormUpdate, FormResponse
 
 
 
@@ -22,20 +22,20 @@ router = APIRouter(
 db_dependency = Annotated[Session, Depends(get_db)]
 user_dependency = Annotated[Users, Depends(get_current_user)]
     
-@router.get("/", response_model=List[TicketResponse])
+@router.get("/", response_model=List[FormResponse])
 async def get_all_forms(user : user_dependency, db: db_dependency):
     forms = db.query(Forms).filter(Forms.created_by == user.id).all()
     return forms
 
-@router.get("/{id}", response_model=TicketResponse)
+@router.get("/{id}", response_model=FormResponse)
 async def get_form_by_id(user : user_dependency, id: int, db: db_dependency):
     form = db.query(Forms).filter(Forms.id == id, Forms.created_by == user.id).first()
     if not form:
         raise HTTPException(status_code=404, detail="Form not found")
     return form
 
-@router.post("/", response_model=TicketResponse, status_code=201)
-async def create_form(user : user_dependency, form: TicketCreate, db: db_dependency):
+@router.post("/", response_model=FormResponse, status_code=201)
+async def create_form(user : user_dependency, form: FormCreate, db: db_dependency):
     form_data = form.model_dump()
     new_form = Forms(**form_data, created_by=user.id)
     db.add(new_form)
@@ -45,8 +45,8 @@ async def create_form(user : user_dependency, form: TicketCreate, db: db_depende
 
 
 
-@router.put("/{id}", response_model=TicketResponse)
-async def edit_form(user: user_dependency, id: int, form: TicketUpdate, db: db_dependency):
+@router.put("/{id}", response_model=FormResponse)
+async def edit_form(user: user_dependency, id: int, form: FormUpdate, db: db_dependency):
     existing_form = db.query(Forms).filter(Forms.id == id, Forms.created_by == user.id).first()
     if not existing_form:
         raise HTTPException(status_code=404, detail="Form not found")

@@ -11,7 +11,7 @@ from app.models.form_fields import FormFields
 from app.models.users import Users
 from app.routers.auth import get_current_user
 
-from app.schemas.tickets import TicketCreate, TicketUpdate, TicketResponse
+from app.schemas.form_fields import FormFieldCreate, FormFieldUpdate, FormFieldResponse
 
 
 
@@ -23,20 +23,20 @@ router = APIRouter(
 db_dependency = Annotated[Session, Depends(get_db)]
 user_dependency = Annotated[Users, Depends(get_current_user)]
     
-@router.get("/", response_model=List[TicketResponse])
+@router.get("/", response_model=List[FormFieldResponse])
 async def get_all_form_fields(user : user_dependency, db: db_dependency):
     form_fields = db.query(FormFields).filter(FormFields.created_by == user.id).all()
     return form_fields
 
-@router.get("/{id}", response_model=TicketResponse)
+@router.get("/{id}", response_model=FormFieldResponse)
 async def get_form_field_by_id(user : user_dependency, id: int, db: db_dependency):
     form_field = db.query(FormFields).filter(FormFields.id == id, FormFields.created_by == user.id).first()
     if not form_field:
         raise HTTPException(status_code=404, detail="Form field not found")
     return form_field
 
-@router.post("/", response_model=TicketResponse, status_code=201)
-async def create_form_field(user : user_dependency, form_field: TicketCreate, db: db_dependency):
+@router.post("/", response_model=FormFieldResponse, status_code=201)
+async def create_form_field(user : user_dependency, form_field: FormFieldCreate, db: db_dependency):
     form_field_data = form_field.model_dump()
     new_form_field = FormFields(**form_field_data, created_by=user.id)
     db.add(new_form_field)
@@ -46,8 +46,8 @@ async def create_form_field(user : user_dependency, form_field: TicketCreate, db
 
 
 
-@router.put("/{id}", response_model=TicketResponse)
-async def edit_form_field(user: user_dependency, id: int, form_field: TicketUpdate, db: db_dependency):
+@router.put("/{id}", response_model=FormFieldResponse)
+async def edit_form_field(user: user_dependency, id: int, form_field: FormFieldUpdate, db: db_dependency):
     existing_form_field = db.query(FormFields).filter(FormFields.id == id, FormFields.created_by == user.id).first()
     if not existing_form_field:
         raise HTTPException(status_code=404, detail="Form field not found")

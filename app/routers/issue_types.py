@@ -10,7 +10,7 @@ from app.models.issue_types import IssueTypes
 from app.models.users import Users
 from app.routers.auth import get_current_user
 
-from app.schemas.tickets import TicketCreate, TicketUpdate, TicketResponse
+from app.schemas.issue_types import IssueTypeCreate, IssueTypeUpdate, IssueTypeResponse
 
 
 
@@ -22,20 +22,20 @@ router = APIRouter(
 db_dependency = Annotated[Session, Depends(get_db)]
 user_dependency = Annotated[Users, Depends(get_current_user)]
     
-@router.get("/", response_model=List[TicketResponse])
+@router.get("/", response_model=List[IssueTypeResponse])
 async def get_all_issue_types(user : user_dependency, db: db_dependency):
     issue_types = db.query(IssueTypes).filter(IssueTypes.created_by == user.id).all()
     return issue_types
 
-@router.get("/{id}", response_model=TicketResponse)
+@router.get("/{id}", response_model=IssueTypeResponse)
 async def get_issue_type_by_id(user : user_dependency, id: int, db: db_dependency):
     issue_type = db.query(IssueTypes).filter(IssueTypes.id == id, IssueTypes.created_by == user.id).first()
     if not issue_type:
         raise HTTPException(status_code=404, detail="Issue type not found")
     return issue_type
 
-@router.post("/", response_model=TicketResponse, status_code=201)
-async def create_issue_type(user : user_dependency, issue_type: TicketCreate, db: db_dependency):
+@router.post("/", response_model=IssueTypeResponse, status_code=201)
+async def create_issue_type(user : user_dependency, issue_type: IssueTypeCreate, db: db_dependency):
     issue_type_data = issue_type.model_dump()
     new_issue_type = IssueTypes(**issue_type_data, created_by=user.id)
     db.add(new_issue_type)
@@ -45,8 +45,8 @@ async def create_issue_type(user : user_dependency, issue_type: TicketCreate, db
 
 
 
-@router.put("/{id}", response_model=TicketResponse)
-async def edit_issue_type(user: user_dependency, id: int, issue_type: TicketUpdate, db: db_dependency):
+@router.put("/{id}", response_model=IssueTypeResponse)
+async def edit_issue_type(user: user_dependency, id: int, issue_type: IssueTypeUpdate, db: db_dependency):
     existing_issue_type = db.query(IssueTypes).filter(IssueTypes.id == id, IssueTypes.created_by == user.id).first()
     if not existing_issue_type:
         raise HTTPException(status_code=404, detail="Issue type not found")

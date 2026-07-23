@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
 
-class TroubleshootingTemplateCreate(BaseModel):
+class IssueTypeCreate(BaseModel):
     name: str
     description: str
     form_template_id: Optional[int] = None
@@ -11,7 +11,7 @@ class TroubleshootingTemplateCreate(BaseModel):
     display_name: Optional[str] = None
     searchable_keywords: Optional[str] = None
 
-class TroubleshootingTemplateUpdate(BaseModel):
+class IssueTypeUpdate(BaseModel):
     name: str
     description: str
     form_template_id: Optional[int] = None
@@ -20,7 +20,7 @@ class TroubleshootingTemplateUpdate(BaseModel):
     display_name: Optional[str] = None
     searchable_keywords: Optional[str] = None
 
-class TroubleshootingTemplateResponse(BaseModel):
+class IssueTypeResponse(BaseModel):
     id: int
     name: str
     description: str
