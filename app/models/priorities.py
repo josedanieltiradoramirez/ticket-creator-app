@@ -7,3 +7,4 @@ class Priorities(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
+    created_by = Column(Integer, ForeignKey('users.id'), nullable=False)

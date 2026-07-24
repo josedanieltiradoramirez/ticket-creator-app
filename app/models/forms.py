@@ -9,3 +9,4 @@ class Forms(Base):
     name = Column(String, nullable=False)
     description = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
+    created_by = Column(Integer, ForeignKey('users.id'), nullable=False)

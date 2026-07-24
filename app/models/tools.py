@@ -9,6 +9,7 @@ class Tools(Base):
     name = Column(String, nullable=False)
     description = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
+    created_by = Column(Integer, ForeignKey('users.id'), nullable=False)
 
     ## Relationships
     issue_types = relationship("IssueTypes", secondary="relation_issue_types_tools", back_populates="tools")

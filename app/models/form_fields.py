@@ -11,3 +11,4 @@ class FormFields(Base):
     field_type = Column(String, nullable=False)
     required = Column(Boolean, default=False)
     display_order = Column(Integer, nullable=False)
+    created_by = Column(Integer, ForeignKey('users.id'), nullable=False)

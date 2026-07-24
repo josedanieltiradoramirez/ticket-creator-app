@@ -9,6 +9,7 @@ class TroubleshootingTemplates(Base):
     steps = Column(Text, nullable=False)
     generated_description = Column(Text, nullable=False)
     is_active = Column(Boolean, default=True)
+    created_by = Column(Integer, ForeignKey('users.id'), nullable=False)
 
     ## Relationships
     issue_types = relationship(

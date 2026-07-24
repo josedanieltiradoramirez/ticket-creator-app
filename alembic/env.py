@@ -25,6 +25,7 @@ from app.models.form_fields import FormFields
 from app.models.locations import Locations
 from app.models.priorities import Priorities
 from app.models.queues import Queues
+from app.models.whs_systems import WHSSystems
 
 
 load_dotenv()

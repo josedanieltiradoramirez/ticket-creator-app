@@ -13,6 +13,7 @@ class IssueTypes(Base):
     is_active = Column(Boolean, default=True)
     display_name = Column(String, nullable=True)
     search_keywords = Column(String, nullable=True)
+    created_by = Column(Integer, ForeignKey('users.id'), nullable=False)
 
     ## Relationships
     troubleshooting_templates = relationship("TroubleshootingTemplates", secondary="relation_issue_types_troubleshooting_templates", back_populates ="issue_types")
