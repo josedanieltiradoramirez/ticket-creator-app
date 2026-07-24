@@ -10,9 +10,9 @@ from app.models.issue_types import IssueTypes
 from app.models.users import Users
 from app.routers.auth import get_current_user
 
-from app.schemas.issue_types import IssueTypeCreate, IssueTypeUpdate, IssueTypeResponse
+from app.schemas.issue_types import IssueTypeCreate, IssueTypeUpdate, IssueTypeResponse, IssueTypeDetailResponse
 
-
+from sqlalchemy.orm import selectinload
 
 router = APIRouter(
     prefix='/issue_types',
@@ -27,9 +27,22 @@ async def get_all_issue_types(user : user_dependency, db: db_dependency):
     issue_types = db.query(IssueTypes).filter(IssueTypes.created_by == user.id).all()
     return issue_types
 
-@router.get("/{id}", response_model=IssueTypeResponse)
+@router.get("/{id}", response_model=IssueTypeDetailResponse)
 async def get_issue_type_by_id(user : user_dependency, id: int, db: db_dependency):
-    issue_type = db.query(IssueTypes).filter(IssueTypes.id == id, IssueTypes.created_by == user.id).first()
+    
+    issue_type = (
+        db.query(IssueTypes)
+        .options(
+            selectinload(IssueTypes.knowledge_base),
+            selectinload(IssueTypes.tools),
+            selectinload(IssueTypes.troubleshooting_templates),
+        )
+        .filter(
+            IssueTypes.id == id,
+            IssueTypes.created_by == user.id
+        )
+        .first()
+    )
     if not issue_type:
         raise HTTPException(status_code=404, detail="Issue type not found")
     return issue_type

@@ -16,3 +16,4 @@ class KnowledgeBase(Base):
     ## Relationships
     tools = relationship("Tools", secondary="relation_knowledge_base_tools", back_populates="knowledge_base")
     troubleshooting_templates = relationship("TroubleshootingTemplates", secondary="relation_troubleshooting_templates_knowledge_base", back_populates="knowledge_base")
+    issue_types = relationship("IssueTypes", secondary="relation_issue_tyoes_knowledge_base", back_populates="knowledge_base")

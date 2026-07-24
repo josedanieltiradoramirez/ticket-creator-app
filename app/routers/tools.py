@@ -10,7 +10,9 @@ from app.models.tools import Tools
 from app.models.users import Users
 from app.routers.auth import get_current_user
 
-from app.schemas.tools import ToolCreate, ToolUpdate, ToolResponse
+from app.schemas.tools import ToolCreate, ToolUpdate, ToolResponse, ToolDetailResponse
+
+from sqlalchemy.orm import selectinload
 
 
 
@@ -27,9 +29,21 @@ async def get_all_tools(user : user_dependency, db: db_dependency):
     tools = db.query(Tools).filter(Tools.created_by == user.id).all()
     return tools
 
-@router.get("/{id}", response_model=ToolResponse)
+@router.get("/{id}", response_model=ToolDetailResponse)
 async def get_tool_by_id(user : user_dependency, id: int, db: db_dependency):
-    tool = db.query(Tools).filter(Tools.id == id, Tools.created_by == user.id).first()
+    tool = (
+    db.query(Tools)
+    .options(
+        selectinload(Tools.issue_types),
+        selectinload(Tools.knowledge_base),
+        selectinload(Tools.troubleshooting_templates),
+    )
+    .filter(
+        Tools.id == id,
+        Tools.created_by == user.id
+    )
+    .first()
+)
     if not tool:
         raise HTTPException(status_code=404, detail="Tool not found")
     return tool

@@ -2,7 +2,8 @@ from pydantic import BaseModel
 
 from app.schemas.summaries import (
     ToolSummary,
-    TroubleshootingTemplateSummary
+    TroubleshootingTemplateSummary,
+    IssueTypeSummary
 )
 
 class KnowledgeBaseItemCreate(BaseModel):
@@ -30,3 +31,4 @@ class KnowledgeBaseItemResponse(BaseModel):
 class KnowledgeBaseDetailResponse(KnowledgeBaseItemResponse):
     tools: list[ToolSummary]
     troubleshooting_templates: list[TroubleshootingTemplateSummary]
+    issue_types: list[IssueTypeSummary]

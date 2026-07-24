@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import Optional
 
 from app.schemas.forms import FormResponse
@@ -37,8 +37,7 @@ class IssueTypeResponse(BaseModel):
     display_name: Optional[str] = None
     search_keywords: Optional[str] = None
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 class IssueTypeDetailResponse(IssueTypeResponse):
     form: FormResponse

@@ -18,6 +18,8 @@ class IssueTypes(Base):
     ## Relationships
     troubleshooting_templates = relationship("TroubleshootingTemplates", secondary="relation_issue_types_troubleshooting_templates", back_populates ="issue_types")
     tools = relationship("Tools", secondary="relation_issue_types_tools", back_populates="issue_types")
+    knowledge_base = relationship("KnowledgeBase", secondary="relation_issue_types_knowledge_base", back_populates="issue_types")
+    form = relationship("Forms", back_populates="issue_types")
     
 
     

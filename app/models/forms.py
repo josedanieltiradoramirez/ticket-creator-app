@@ -10,3 +10,9 @@ class Forms(Base):
     description = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
     created_by = Column(Integer, ForeignKey('users.id'), nullable=False)
+
+    ## Relationships
+    issue_types = relationship(
+        "IssueTypes",
+        back_populates="form"
+    )

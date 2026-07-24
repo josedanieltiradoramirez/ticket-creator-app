@@ -1,6 +1,4 @@
-from pydantic import BaseModel
-from typing import Optional
-from datetime import datetime
+from pydantic import BaseModel, ConfigDict
 
 from app.schemas.summaries import (
     IssueTypeSummary,
@@ -24,8 +22,7 @@ class ToolResponse(BaseModel):
     description: str
     is_active: bool
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 class ToolDetailResponse(ToolResponse):
     issue_types: list[IssueTypeSummary]
