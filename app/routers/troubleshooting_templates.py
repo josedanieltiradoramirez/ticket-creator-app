@@ -10,9 +10,9 @@ from app.models.troubleshooting_templates import TroubleshootingTemplates
 from app.models.users import Users
 from app.routers.auth import get_current_user
 
-from app.schemas.troubleshooting_templates import TroubleshootingTemplateCreate, TroubleshootingTemplateUpdate, TroubleshootingTemplateResponse
+from app.schemas.troubleshooting_templates import TroubleshootingTemplateCreate, TroubleshootingTemplateUpdate, TroubleshootingTemplateResponse, TroubleshootingTemplateDetailResponse
 
-
+from sqlalchemy.orm import selectinload
 
 router = APIRouter(
     prefix='/troubleshooting_templates',
@@ -22,14 +22,27 @@ router = APIRouter(
 db_dependency = Annotated[Session, Depends(get_db)]
 user_dependency = Annotated[Users, Depends(get_current_user)]
     
-@router.get("/", response_model=List[TroubleshootingTemplateResponse])
+@router.get("/", response_model=List[TroubleshootingTemplateDetailResponse])
 async def get_all_troubleshooting_templates(user : user_dependency, db: db_dependency):
     troubleshooting_templates = db.query(TroubleshootingTemplates).filter(TroubleshootingTemplates.created_by == user.id).all()
     return troubleshooting_templates
 
 @router.get("/{id}", response_model=TroubleshootingTemplateResponse)
 async def get_troubleshooting_template_by_id(user : user_dependency, id: int, db: db_dependency):
-    troubleshooting_template = db.query(TroubleshootingTemplates).filter(TroubleshootingTemplates.id == id, TroubleshootingTemplates.created_by == user.id).first()
+    
+    troubleshooting_template = (
+                db.query(TroubleshootingTemplates)
+                .options(
+                    selectinload(TroubleshootingTemplates.issue_types),
+                    selectinload(TroubleshootingTemplates.knowledge_base),
+                    selectinload(TroubleshootingTemplates.tools),
+                )
+                .filter(
+                    TroubleshootingTemplates.id == id,
+                    TroubleshootingTemplates.created_by == user.id
+                )
+                .first()
+            )
     if not troubleshooting_template:
         raise HTTPException(status_code=404, detail="Troubleshooting template not found")
     return troubleshooting_template

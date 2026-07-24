@@ -1,9 +1,10 @@
-from pydantic import BaseModel
-from typing import Optional
-from datetime import datetime
+from pydantic import BaseModel, ConfigDict
 
-from app.schemas.tools import ToolResponse
-from app.schemas.knowledge_base import KnowledgeBaseItemResponse
+from app.schemas.summaries import (
+    ToolSummary,
+    KnowledgeBaseSummary,
+    IssueTypeSummary
+)
 
 class TroubleshootingTemplateCreate(BaseModel):
     steps: str
@@ -21,9 +22,10 @@ class TroubleshootingTemplateResponse(BaseModel):
     generated_description: str
     is_active: bool
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
+
 
 class TroubleshootingTemplateDetailResponse(TroubleshootingTemplateResponse):
-    tools: list[ToolResponse]
-    knowledge_base: list[KnowledgeBaseItemResponse]
+    tools: list[ToolSummary]
+    knowledge_base: list[KnowledgeBaseSummary]
+    issue_types: list[IssueTypeSummary]
