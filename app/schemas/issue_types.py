@@ -9,7 +9,7 @@ class IssueTypeCreate(BaseModel):
     category: str
     is_active: bool = True
     display_name: Optional[str] = None
-    searchable_keywords: Optional[str] = None
+    search_keywords: Optional[str] = None
 
 class IssueTypeUpdate(BaseModel):
     name: str
@@ -18,7 +18,7 @@ class IssueTypeUpdate(BaseModel):
     category: str
     is_active: bool = True
     display_name: Optional[str] = None
-    searchable_keywords: Optional[str] = None
+    search_keywords: Optional[str] = None
 
 class IssueTypeResponse(BaseModel):
     id: int
@@ -28,7 +28,7 @@ class IssueTypeResponse(BaseModel):
     category: str
     is_active: bool = True
     display_name: Optional[str] = None
-    searchable_keywords: Optional[str] = None
+    search_keywords: Optional[str] = None
 
     class Config:
         orm_mode = True
