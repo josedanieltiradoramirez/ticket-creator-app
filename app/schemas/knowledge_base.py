@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from app.schemas.summaries import (
     ToolSummary,
@@ -25,8 +25,7 @@ class KnowledgeBaseItemResponse(BaseModel):
     url: str
     description: str
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 class KnowledgeBaseDetailResponse(KnowledgeBaseItemResponse):
     tools: list[ToolSummary]

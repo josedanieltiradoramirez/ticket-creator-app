@@ -10,9 +10,9 @@ from app.models.knowledge_base import KnowledgeBase
 from app.models.users import Users
 from app.routers.auth import get_current_user
 
-from app.schemas.knowledge_base import KnowledgeBaseItemCreate, KnowledgeBaseItemUpdate, KnowledgeBaseItemResponse
+from app.schemas.knowledge_base import KnowledgeBaseItemCreate, KnowledgeBaseItemUpdate, KnowledgeBaseItemResponse, KnowledgeBaseDetailResponse
 
-
+from sqlalchemy.orm import selectinload
 
 router = APIRouter(
     prefix='/knowledge_base',
@@ -27,9 +27,21 @@ async def get_all_knowledge_base_items(user : user_dependency, db: db_dependency
     knowledge_base_items = db.query(KnowledgeBase).filter(KnowledgeBase.created_by == user.id).all()
     return knowledge_base_items
 
-@router.get("/{id}", response_model=KnowledgeBaseItemResponse)
+@router.get("/{id}", response_model=KnowledgeBaseDetailResponse)
 async def get_knowledge_base_item_by_id(user : user_dependency, id: int, db: db_dependency):
-    knowledge_base_item = db.query(KnowledgeBase).filter(KnowledgeBase.id == id, KnowledgeBase.created_by == user.id).first()
+    knowledge_base_item = (
+            db.query(KnowledgeBase)
+            .options(
+                selectinload(KnowledgeBase.issue_types),
+                selectinload(KnowledgeBase.tools),
+                selectinload(KnowledgeBase.troubleshooting_templates),
+            )
+            .filter(
+                KnowledgeBase.id == id,
+                KnowledgeBase.created_by == user.id
+            )
+            .first()
+        )
     if not knowledge_base_item:
         raise HTTPException(status_code=404, detail="Knowledge base item not found")
     return knowledge_base_item
