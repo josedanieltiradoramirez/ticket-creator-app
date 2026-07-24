@@ -1,9 +1,9 @@
 from pydantic import BaseModel
-from typing import Optional
-from datetime import datetime
 
-from app.schemas.tools import ToolResponse
-from app.schemas.troubleshooting_templates import TroubleshootingTemplateResponse
+from app.schemas.summaries import (
+    ToolSummary,
+    TroubleshootingTemplateSummary
+)
 
 class KnowledgeBaseItemCreate(BaseModel):
     article_number: str
@@ -28,5 +28,5 @@ class KnowledgeBaseItemResponse(BaseModel):
         orm_mode = True
 
 class KnowledgeBaseDetailResponse(KnowledgeBaseItemResponse):
-    tools: list[ToolResponse]
-    troubleshooting_templates: list[TroubleshootingTemplateResponse]
+    tools: list[ToolSummary]
+    troubleshooting_templates: list[TroubleshootingTemplateSummary]

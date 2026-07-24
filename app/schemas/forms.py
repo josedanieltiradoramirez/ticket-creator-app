@@ -1,8 +1,6 @@
 from pydantic import BaseModel
-from typing import Optional
-from datetime import datetime
 
-from app.schemas.form_fields import FormFieldResponse
+from app.schemas.summaries import FormFieldSummary
 
 class FormCreate(BaseModel):
     name: str
@@ -24,4 +22,4 @@ class FormResponse(BaseModel):
         orm_mode = True
 
 class FormDetailResponse(FormResponse):
-    fields: list[FormFieldResponse]
+    fields: list[FormFieldSummary]

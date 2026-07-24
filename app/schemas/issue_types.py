@@ -1,12 +1,13 @@
 from pydantic import BaseModel
 from typing import Optional
-from datetime import datetime
 
 from app.schemas.forms import FormResponse
-from app.schemas.knowledge_base import KnowledgeBaseItemResponse
-from app.schemas.tools import ToolResponse
-from app.schemas.troubleshooting_templates import TroubleshootingTemplateResponse
-from app.schemas.troubleshooting_templates import TroubleshootingTemplateResponse
+
+from app.schemas.summaries import (
+    ToolSummary,
+    KnowledgeBaseSummary,
+    TroubleshootingTemplateSummary
+)
 
 class IssueTypeCreate(BaseModel):
     name: str
@@ -41,6 +42,6 @@ class IssueTypeResponse(BaseModel):
 
 class IssueTypeDetailResponse(IssueTypeResponse):
     form: FormResponse
-    tools: list[ToolResponse]
-    troubleshooting_templates: list[TroubleshootingTemplateResponse]
-    knowledge_base: list[KnowledgeBaseItemResponse]
+    tools: list[ToolSummary]
+    troubleshooting_templates: list[TroubleshootingTemplateSummary]
+    knowledge_base: list[KnowledgeBaseSummary]
