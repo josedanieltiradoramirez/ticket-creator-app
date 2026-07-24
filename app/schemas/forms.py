@@ -2,6 +2,8 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
 
+from app.schemas.form_fields import FormFieldResponse
+
 class FormCreate(BaseModel):
     name: str
     description: str
@@ -20,3 +22,6 @@ class FormResponse(BaseModel):
 
     class Config:
         orm_mode = True
+
+class FormDetailResponse(FormResponse):
+    fields: list[FormFieldResponse]
