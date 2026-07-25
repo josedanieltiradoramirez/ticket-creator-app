@@ -11,9 +11,9 @@ from app.models.form_fields import FormFields
 from app.models.users import Users
 from app.routers.auth import get_current_user
 
-from app.schemas.form_fields import FormFieldCreate, FormFieldUpdate, FormFieldResponse
+from app.schemas.form_fields import FormFieldCreate, FormFieldUpdate, FormFieldResponse, FormFieldDetailResponse
 
-
+from sqlalchemy.orm import selectinload
 
 router = APIRouter(
     prefix='/form_fields',
@@ -28,9 +28,19 @@ async def get_all_form_fields(user : user_dependency, db: db_dependency):
     form_fields = db.query(FormFields).filter(FormFields.created_by == user.id).all()
     return form_fields
 
-@router.get("/{id}", response_model=FormFieldResponse)
+@router.get("/{id}", response_model=FormFieldDetailResponse)
 async def get_form_field_by_id(user : user_dependency, id: int, db: db_dependency):
-    form_field = db.query(FormFields).filter(FormFields.id == id, FormFields.created_by == user.id).first()
+    form_field = (
+            db.query(FormFields)
+            .options(
+                selectinload(FormFields.form),
+            )
+            .filter(
+                FormFields.id == id,
+                FormFields.created_by == user.id
+            )
+            .first()
+        )
     if not form_field:
         raise HTTPException(status_code=404, detail="Form field not found")
     return form_field

@@ -33,6 +33,7 @@ async def get_issue_type_by_id(user : user_dependency, id: int, db: db_dependenc
     issue_type = (
         db.query(IssueTypes)
         .options(
+            selectinload(IssueTypes.form),
             selectinload(IssueTypes.knowledge_base),
             selectinload(IssueTypes.tools),
             selectinload(IssueTypes.troubleshooting_templates),
