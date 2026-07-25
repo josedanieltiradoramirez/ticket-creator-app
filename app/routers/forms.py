@@ -10,8 +10,9 @@ from app.models.forms import Forms
 from app.models.users import Users
 from app.routers.auth import get_current_user
 
-from app.schemas.forms import FormCreate, FormUpdate, FormResponse
+from app.schemas.forms import FormCreate, FormUpdate, FormResponse, FormDetailResponse
 
+from sqlalchemy.orm import selectinload
 
 
 router = APIRouter(
@@ -27,9 +28,20 @@ async def get_all_forms(user : user_dependency, db: db_dependency):
     forms = db.query(Forms).filter(Forms.created_by == user.id).all()
     return forms
 
-@router.get("/{id}", response_model=FormResponse)
+@router.get("/{id}", response_model=FormDetailResponse)
 async def get_form_by_id(user : user_dependency, id: int, db: db_dependency):
-    form = db.query(Forms).filter(Forms.id == id, Forms.created_by == user.id).first()
+    form = (
+        db.query(Forms)
+        .options(
+            selectinload(Forms.form_fields),
+            selectinload(Forms.issue_types),
+        )
+        .filter(
+            Forms.id == id,
+            Forms.created_by == user.id
+        )
+        .first()
+    )
     if not form:
         raise HTTPException(status_code=404, detail="Form not found")
     return form

@@ -1,6 +1,9 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
-from app.schemas.summaries import FormFieldSummary
+from app.schemas.summaries import (
+    FormFieldSummary,
+    IssueTypeSummary
+)
 
 class FormCreate(BaseModel):
     name: str
@@ -18,8 +21,8 @@ class FormResponse(BaseModel):
     description: str
     is_active: bool
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 class FormDetailResponse(FormResponse):
-    fields: list[FormFieldSummary]
+    form_fields: list[FormFieldSummary]
+    issue_types: list[IssueTypeSummary]

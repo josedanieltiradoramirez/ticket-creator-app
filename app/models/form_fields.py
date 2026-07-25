@@ -12,3 +12,9 @@ class FormFields(Base):
     required = Column(Boolean, default=False)
     display_order = Column(Integer, nullable=False)
     created_by = Column(Integer, ForeignKey('users.id'), nullable=False)
+
+    ## Relationships
+    form = relationship(
+        "Forms",
+        back_populates="form_fields"
+    )

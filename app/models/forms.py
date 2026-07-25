@@ -16,3 +16,10 @@ class Forms(Base):
         "IssueTypes",
         back_populates="form"
     )
+
+    form_fields = relationship(
+        "FormFields",
+        back_populates="form",
+        cascade="all, delete-orphan",
+        order_by="FormFields.display_order"
+    )
