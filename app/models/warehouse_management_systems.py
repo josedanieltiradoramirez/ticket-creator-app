@@ -2,8 +2,8 @@ from sqlalchemy import Boolean, Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 
-class WHSSystems(Base):
-    __tablename__ = 'whs_systems'
+class WarehouseManagementSystems(Base):
+    __tablename__ = 'warehouse_management_systems'
 
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
@@ -12,5 +12,5 @@ class WHSSystems(Base):
 
     locations = relationship(
         "Locations",
-        back_populates="whs_system"
+        back_populates="warehouse_management_system"
     )

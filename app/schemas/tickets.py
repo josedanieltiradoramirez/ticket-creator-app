@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import Optional
 from datetime import datetime
 
@@ -27,8 +27,7 @@ class TicketCreate(BaseModel):
     status_id: int
     queue_id: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class TicketUpdate(BaseModel):
@@ -53,8 +52,7 @@ class TicketUpdate(BaseModel):
     status_id: int
     queue_id: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 class TicketResponse(BaseModel):
     id: int
@@ -82,5 +80,4 @@ class TicketResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

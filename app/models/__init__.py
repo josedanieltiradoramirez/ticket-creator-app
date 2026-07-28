@@ -10,7 +10,7 @@ from .locations import Locations
 from .priorities import Priorities
 from .queues import Queues
 from .ticket_status import TicketStatus
-from .whs_systems import WHSSystems
+from .warehouse_management_systems import WarehouseManagementSystems
 
 from .relation_issue_types_tools import RelationIssueTypesTools
 from .relation_issue_types_troubleshooting_templates import RelationIssueTypesTroubleshootingTemplates

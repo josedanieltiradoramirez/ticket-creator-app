@@ -12,11 +12,11 @@ class Locations(Base):
     code = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
     created_by = Column(Integer, ForeignKey('users.id'), nullable=False)
-    whs_system_id = Column(Integer, ForeignKey('whs_systems.id'), nullable=True)
+    warehouse_management_system_id = Column(Integer, ForeignKey('warehouse_management_systems.id'), nullable=True)
 
     ## Relationships
-    whs_system = relationship(
-        "WHSSystems",
+    warehouse_management_system = relationship(
+        "WarehouseManagementSystems",
         back_populates="locations"
     )
 
