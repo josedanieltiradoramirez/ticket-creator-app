@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from app.routers import auth, form_fields, forms, issue_types, knowledge_base, locations, priorities, queues, ticket_status, tickets, tools, troubleshooting_templates, users
+from app.routers import auth, form_fields, forms, issue_types, knowledge_base, locations, priorities, queues, ticket_status, tickets, tools, troubleshooting_templates, users, warehouse_management_systems
 
 ## from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -36,5 +36,5 @@ app.include_router(queues.router, prefix="/api")
 app.include_router(ticket_status.router, prefix="/api")
 app.include_router(tools.router, prefix="/api")
 app.include_router(troubleshooting_templates.router, prefix="/api")
-
+app.include_router(warehouse_management_systems.router, prefix="/api")
 

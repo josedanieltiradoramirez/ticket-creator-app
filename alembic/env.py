@@ -25,7 +25,7 @@ from app.models.form_fields import FormFields
 from app.models.locations import Locations
 from app.models.priorities import Priorities
 from app.models.queues import Queues
-from app.models.whs_systems import WHSSystems
+from app.models.warehouse_management_systems import WarehouseManagementSystems
 
 
 load_dotenv()
