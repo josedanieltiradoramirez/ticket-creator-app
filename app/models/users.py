@@ -14,3 +14,8 @@ class Users(Base):
     role = Column(String)
     phone_number = Column(String)
     
+    ## Relationship
+    tickets = relationship(
+        "Tickets",
+        back_populates="creator"
+    )

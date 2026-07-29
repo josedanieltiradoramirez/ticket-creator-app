@@ -15,3 +15,4 @@ class Tools(Base):
     issue_types = relationship("IssueTypes", secondary="relation_issue_types_tools", back_populates="tools")
     knowledge_base = relationship("KnowledgeBase", secondary="relation_knowledge_base_tools", back_populates="tools")
     troubleshooting_templates = relationship("TroubleshootingTemplates", secondary="relation_troubleshooting_templates_tools", back_populates="tools")
+    tickets = relationship("Tickets", back_populates="tool")

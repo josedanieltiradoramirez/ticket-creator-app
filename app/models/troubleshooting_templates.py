@@ -28,3 +28,7 @@ class TroubleshootingTemplates(Base):
         secondary="relation_troubleshooting_templates_tools",
         back_populates="troubleshooting_templates"
     )
+    tickets = relationship(
+        "Tickets",
+        back_populates="troubleshooting_template"
+    )

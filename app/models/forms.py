@@ -23,3 +23,8 @@ class Forms(Base):
         cascade="all, delete-orphan",
         order_by="FormFields.display_order"
     )
+
+    tickets = relationship(
+        "Tickets",
+        back_populates="form_template"
+    )

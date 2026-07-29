@@ -20,3 +20,8 @@ class Locations(Base):
         back_populates="locations"
     )
 
+    tickets = relationship(
+        "Tickets",
+        back_populates="location"
+    )
+

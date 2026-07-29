@@ -10,3 +10,9 @@ class Queues(Base):
     description = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
     created_by = Column(Integer, ForeignKey('users.id'), nullable=False)
+
+    ## Relationships
+    tickets = relationship(
+        "Tickets",
+        back_populates="queue"
+    )

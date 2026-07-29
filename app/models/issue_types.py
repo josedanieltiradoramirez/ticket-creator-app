@@ -20,6 +20,7 @@ class IssueTypes(Base):
     tools = relationship("Tools", secondary="relation_issue_types_tools", back_populates="issue_types")
     knowledge_base = relationship("KnowledgeBase", secondary="relation_issue_types_knowledge_base", back_populates="issue_types")
     form = relationship("Forms", back_populates="issue_types")
+    tickets = relationship("Tickets", back_populates="issue_type")
     
 
     
