@@ -7,16 +7,19 @@ from app.schemas.summaries import (
 )
 
 class TroubleshootingTemplateCreate(BaseModel):
+    name: str | None = None
     steps: str
     generated_description: str
     is_active: bool
 
 class TroubleshootingTemplateUpdate(BaseModel):
+    name: str | None = None
     steps: str
     generated_description: str
     is_active: bool
 
 class TroubleshootingTemplateResponse(BaseModel):
+    name: str | None = None
     id: int
     steps: str
     generated_description: str

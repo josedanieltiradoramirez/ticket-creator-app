@@ -6,6 +6,7 @@ class TroubleshootingTemplates(Base):
     __tablename__ = 'troubleshooting_templates'
 
     id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=True)
     steps = Column(Text, nullable=False)
     generated_description = Column(Text, nullable=False)
     is_active = Column(Boolean, default=True)
