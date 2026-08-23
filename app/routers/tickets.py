@@ -9,6 +9,8 @@ from app.models.tickets import Tickets
 from app.models.users import Users
 from app.routers.auth import get_current_user
 from app.schemas.tickets import TicketCreate, TicketUpdate, TicketResponse, TicketDetailResponse
+from sqlalchemy.orm import selectinload
+from app.models.forms import Forms
 
 
 router = APIRouter(
@@ -37,6 +39,18 @@ async def get_ticket_by_id(
 ):
     ticket = (
         db.query(Tickets)
+        .options(
+            selectinload(Tickets.tool),
+            selectinload(Tickets.issue_type),
+            selectinload(Tickets.knowledge_base),
+            selectinload(Tickets.troubleshooting_template),
+            selectinload(Tickets.form_template)
+                .selectinload(Forms.form_fields),
+            selectinload(Tickets.queue),
+            selectinload(Tickets.status),
+            selectinload(Tickets.location),
+            selectinload(Tickets.priority),
+        )
         .filter(
             Tickets.id == id,
             Tickets.created_by == user.id,

@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 class ToolSummary(BaseModel):
     id: int
@@ -39,6 +39,16 @@ class FormSummary(BaseModel):
 
     class Config:
         orm_mode = True
+
+class TicketFormSummary(BaseModel):
+    id: int
+    name: str
+    description: str
+    is_active: bool
+    form_fields: list[FormFieldSummary]
+
+    class Config:
+            orm_mode = True
 
 class FormFieldSummary(BaseModel):
     id: int
