@@ -65,3 +65,10 @@ class TicketDetailResponse(TicketResponse):
     location: Optional[LocationSummary] = None
     priority: Optional[PrioritySummary] = None
 
+class TicketListResponse(BaseModel):
+    items: list[TicketResponse]
+    total: int
+    page: int
+    limit: int
+    pages: int
+

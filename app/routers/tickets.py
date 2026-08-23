@@ -1,4 +1,5 @@
 from datetime import date, timedelta
+from math import ceil
 from typing import List, Optional
 from typing import Annotated
 
@@ -9,7 +10,7 @@ from app.core.database import get_db
 from app.models.tickets import Tickets
 from app.models.users import Users
 from app.routers.auth import get_current_user
-from app.schemas.tickets import TicketCreate, TicketUpdate, TicketResponse, TicketDetailResponse
+from app.schemas.tickets import TicketCreate, TicketUpdate, TicketResponse, TicketDetailResponse, TicketListResponse
 from sqlalchemy.orm import selectinload
 from app.models.forms import Forms
 
@@ -23,7 +24,7 @@ db_dependency = Annotated[Session, Depends(get_db)]
 user_dependency = Annotated[Users, Depends(get_current_user)]
 
 
-@router.get("/", response_model=List[TicketResponse])
+@router.get("/", response_model=TicketListResponse)
 async def get_tickets(
     user: user_dependency,
     db: db_dependency,
@@ -38,6 +39,8 @@ async def get_tickets(
     ticket_number: Optional[str] = Query(None),
     kb_article_id: Optional[int] = Query(None),
     user_name: Optional[str] = Query(None),
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100),
 ):
     query = (
         db.query(Tickets)
@@ -69,12 +72,28 @@ async def get_tickets(
         query = query.filter(Tickets.kb_article_id == kb_article_id)
     if user_name:
         query = query.filter(Tickets.user_name.ilike(f"%{user_name}%"))
-        
-    tickets = query.order_by(
-        Tickets.created_at.desc()
-    ).all()
 
-    return tickets
+    total = query.count()
+
+    offset = (page - 1) * limit
+
+    tickets = (
+        query
+        .order_by(Tickets.created_at.desc())
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
+
+    pages = ceil(total / limit) if total > 0 else 0
+
+    return {
+        "items": tickets,
+        "total": total,
+        "page": page,
+        "limit": limit,
+        "pages": pages,
+    }
 
 
 @router.get("/{id}", response_model=TicketDetailResponse)
