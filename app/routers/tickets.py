@@ -1,7 +1,8 @@
-from typing import List
+from datetime import date, timedelta
+from typing import List, Optional
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
@@ -23,12 +24,54 @@ user_dependency = Annotated[Users, Depends(get_current_user)]
 
 
 @router.get("/", response_model=List[TicketResponse])
-async def get_all_tickets(user: user_dependency, db: db_dependency):
-    return (
+async def get_tickets(
+    user: user_dependency,
+    db: db_dependency,
+    ticket_date: Optional[date] = Query(None),
+    issue_type_id: Optional[int] = Query(None),
+    status_id: Optional[int] = Query(None),
+    priority_id: Optional[int] = Query(None),
+    queue_id: Optional[int] = Query(None),
+    tool_id: Optional[int] = Query(None),
+    location_id: Optional[int] = Query(None),
+    created_by_id: Optional[int] = Query(None),
+    ticket_number: Optional[str] = Query(None),
+    kb_article_id: Optional[int] = Query(None),
+    user_name: Optional[str] = Query(None),
+):
+    query = (
         db.query(Tickets)
         .filter(Tickets.created_by == user.id)
-        .all()
     )
+
+    if ticket_date:
+        query = query.filter(
+            Tickets.created_at >= ticket_date,
+            Tickets.created_at < ticket_date + timedelta(days=1)
+        )
+    if issue_type_id is not None:
+        query = query.filter(Tickets.issue_type_id == issue_type_id)
+    if status_id is not None:
+        query = query.filter(Tickets.status_id == status_id)
+    if priority_id is not None:
+        query = query.filter(Tickets.priority_id == priority_id)
+    if queue_id is not None:
+        query = query.filter(Tickets.queue_id == queue_id)
+    if tool_id is not None:
+        query = query.filter(Tickets.tool_id == tool_id)
+    if location_id is not None:
+        query = query.filter(Tickets.location_id == location_id)
+    if created_by_id is not None:
+        query = query.filter(Tickets.created_by == created_by_id)
+    if ticket_number:
+        query = query.filter(Tickets.ticket_number == ticket_number)
+    if kb_article_id is not None:
+        query = query.filter(Tickets.kb_article_id == kb_article_id)
+    if user_name:
+        query = query.filter(Tickets.user_name.ilike(f"%{user_name}%"))
+    tickets = query.all()
+
+    return tickets
 
 
 @router.get("/{id}", response_model=TicketDetailResponse)
