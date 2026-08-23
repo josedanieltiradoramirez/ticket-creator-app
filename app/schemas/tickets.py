@@ -2,6 +2,9 @@ from pydantic import BaseModel, ConfigDict
 from typing import Optional
 from datetime import datetime
 
+from app.schemas.forms import FormDetailResponse
+from app.schemas.summaries import FormSummary, IssueTypeSummary, KnowledgeBaseSummary, LocationSummary, PrioritySummary, QueueSummary, TicketStatusSummary, ToolSummary, TroubleshootingTemplateSummary
+
 
 
 class TicketBase(BaseModel):
@@ -50,3 +53,15 @@ class TicketResponse(TicketBase):
     created_at: datetime
     updated_at: datetime
     closed_at: Optional[datetime] = None
+
+class TicketDetailResponse(TicketResponse):
+    tool: Optional[ToolSummary] = None
+    issue_type: Optional[IssueTypeSummary] = None
+    knowledge_base: Optional[KnowledgeBaseSummary] = None
+    troubleshooting_template: Optional[TroubleshootingTemplateSummary] = None
+    form_template: Optional[FormDetailResponse] = None
+    queue: Optional[QueueSummary] = None
+    status: Optional[TicketStatusSummary] = None
+    location: Optional[LocationSummary] = None
+    priority: Optional[PrioritySummary] = None
+

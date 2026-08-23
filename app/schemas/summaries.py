@@ -42,10 +42,14 @@ class FormSummary(BaseModel):
 
 class FormFieldSummary(BaseModel):
     id: int
-    name: str
+    label: str
+    field_type: str
+    required: bool
+    display_order: int
 
     class Config:
         orm_mode = True
+
 
 
 class QueueSummary(BaseModel):

@@ -8,7 +8,7 @@ from app.core.database import get_db
 from app.models.tickets import Tickets
 from app.models.users import Users
 from app.routers.auth import get_current_user
-from app.schemas.tickets import TicketCreate, TicketUpdate, TicketResponse
+from app.schemas.tickets import TicketCreate, TicketUpdate, TicketResponse, TicketDetailResponse
 
 
 router = APIRouter(
@@ -29,7 +29,7 @@ async def get_all_tickets(user: user_dependency, db: db_dependency):
     )
 
 
-@router.get("/{id}", response_model=TicketResponse)
+@router.get("/{id}", response_model=TicketDetailResponse)
 async def get_ticket_by_id(
     id: int,
     user: user_dependency,
