@@ -69,7 +69,10 @@ async def get_tickets(
         query = query.filter(Tickets.kb_article_id == kb_article_id)
     if user_name:
         query = query.filter(Tickets.user_name.ilike(f"%{user_name}%"))
-    tickets = query.all()
+        
+    tickets = query.order_by(
+        Tickets.created_at.desc()
+    ).all()
 
     return tickets
 
