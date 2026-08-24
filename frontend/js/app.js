@@ -37,15 +37,12 @@ if (loginForm) {
 // TICKETS
 // =========================
 
-const loadTicketsButton = document.getElementById("loadTickets");
 const ticketsContainer = document.getElementById("ticketsContainer");
+if (ticketsContainer) {
+        
 
-if (loadTicketsButton) {
-
-    loadTicketsButton.addEventListener("click", async () => {
-
+    async function loadTickets() {
         try {
-
             const data = await getTickets();
 
             console.log(data);
@@ -54,22 +51,27 @@ if (loadTicketsButton) {
 
             data.items.forEach(ticket => {
 
-                const ticketElement = document.createElement("div");
+                const ticketElement = document.createElement("tr");
 
                 ticketElement.innerHTML = `
-                    <h3>${ticket.ticket_number}</h3>
-                    <p>${ticket.title ?? "Sin título"}</p>
+                    <td>${ticket.ticket_number ?? ""}</td>
+                    <td>${ticket.title ?? "Sin título"}</td>
+                    <td>${ticket.status_id ?? ""}</td>
+                    <td>${ticket.priority_id ?? ""}</td>
+                    <td>${ticket.queue_id ?? ""}</td>
+                    <td>${ticket.created_at ?? ""}</td>
                 `;
 
                 ticketsContainer.appendChild(ticketElement);
             });
 
         } catch (error) {
-
             console.error(error);
-
-            ticketsContainer.textContent =
-                "No se pudieron cargar los tickets.";
+            ticketsContainer.textContent = "No se pudieron cargar los tickets.";
         }
-    });
+    }
+
+
+    loadTickets();
+
 }
