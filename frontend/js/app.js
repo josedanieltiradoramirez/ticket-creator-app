@@ -56,10 +56,12 @@ if (ticketsContainer) {
                 ticketElement.innerHTML = `
                     <td>${ticket.ticket_number ?? ""}</td>
                     <td>${ticket.title ?? "Sin título"}</td>
-                    <td>${ticket.status_id ?? ""}</td>
-                    <td>${ticket.priority_id ?? ""}</td>
-                    <td>${ticket.queue_id ?? ""}</td>
-                    <td>${ticket.created_at ?? ""}</td>
+                    <td>${ticket.issue_type?.name ?? ""}</td>
+                    <td>${ticket.tool?.name ?? ""}</td>
+                    <td>${ticket.status?.name ?? ""}</td>
+                    <td>${ticket.priority?.name ?? ""}</td>
+                    <td>${ticket.queue?.name ?? ""}</td>
+                    <td>${ticket.location?.name ?? ""}</td>
                 `;
 
                 ticketsContainer.appendChild(ticketElement);
