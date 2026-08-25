@@ -65,10 +65,19 @@ class TicketDetailResponse(TicketResponse):
     location: Optional[LocationSummary] = None
     priority: Optional[PrioritySummary] = None
 
+class TicketSummaryResponse(TicketResponse):
+    tool: Optional[ToolSummary] = None
+    issue_type: Optional[IssueTypeSummary] = None
+    queue: Optional[QueueSummary] = None
+    status: Optional[TicketStatusSummary] = None
+    location: Optional[LocationSummary] = None
+    priority: Optional[PrioritySummary] = None
+
 class TicketListResponse(BaseModel):
-    items: list[TicketResponse]
+    items: list[TicketSummaryResponse]
     total: int
     page: int
     limit: int
     pages: int
+
 

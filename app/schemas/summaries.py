@@ -90,3 +90,4 @@ class PrioritySummary(BaseModel):
         
     class Config:
         orm_mode = True
+
