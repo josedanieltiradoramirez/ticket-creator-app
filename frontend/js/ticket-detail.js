@@ -9,68 +9,96 @@ async function loadTicket() {
 
         const ticket = await getTicket(ticketId);
 
-        ticketDetails.innerHTML = `
-            <h2>${ticket.ticket_number ?? ""}</h2>
+        document.getElementById("ticketNumber").textContent =
+            ticket.ticket_number ?? "Ticket";
 
-            <p>
-                <strong>Title:</strong>
-                ${ticket.title ?? "Sin título"}
-            </p>
+        document.getElementById("ticketTitle").value =
+            ticket.title ?? "";
 
-            <p>
-                <strong>User:</strong>
-                ${ticket.user_name ?? ""}
-            </p>
 
-            <p>
-                <strong>Issue Type:</strong>
-                ${ticket.issue_type?.name ?? ""}
-            </p>
+        // User
 
-            <p>
-                <strong>Tool:</strong>
-                ${ticket.tool?.name ?? ""}
-            </p>
+        document.getElementById("userName").value =
+            ticket.user_name ?? "";
 
-            <p>
-                <strong>Status:</strong>
-                ${ticket.status?.name ?? ""}
-            </p>
+        document.getElementById("userEmail").value =
+            ticket.user_email ?? "";
 
-            <p>
-                <strong>Priority:</strong>
-                ${ticket.priority?.name ?? ""}
-            </p>
+        document.getElementById("userPhone").value =
+            ticket.user_best_contact_number ?? "";
 
-            <p>
-                <strong>Queue:</strong>
-                ${ticket.queue?.name ?? ""}
-            </p>
+        document.getElementById("userType").value =
+            ticket.user_type ?? "";
 
-            <p>
-                <strong>Location:</strong>
-                ${ticket.location?.name ?? ""}
-            </p>
 
-            <p>
-                <strong>Description:</strong>
-                ${ticket.issue_description ?? ""}
-            </p>
+        // Issue
 
-            <p>
-                <strong>Troubleshooting:</strong>
-                ${ticket.troubleshooting_steps ?? ""}
-            </p>
-        `;
+        document.getElementById("issueType").textContent =
+            ticket.issue_type?.name ?? "";
+
+        document.getElementById("tool").textContent =
+            ticket.tool?.name ?? "";
+
+        document.getElementById("location").textContent =
+            ticket.location?.name ?? "";
+
+        document.getElementById("priority").textContent =
+            ticket.priority?.name ?? "";
+
+        document.getElementById("issueDescription").value =
+            ticket.issue_description ?? "";
+
+
+        // Troubleshooting
+
+        document.getElementById("troubleshootingTemplate").textContent =
+            ticket.troubleshooting_template?.name ?? "";
+
+        document.getElementById("troubleshootingSteps").value =
+            ticket.troubleshooting_steps ?? "";
+
+
+        // Configuration
+
+        document.getElementById("status").textContent =
+            ticket.status?.name ?? "";
+
+        document.getElementById("queue").textContent =
+            ticket.queue?.name ?? "";
+
+        document.getElementById("knowledgeBase").textContent =
+            ticket.knowledge_base?.title ?? "";
+
+
+        // Dates
+
+        document.getElementById("createdAt").textContent =
+            new Date(ticket.created_at).toLocaleString();
+
+        document.getElementById("updatedAt").textContent =
+            new Date(ticket.updated_at).toLocaleString();
+
+        document.getElementById("closedAt").textContent =
+            ticket.closed_at
+                ? new Date(ticket.closed_at).toLocaleString()
+                : "Not closed";
+
 
     } catch (error) {
 
         console.error(error);
 
-        ticketDetails.textContent =
-            "No se pudo cargar el ticket.";
-
+        document.body.innerHTML =
+            "<h2>Error loading ticket.</h2>";
     }
 }
+
+
+document.getElementById("backButton").addEventListener("click", () => {
+
+    window.location.href = "index.html";
+
+});
+
 
 loadTicket();

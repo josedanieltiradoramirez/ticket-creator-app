@@ -12,11 +12,178 @@
 
 <body>
 
-    <h1>Ticket Details</h1>
+    <div class="ticket-page">
 
-    <div id="ticketDetails">
-        Loading ticket...
+        <div class="ticket-header">
+            <div>
+                <h1 id="ticketNumber">Ticket</h1>
+                <input
+                    type="text"
+                    id="ticketTitle"
+                >
+            </div>
+
+            <button id="backButton">← Back</button>
+        </div>
+
+
+        <!-- USER -->
+
+        <section class="ticket-section">
+
+            <h2>Información del usuario</h2>
+
+            <div class="ticket-grid">
+
+                <div>
+                    <label>User</label>
+                    <input type="text" id="userName">
+                </div>
+
+                <div>
+                    <label>Email</label>
+                    <input type="email" id="userEmail">
+
+                </div>
+
+                <div>
+                    <label>Phone</label>
+                    <input type="text" id="userPhone">
+                </div>
+
+                <div>
+                    <label>User Type</label>
+                    <input type="text" id="userType">
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ISSUE -->
+
+        <section class="ticket-section">
+
+            <h2>Issue</h2>
+
+            <div class="ticket-grid">
+
+                <div>
+                    <label>Issue Type</label>
+                    <p id="issueType"></p>
+                </div>
+
+                <div>
+                    <label>Tool</label>
+                    <p id="tool"></p>
+                </div>
+
+                <div>
+                    <label>Location</label>
+                    <select id="location"></select>
+                </div>
+
+                <div>
+                    <label>Priority</label>
+                    <select id="priority"></select>
+                </div>
+
+            </div>
+
+            <div class="ticket-field">
+
+                <label>Issue Description</label>
+
+                <textarea id="issueDescription"></textarea>
+
+            </div>
+
+        </section>
+
+
+        <!-- TROUBLESHOOTING -->
+
+        <section class="ticket-section">
+
+            <h2>Troubleshooting</h2>
+
+            <div class="ticket-field">
+
+                <label>Template</label>
+
+                <p id="troubleshootingTemplate"></p>
+
+            </div>
+
+            <div class="ticket-field">
+
+                <label>Steps</label>
+
+                <textarea id="troubleshootingSteps"></textarea>
+
+            </div>
+
+        </section>
+
+
+        <!-- Configuration -->
+
+        <section class="ticket-section">
+
+            <h2>Configuration</h2>
+
+            <div class="ticket-grid">
+
+                <div>
+                    <label>Status</label>
+                    <select id="status"></select>
+                </div>
+
+                <div>
+                    <label>Queue</label>
+                    <select id="queue"></select>
+                </div>
+
+                <div>
+                    <label>KB Article</label>
+                    <p id="knowledgeBase"></p>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- DATES -->
+
+        <section class="ticket-section">
+
+            <h2>Información del ticket</h2>
+
+            <div class="ticket-grid">
+
+                <div>
+                    <label>Created</label>
+                    <p id="createdAt"></p>
+                </div>
+
+                <div>
+                    <label>Updated</label>
+                    <p id="updatedAt"></p>
+                </div>
+
+                <div>
+                    <label>Closed</label>
+                    <p id="closedAt"></p>
+                </div>
+
+            </div>
+
+        </section>
+
     </div>
+
 
     <script src="js/api.js"></script>
     <script src="js/ticket-detail.js"></script>
