@@ -45,6 +45,7 @@ const pageInfo = document.getElementById("pageInfo");
 const ticketsContainer = document.getElementById("ticketsContainer");
 
 const statusFilter = document.getElementById("statusFilter");
+const issueTypeFilter = document.getElementById("issueTypeFilter");
 const applyFiltersButton = document.getElementById("applyFilters");
 
 let filters = {};
@@ -122,7 +123,8 @@ applyFiltersButton.addEventListener("click", () => {
     currentPage = 1;
 
     filters = {
-        status_id: statusFilter.value
+        status_id: statusFilter.value,
+        issue_type_id: issueTypeFilter.value
     };
 
     loadTickets();
@@ -152,6 +154,29 @@ async function loadStatuses() {
     }
 }
 
+async function loadIssueTypes() {
+
+    try {
+
+        const issueTypes = await getIssueTypes();
+
+        issueTypes.forEach(issueType => {
+
+            const option = document.createElement("option");
+
+            option.value = issueType.id;
+            option.textContent = issueType.name;
+
+            issueTypeFilter.appendChild(option);
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+}
+
 
 // =========================
 // INITIAL LOAD
@@ -160,7 +185,7 @@ async function loadStatuses() {
 async function initialize() {
 
     await loadStatuses();
-
+    await loadIssueTypes();
     await loadTickets();
 
 }

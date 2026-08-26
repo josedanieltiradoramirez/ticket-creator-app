@@ -47,6 +47,24 @@ async function getTicketStatuses() {
     return await response.json();
 }
 
+async function getIssueTypes() {
+
+    const response = await fetch(
+        `${API_URL}/api/issue_types/`,
+        {
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+            }
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error al obtener los issue types");
+    }
+
+    return await response.json();
+}
+
 async function login(username, password) {
 
     const formData = new URLSearchParams();
