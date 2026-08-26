@@ -161,3 +161,22 @@ async function login(username, password) {
 
     return await response.json();
 }
+
+
+async function getTicket(ticketId) {
+
+    const response = await fetch(
+        `${API_URL}/api/tickets/${ticketId}`,
+        {
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+            }
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error al obtener el ticket");
+    }
+
+    return await response.json();
+}

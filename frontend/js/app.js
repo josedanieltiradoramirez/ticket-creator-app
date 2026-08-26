@@ -70,17 +70,23 @@ async function loadTickets() {
         data.items.forEach(ticket => {
 
             const ticketElement = document.createElement("tr");
+            ticketElement.classList.add("ticket-row");
 
             ticketElement.innerHTML = `
                 <td>${ticket.ticket_number ?? ""}</td>
-                <td>${ticket.title ?? "Sin título"}</td>
+                <td>${ticket.title ?? "No title"}</td>
                 <td>${ticket.issue_type?.name ?? ""}</td>
                 <td>${ticket.tool?.name ?? ""}</td>
                 <td>${ticket.status?.name ?? ""}</td>
                 <td>${ticket.priority?.name ?? ""}</td>
                 <td>${ticket.queue?.name ?? ""}</td>
                 <td>${ticket.location?.name ?? ""}</td>
+                <td>${new Date(ticket.created_at).toLocaleDateString()}</td>
             `;
+
+            ticketElement.addEventListener("click", () => {
+                window.location.href = `ticket-detail.html?id=${ticket.id}`;
+            });
 
             ticketsContainer.appendChild(ticketElement);
         });
