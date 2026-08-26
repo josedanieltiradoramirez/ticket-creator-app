@@ -1,14 +1,15 @@
 const API_URL = "http://127.0.0.1:8000";
 
-async function getTickets() {
+async function getTickets(page = 1, limit = 20) {
 
-    const token = localStorage.getItem("access_token");
-
-    const response = await fetch(`${API_URL}/api/tickets/`, {
-        headers: {
-            "Authorization": `Bearer ${token}`
+    const response = await fetch(
+        `${API_URL}/api/tickets/?page=${page}&limit=${limit}`,
+        {
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+            }
         }
-    });
+    );
 
     if (!response.ok) {
         throw new Error("Error al obtener los tickets");
