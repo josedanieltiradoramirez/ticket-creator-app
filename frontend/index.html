@@ -31,13 +31,27 @@
         <!-- FILTERS -->
         <section id="filters">
 
-            <!-- Aquí posteriormente irán los filtros -->
+          
 
         </section>
 
 
         <!-- TICKETS -->
         <section id="ticketsSection">
+
+            <div id="filters">
+
+                <label for="statusFilter">Status:</label>
+                <select id="statusFilter">
+                    <option value="">Todos</option>
+                    <option value="1">Open</option>
+                    <option value="2">New</option>
+                    <option value="3">Closed</option>
+                </select>
+
+                <button id="applyFilters">Apply Filters</button>
+
+            </div>
 
             <table id="ticketsTable">
 
@@ -59,11 +73,11 @@
 
             </table>
             <div id="pagination">
-                <button id="previousPage">Anterior</button>
+                <button id="previousPage">Last</button>
 
                 <span id="pageInfo"></span>
 
-                <button id="nextPage">Siguiente</button>
+                <button id="nextPage">Next</button>
             </div>
 
 
