@@ -46,6 +46,13 @@ const ticketsContainer = document.getElementById("ticketsContainer");
 
 const statusFilter = document.getElementById("statusFilter");
 const issueTypeFilter = document.getElementById("issueTypeFilter");
+const priorityFilter = document.getElementById("priorityFilter");
+const queueFilter = document.getElementById("queueFilter");
+const toolFilter = document.getElementById("toolFilter");
+const locationFilter = document.getElementById("locationFilter");
+const ticketNumberFilter = document.getElementById("ticketNumberFilter");
+const userNameFilter = document.getElementById("userNameFilter");
+const ticketDateFilter = document.getElementById("ticketDateFilter");
 const applyFiltersButton = document.getElementById("applyFilters");
 
 let filters = {};
@@ -124,7 +131,14 @@ applyFiltersButton.addEventListener("click", () => {
 
     filters = {
         status_id: statusFilter.value,
-        issue_type_id: issueTypeFilter.value
+        issue_type_id: issueTypeFilter.value,
+        priority_id: priorityFilter.value,
+        queue_id: queueFilter.value,
+        tool_id: toolFilter.value,
+        location_id: locationFilter.value,
+        ticket_number: ticketNumberFilter.value,
+        user_name: userNameFilter.value,
+        ticket_date: ticketDateFilter.value
     };
 
     loadTickets();
@@ -177,6 +191,97 @@ async function loadIssueTypes() {
     }
 }
 
+async function loadPriorities() {
+
+    try {
+
+        const priorities = await getPriorities();
+
+        priorities.forEach(priority => {
+
+            const option = document.createElement("option");
+
+            option.value = priority.id;
+            option.textContent = priority.name;
+
+            priorityFilter.appendChild(option);
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+}
+
+async function loadQueues() {
+
+    try {
+
+        const queues = await getQueues();
+
+        queues.forEach(queue => {
+
+            const option = document.createElement("option");
+
+            option.value = queue.id;
+            option.textContent = queue.name;
+
+            queueFilter.appendChild(option);
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+}
+
+async function loadTools() {
+
+    try {
+
+        const tools = await getTools();
+
+        tools.forEach(tool => {
+
+            const option = document.createElement("option");
+
+            option.value = tool.id;
+            option.textContent = tool.name;
+
+            toolFilter.appendChild(option);
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+}
+
+async function loadLocations() {
+
+    try {
+
+        const locations = await getLocations();
+
+        locations.forEach(location => {
+
+            const option = document.createElement("option");
+
+            option.value = location.id;
+            option.textContent = location.name;
+
+            locationFilter.appendChild(option);
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+}
 
 // =========================
 // INITIAL LOAD
@@ -185,9 +290,18 @@ async function loadIssueTypes() {
 async function initialize() {
 
     await loadStatuses();
-    await loadIssueTypes();
-    await loadTickets();
 
+    await loadIssueTypes();
+
+    await loadPriorities();
+
+    await loadQueues();
+
+    await loadTools();
+
+    await loadLocations();
+
+    await loadTickets();
 }
 
 initialize();

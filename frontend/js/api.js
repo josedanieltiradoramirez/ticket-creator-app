@@ -65,6 +65,81 @@ async function getIssueTypes() {
     return await response.json();
 }
 
+async function getPriorities() {
+
+    const response = await fetch(
+        `${API_URL}/api/priorities/`,
+        {
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+            }
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error al obtener las prioridades");
+    }
+
+    return await response.json();
+}
+
+
+async function getQueues() {
+
+    const response = await fetch(
+        `${API_URL}/api/queues/`,
+        {
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+            }
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error al obtener las queues");
+    }
+
+    return await response.json();
+}
+
+
+async function getTools() {
+
+    const response = await fetch(
+        `${API_URL}/api/tools/`,
+        {
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+            }
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error al obtener las tools");
+    }
+
+    return await response.json();
+}
+
+
+async function getLocations() {
+
+    const response = await fetch(
+        `${API_URL}/api/locations/`,
+        {
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+            }
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error al obtener las locations");
+    }
+
+    return await response.json();
+}
+
 async function login(username, password) {
 
     const formData = new URLSearchParams();
