@@ -29,6 +29,24 @@ async function getTickets(page = 1, limit = 20, filters = {}) {
     return await response.json();
 }
 
+async function getTicketStatuses() {
+
+    const response = await fetch(
+        `${API_URL}/api/ticket_status/`,
+        {
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+            }
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error while fetching ticket statuses");
+    }
+
+    return await response.json();
+}
+
 async function login(username, password) {
 
     const formData = new URLSearchParams();

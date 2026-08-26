@@ -129,9 +129,40 @@ applyFiltersButton.addEventListener("click", () => {
 
 });
 
+async function loadStatuses() {
+
+    try {
+
+        const statuses = await getTicketStatuses();
+
+        statuses.forEach(status => {
+
+            const option = document.createElement("option");
+
+            option.value = status.id;
+            option.textContent = status.name;
+
+            statusFilter.appendChild(option);
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+}
+
 
 // =========================
 // INITIAL LOAD
 // =========================
 
-loadTickets();
+async function initialize() {
+
+    await loadStatuses();
+
+    await loadTickets();
+
+}
+
+initialize();
