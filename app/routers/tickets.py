@@ -67,7 +67,7 @@ async def get_tickets(
     if created_by_id is not None:
         query = query.filter(Tickets.created_by == created_by_id)
     if ticket_number:
-        query = query.filter(Tickets.ticket_number == ticket_number)
+        query = query.filter(Tickets.ticket_number.ilike(f"%{ticket_number}%"))
     if kb_article_id is not None:
         query = query.filter(Tickets.kb_article_id == kb_article_id)
     if user_name:

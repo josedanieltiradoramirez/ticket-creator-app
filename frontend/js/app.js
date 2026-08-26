@@ -54,6 +54,7 @@ const ticketNumberFilter = document.getElementById("ticketNumberFilter");
 const userNameFilter = document.getElementById("userNameFilter");
 const ticketDateFilter = document.getElementById("ticketDateFilter");
 const applyFiltersButton = document.getElementById("applyFilters");
+const clearFiltersButton = document.getElementById("clearFilters");
 
 let filters = {};
 
@@ -127,6 +128,32 @@ nextPageButton.addEventListener("click", () => {
 
 applyFiltersButton.addEventListener("click", () => {
 
+    applyFilters();
+
+});
+
+clearFiltersButton.addEventListener("click", () => {
+    clearFilters();
+});
+
+ticketNumberFilter.addEventListener("keydown", (event) => {
+
+    if (event.key === "Enter") {
+        applyFilters();
+    }
+
+});
+
+userNameFilter.addEventListener("keydown", (event) => {
+
+    if (event.key === "Enter") {
+        applyFilters();
+    }
+
+});
+
+function applyFilters() {
+
     currentPage = 1;
 
     filters = {
@@ -142,8 +169,27 @@ applyFiltersButton.addEventListener("click", () => {
     };
 
     loadTickets();
+}
 
-});
+function clearFilters() {
+
+    statusFilter.value = "";
+    issueTypeFilter.value = "";
+    priorityFilter.value = "";
+    queueFilter.value = "";
+    toolFilter.value = "";
+    locationFilter.value = "";
+
+    ticketNumberFilter.value = "";
+    userNameFilter.value = "";
+    ticketDateFilter.value = "";
+
+    filters = {};
+
+    currentPage = 1;
+
+    loadTickets();
+}
 
 async function loadStatuses() {
 
@@ -282,6 +328,8 @@ async function loadLocations() {
 
     }
 }
+
+
 
 // =========================
 // INITIAL LOAD
