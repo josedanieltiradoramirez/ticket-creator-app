@@ -20,8 +20,8 @@ async function loadTicket() {
         );
         
 
-        document.getElementById("ticketNumber").textContent =
-            ticket.ticket_number ?? "Ticket";
+        document.getElementById("ticketNumber").value =
+            ticket.ticket_number ?? "";
 
         document.getElementById("ticketTitle").value =
             ticket.title ?? "";
@@ -314,6 +314,66 @@ document.getElementById("backButton").addEventListener("click", () => {
     window.location.href = "index.html";
 
 });
+
+document.getElementById("saveButton").addEventListener(
+    "click",
+    async () => {
+
+        const ticketData = {
+            ticket_number: document.getElementById("ticketNumber").value,
+            title: document.getElementById("ticketTitle").value,
+            user_name: document.getElementById("userName").value,
+            user_email: document.getElementById("userEmail").value,
+            user_best_contact_number:
+                document.getElementById("userPhone").value,
+            user_type:
+                document.getElementById("userType").value,
+            issue_description:
+                document.getElementById("issueDescription").value,
+            troubleshooting_steps:
+                document.getElementById("troubleshootingSteps").value,
+
+            tool_id:
+                Number(document.getElementById("tool").value),
+
+            location_id:
+                Number(document.getElementById("location").value),
+
+            priority_id:
+                Number(document.getElementById("priority").value),
+
+            issue_type_id:
+                Number(document.getElementById("issueType").value),
+
+            troubleshooting_template_id:
+            document.getElementById("troubleshootingTemplate").value
+                ? Number(
+                    document.getElementById("troubleshootingTemplate").value
+                )
+                : null,
+
+            status_id:
+                Number(document.getElementById("status").value),
+
+            queue_id:
+                Number(document.getElementById("queue").value)
+        };
+
+        try {
+
+            await updateTicket(ticketId, ticketData);
+
+            alert("Ticket updated successfully.");
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert("Error updating ticket.");
+
+        }
+    }
+);
 
 
 loadTicket();

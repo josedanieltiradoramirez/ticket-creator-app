@@ -200,3 +200,24 @@ async function getIssueTypeTroubleshootingTemplates(issueTypeId) {
 
     return await response.json();
 }
+
+async function updateTicket(ticketId, ticketData) {
+
+    const response = await fetch(
+        `${API_URL}/api/tickets/${ticketId}`,
+        {
+            method: "PUT",
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("access_token")}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(ticketData)
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error updating ticket");
+    }
+
+    return await response.json();
+}
