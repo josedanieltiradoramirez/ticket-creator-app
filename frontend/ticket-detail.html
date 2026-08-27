@@ -31,7 +31,7 @@
 
         <section class="ticket-section">
 
-            <h2>Información del usuario</h2>
+            <h2>User information</h2>
 
             <div class="ticket-grid">
 
@@ -104,27 +104,36 @@
 
         <!-- TROUBLESHOOTING -->
 
-        <section class="ticket-section">
+        <div class="ticket-field">
 
-            <h2>Troubleshooting</h2>
+            <label>Template</label>
 
-            <div class="ticket-field">
+            <select id="troubleshootingTemplate"></select>
 
-                <label>Template</label>
+        </div>
 
-                <select id="troubleshootingTemplate"></select>
+        <div class="ticket-field">
 
-            </div>
+            <label>Template Preview</label>
 
-            <div class="ticket-field">
+            <textarea
+                id="troubleshootingTemplatePreview"
+                readonly
+            ></textarea>
 
-                <label>Steps</label>
+            <button type="button" id="copyTemplateButton">
+                Copy
+            </button>
 
-                <textarea id="troubleshootingSteps"></textarea>
+        </div>
 
-            </div>
+        <div class="ticket-field">
 
-        </section>
+            <label>Troubleshooting Steps</label>
+
+            <textarea id="troubleshootingSteps"></textarea>
+
+        </div>
 
 
         <!-- Configuration -->

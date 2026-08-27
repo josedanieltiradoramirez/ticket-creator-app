@@ -223,12 +223,14 @@ async function loadIssueTypes(currentIssueTypeId) {
     });
 }
 
+let troubleshootingTemplates = [];
+
 async function loadTroubleshootingTemplates(
     issueTypeId,
     currentTemplateId = null
 ) {
 
-    const templates =
+    troubleshootingTemplates =
         await getIssueTypeTroubleshootingTemplates(issueTypeId);
 
     const templateSelect =
@@ -236,7 +238,7 @@ async function loadTroubleshootingTemplates(
 
     templateSelect.innerHTML = "";
 
-    templates.forEach(template => {
+    troubleshootingTemplates.forEach(template => {
 
         const option = document.createElement("option");
 
@@ -249,7 +251,53 @@ async function loadTroubleshootingTemplates(
 
         templateSelect.appendChild(option);
     });
+
+
+    loadTemplatePreview();
 }
+
+function loadTemplatePreview() {
+
+    const templateSelect =
+        document.getElementById("troubleshootingTemplate");
+
+    const preview =
+        document.getElementById("troubleshootingTemplatePreview");
+
+    const selectedTemplateId =
+        Number(templateSelect.value);
+
+    const selectedTemplate =
+        troubleshootingTemplates.find(
+            template => template.id === selectedTemplateId
+        );
+
+    if (selectedTemplate) {
+        preview.value = selectedTemplate.steps ?? "";
+    } else {
+        preview.value = "";
+    }
+}
+
+document.getElementById("troubleshootingTemplate").addEventListener(
+    "change",
+    () => {
+        loadTemplatePreview();
+    }
+);
+
+document.getElementById("copyTemplateButton").addEventListener(
+    "click",
+    async () => {
+
+        const preview =
+            document.getElementById(
+                "troubleshootingTemplatePreview"
+            );
+
+        await navigator.clipboard.writeText(preview.value);
+    }
+);
 
 document.getElementById("issueType").addEventListener(
     "change",
