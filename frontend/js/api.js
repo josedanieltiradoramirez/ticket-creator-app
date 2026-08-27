@@ -59,7 +59,7 @@ async function getIssueTypes() {
     );
 
     if (!response.ok) {
-        throw new Error("Error al obtener los issue types");
+        throw new Error("Error loading issue types");
     }
 
     return await response.json();
@@ -77,7 +77,7 @@ async function getPriorities() {
     );
 
     if (!response.ok) {
-        throw new Error("Error al obtener las prioridades");
+        throw new Error("Error loading priorities");
     }
 
     return await response.json();
@@ -96,7 +96,7 @@ async function getQueues() {
     );
 
     if (!response.ok) {
-        throw new Error("Error al obtener las queues");
+        throw new Error("Error loading queues");
     }
 
     return await response.json();
@@ -115,7 +115,7 @@ async function getTools() {
     );
 
     if (!response.ok) {
-        throw new Error("Error al obtener las tools");
+        throw new Error("Error loading tools");
     }
 
     return await response.json();
@@ -134,7 +134,7 @@ async function getLocations() {
     );
 
     if (!response.ok) {
-        throw new Error("Error al obtener las locations");
+        throw new Error("Error loading locations");
     }
 
     return await response.json();
@@ -175,7 +175,7 @@ async function getTicket(ticketId) {
     );
 
     if (!response.ok) {
-        throw new Error("Error al obtener el ticket");
+        throw new Error("Error loading ticket");
     }
 
     return await response.json();

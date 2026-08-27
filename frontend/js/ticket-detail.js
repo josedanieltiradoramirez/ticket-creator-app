@@ -8,6 +8,11 @@ async function loadTicket() {
     try {
 
         const ticket = await getTicket(ticketId);
+        await loadPriorities(ticket.priority_id);
+        await loadStatuses(ticket.status_id);
+        await loadQueues(ticket.queue_id);
+        await loadLocations(ticket.location_id);
+        await loadTools(ticket.tool_id);
 
         document.getElementById("ticketNumber").textContent =
             ticket.ticket_number ?? "Ticket";
@@ -36,15 +41,6 @@ async function loadTicket() {
         document.getElementById("issueType").textContent =
             ticket.issue_type?.name ?? "";
 
-        document.getElementById("tool").textContent =
-            ticket.tool?.name ?? "";
-
-        document.getElementById("location").textContent =
-            ticket.location?.name ?? "";
-
-        document.getElementById("priority").textContent =
-            ticket.priority?.name ?? "";
-
         document.getElementById("issueDescription").value =
             ticket.issue_description ?? "";
 
@@ -60,11 +56,6 @@ async function loadTicket() {
 
         // Configuration
 
-        document.getElementById("status").textContent =
-            ticket.status?.name ?? "";
-
-        document.getElementById("queue").textContent =
-            ticket.queue?.name ?? "";
 
         document.getElementById("knowledgeBase").textContent =
             ticket.knowledge_base?.title ?? "";
@@ -93,6 +84,120 @@ async function loadTicket() {
     }
 }
 
+async function loadPriorities(currentPriorityId) {
+
+    const priorities = await getPriorities();
+
+    const prioritySelect = document.getElementById("priority");
+
+    prioritySelect.innerHTML = "";
+
+    priorities.forEach(priority => {
+
+        const option = document.createElement("option");
+
+        option.value = priority.id;
+        option.textContent = priority.name;
+
+        if (priority.id === currentPriorityId) {
+            option.selected = true;
+        }
+
+        prioritySelect.appendChild(option);
+    });
+}
+
+async function loadStatuses(currentStatusId) {
+
+    const statuses = await getTicketStatuses();
+
+    const statusSelect = document.getElementById("status");
+
+    statusSelect.innerHTML = "";
+
+    statuses.forEach(status => {
+
+        const option = document.createElement("option");
+
+        option.value = status.id;
+        option.textContent = status.name;
+
+        if (status.id === currentStatusId) {
+            option.selected = true;
+        }
+
+        statusSelect.appendChild(option);
+    });
+}
+
+async function loadQueues(currentQueueId) {
+
+    const queues = await getQueues();
+
+    const queueSelect = document.getElementById("queue");
+
+    queueSelect.innerHTML = "";
+
+    queues.forEach(queue => {
+
+        const option = document.createElement("option");
+
+        option.value = queue.id;
+        option.textContent = queue.name;
+
+        if (queue.id === currentQueueId) {
+            option.selected = true;
+        }
+
+        queueSelect.appendChild(option);
+    });
+}
+
+async function loadTools(currentToolId) {
+
+    const tools = await getTools();
+
+    const toolSelect = document.getElementById("tool");
+
+    toolSelect.innerHTML = "";
+
+    tools.forEach(tool => {
+
+        const option = document.createElement("option");
+
+        option.value = tool.id;
+        option.textContent = tool.name;
+
+        if (tool.id === currentToolId) {
+            option.selected = true;
+        }
+
+        toolSelect.appendChild(option);
+    });
+}
+
+async function loadLocations(currentLocationId) {
+
+    const locations = await getLocations();
+
+    const locationSelect = document.getElementById("location");
+
+    locationSelect.innerHTML = "";
+
+    locations.forEach(location => {
+
+        const option = document.createElement("option");
+
+        option.value = location.id;
+        option.textContent = location.name;
+
+        if (location.id === currentLocationId) {
+            option.selected = true;
+        }
+
+        locationSelect.appendChild(option);
+    });
+}
 
 document.getElementById("backButton").addEventListener("click", () => {
 
