@@ -17,6 +17,7 @@ class TroubleshootingTemplateUpdate(BaseModel):
     steps: str
     generated_description: str
     is_active: bool
+    issue_types: list[int] = []
 
 class TroubleshootingTemplateResponse(BaseModel):
     name: str | None = None

@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from typing import Annotated
 
 from app.core.database import get_db
+from app.models.issue_types import IssueTypes
 from app.models.troubleshooting_templates import TroubleshootingTemplates
 from app.models.users import Users
 from app.routers.auth import get_current_user
@@ -63,9 +64,21 @@ async def edit_troubleshooting_template(user: user_dependency, id: int, troubles
     existing_troubleshooting_template = db.query(TroubleshootingTemplates).filter(TroubleshootingTemplates.id == id, TroubleshootingTemplates.created_by == user.id).first()
     if not existing_troubleshooting_template:
         raise HTTPException(status_code=404, detail="Troubleshooting template not found")
-    troubleshooting_template_data = troubleshooting_template.model_dump()
-    for key, value in troubleshooting_template_data.items():
-        setattr(existing_troubleshooting_template, key, value)
+    existing_troubleshooting_template.name = troubleshooting_template.name
+    existing_troubleshooting_template.steps = troubleshooting_template.steps
+    existing_troubleshooting_template.generated_description = troubleshooting_template.generated_description
+    existing_troubleshooting_template.is_active = troubleshooting_template.is_active
+
+    issue_types = (
+        db.query(IssueTypes)
+        .filter(
+            IssueTypes.id.in_(troubleshooting_template.issue_types),
+            IssueTypes.created_by == user.id
+        )
+        .all()
+    )
+
+    existing_troubleshooting_template.issue_types = issue_types
     
     db.commit()
     db.refresh(existing_troubleshooting_template)

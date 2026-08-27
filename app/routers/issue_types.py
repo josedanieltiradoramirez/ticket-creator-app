@@ -48,6 +48,29 @@ async def get_issue_type_by_id(user : user_dependency, id: int, db: db_dependenc
         raise HTTPException(status_code=404, detail="Issue type not found")
     return issue_type
 
+@router.get("/{id}/troubleshooting-templates")
+async def get_issue_type_troubleshooting_templates(
+    user: user_dependency,
+    id: int,
+    db: db_dependency
+):
+    issue_type = (
+        db.query(IssueTypes)
+        .filter(
+            IssueTypes.id == id,
+            IssueTypes.created_by == user.id
+        )
+        .first()
+    )
+
+    if not issue_type:
+        raise HTTPException(
+            status_code=404,
+            detail="Issue type not found"
+        )
+
+    return issue_type.troubleshooting_templates
+
 @router.post("/", response_model=IssueTypeResponse, status_code=201)
 async def create_issue_type(user : user_dependency, issue_type: IssueTypeCreate, db: db_dependency):
     issue_type_data = issue_type.model_dump()

@@ -180,3 +180,23 @@ async function getTicket(ticketId) {
 
     return await response.json();
 }
+
+async function getIssueTypeTroubleshootingTemplates(issueTypeId) {
+
+    const response = await fetch(
+        `${API_URL}/api/issue_types/${issueTypeId}/troubleshooting-templates`,
+        {
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+            }
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error loading troubleshooting templates for the selected issue type"
+        );
+    }
+
+    return await response.json();
+}

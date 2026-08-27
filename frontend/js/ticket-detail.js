@@ -13,6 +13,12 @@ async function loadTicket() {
         await loadQueues(ticket.queue_id);
         await loadLocations(ticket.location_id);
         await loadTools(ticket.tool_id);
+        await loadIssueTypes(ticket.issue_type_id);
+        await loadTroubleshootingTemplates(
+            ticket.issue_type_id,
+            ticket.troubleshooting_template_id
+        );
+        
 
         document.getElementById("ticketNumber").textContent =
             ticket.ticket_number ?? "Ticket";
@@ -38,17 +44,12 @@ async function loadTicket() {
 
         // Issue
 
-        document.getElementById("issueType").textContent =
-            ticket.issue_type?.name ?? "";
-
         document.getElementById("issueDescription").value =
             ticket.issue_description ?? "";
 
 
         // Troubleshooting
 
-        document.getElementById("troubleshootingTemplate").textContent =
-            ticket.troubleshooting_template?.name ?? "";
 
         document.getElementById("troubleshootingSteps").value =
             ticket.troubleshooting_steps ?? "";
@@ -198,6 +199,67 @@ async function loadLocations(currentLocationId) {
         locationSelect.appendChild(option);
     });
 }
+
+async function loadIssueTypes(currentIssueTypeId) {
+
+    const issueTypes = await getIssueTypes();
+
+    const issueTypeSelect = document.getElementById("issueType");
+
+    issueTypeSelect.innerHTML = "";
+
+    issueTypes.forEach(issueType => {
+
+        const option = document.createElement("option");
+
+        option.value = issueType.id;
+        option.textContent = issueType.name;
+
+        if (issueType.id === currentIssueTypeId) {
+            option.selected = true;
+        }
+
+        issueTypeSelect.appendChild(option);
+    });
+}
+
+async function loadTroubleshootingTemplates(
+    issueTypeId,
+    currentTemplateId = null
+) {
+
+    const templates =
+        await getIssueTypeTroubleshootingTemplates(issueTypeId);
+
+    const templateSelect =
+        document.getElementById("troubleshootingTemplate");
+
+    templateSelect.innerHTML = "";
+
+    templates.forEach(template => {
+
+        const option = document.createElement("option");
+
+        option.value = template.id;
+        option.textContent = template.name;
+
+        if (template.id === currentTemplateId) {
+            option.selected = true;
+        }
+
+        templateSelect.appendChild(option);
+    });
+}
+
+document.getElementById("issueType").addEventListener(
+    "change",
+    async (event) => {
+
+        const issueTypeId = Number(event.target.value);
+
+        await loadTroubleshootingTemplates(issueTypeId);
+    }
+);
 
 document.getElementById("backButton").addEventListener("click", () => {
 
