@@ -219,6 +219,42 @@ async function getTroubleshootingTemplates() {
     return await response.json();
 }
 
+async function getIssueTypeForm(issueTypeId) {
+
+    const response = await fetch(
+        `${API_URL}/api/issue_types/${issueTypeId}/form`,
+        {
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+            }
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error loading form for issue type");
+    }
+
+    return await response.json();
+}
+
+async function getForms() {
+
+    const response = await fetch(
+        `${API_URL}/api/forms/`,
+        {
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+            }
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error loading forms");
+    }
+
+    return await response.json();
+}
+
 async function updateTicket(ticketId, ticketData) {
 
     const response = await fetch(

@@ -71,6 +71,32 @@ async def get_issue_type_troubleshooting_templates(
 
     return issue_type.troubleshooting_templates
 
+@router.get("/{id}/form")
+async def get_issue_type_form(
+    user: user_dependency,
+    id: int,
+    db: db_dependency
+):
+    issue_type = (
+        db.query(IssueTypes)
+        .filter(
+            IssueTypes.id == id,
+            IssueTypes.created_by == user.id
+        )
+        .first()
+    )
+
+    if not issue_type:
+        raise HTTPException(
+            status_code=404,
+            detail="Issue type not found"
+        )
+
+    if not issue_type.form:
+        return []
+
+    return [issue_type.form]
+
 @router.post("/", response_model=IssueTypeResponse, status_code=201)
 async def create_issue_type(user : user_dependency, issue_type: IssueTypeCreate, db: db_dependency):
     issue_type_data = issue_type.model_dump()

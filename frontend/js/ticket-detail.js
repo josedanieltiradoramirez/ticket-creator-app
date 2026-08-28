@@ -18,7 +18,10 @@ async function loadTicket() {
             ticket.issue_type_id,
             ticket.troubleshooting_template_id
         );
-        
+        await loadForms(
+            ticket.issue_type_id,
+            ticket.form_id
+        );
 
         document.getElementById("ticketNumber").value =
             ticket.ticket_number ?? "";
@@ -229,6 +232,7 @@ async function loadIssueTypes(currentIssueTypeId) {
 }
 
 let troubleshootingTemplates = [];
+let forms = [];
 
 async function loadTroubleshootingTemplates(
     issueTypeId,
@@ -335,6 +339,111 @@ async function loadTroubleshootingTemplates(
     loadTemplatePreview();
 }
 
+async function loadForms(
+    issueTypeId,
+    currentFormId = null
+) {
+
+    const relatedForms =
+        await getIssueTypeForm(issueTypeId);
+
+    const allForms =
+        await getForms();
+
+    forms = allForms;
+
+    const formSelect =
+        document.getElementById("form");
+
+    formSelect.innerHTML = "";
+
+    // Empty option
+    const emptyOption =
+        document.createElement("option");
+
+    emptyOption.value = "";
+    emptyOption.textContent = "Select a form";
+
+    formSelect.appendChild(emptyOption);
+
+
+    // Related form
+
+    if (relatedForms.length > 0) {
+
+        const relatedGroup =
+            document.createElement("optgroup");
+
+        relatedGroup.label = "Related";
+
+        relatedForms.forEach(form => {
+
+            const option =
+                document.createElement("option");
+
+            option.value = form.id;
+            option.textContent = form.name;
+
+            if (form.id === currentFormId) {
+                option.selected = true;
+            }
+
+            relatedGroup.appendChild(option);
+        });
+
+        formSelect.appendChild(relatedGroup);
+    }
+
+
+    // Other forms
+
+    const relatedIds = new Set(
+        relatedForms.map(form => form.id)
+    );
+
+    const otherForms =
+        allForms.filter(
+            form => !relatedIds.has(form.id)
+        );
+
+    if (otherForms.length > 0) {
+
+        const allGroup =
+            document.createElement("optgroup");
+
+        allGroup.label = "All";
+
+        otherForms.forEach(form => {
+
+            const option =
+                document.createElement("option");
+
+            option.value = form.id;
+            option.textContent = form.name;
+
+            if (form.id === currentFormId) {
+                option.selected = true;
+            }
+
+            allGroup.appendChild(option);
+        });
+
+        formSelect.appendChild(allGroup);
+    }
+
+
+    // Select first related form
+    // if ticket doesn't already have one
+
+    if (
+        currentFormId === null &&
+        relatedForms.length > 0
+    ) {
+        formSelect.value =
+            relatedForms[0].id;
+    }
+}
+
 function loadTemplatePreview() {
 
     const templateSelect =
@@ -381,7 +490,10 @@ document.getElementById("issueType").addEventListener(
     "change",
     async (event) => {
 
-        const issueTypeId = Number(event.target.value);
+        const issueTypeId =
+            Number(event.target.value);
+
+        await loadForms(issueTypeId);
 
         await loadTroubleshootingTemplates(issueTypeId);
     }
