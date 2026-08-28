@@ -201,6 +201,24 @@ async function getIssueTypeTroubleshootingTemplates(issueTypeId) {
     return await response.json();
 }
 
+async function getTroubleshootingTemplates() {
+
+    const response = await fetch(
+        `${API_URL}/api/troubleshooting_templates/`,
+        {
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+            }
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error loading troubleshooting templates");
+    }
+
+    return await response.json();
+}
+
 async function updateTicket(ticketId, ticketData) {
 
     const response = await fetch(

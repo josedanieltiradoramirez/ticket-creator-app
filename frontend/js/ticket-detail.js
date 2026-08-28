@@ -54,6 +54,11 @@ async function loadTicket() {
         document.getElementById("troubleshootingSteps").value =
             ticket.troubleshooting_steps ?? "";
 
+        
+        // Additional notes
+        document.getElementById("additionalNotes").value =
+            ticket.additional_notes ?? "";
+
 
         // Configuration
 
@@ -229,28 +234,102 @@ async function loadTroubleshootingTemplates(
     issueTypeId,
     currentTemplateId = null
 ) {
-
-    troubleshootingTemplates =
+    const relatedTemplates =
         await getIssueTypeTroubleshootingTemplates(issueTypeId);
+
+    const allTemplates =
+        await getTroubleshootingTemplates();
 
     const templateSelect =
         document.getElementById("troubleshootingTemplate");
 
     templateSelect.innerHTML = "";
 
-    troubleshootingTemplates.forEach(template => {
+    troubleshootingTemplates = allTemplates;
 
-        const option = document.createElement("option");
+    // Empty option
+    const emptyOption = document.createElement("option");
 
-        option.value = template.id;
-        option.textContent = template.name;
+    emptyOption.value = "";
+    emptyOption.textContent = "Select a template";
 
-        if (template.id === currentTemplateId) {
-            option.selected = true;
-        }
+    templateSelect.appendChild(emptyOption);
 
-        templateSelect.appendChild(option);
-    });
+
+    // Related template IDs
+    const relatedIds = new Set(
+        relatedTemplates.map(template => template.id)
+    );
+
+
+    // Related templates
+    if (relatedTemplates.length > 0) {
+
+        const relatedGroup =
+            document.createElement("optgroup");
+
+        relatedGroup.label = "Related";
+
+        relatedTemplates.forEach(template => {
+
+            const option =
+                document.createElement("option");
+
+            option.value = template.id;
+            option.textContent = template.name;
+
+            if (template.id === currentTemplateId) {
+                option.selected = true;
+            }
+
+            relatedGroup.appendChild(option);
+        });
+
+        templateSelect.appendChild(relatedGroup);
+    }
+
+
+    // Other templates
+    const otherTemplates =
+        allTemplates.filter(
+            template => !relatedIds.has(template.id)
+        );
+
+    if (otherTemplates.length > 0) {
+
+        const allGroup =
+            document.createElement("optgroup");
+
+        allGroup.label = "All";
+
+        otherTemplates.forEach(template => {
+
+            const option =
+                document.createElement("option");
+
+            option.value = template.id;
+            option.textContent = template.name;
+
+            if (template.id === currentTemplateId) {
+                option.selected = true;
+            }
+
+            allGroup.appendChild(option);
+        });
+
+        templateSelect.appendChild(allGroup);
+    }
+
+
+    // Select first related template
+    // only when the ticket doesn't already have a template
+    if (
+        currentTemplateId === null &&
+        relatedTemplates.length > 0
+    ) {
+        templateSelect.value =
+            relatedTemplates[0].id;
+    }
 
 
     loadTemplatePreview();
@@ -264,8 +343,7 @@ function loadTemplatePreview() {
     const preview =
         document.getElementById("troubleshootingTemplatePreview");
 
-    const selectedTemplateId =
-        Number(templateSelect.value);
+    const selectedTemplateId = Number(templateSelect.value);
 
     const selectedTemplate =
         troubleshootingTemplates.find(
@@ -351,6 +429,8 @@ document.getElementById("saveButton").addEventListener(
                     document.getElementById("troubleshootingTemplate").value
                 )
                 : null,
+            additional_notes:
+            document.getElementById("additionalNotes").value,
 
             status_id:
                 Number(document.getElementById("status").value),
