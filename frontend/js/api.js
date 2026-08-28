@@ -273,6 +273,43 @@ async function getFormFields(formId) {
     return await response.json();
 }
 
+
+async function getToolKnowledgeBase(toolId) {
+
+    const response = await fetch(
+        `${API_URL}/api/tools/${toolId}/knowledge-base`,
+        {
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+            }
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error loading tool knowledge base");
+    }
+
+    return await response.json();
+}
+
+async function getIssueTypeKnowledgeBase(issueTypeId) {
+
+    const response = await fetch(
+        `${API_URL}/api/issue_types/${issueTypeId}/knowledge-base`,
+        {
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+            }
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error loading issue type knowledge base");
+    }
+
+    return await response.json();
+}
+
 async function updateTicket(ticketId, ticketData) {
 
     const response = await fetch(

@@ -97,6 +97,29 @@ async def get_issue_type_form(
 
     return [issue_type.form]
 
+@router.get("/{id}/knowledge-base")
+async def get_issue_type_knowledge_base(
+    user: user_dependency,
+    id: int,
+    db: db_dependency
+):
+    issue_type = (
+        db.query(IssueTypes)
+        .filter(
+            IssueTypes.id == id,
+            IssueTypes.created_by == user.id
+        )
+        .first()
+    )
+
+    if not issue_type:
+        raise HTTPException(
+            status_code=404,
+            detail="Issue type not found"
+        )
+
+    return issue_type.knowledge_base
+
 @router.post("/", response_model=IssueTypeResponse, status_code=201)
 async def create_issue_type(user : user_dependency, issue_type: IssueTypeCreate, db: db_dependency):
     issue_type_data = issue_type.model_dump()

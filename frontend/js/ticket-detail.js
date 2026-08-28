@@ -21,14 +21,22 @@ async function loadTicket() {
         await loadStatuses(ticket.status_id);
         await loadQueues(ticket.queue_id);
         await loadLocations(ticket.location_id);
-        await loadTools(ticket.tool_id);
-        await loadIssueTypes(ticket.issue_type_id);
 
+        // Tool
+        await loadTools(ticket.tool_id);
+        await loadToolKnowledgeBase(ticket.tool_id);
+
+        // Issue Type
+        await loadIssueTypes(ticket.issue_type_id);
+        await loadIssueTypeKnowledgeBase(ticket.issue_type_id);
+
+        // Troubleshooting Templates
         await loadTroubleshootingTemplates(
             ticket.issue_type_id,
             ticket.troubleshooting_template_id
         );
 
+        // Forms
         await loadForms(
             ticket.issue_type_id,
             ticket.form_id
@@ -250,6 +258,47 @@ async function loadTools(currentToolId) {
 
 
 // ============================================================
+// TOOL KNOWLEDGE BASE
+// ============================================================
+
+async function loadToolKnowledgeBase(toolId) {
+
+    const container =
+        document.getElementById("toolKnowledgeBase");
+
+    container.innerHTML = "";
+
+    if (!toolId) {
+        return;
+    }
+
+    const knowledgeBase =
+        await getToolKnowledgeBase(toolId);
+
+
+    if (knowledgeBase.length === 0) {
+
+        container.textContent =
+            "No Knowledge Base articles associated.";
+
+        return;
+    }
+
+
+    knowledgeBase.forEach(kb => {
+
+        const item =
+            document.createElement("div");
+
+        item.textContent =
+            `${kb.article_number} - ${kb.title}`;
+
+        container.appendChild(item);
+    });
+}
+
+
+// ============================================================
 // LOCATIONS
 // ============================================================
 
@@ -305,6 +354,47 @@ async function loadIssueTypes(currentIssueTypeId) {
         }
 
         issueTypeSelect.appendChild(option);
+    });
+}
+
+
+// ============================================================
+// ISSUE TYPE KNOWLEDGE BASE
+// ============================================================
+
+async function loadIssueTypeKnowledgeBase(issueTypeId) {
+
+    const container =
+        document.getElementById("issueTypeKnowledgeBase");
+
+    container.innerHTML = "";
+
+    if (!issueTypeId) {
+        return;
+    }
+
+    const knowledgeBase =
+        await getIssueTypeKnowledgeBase(issueTypeId);
+
+
+    if (knowledgeBase.length === 0) {
+
+        container.textContent =
+            "No Knowledge Base articles associated.";
+
+        return;
+    }
+
+
+    knowledgeBase.forEach(kb => {
+
+        const item =
+            document.createElement("div");
+
+        item.textContent =
+            `${kb.article_number} - ${kb.title}`;
+
+        container.appendChild(item);
     });
 }
 
@@ -369,6 +459,7 @@ async function loadTroubleshootingTemplates(
                 document.createElement("option");
 
             option.value = template.id;
+
             option.textContent =
                 template.name ??
                 template.generated_description;
@@ -406,6 +497,7 @@ async function loadTroubleshootingTemplates(
                 document.createElement("option");
 
             option.value = template.id;
+
             option.textContent =
                 template.name ??
                 template.generated_description;
@@ -728,6 +820,26 @@ document.getElementById(
 
 
 // ============================================================
+// TOOL CHANGE
+// ============================================================
+
+document.getElementById(
+    "tool"
+).addEventListener(
+    "change",
+    async (event) => {
+
+        const toolId =
+            event.target.value
+                ? Number(event.target.value)
+                : null;
+
+        await loadToolKnowledgeBase(toolId);
+    }
+);
+
+
+// ============================================================
 // ISSUE TYPE CHANGE
 // ============================================================
 
@@ -743,6 +855,10 @@ document.getElementById(
         await loadForms(issueTypeId);
 
         await loadTroubleshootingTemplates(
+            issueTypeId
+        );
+
+        await loadIssueTypeKnowledgeBase(
             issueTypeId
         );
     }

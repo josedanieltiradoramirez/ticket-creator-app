@@ -48,6 +48,30 @@ async def get_tool_by_id(user : user_dependency, id: int, db: db_dependency):
         raise HTTPException(status_code=404, detail="Tool not found")
     return tool
 
+
+@router.get("/{id}/knowledge-base")
+async def get_tool_knowledge_base(
+    user: user_dependency,
+    id: int,
+    db: db_dependency
+):
+    tool = (
+        db.query(Tools)
+        .filter(
+            Tools.id == id,
+            Tools.created_by == user.id
+        )
+        .first()
+    )
+
+    if not tool:
+        raise HTTPException(
+            status_code=404,
+            detail="Tool not found"
+        )
+
+    return tool.knowledge_base
+
 @router.post("/", response_model=ToolResponse, status_code=201)
 async def create_tool(user : user_dependency, tool: ToolCreate, db: db_dependency):
     tool_data = tool.model_dump()
