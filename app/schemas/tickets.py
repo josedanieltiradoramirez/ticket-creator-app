@@ -33,6 +33,7 @@ class TicketBase(BaseModel):
 
     ticket_body: Optional[str] = None
     additional_notes: Optional[str] = None
+    form_content: Optional[str] = None
 
     form_template_id: Optional[int] = None
     troubleshooting_template_id: Optional[int] = None

@@ -3,25 +3,41 @@ const ticketDetails = document.getElementById("ticketDetails");
 const params = new URLSearchParams(window.location.search);
 const ticketId = params.get("id");
 
+let troubleshootingTemplates = [];
+let forms = [];
+
+
+// ============================================================
+// LOAD TICKET
+// ============================================================
+
 async function loadTicket() {
 
     try {
 
         const ticket = await getTicket(ticketId);
+
         await loadPriorities(ticket.priority_id);
         await loadStatuses(ticket.status_id);
         await loadQueues(ticket.queue_id);
         await loadLocations(ticket.location_id);
         await loadTools(ticket.tool_id);
         await loadIssueTypes(ticket.issue_type_id);
+
         await loadTroubleshootingTemplates(
             ticket.issue_type_id,
             ticket.troubleshooting_template_id
         );
+
         await loadForms(
             ticket.issue_type_id,
             ticket.form_id
         );
+
+
+        // ====================================================
+        // TICKET INFORMATION
+        // ====================================================
 
         document.getElementById("ticketNumber").value =
             ticket.ticket_number ?? "";
@@ -30,7 +46,9 @@ async function loadTicket() {
             ticket.title ?? "";
 
 
-        // User
+        // ====================================================
+        // USER
+        // ====================================================
 
         document.getElementById("userName").value =
             ticket.user_name ?? "";
@@ -45,32 +63,49 @@ async function loadTicket() {
             ticket.user_type ?? "";
 
 
-        // Issue
+        // ====================================================
+        // ISSUE
+        // ====================================================
 
         document.getElementById("issueDescription").value =
             ticket.issue_description ?? "";
 
 
-        // Troubleshooting
-
+        // ====================================================
+        // TROUBLESHOOTING
+        // ====================================================
 
         document.getElementById("troubleshootingSteps").value =
             ticket.troubleshooting_steps ?? "";
 
-        
-        // Additional notes
+
+        // ====================================================
+        // ADDITIONAL NOTES
+        // ====================================================
+
         document.getElementById("additionalNotes").value =
             ticket.additional_notes ?? "";
 
 
-        // Configuration
+        // ====================================================
+        // FORM CONTENT
+        // ====================================================
 
+        document.getElementById("formContent").value =
+            ticket.form_content ?? "";
+
+
+        // ====================================================
+        // CONFIGURATION
+        // ====================================================
 
         document.getElementById("knowledgeBase").textContent =
             ticket.knowledge_base?.title ?? "";
 
 
-        // Dates
+        // ====================================================
+        // DATES
+        // ====================================================
 
         document.getElementById("createdAt").textContent =
             new Date(ticket.created_at).toLocaleString();
@@ -93,17 +128,24 @@ async function loadTicket() {
     }
 }
 
+
+// ============================================================
+// PRIORITIES
+// ============================================================
+
 async function loadPriorities(currentPriorityId) {
 
     const priorities = await getPriorities();
 
-    const prioritySelect = document.getElementById("priority");
+    const prioritySelect =
+        document.getElementById("priority");
 
     prioritySelect.innerHTML = "";
 
     priorities.forEach(priority => {
 
-        const option = document.createElement("option");
+        const option =
+            document.createElement("option");
 
         option.value = priority.id;
         option.textContent = priority.name;
@@ -116,17 +158,24 @@ async function loadPriorities(currentPriorityId) {
     });
 }
 
+
+// ============================================================
+// STATUSES
+// ============================================================
+
 async function loadStatuses(currentStatusId) {
 
     const statuses = await getTicketStatuses();
 
-    const statusSelect = document.getElementById("status");
+    const statusSelect =
+        document.getElementById("status");
 
     statusSelect.innerHTML = "";
 
     statuses.forEach(status => {
 
-        const option = document.createElement("option");
+        const option =
+            document.createElement("option");
 
         option.value = status.id;
         option.textContent = status.name;
@@ -139,17 +188,24 @@ async function loadStatuses(currentStatusId) {
     });
 }
 
+
+// ============================================================
+// QUEUES
+// ============================================================
+
 async function loadQueues(currentQueueId) {
 
     const queues = await getQueues();
 
-    const queueSelect = document.getElementById("queue");
+    const queueSelect =
+        document.getElementById("queue");
 
     queueSelect.innerHTML = "";
 
     queues.forEach(queue => {
 
-        const option = document.createElement("option");
+        const option =
+            document.createElement("option");
 
         option.value = queue.id;
         option.textContent = queue.name;
@@ -162,17 +218,24 @@ async function loadQueues(currentQueueId) {
     });
 }
 
+
+// ============================================================
+// TOOLS
+// ============================================================
+
 async function loadTools(currentToolId) {
 
     const tools = await getTools();
 
-    const toolSelect = document.getElementById("tool");
+    const toolSelect =
+        document.getElementById("tool");
 
     toolSelect.innerHTML = "";
 
     tools.forEach(tool => {
 
-        const option = document.createElement("option");
+        const option =
+            document.createElement("option");
 
         option.value = tool.id;
         option.textContent = tool.name;
@@ -185,17 +248,24 @@ async function loadTools(currentToolId) {
     });
 }
 
+
+// ============================================================
+// LOCATIONS
+// ============================================================
+
 async function loadLocations(currentLocationId) {
 
     const locations = await getLocations();
 
-    const locationSelect = document.getElementById("location");
+    const locationSelect =
+        document.getElementById("location");
 
     locationSelect.innerHTML = "";
 
     locations.forEach(location => {
 
-        const option = document.createElement("option");
+        const option =
+            document.createElement("option");
 
         option.value = location.id;
         option.textContent = location.name;
@@ -208,17 +278,24 @@ async function loadLocations(currentLocationId) {
     });
 }
 
+
+// ============================================================
+// ISSUE TYPES
+// ============================================================
+
 async function loadIssueTypes(currentIssueTypeId) {
 
     const issueTypes = await getIssueTypes();
 
-    const issueTypeSelect = document.getElementById("issueType");
+    const issueTypeSelect =
+        document.getElementById("issueType");
 
     issueTypeSelect.innerHTML = "";
 
     issueTypes.forEach(issueType => {
 
-        const option = document.createElement("option");
+        const option =
+            document.createElement("option");
 
         option.value = issueType.id;
         option.textContent = issueType.name;
@@ -231,13 +308,16 @@ async function loadIssueTypes(currentIssueTypeId) {
     });
 }
 
-let troubleshootingTemplates = [];
-let forms = [];
+
+// ============================================================
+// TROUBLESHOOTING TEMPLATES
+// ============================================================
 
 async function loadTroubleshootingTemplates(
     issueTypeId,
     currentTemplateId = null
 ) {
+
     const relatedTemplates =
         await getIssueTypeTroubleshootingTemplates(issueTypeId);
 
@@ -245,14 +325,19 @@ async function loadTroubleshootingTemplates(
         await getTroubleshootingTemplates();
 
     const templateSelect =
-        document.getElementById("troubleshootingTemplate");
+        document.getElementById(
+            "troubleshootingTemplate"
+        );
 
     templateSelect.innerHTML = "";
 
     troubleshootingTemplates = allTemplates;
 
+
     // Empty option
-    const emptyOption = document.createElement("option");
+
+    const emptyOption =
+        document.createElement("option");
 
     emptyOption.value = "";
     emptyOption.textContent = "Select a template";
@@ -261,12 +346,16 @@ async function loadTroubleshootingTemplates(
 
 
     // Related template IDs
+
     const relatedIds = new Set(
-        relatedTemplates.map(template => template.id)
+        relatedTemplates.map(
+            template => template.id
+        )
     );
 
 
     // Related templates
+
     if (relatedTemplates.length > 0) {
 
         const relatedGroup =
@@ -280,7 +369,9 @@ async function loadTroubleshootingTemplates(
                 document.createElement("option");
 
             option.value = template.id;
-            option.textContent = template.name;
+            option.textContent =
+                template.name ??
+                template.generated_description;
 
             if (template.id === currentTemplateId) {
                 option.selected = true;
@@ -294,10 +385,13 @@ async function loadTroubleshootingTemplates(
 
 
     // Other templates
+
     const otherTemplates =
         allTemplates.filter(
-            template => !relatedIds.has(template.id)
+            template =>
+                !relatedIds.has(template.id)
         );
+
 
     if (otherTemplates.length > 0) {
 
@@ -312,7 +406,9 @@ async function loadTroubleshootingTemplates(
                 document.createElement("option");
 
             option.value = template.id;
-            option.textContent = template.name;
+            option.textContent =
+                template.name ??
+                template.generated_description;
 
             if (template.id === currentTemplateId) {
                 option.selected = true;
@@ -326,11 +422,13 @@ async function loadTroubleshootingTemplates(
 
 
     // Select first related template
-    // only when the ticket doesn't already have a template
+    // only if ticket doesn't already have one
+
     if (
         currentTemplateId === null &&
         relatedTemplates.length > 0
     ) {
+
         templateSelect.value =
             relatedTemplates[0].id;
     }
@@ -338,6 +436,49 @@ async function loadTroubleshootingTemplates(
 
     loadTemplatePreview();
 }
+
+
+// ============================================================
+// TEMPLATE PREVIEW
+// ============================================================
+
+function loadTemplatePreview() {
+
+    const templateSelect =
+        document.getElementById(
+            "troubleshootingTemplate"
+        );
+
+    const preview =
+        document.getElementById(
+            "troubleshootingTemplatePreview"
+        );
+
+    const selectedTemplateId =
+        Number(templateSelect.value);
+
+    const selectedTemplate =
+        troubleshootingTemplates.find(
+            template =>
+                template.id === selectedTemplateId
+        );
+
+
+    if (selectedTemplate) {
+
+        preview.value =
+            selectedTemplate.steps ?? "";
+
+    } else {
+
+        preview.value = "";
+    }
+}
+
+
+// ============================================================
+// FORMS
+// ============================================================
 
 async function loadForms(
     issueTypeId,
@@ -357,7 +498,9 @@ async function loadForms(
 
     formSelect.innerHTML = "";
 
+
     // Empty option
+
     const emptyOption =
         document.createElement("option");
 
@@ -367,7 +510,7 @@ async function loadForms(
     formSelect.appendChild(emptyOption);
 
 
-    // Related form
+    // Related forms
 
     if (relatedForms.length > 0) {
 
@@ -395,16 +538,23 @@ async function loadForms(
     }
 
 
-    // Other forms
+    // Related IDs
 
     const relatedIds = new Set(
-        relatedForms.map(form => form.id)
+        relatedForms.map(
+            form => form.id
+        )
     );
+
+
+    // Other forms
 
     const otherForms =
         allForms.filter(
-            form => !relatedIds.has(form.id)
+            form =>
+                !relatedIds.has(form.id)
         );
+
 
     if (otherForms.length > 0) {
 
@@ -433,60 +583,157 @@ async function loadForms(
 
 
     // Select first related form
-    // if ticket doesn't already have one
+    // only when ticket doesn't already have one
 
     if (
         currentFormId === null &&
         relatedForms.length > 0
     ) {
+
         formSelect.value =
             relatedForms[0].id;
     }
+
+
+    // Load preview
+
+    await loadSelectedForm(
+        formSelect.value
+    );
 }
 
-function loadTemplatePreview() {
 
-    const templateSelect =
-        document.getElementById("troubleshootingTemplate");
+// ============================================================
+// SELECTED FORM
+// ============================================================
+
+async function loadSelectedForm(formId) {
+
+    await loadFormPreview(formId);
+}
+
+
+// ============================================================
+// FORM PREVIEW
+// ============================================================
+
+async function loadFormPreview(formId) {
 
     const preview =
-        document.getElementById("troubleshootingTemplatePreview");
+        document.getElementById("formPreview");
 
-    const selectedTemplateId = Number(templateSelect.value);
+    if (!formId) {
 
-    const selectedTemplate =
-        troubleshootingTemplates.find(
-            template => template.id === selectedTemplateId
+        preview.value = "";
+
+        return;
+    }
+
+
+    const form =
+        forms.find(
+            form =>
+                form.id === Number(formId)
         );
 
-    if (selectedTemplate) {
-        preview.value = selectedTemplate.steps ?? "";
-    } else {
+
+    if (!form) {
+
         preview.value = "";
+
+        return;
     }
+
+
+    const fields =
+        await getFormFields(formId);
+
+
+    if (fields.length === 0) {
+
+        preview.value =
+            form.description ?? "";
+
+        return;
+    }
+
+
+    let previewText = "";
+
+    fields.forEach(field => {
+
+        previewText +=
+            `${field.label}:\n\n`;
+
+    });
+
+
+    preview.value = previewText;
 }
 
-document.getElementById("troubleshootingTemplate").addEventListener(
-    "change",
-    () => {
-        loadTemplatePreview();
-    }
-);
 
-document.getElementById("copyTemplateButton").addEventListener(
+// ============================================================
+// COPY FORM PREVIEW
+// ============================================================
+
+document.getElementById(
+    "copyFormButton"
+).addEventListener(
     "click",
     async () => {
 
         const preview =
-            document.getElementById(
-                "troubleshootingTemplatePreview"
-            );
+            document.getElementById("formPreview");
 
-        await navigator.clipboard.writeText(preview.value);
+        await navigator.clipboard.writeText(
+            preview.value
+        );
     }
 );
 
-document.getElementById("issueType").addEventListener(
+
+// ============================================================
+// TROUBLESHOOTING TEMPLATE CHANGE
+// ============================================================
+
+document.getElementById(
+    "troubleshootingTemplate"
+).addEventListener(
+    "change",
+    () => {
+
+        loadTemplatePreview();
+    }
+);
+
+
+// ============================================================
+// FORM CHANGE
+// ============================================================
+
+document.getElementById(
+    "form"
+).addEventListener(
+    "change",
+    async (event) => {
+
+        const formId =
+            event.target.value
+                ? Number(event.target.value)
+                : null;
+
+        await loadSelectedForm(formId);
+    }
+);
+
+
+// ============================================================
+// ISSUE TYPE CHANGE
+// ============================================================
+
+document.getElementById(
+    "issueType"
+).addEventListener(
     "change",
     async (event) => {
 
@@ -495,77 +742,182 @@ document.getElementById("issueType").addEventListener(
 
         await loadForms(issueTypeId);
 
-        await loadTroubleshootingTemplates(issueTypeId);
+        await loadTroubleshootingTemplates(
+            issueTypeId
+        );
     }
 );
 
-document.getElementById("backButton").addEventListener("click", () => {
 
-    window.location.href = "index.html";
+// ============================================================
+// BACK BUTTON
+// ============================================================
 
-});
+document.getElementById(
+    "backButton"
+).addEventListener(
+    "click",
+    () => {
 
-document.getElementById("saveButton").addEventListener(
+        window.location.href =
+            "index.html";
+    }
+);
+
+
+// ============================================================
+// SAVE TICKET
+// ============================================================
+
+document.getElementById(
+    "saveButton"
+).addEventListener(
     "click",
     async () => {
 
         const ticketData = {
-            ticket_number: document.getElementById("ticketNumber").value,
-            title: document.getElementById("ticketTitle").value,
-            user_name: document.getElementById("userName").value,
-            user_email: document.getElementById("userEmail").value,
+
+            ticket_number:
+                document.getElementById(
+                    "ticketNumber"
+                ).value,
+
+            title:
+                document.getElementById(
+                    "ticketTitle"
+                ).value,
+
+            user_name:
+                document.getElementById(
+                    "userName"
+                ).value,
+
+            user_email:
+                document.getElementById(
+                    "userEmail"
+                ).value,
+
             user_best_contact_number:
-                document.getElementById("userPhone").value,
+                document.getElementById(
+                    "userPhone"
+                ).value,
+
             user_type:
-                document.getElementById("userType").value,
+                document.getElementById(
+                    "userType"
+                ).value,
+
             issue_description:
-                document.getElementById("issueDescription").value,
+                document.getElementById(
+                    "issueDescription"
+                ).value,
+
             troubleshooting_steps:
-                document.getElementById("troubleshootingSteps").value,
+                document.getElementById(
+                    "troubleshootingSteps"
+                ).value,
+
+            additional_notes:
+                document.getElementById(
+                    "additionalNotes"
+                ).value,
+
+            form_content:
+                document.getElementById(
+                    "formContent"
+                ).value,
 
             tool_id:
-                Number(document.getElementById("tool").value),
+                Number(
+                    document.getElementById(
+                        "tool"
+                    ).value
+                ),
 
             location_id:
-                Number(document.getElementById("location").value),
+                Number(
+                    document.getElementById(
+                        "location"
+                    ).value
+                ),
 
             priority_id:
-                Number(document.getElementById("priority").value),
+                Number(
+                    document.getElementById(
+                        "priority"
+                    ).value
+                ),
 
             issue_type_id:
-                Number(document.getElementById("issueType").value),
+                Number(
+                    document.getElementById(
+                        "issueType"
+                    ).value
+                ),
+
+            form_id:
+                document.getElementById(
+                    "form"
+                ).value
+                    ? Number(
+                        document.getElementById(
+                            "form"
+                        ).value
+                    )
+                    : null,
 
             troubleshooting_template_id:
-            document.getElementById("troubleshootingTemplate").value
-                ? Number(
-                    document.getElementById("troubleshootingTemplate").value
-                )
-                : null,
-            additional_notes:
-            document.getElementById("additionalNotes").value,
+                document.getElementById(
+                    "troubleshootingTemplate"
+                ).value
+                    ? Number(
+                        document.getElementById(
+                            "troubleshootingTemplate"
+                        ).value
+                    )
+                    : null,
 
             status_id:
-                Number(document.getElementById("status").value),
+                Number(
+                    document.getElementById(
+                        "status"
+                    ).value
+                ),
 
             queue_id:
-                Number(document.getElementById("queue").value)
+                Number(
+                    document.getElementById(
+                        "queue"
+                    ).value
+                )
         };
+
 
         try {
 
-            await updateTicket(ticketId, ticketData);
+            await updateTicket(
+                ticketId,
+                ticketData
+            );
 
-            alert("Ticket updated successfully.");
+            alert(
+                "Ticket updated successfully."
+            );
 
         } catch (error) {
 
             console.error(error);
 
-            alert("Error updating ticket.");
-
+            alert(
+                "Error updating ticket."
+            );
         }
     }
 );
 
+
+// ============================================================
+// INITIAL LOAD
+// ============================================================
 
 loadTicket();

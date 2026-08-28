@@ -255,6 +255,24 @@ async function getForms() {
     return await response.json();
 }
 
+async function getFormFields(formId) {
+
+    const response = await fetch(
+        `${API_URL}/api/forms/${formId}/fields`,
+        {
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+            }
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error loading form fields");
+    }
+
+    return await response.json();
+}
+
 async function updateTicket(ticketId, ticketData) {
 
     const response = await fetch(

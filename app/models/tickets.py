@@ -39,6 +39,7 @@ class Tickets(Base):
 
     ticket_body = Column(Text, nullable=True)
     additional_notes = Column(Text, nullable=True)
+    form_content = Column(Text, nullable=True)
 
     ## Templates
     form_template_id = Column(Integer, ForeignKey("forms.id"), nullable=True)

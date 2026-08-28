@@ -46,6 +46,29 @@ async def get_form_by_id(user : user_dependency, id: int, db: db_dependency):
         raise HTTPException(status_code=404, detail="Form not found")
     return form
 
+@router.get("/{id}/fields")
+async def get_form_fields(
+    user: user_dependency,
+    id: int,
+    db: db_dependency
+):
+    form = (
+        db.query(Forms)
+        .filter(
+            Forms.id == id,
+            Forms.created_by == user.id
+        )
+        .first()
+    )
+
+    if not form:
+        raise HTTPException(
+            status_code=404,
+            detail="Form not found"
+        )
+
+    return form.form_fields
+
 @router.post("/", response_model=FormResponse, status_code=201)
 async def create_form(user : user_dependency, form: FormCreate, db: db_dependency):
     form_data = form.model_dump()
