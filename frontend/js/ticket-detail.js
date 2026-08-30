@@ -1,10 +1,47 @@
-const ticketDetails = document.getElementById("ticketDetails");
+// ============================================================
+// GLOBAL VARIABLES
+// ============================================================
 
-const params = new URLSearchParams(window.location.search);
-const ticketId = params.get("id");
+const params =
+    new URLSearchParams(window.location.search);
+
+const ticketId =
+    params.get("id");
+
 
 let troubleshootingTemplates = [];
+
 let forms = [];
+
+
+// KBs that the user explicitly marked as used
+let usedKnowledgeBase = [];
+
+
+// ============================================================
+// DOM READY
+// ============================================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        initializeTicketPage();
+
+    }
+);
+
+
+// ============================================================
+// INITIALIZE PAGE
+// ============================================================
+
+async function initializeTicketPage() {
+
+    setupEventListeners();
+
+    await loadTicket();
+}
 
 
 // ============================================================
@@ -15,31 +52,74 @@ async function loadTicket() {
 
     try {
 
-        const ticket = await getTicket(ticketId);
+        const ticket =
+            await getTicket(ticketId);
 
-        await loadPriorities(ticket.priority_id);
-        await loadStatuses(ticket.status_id);
-        await loadQueues(ticket.queue_id);
-        await loadLocations(ticket.location_id);
 
-        // Tool
-        await loadTools(ticket.tool_id);
-        await loadToolKnowledgeBase(ticket.tool_id);
+        // ====================================================
+        // BASIC SELECTS
+        // ====================================================
 
-        // Issue Type
-        await loadIssueTypes(ticket.issue_type_id);
-        await loadIssueTypeKnowledgeBase(ticket.issue_type_id);
+        await loadPriorities(
+            ticket.priority_id
+        );
 
-        // Troubleshooting Templates
+        await loadStatuses(
+            ticket.status_id
+        );
+
+        await loadQueues(
+            ticket.queue_id
+        );
+
+        await loadLocations(
+            ticket.location_id
+        );
+
+
+        // ====================================================
+        // TOOL
+        // ====================================================
+
+        await loadTools(
+            ticket.tool_id
+        );
+
+        await loadToolKnowledgeBase(
+            ticket.tool_id
+        );
+
+
+        // ====================================================
+        // ISSUE TYPE
+        // ====================================================
+
+        await loadIssueTypes(
+            ticket.issue_type_id
+        );
+
+        await loadIssueTypeKnowledgeBase(
+            ticket.issue_type_id
+        );
+
+
+        // ====================================================
+        // TROUBLESHOOTING TEMPLATES
+        // ====================================================
+
         await loadTroubleshootingTemplates(
             ticket.issue_type_id,
             ticket.troubleshooting_template_id
         );
 
-        // Forms
+
+        // ====================================================
+        // FORMS
+        // ====================================================
+
         await loadForms(
             ticket.issue_type_id,
-            ticket.form_id
+            ticket.form_template_id
         );
 
 
@@ -47,10 +127,15 @@ async function loadTicket() {
         // TICKET INFORMATION
         // ====================================================
 
-        document.getElementById("ticketNumber").value =
+        document.getElementById(
+            "ticketNumber"
+        ).value =
             ticket.ticket_number ?? "";
 
-        document.getElementById("ticketTitle").value =
+
+        document.getElementById(
+            "ticketTitle"
+        ).value =
             ticket.title ?? "";
 
 
@@ -58,16 +143,27 @@ async function loadTicket() {
         // USER
         // ====================================================
 
-        document.getElementById("userName").value =
+        document.getElementById(
+            "userName"
+        ).value =
             ticket.user_name ?? "";
 
-        document.getElementById("userEmail").value =
+
+        document.getElementById(
+            "userEmail"
+        ).value =
             ticket.user_email ?? "";
 
-        document.getElementById("userPhone").value =
+
+        document.getElementById(
+            "userPhone"
+        ).value =
             ticket.user_best_contact_number ?? "";
 
-        document.getElementById("userType").value =
+
+        document.getElementById(
+            "userType"
+        ).value =
             ticket.user_type ?? "";
 
 
@@ -75,7 +171,9 @@ async function loadTicket() {
         // ISSUE
         // ====================================================
 
-        document.getElementById("issueDescription").value =
+        document.getElementById(
+            "issueDescription"
+        ).value =
             ticket.issue_description ?? "";
 
 
@@ -83,7 +181,9 @@ async function loadTicket() {
         // TROUBLESHOOTING
         // ====================================================
 
-        document.getElementById("troubleshootingSteps").value =
+        document.getElementById(
+            "troubleshootingSteps"
+        ).value =
             ticket.troubleshooting_steps ?? "";
 
 
@@ -91,15 +191,27 @@ async function loadTicket() {
         // ADDITIONAL NOTES
         // ====================================================
 
-        document.getElementById("additionalNotes").value =
+        document.getElementById(
+            "additionalNotes"
+        ).value =
             ticket.additional_notes ?? "";
 
 
         // ====================================================
         // FORM CONTENT
         // ====================================================
+        //
+        // NOTE:
+        // The current Ticket model/schema does not contain
+        // form_content.
+        //
+        // Therefore we only load it if the API happens to
+        // return it.
+        //
 
-        document.getElementById("formContent").value =
+        document.getElementById(
+            "formContent"
+        ).value =
             ticket.form_content ?? "";
 
 
@@ -107,7 +219,9 @@ async function loadTicket() {
         // CONFIGURATION
         // ====================================================
 
-        document.getElementById("knowledgeBase").textContent =
+        document.getElementById(
+            "knowledgeBase"
+        ).textContent =
             ticket.knowledge_base?.title ?? "";
 
 
@@ -115,24 +229,46 @@ async function loadTicket() {
         // DATES
         // ====================================================
 
-        document.getElementById("createdAt").textContent =
-            new Date(ticket.created_at).toLocaleString();
+        document.getElementById(
+            "createdAt"
+        ).textContent =
+            ticket.created_at
+                ? new Date(
+                    ticket.created_at
+                ).toLocaleString()
+                : "";
 
-        document.getElementById("updatedAt").textContent =
-            new Date(ticket.updated_at).toLocaleString();
 
-        document.getElementById("closedAt").textContent =
+        document.getElementById(
+            "updatedAt"
+        ).textContent =
+            ticket.updated_at
+                ? new Date(
+                    ticket.updated_at
+                ).toLocaleString()
+                : "";
+
+
+        document.getElementById(
+            "closedAt"
+        ).textContent =
             ticket.closed_at
-                ? new Date(ticket.closed_at).toLocaleString()
+                ? new Date(
+                    ticket.closed_at
+                ).toLocaleString()
                 : "Not closed";
 
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "Error loading ticket:",
+            error
+        );
 
-        document.body.innerHTML =
-            "<h2>Error loading ticket.</h2>";
+        alert(
+            "Error loading ticket."
+        );
     }
 }
 
@@ -141,29 +277,53 @@ async function loadTicket() {
 // PRIORITIES
 // ============================================================
 
-async function loadPriorities(currentPriorityId) {
+async function loadPriorities(
+    currentPriorityId
+) {
 
-    const priorities = await getPriorities();
+    const priorities =
+        await getPriorities();
+
 
     const prioritySelect =
-        document.getElementById("priority");
+        document.getElementById(
+            "priority"
+        );
+
 
     prioritySelect.innerHTML = "";
 
-    priorities.forEach(priority => {
 
-        const option =
-            document.createElement("option");
+    priorities.forEach(
+        priority => {
 
-        option.value = priority.id;
-        option.textContent = priority.name;
+            const option =
+                document.createElement(
+                    "option"
+                );
 
-        if (priority.id === currentPriorityId) {
-            option.selected = true;
+
+            option.value =
+                priority.id;
+
+            option.textContent =
+                priority.name;
+
+
+            if (
+                priority.id ===
+                currentPriorityId
+            ) {
+
+                option.selected = true;
+            }
+
+
+            prioritySelect.appendChild(
+                option
+            );
         }
-
-        prioritySelect.appendChild(option);
-    });
+    );
 }
 
 
@@ -171,29 +331,53 @@ async function loadPriorities(currentPriorityId) {
 // STATUSES
 // ============================================================
 
-async function loadStatuses(currentStatusId) {
+async function loadStatuses(
+    currentStatusId
+) {
 
-    const statuses = await getTicketStatuses();
+    const statuses =
+        await getTicketStatuses();
+
 
     const statusSelect =
-        document.getElementById("status");
+        document.getElementById(
+            "status"
+        );
+
 
     statusSelect.innerHTML = "";
 
-    statuses.forEach(status => {
 
-        const option =
-            document.createElement("option");
+    statuses.forEach(
+        status => {
 
-        option.value = status.id;
-        option.textContent = status.name;
+            const option =
+                document.createElement(
+                    "option"
+                );
 
-        if (status.id === currentStatusId) {
-            option.selected = true;
+
+            option.value =
+                status.id;
+
+            option.textContent =
+                status.name;
+
+
+            if (
+                status.id ===
+                currentStatusId
+            ) {
+
+                option.selected = true;
+            }
+
+
+            statusSelect.appendChild(
+                option
+            );
         }
-
-        statusSelect.appendChild(option);
-    });
+    );
 }
 
 
@@ -201,29 +385,53 @@ async function loadStatuses(currentStatusId) {
 // QUEUES
 // ============================================================
 
-async function loadQueues(currentQueueId) {
+async function loadQueues(
+    currentQueueId
+) {
 
-    const queues = await getQueues();
+    const queues =
+        await getQueues();
+
 
     const queueSelect =
-        document.getElementById("queue");
+        document.getElementById(
+            "queue"
+        );
+
 
     queueSelect.innerHTML = "";
 
-    queues.forEach(queue => {
 
-        const option =
-            document.createElement("option");
+    queues.forEach(
+        queue => {
 
-        option.value = queue.id;
-        option.textContent = queue.name;
+            const option =
+                document.createElement(
+                    "option"
+                );
 
-        if (queue.id === currentQueueId) {
-            option.selected = true;
+
+            option.value =
+                queue.id;
+
+            option.textContent =
+                queue.name;
+
+
+            if (
+                queue.id ===
+                currentQueueId
+            ) {
+
+                option.selected = true;
+            }
+
+
+            queueSelect.appendChild(
+                option
+            );
         }
-
-        queueSelect.appendChild(option);
-    });
+    );
 }
 
 
@@ -231,29 +439,53 @@ async function loadQueues(currentQueueId) {
 // TOOLS
 // ============================================================
 
-async function loadTools(currentToolId) {
+async function loadTools(
+    currentToolId
+) {
 
-    const tools = await getTools();
+    const tools =
+        await getTools();
+
 
     const toolSelect =
-        document.getElementById("tool");
+        document.getElementById(
+            "tool"
+        );
+
 
     toolSelect.innerHTML = "";
 
-    tools.forEach(tool => {
 
-        const option =
-            document.createElement("option");
+    tools.forEach(
+        tool => {
 
-        option.value = tool.id;
-        option.textContent = tool.name;
+            const option =
+                document.createElement(
+                    "option"
+                );
 
-        if (tool.id === currentToolId) {
-            option.selected = true;
+
+            option.value =
+                tool.id;
+
+            option.textContent =
+                tool.name;
+
+
+            if (
+                tool.id ===
+                currentToolId
+            ) {
+
+                option.selected = true;
+            }
+
+
+            toolSelect.appendChild(
+                option
+            );
         }
-
-        toolSelect.appendChild(option);
-    });
+    );
 }
 
 
@@ -261,40 +493,78 @@ async function loadTools(currentToolId) {
 // TOOL KNOWLEDGE BASE
 // ============================================================
 
-async function loadToolKnowledgeBase(toolId) {
+async function loadToolKnowledgeBase(
+    toolId
+) {
 
     const container =
-        document.getElementById("toolKnowledgeBase");
+        document.getElementById(
+            "toolKnowledgeBase"
+        );
+
 
     container.innerHTML = "";
 
+
     if (!toolId) {
-        return;
-    }
 
-    const knowledgeBase =
-        await getToolKnowledgeBase(toolId);
-
-
-    if (knowledgeBase.length === 0) {
-
-        container.textContent =
-            "No Knowledge Base articles associated.";
+        container.innerHTML =
+            "<p>No Knowledge Base articles selected.</p>";
 
         return;
     }
 
 
-    knowledgeBase.forEach(kb => {
+    try {
 
-        const item =
-            document.createElement("div");
+        const knowledgeBase =
+            await getToolKnowledgeBase(
+                toolId
+            );
 
-        item.textContent =
-            `${kb.article_number} - ${kb.title}`;
 
-        container.appendChild(item);
-    });
+        if (
+            !knowledgeBase ||
+            knowledgeBase.length === 0
+        ) {
+
+            container.innerHTML =
+                "<p>No Knowledge Base articles associated.</p>";
+
+            return;
+        }
+
+
+        knowledgeBase.forEach(
+            kb => {
+
+                const item =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                item.textContent =
+                    `${kb.article_number} - ${kb.title}`;
+
+
+                container.appendChild(
+                    item
+                );
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Error loading Tool KB:",
+            error
+        );
+
+        container.innerHTML =
+            "<p>Error loading Knowledge Base articles.</p>";
+    }
 }
 
 
@@ -302,29 +572,53 @@ async function loadToolKnowledgeBase(toolId) {
 // LOCATIONS
 // ============================================================
 
-async function loadLocations(currentLocationId) {
+async function loadLocations(
+    currentLocationId
+) {
 
-    const locations = await getLocations();
+    const locations =
+        await getLocations();
+
 
     const locationSelect =
-        document.getElementById("location");
+        document.getElementById(
+            "location"
+        );
+
 
     locationSelect.innerHTML = "";
 
-    locations.forEach(location => {
 
-        const option =
-            document.createElement("option");
+    locations.forEach(
+        location => {
 
-        option.value = location.id;
-        option.textContent = location.name;
+            const option =
+                document.createElement(
+                    "option"
+                );
 
-        if (location.id === currentLocationId) {
-            option.selected = true;
+
+            option.value =
+                location.id;
+
+            option.textContent =
+                location.name;
+
+
+            if (
+                location.id ===
+                currentLocationId
+            ) {
+
+                option.selected = true;
+            }
+
+
+            locationSelect.appendChild(
+                option
+            );
         }
-
-        locationSelect.appendChild(option);
-    });
+    );
 }
 
 
@@ -332,29 +626,53 @@ async function loadLocations(currentLocationId) {
 // ISSUE TYPES
 // ============================================================
 
-async function loadIssueTypes(currentIssueTypeId) {
+async function loadIssueTypes(
+    currentIssueTypeId
+) {
 
-    const issueTypes = await getIssueTypes();
+    const issueTypes =
+        await getIssueTypes();
+
 
     const issueTypeSelect =
-        document.getElementById("issueType");
+        document.getElementById(
+            "issueType"
+        );
+
 
     issueTypeSelect.innerHTML = "";
 
-    issueTypes.forEach(issueType => {
 
-        const option =
-            document.createElement("option");
+    issueTypes.forEach(
+        issueType => {
 
-        option.value = issueType.id;
-        option.textContent = issueType.name;
+            const option =
+                document.createElement(
+                    "option"
+                );
 
-        if (issueType.id === currentIssueTypeId) {
-            option.selected = true;
+
+            option.value =
+                issueType.id;
+
+            option.textContent =
+                issueType.name;
+
+
+            if (
+                issueType.id ===
+                currentIssueTypeId
+            ) {
+
+                option.selected = true;
+            }
+
+
+            issueTypeSelect.appendChild(
+                option
+            );
         }
-
-        issueTypeSelect.appendChild(option);
-    });
+    );
 }
 
 
@@ -362,40 +680,78 @@ async function loadIssueTypes(currentIssueTypeId) {
 // ISSUE TYPE KNOWLEDGE BASE
 // ============================================================
 
-async function loadIssueTypeKnowledgeBase(issueTypeId) {
+async function loadIssueTypeKnowledgeBase(
+    issueTypeId
+) {
 
     const container =
-        document.getElementById("issueTypeKnowledgeBase");
+        document.getElementById(
+            "issueTypeKnowledgeBase"
+        );
+
 
     container.innerHTML = "";
 
+
     if (!issueTypeId) {
-        return;
-    }
 
-    const knowledgeBase =
-        await getIssueTypeKnowledgeBase(issueTypeId);
-
-
-    if (knowledgeBase.length === 0) {
-
-        container.textContent =
-            "No Knowledge Base articles associated.";
+        container.innerHTML =
+            "<p>No Knowledge Base articles selected.</p>";
 
         return;
     }
 
 
-    knowledgeBase.forEach(kb => {
+    try {
 
-        const item =
-            document.createElement("div");
+        const knowledgeBase =
+            await getIssueTypeKnowledgeBase(
+                issueTypeId
+            );
 
-        item.textContent =
-            `${kb.article_number} - ${kb.title}`;
 
-        container.appendChild(item);
-    });
+        if (
+            !knowledgeBase ||
+            knowledgeBase.length === 0
+        ) {
+
+            container.innerHTML =
+                "<p>No Knowledge Base articles associated.</p>";
+
+            return;
+        }
+
+
+        knowledgeBase.forEach(
+            kb => {
+
+                const item =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                item.textContent =
+                    `${kb.article_number} - ${kb.title}`;
+
+
+                container.appendChild(
+                    item
+                );
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Error loading Issue Type KB:",
+            error
+        );
+
+        container.innerHTML =
+            "<p>Error loading Knowledge Base articles.</p>";
+    }
 }
 
 
@@ -409,69 +765,115 @@ async function loadTroubleshootingTemplates(
 ) {
 
     const relatedTemplates =
-        await getIssueTypeTroubleshootingTemplates(issueTypeId);
+        issueTypeId
+            ? await getIssueTypeTroubleshootingTemplates(
+                issueTypeId
+            )
+            : [];
+
 
     const allTemplates =
         await getTroubleshootingTemplates();
+
+
+    troubleshootingTemplates =
+        allTemplates;
+
 
     const templateSelect =
         document.getElementById(
             "troubleshootingTemplate"
         );
 
-    templateSelect.innerHTML = "";
 
-    troubleshootingTemplates = allTemplates;
+    templateSelect.innerHTML = "";
 
 
     // Empty option
 
     const emptyOption =
-        document.createElement("option");
+        document.createElement(
+            "option"
+        );
+
 
     emptyOption.value = "";
-    emptyOption.textContent = "Select a template";
 
-    templateSelect.appendChild(emptyOption);
+    emptyOption.textContent =
+        "Select a template";
+
+
+    templateSelect.appendChild(
+        emptyOption
+    );
 
 
     // Related template IDs
 
-    const relatedIds = new Set(
-        relatedTemplates.map(
-            template => template.id
-        )
-    );
+    const relatedIds =
+        new Set(
+            relatedTemplates.map(
+                template =>
+                    template.id
+            )
+        );
 
 
     // Related templates
 
-    if (relatedTemplates.length > 0) {
+    if (
+        relatedTemplates.length > 0
+    ) {
 
         const relatedGroup =
-            document.createElement("optgroup");
+            document.createElement(
+                "optgroup"
+            );
 
-        relatedGroup.label = "Related";
 
-        relatedTemplates.forEach(template => {
+        relatedGroup.label =
+            "Related";
 
-            const option =
-                document.createElement("option");
 
-            option.value = template.id;
+        relatedTemplates.forEach(
+            template => {
 
-            option.textContent =
-                template.name ??
-                template.generated_description;
+                const option =
+                    document.createElement(
+                        "option"
+                    );
 
-            if (template.id === currentTemplateId) {
-                option.selected = true;
+
+                option.value =
+                    template.id;
+
+
+                option.textContent =
+                    template.name ??
+                    template.generated_description ??
+                    `Template ${template.id}`;
+
+
+                if (
+                    template.id ===
+                    currentTemplateId
+                ) {
+
+                    option.selected =
+                        true;
+                }
+
+
+                relatedGroup.appendChild(
+                    option
+                );
             }
+        );
 
-            relatedGroup.appendChild(option);
-        });
 
-        templateSelect.appendChild(relatedGroup);
+        templateSelect.appendChild(
+            relatedGroup
+        );
     }
 
 
@@ -480,41 +882,70 @@ async function loadTroubleshootingTemplates(
     const otherTemplates =
         allTemplates.filter(
             template =>
-                !relatedIds.has(template.id)
+                !relatedIds.has(
+                    template.id
+                )
         );
 
 
-    if (otherTemplates.length > 0) {
+    if (
+        otherTemplates.length > 0
+    ) {
 
         const allGroup =
-            document.createElement("optgroup");
+            document.createElement(
+                "optgroup"
+            );
 
-        allGroup.label = "All";
 
-        otherTemplates.forEach(template => {
+        allGroup.label =
+            "All";
 
-            const option =
-                document.createElement("option");
 
-            option.value = template.id;
+        otherTemplates.forEach(
+            template => {
 
-            option.textContent =
-                template.name ??
-                template.generated_description;
+                const option =
+                    document.createElement(
+                        "option"
+                    );
 
-            if (template.id === currentTemplateId) {
-                option.selected = true;
+
+                option.value =
+                    template.id;
+
+
+                option.textContent =
+                    template.name ??
+                    template.generated_description ??
+                    `Template ${template.id}`;
+
+
+                if (
+                    template.id ===
+                    currentTemplateId
+                ) {
+
+                    option.selected =
+                        true;
+                }
+
+
+                allGroup.appendChild(
+                    option
+                );
             }
+        );
 
-            allGroup.appendChild(option);
-        });
 
-        templateSelect.appendChild(allGroup);
+        templateSelect.appendChild(
+            allGroup
+        );
     }
 
 
     // Select first related template
-    // only if ticket doesn't already have one
+    // only for a new ticket
 
     if (
         currentTemplateId === null &&
@@ -526,7 +957,36 @@ async function loadTroubleshootingTemplates(
     }
 
 
+    await loadSelectedTemplate();
+}
+
+
+// ============================================================
+// SELECTED TEMPLATE
+// ============================================================
+
+async function loadSelectedTemplate() {
+
+    const templateSelect =
+        document.getElementById(
+            "troubleshootingTemplate"
+        );
+
+
+    const templateId =
+        templateSelect.value
+            ? Number(
+                templateSelect.value
+            )
+            : null;
+
+
     loadTemplatePreview();
+
+
+    await loadTemplateKnowledgeBase(
+        templateId
+    );
 }
 
 
@@ -541,29 +1001,118 @@ function loadTemplatePreview() {
             "troubleshootingTemplate"
         );
 
+
     const preview =
         document.getElementById(
             "troubleshootingTemplatePreview"
         );
 
+
     const selectedTemplateId =
-        Number(templateSelect.value);
+        templateSelect.value
+            ? Number(
+                templateSelect.value
+            )
+            : null;
+
 
     const selectedTemplate =
         troubleshootingTemplates.find(
             template =>
-                template.id === selectedTemplateId
+                template.id ===
+                selectedTemplateId
         );
 
 
     if (selectedTemplate) {
 
         preview.value =
-            selectedTemplate.steps ?? "";
+            selectedTemplate.steps ??
+            selectedTemplate.generated_description ??
+            "";
 
     } else {
 
         preview.value = "";
+    }
+}
+
+
+// ============================================================
+// TEMPLATE KNOWLEDGE BASE
+// ============================================================
+
+async function loadTemplateKnowledgeBase(
+    templateId
+) {
+
+    const container =
+        document.getElementById(
+            "templateKnowledgeBase"
+        );
+
+
+    container.innerHTML = "";
+
+
+    if (!templateId) {
+
+        container.innerHTML =
+            "<p>No Knowledge Base articles associated.</p>";
+
+        return;
+    }
+
+
+    try {
+
+        const knowledgeBase =
+            await getTroubleshootingTemplateKnowledgeBase(
+                templateId
+            );
+
+
+        if (
+            !knowledgeBase ||
+            knowledgeBase.length === 0
+        ) {
+
+            container.innerHTML =
+                "<p>No Knowledge Base articles associated.</p>";
+
+            return;
+        }
+
+
+        knowledgeBase.forEach(
+            kb => {
+
+                const item =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                item.textContent =
+                    `${kb.article_number} - ${kb.title}`;
+
+
+                container.appendChild(
+                    item
+                );
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Error loading Template KB:",
+            error
+        );
+
+        container.innerHTML =
+            "<p>Error loading Knowledge Base articles.</p>";
     }
 }
 
@@ -578,15 +1127,26 @@ async function loadForms(
 ) {
 
     const relatedForms =
-        await getIssueTypeForm(issueTypeId);
+        issueTypeId
+            ? await getIssueTypeForm(
+                issueTypeId
+            )
+            : [];
+
 
     const allForms =
         await getForms();
 
-    forms = allForms;
+
+    forms =
+        allForms;
+
 
     const formSelect =
-        document.getElementById("form");
+        document.getElementById(
+            "form"
+        );
+
 
     formSelect.innerHTML = "";
 
@@ -594,49 +1154,87 @@ async function loadForms(
     // Empty option
 
     const emptyOption =
-        document.createElement("option");
+        document.createElement(
+            "option"
+        );
+
 
     emptyOption.value = "";
-    emptyOption.textContent = "Select a form";
 
-    formSelect.appendChild(emptyOption);
+    emptyOption.textContent =
+        "Select a form";
+
+
+    formSelect.appendChild(
+        emptyOption
+    );
 
 
     // Related forms
 
-    if (relatedForms.length > 0) {
+    if (
+        relatedForms.length > 0
+    ) {
 
         const relatedGroup =
-            document.createElement("optgroup");
+            document.createElement(
+                "optgroup"
+            );
 
-        relatedGroup.label = "Related";
 
-        relatedForms.forEach(form => {
+        relatedGroup.label =
+            "Related";
 
-            const option =
-                document.createElement("option");
 
-            option.value = form.id;
-            option.textContent = form.name;
+        relatedForms.forEach(
+            form => {
 
-            if (form.id === currentFormId) {
-                option.selected = true;
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+
+                option.value =
+                    form.id;
+
+
+                option.textContent =
+                    form.name;
+
+
+                if (
+                    form.id ===
+                    currentFormId
+                ) {
+
+                    option.selected =
+                        true;
+                }
+
+
+                relatedGroup.appendChild(
+                    option
+                );
             }
+        );
 
-            relatedGroup.appendChild(option);
-        });
 
-        formSelect.appendChild(relatedGroup);
+        formSelect.appendChild(
+            relatedGroup
+        );
     }
 
 
     // Related IDs
 
-    const relatedIds = new Set(
-        relatedForms.map(
-            form => form.id
-        )
-    );
+    const relatedIds =
+        new Set(
+            relatedForms.map(
+                form =>
+                    form.id
+            )
+        );
 
 
     // Other forms
@@ -644,38 +1242,68 @@ async function loadForms(
     const otherForms =
         allForms.filter(
             form =>
-                !relatedIds.has(form.id)
+                !relatedIds.has(
+                    form.id
+                )
         );
 
 
-    if (otherForms.length > 0) {
+    if (
+        otherForms.length > 0
+    ) {
 
         const allGroup =
-            document.createElement("optgroup");
+            document.createElement(
+                "optgroup"
+            );
 
-        allGroup.label = "All";
 
-        otherForms.forEach(form => {
+        allGroup.label =
+            "All";
 
-            const option =
-                document.createElement("option");
 
-            option.value = form.id;
-            option.textContent = form.name;
+        otherForms.forEach(
+            form => {
 
-            if (form.id === currentFormId) {
-                option.selected = true;
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+
+                option.value =
+                    form.id;
+
+
+                option.textContent =
+                    form.name;
+
+
+                if (
+                    form.id ===
+                    currentFormId
+                ) {
+
+                    option.selected =
+                        true;
+                }
+
+
+                allGroup.appendChild(
+                    option
+                );
             }
+        );
 
-            allGroup.appendChild(option);
-        });
 
-        formSelect.appendChild(allGroup);
+        formSelect.appendChild(
+            allGroup
+        );
     }
 
 
     // Select first related form
-    // only when ticket doesn't already have one
+    // only for a new ticket
 
     if (
         currentFormId === null &&
@@ -687,8 +1315,6 @@ async function loadForms(
     }
 
 
-    // Load preview
-
     await loadSelectedForm(
         formSelect.value
     );
@@ -699,9 +1325,13 @@ async function loadForms(
 // SELECTED FORM
 // ============================================================
 
-async function loadSelectedForm(formId) {
+async function loadSelectedForm(
+    formId
+) {
 
-    await loadFormPreview(formId);
+    await loadFormPreview(
+        formId
+    );
 }
 
 
@@ -709,10 +1339,15 @@ async function loadSelectedForm(formId) {
 // FORM PREVIEW
 // ============================================================
 
-async function loadFormPreview(formId) {
+async function loadFormPreview(
+    formId
+) {
 
     const preview =
-        document.getElementById("formPreview");
+        document.getElementById(
+            "formPreview"
+        );
+
 
     if (!formId) {
 
@@ -725,7 +1360,8 @@ async function loadFormPreview(formId) {
     const form =
         forms.find(
             form =>
-                form.id === Number(formId)
+                form.id ===
+                Number(formId)
         );
 
 
@@ -737,30 +1373,52 @@ async function loadFormPreview(formId) {
     }
 
 
-    const fields =
-        await getFormFields(formId);
+    try {
+
+        const fields =
+            await getFormFields(
+                formId
+            );
 
 
-    if (fields.length === 0) {
+        if (
+            !fields ||
+            fields.length === 0
+        ) {
+
+            preview.value =
+                form.description ?? "";
+
+            return;
+        }
+
+
+        let previewText = "";
+
+
+        fields.forEach(
+            field => {
+
+                previewText +=
+                    `${field.label}:\n\n`;
+            }
+        );
+
+
+        preview.value =
+            previewText;
+
+
+    } catch (error) {
+
+        console.error(
+            "Error loading Form Preview:",
+            error
+        );
 
         preview.value =
             form.description ?? "";
-
-        return;
     }
-
-
-    let previewText = "";
-
-    fields.forEach(field => {
-
-        previewText +=
-            `${field.label}:\n\n`;
-
-    });
-
-
-    preview.value = previewText;
 }
 
 
@@ -768,272 +1426,609 @@ async function loadFormPreview(formId) {
 // COPY FORM PREVIEW
 // ============================================================
 
-document.getElementById(
-    "copyFormButton"
-).addEventListener(
-    "click",
-    async () => {
+async function copyFormPreview() {
 
-        const preview =
-            document.getElementById("formPreview");
+    const preview =
+        document.getElementById(
+            "formPreview"
+        );
+
+
+    if (!preview.value) {
+
+        return;
+    }
+
+
+    try {
 
         await navigator.clipboard.writeText(
             preview.value
         );
-    }
-);
 
 
-// ============================================================
-// TROUBLESHOOTING TEMPLATE CHANGE
-// ============================================================
-
-document.getElementById(
-    "troubleshootingTemplate"
-).addEventListener(
-    "change",
-    () => {
-
-        loadTemplatePreview();
-    }
-);
-
-
-// ============================================================
-// FORM CHANGE
-// ============================================================
-
-document.getElementById(
-    "form"
-).addEventListener(
-    "change",
-    async (event) => {
-
-        const formId =
-            event.target.value
-                ? Number(event.target.value)
-                : null;
-
-        await loadSelectedForm(formId);
-    }
-);
-
-
-// ============================================================
-// TOOL CHANGE
-// ============================================================
-
-document.getElementById(
-    "tool"
-).addEventListener(
-    "change",
-    async (event) => {
-
-        const toolId =
-            event.target.value
-                ? Number(event.target.value)
-                : null;
-
-        await loadToolKnowledgeBase(toolId);
-    }
-);
-
-
-// ============================================================
-// ISSUE TYPE CHANGE
-// ============================================================
-
-document.getElementById(
-    "issueType"
-).addEventListener(
-    "change",
-    async (event) => {
-
-        const issueTypeId =
-            Number(event.target.value);
-
-        await loadForms(issueTypeId);
-
-        await loadTroubleshootingTemplates(
-            issueTypeId
+        alert(
+            "Form copied to clipboard."
         );
 
-        await loadIssueTypeKnowledgeBase(
-            issueTypeId
+
+    } catch (error) {
+
+        console.error(
+            "Error copying form:",
+            error
         );
     }
-);
+}
 
 
 // ============================================================
-// BACK BUTTON
+// COPY TEMPLATE
 // ============================================================
 
-document.getElementById(
-    "backButton"
-).addEventListener(
-    "click",
-    () => {
+async function copyTemplatePreview() {
 
-        window.location.href =
-            "index.html";
+    const preview =
+        document.getElementById(
+            "troubleshootingTemplatePreview"
+        );
+
+
+    if (!preview.value) {
+
+        return;
     }
-);
+
+
+    try {
+
+        await navigator.clipboard.writeText(
+            preview.value
+        );
+
+
+        alert(
+            "Template copied to clipboard."
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Error copying template:",
+            error
+        );
+    }
+}
+
+
+// ============================================================
+// USED KNOWLEDGE BASE
+// ============================================================
+
+async function useCurrentTemplate() {
+
+    const templateSelect =
+        document.getElementById(
+            "troubleshootingTemplate"
+        );
+
+
+    const templateId =
+        templateSelect.value
+            ? Number(
+                templateSelect.value
+            )
+            : null;
+
+
+    if (!templateId) {
+
+        alert(
+            "Please select a troubleshooting template first."
+        );
+
+        return;
+    }
+
+
+    try {
+
+        const knowledgeBase =
+            await getTroubleshootingTemplateKnowledgeBase(
+                templateId
+            );
+
+
+        if (
+            !knowledgeBase ||
+            knowledgeBase.length === 0
+        ) {
+
+            alert(
+                "This template has no associated Knowledge Base articles."
+            );
+
+            return;
+        }
+
+
+        knowledgeBase.forEach(
+            kb => {
+
+                const alreadyExists =
+                    usedKnowledgeBase.some(
+                        existingKb =>
+                            existingKb.id ===
+                            kb.id
+                    );
+
+
+                if (!alreadyExists) {
+
+                    usedKnowledgeBase.push(
+                        kb
+                    );
+                }
+            }
+        );
+
+
+        renderUsedKnowledgeBase();
+
+
+    } catch (error) {
+
+        console.error(
+            "Error adding template KBs:",
+            error
+        );
+
+
+        alert(
+            "Error loading Knowledge Base articles."
+        );
+    }
+}
+
+
+// ============================================================
+// RENDER USED KNOWLEDGE BASE
+// ============================================================
+
+function renderUsedKnowledgeBase() {
+
+    const container =
+        document.getElementById(
+            "usedKnowledgeBase"
+        );
+
+
+    container.innerHTML = "";
+
+
+    if (
+        usedKnowledgeBase.length === 0
+    ) {
+
+        container.innerHTML =
+            "<p>No Knowledge Base articles selected.</p>";
+
+        return;
+    }
+
+
+    usedKnowledgeBase.forEach(
+        kb => {
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+
+            item.textContent =
+                `${kb.article_number} - ${kb.title}`;
+
+
+            container.appendChild(
+                item
+            );
+        }
+    );
+}
+
+
+// ============================================================
+// TEMPLATE NOT USED
+// ============================================================
+
+function doNotUseTemplate() {
+
+    // Intentionally does nothing.
+
+    // Selecting a template is only for visualization.
+    // KBs are added only when the user explicitly clicks Yes.
+}
+
+
+// ============================================================
+// SETUP EVENT LISTENERS
+// ============================================================
+
+function setupEventListeners() {
+
+
+    // ========================================================
+    // BACK
+    // ========================================================
+
+    document.getElementById(
+        "backButton"
+    ).addEventListener(
+        "click",
+        () => {
+
+            window.location.href =
+                "index.html";
+        }
+    );
+
+
+    // ========================================================
+    // SAVE
+    // ========================================================
+
+    document.getElementById(
+        "saveButton"
+    ).addEventListener(
+        "click",
+        saveTicket
+    );
+
+
+    // ========================================================
+    // COPY FORM
+    // ========================================================
+
+    document.getElementById(
+        "copyFormButton"
+    ).addEventListener(
+        "click",
+        copyFormPreview
+    );
+
+
+    // ========================================================
+    // COPY TEMPLATE
+    // ========================================================
+
+    document.getElementById(
+        "copyTemplateButton"
+    ).addEventListener(
+        "click",
+        copyTemplatePreview
+    );
+
+
+    // ========================================================
+    // TEMPLATE CHANGE
+    // ========================================================
+
+    document.getElementById(
+        "troubleshootingTemplate"
+    ).addEventListener(
+        "change",
+        async () => {
+
+            await loadSelectedTemplate();
+
+        }
+    );
+
+
+    // ========================================================
+    // TEMPLATE USED — YES
+    // ========================================================
+
+    document.getElementById(
+        "useTemplateYes"
+    ).addEventListener(
+        "click",
+        useCurrentTemplate
+    );
+
+
+    // ========================================================
+    // TEMPLATE USED — NO
+    // ========================================================
+
+    document.getElementById(
+        "useTemplateNo"
+    ).addEventListener(
+        "click",
+        doNotUseTemplate
+    );
+
+
+    // ========================================================
+    // FORM CHANGE
+    // ========================================================
+
+    document.getElementById(
+        "form"
+    ).addEventListener(
+        "change",
+        async event => {
+
+            const formId =
+                event.target.value
+                    ? Number(
+                        event.target.value
+                    )
+                    : null;
+
+
+            await loadSelectedForm(
+                formId
+            );
+        }
+    );
+
+
+    // ========================================================
+    // TOOL CHANGE
+    // ========================================================
+
+    document.getElementById(
+        "tool"
+    ).addEventListener(
+        "change",
+        async event => {
+
+            const toolId =
+                event.target.value
+                    ? Number(
+                        event.target.value
+                    )
+                    : null;
+
+
+            await loadToolKnowledgeBase(
+                toolId
+            );
+        }
+    );
+
+
+    // ========================================================
+    // ISSUE TYPE CHANGE
+    // ========================================================
+
+    document.getElementById(
+        "issueType"
+    ).addEventListener(
+        "change",
+        async event => {
+
+            const issueTypeId =
+                event.target.value
+                    ? Number(
+                        event.target.value
+                    )
+                    : null;
+
+
+            // Reload forms
+
+            await loadForms(
+                issueTypeId
+            );
+
+
+            // Reload troubleshooting templates
+
+            await loadTroubleshootingTemplates(
+                issueTypeId
+            );
+
+
+            // Reload Issue Type KB
+
+            await loadIssueTypeKnowledgeBase(
+                issueTypeId
+            );
+        }
+    );
+}
 
 
 // ============================================================
 // SAVE TICKET
 // ============================================================
 
-document.getElementById(
-    "saveButton"
-).addEventListener(
-    "click",
-    async () => {
+async function saveTicket() {
 
-        const ticketData = {
+    const ticketData = {
 
-            ticket_number:
-                document.getElementById(
-                    "ticketNumber"
-                ).value,
+        ticket_number:
+            document.getElementById(
+                "ticketNumber"
+            ).value,
 
-            title:
-                document.getElementById(
-                    "ticketTitle"
-                ).value,
 
-            user_name:
-                document.getElementById(
-                    "userName"
-                ).value,
+        title:
+            document.getElementById(
+                "ticketTitle"
+            ).value,
 
-            user_email:
-                document.getElementById(
-                    "userEmail"
-                ).value,
 
-            user_best_contact_number:
-                document.getElementById(
-                    "userPhone"
-                ).value,
+        user_name:
+            document.getElementById(
+                "userName"
+            ).value,
 
-            user_type:
-                document.getElementById(
-                    "userType"
-                ).value,
 
-            issue_description:
-                document.getElementById(
-                    "issueDescription"
-                ).value,
+        user_email:
+            document.getElementById(
+                "userEmail"
+            ).value,
 
-            troubleshooting_steps:
-                document.getElementById(
-                    "troubleshootingSteps"
-                ).value,
 
-            additional_notes:
-                document.getElementById(
-                    "additionalNotes"
-                ).value,
+        user_best_contact_number:
+            document.getElementById(
+                "userPhone"
+            ).value,
 
-            form_content:
-                document.getElementById(
-                    "formContent"
-                ).value,
 
-            tool_id:
-                Number(
+        user_type:
+            document.getElementById(
+                "userType"
+            ).value,
+
+
+        issue_description:
+            document.getElementById(
+                "issueDescription"
+            ).value,
+
+
+        troubleshooting_steps:
+            document.getElementById(
+                "troubleshootingSteps"
+            ).value,
+
+
+        additional_notes:
+            document.getElementById(
+                "additionalNotes"
+            ).value,
+
+
+        // IMPORTANT:
+        // The backend schema currently uses
+        // form_template_id, not form_id.
+
+        form_template_id:
+            document.getElementById(
+                "form"
+            ).value
+                ? Number(
+                    document.getElementById(
+                        "form"
+                    ).value
+                )
+                : null,
+
+
+        tool_id:
+            document.getElementById(
+                "tool"
+            ).value
+                ? Number(
                     document.getElementById(
                         "tool"
                     ).value
-                ),
+                )
+                : null,
 
-            location_id:
-                Number(
+
+        location_id:
+            document.getElementById(
+                "location"
+            ).value
+                ? Number(
                     document.getElementById(
                         "location"
                     ).value
-                ),
+                )
+                : null,
 
-            priority_id:
-                Number(
+
+        priority_id:
+            document.getElementById(
+                "priority"
+            ).value
+                ? Number(
                     document.getElementById(
                         "priority"
                     ).value
-                ),
+                )
+                : null,
 
-            issue_type_id:
-                Number(
+
+        issue_type_id:
+            document.getElementById(
+                "issueType"
+            ).value
+                ? Number(
                     document.getElementById(
                         "issueType"
                     ).value
-                ),
+                )
+                : null,
 
-            form_id:
-                document.getElementById(
-                    "form"
-                ).value
-                    ? Number(
-                        document.getElementById(
-                            "form"
-                        ).value
-                    )
-                    : null,
 
-            troubleshooting_template_id:
-                document.getElementById(
-                    "troubleshootingTemplate"
-                ).value
-                    ? Number(
-                        document.getElementById(
-                            "troubleshootingTemplate"
-                        ).value
-                    )
-                    : null,
+        troubleshooting_template_id:
+            document.getElementById(
+                "troubleshootingTemplate"
+            ).value
+                ? Number(
+                    document.getElementById(
+                        "troubleshootingTemplate"
+                    ).value
+                )
+                : null,
 
-            status_id:
-                Number(
+
+        status_id:
+            document.getElementById(
+                "status"
+            ).value
+                ? Number(
                     document.getElementById(
                         "status"
                     ).value
-                ),
+                )
+                : null,
 
-            queue_id:
-                Number(
+
+        queue_id:
+            document.getElementById(
+                "queue"
+            ).value
+                ? Number(
                     document.getElementById(
                         "queue"
                     ).value
                 )
-        };
+                : null
+    };
 
 
-        try {
+    try {
 
-            await updateTicket(
-                ticketId,
-                ticketData
-            );
+        await updateTicket(
+            ticketId,
+            ticketData
+        );
 
-            alert(
-                "Ticket updated successfully."
-            );
 
-        } catch (error) {
+        alert(
+            "Ticket updated successfully."
+        );
 
-            console.error(error);
 
-            alert(
-                "Error updating ticket."
-            );
-        }
+    } catch (error) {
+
+        console.error(
+            "Error updating ticket:",
+            error
+        );
+
+
+        alert(
+            "Error updating ticket."
+        );
     }
-);
-
-
-// ============================================================
-// INITIAL LOAD
-// ============================================================
-
-loadTicket();
+}

@@ -48,6 +48,29 @@ async def get_troubleshooting_template_by_id(user : user_dependency, id: int, db
         raise HTTPException(status_code=404, detail="Troubleshooting template not found")
     return troubleshooting_template
 
+@router.get("/{id}/knowledge-base")
+async def get_troubleshooting_template_knowledge_base(
+    user: user_dependency,
+    id: int,
+    db: db_dependency
+):
+    troubleshooting_template = (
+        db.query(TroubleshootingTemplates)
+        .filter(
+            TroubleshootingTemplates.id == id,
+            TroubleshootingTemplates.created_by == user.id
+        )
+        .first()
+    )
+
+    if not troubleshooting_template:
+        raise HTTPException(
+            status_code=404,
+            detail="Troubleshooting template not found"
+        )
+
+    return troubleshooting_template.knowledge_base
+
 @router.post("/", response_model=TroubleshootingTemplateResponse, status_code=201)
 async def create_troubleshooting_template(user : user_dependency, troubleshooting_template: TroubleshootingTemplateCreate, db: db_dependency):
     troubleshooting_template_data = troubleshooting_template.model_dump()

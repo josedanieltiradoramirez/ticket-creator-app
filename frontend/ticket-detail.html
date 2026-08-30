@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -14,51 +14,100 @@
 
     <div class="ticket-page">
 
+        <!-- =========================================================
+             HEADER
+        ========================================================== -->
+
         <div class="ticket-header">
+
             <div>
+
                 <label>Ticket Number</label>
+
                 <input
                     type="text"
                     id="ticketNumber"
                 >
+
                 <input
                     type="text"
                     id="ticketTitle"
                 >
+
             </div>
-            <button id="saveButton">Save Changes</button>
-            <button id="backButton">← Back</button>
-            
+
+            <button
+                type="button"
+                id="saveButton"
+            >
+                Save Changes
+            </button>
+
+            <button
+                type="button"
+                id="backButton"
+            >
+                ← Back
+            </button>
+
         </div>
 
 
-        <!-- USER -->
+        <!-- =========================================================
+             USER INFORMATION
+        ========================================================== -->
 
         <section class="ticket-section">
 
-            <h2>User information</h2>
+            <h2>User Information</h2>
 
             <div class="ticket-grid">
 
                 <div>
+
                     <label>User</label>
-                    <input type="text" id="userName">
+
+                    <input
+                        type="text"
+                        id="userName"
+                    >
+
                 </div>
 
+
                 <div>
+
                     <label>Email</label>
-                    <input type="email" id="userEmail">
+
+                    <input
+                        type="email"
+                        id="userEmail"
+                    >
 
                 </div>
 
+
                 <div>
+
                     <label>Phone</label>
-                    <input type="text" id="userPhone">
+
+                    <input
+                        type="text"
+                        id="userPhone"
+                    >
+
                 </div>
 
+
                 <div>
+
                     <label>User Type</label>
-                    <input type="text" id="userType">
+
+                    <input
+                        type="text"
+                        id="userType"
+                    >
+
                 </div>
 
             </div>
@@ -66,7 +115,9 @@
         </section>
 
 
-        <!-- ISSUE -->
+        <!-- =========================================================
+             ISSUE
+        ========================================================== -->
 
         <section class="ticket-section">
 
@@ -74,61 +125,129 @@
 
             <div class="ticket-grid">
 
+                <!-- ISSUE TYPE -->
+
                 <div>
+
                     <label>Issue Type</label>
+
                     <select id="issueType"></select>
+
                 </div>
+
+
+                <!-- ISSUE TYPE KNOWLEDGE BASE -->
+
                 <div class="knowledge-base-panel">
 
-                <h3>Knowledge Base — Issue Type</h3>
+                    <h3>
+                        Knowledge Base — Issue Type
+                    </h3>
 
-                <div id="issueTypeKnowledgeBase"></div>
+                    <div id="issueTypeKnowledgeBase">
 
-            </div>
+                        <p>
+                            No Knowledge Base articles selected.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- TOOL -->
 
                 <div>
+
                     <label>Tool</label>
+
                     <select id="tool"></select>
+
                 </div>
+
+
+                <!-- TOOL KNOWLEDGE BASE -->
+
                 <div class="knowledge-base-panel">
 
-                    <h3>Knowledge Base — Tool</h3>
+                    <h3>
+                        Knowledge Base — Tool
+                    </h3>
 
-                    <div id="toolKnowledgeBase"></div>
+                    <div id="toolKnowledgeBase">
+
+                        <p>
+                            No Knowledge Base articles selected.
+                        </p>
+
+                    </div>
 
                 </div>
 
+
+                <!-- LOCATION -->
+
                 <div>
+
                     <label>Location</label>
+
                     <select id="location"></select>
+
                 </div>
 
+
+                <!-- PRIORITY -->
+
                 <div>
+
                     <label>Priority</label>
+
                     <select id="priority"></select>
+
                 </div>
 
             </div>
+
+
+            <!-- ISSUE DESCRIPTION -->
 
             <div class="ticket-field">
 
-                <label>Issue Description</label>
+                <label>
+                    Issue Description
+                </label>
 
-                <textarea id="issueDescription"></textarea>
+                <textarea
+                    id="issueDescription"
+                ></textarea>
 
             </div>
 
         </section>
-        
-        <!-- FORM -->
-        <div>
-            <label>Form</label>
-            <select id="form"></select>
-        </div>
+
+
+        <!-- =========================================================
+             FORM
+        ========================================================== -->
 
         <div class="ticket-field">
 
-            <label>Form Preview</label>
+            <label>
+                Form
+            </label>
+
+            <select id="form"></select>
+
+        </div>
+
+
+        <!-- FORM PREVIEW -->
+
+        <div class="ticket-field">
+
+            <label>
+                Form Preview
+            </label>
 
             <textarea
                 id="formPreview"
@@ -137,17 +256,28 @@
 
         </div>
 
+
+        <!-- COPY FORM -->
+
         <div class="ticket-field">
 
-            <button id="copyFormButton">
+            <button
+                type="button"
+                id="copyFormButton"
+            >
                 Copy Form
             </button>
 
         </div>
 
+
+        <!-- FORM CONTENT -->
+
         <div class="ticket-field">
 
-            <label>Form</label>
+            <label>
+                Form Content
+            </label>
 
             <textarea
                 id="formContent"
@@ -156,71 +286,194 @@
 
         </div>
 
-        <!-- TROUBLESHOOTING -->
+
+        <!-- =========================================================
+             TROUBLESHOOTING
+        ========================================================== -->
 
         <div class="ticket-field">
 
-            <label>Template</label>
+            <label>
+                Troubleshooting Template
+            </label>
 
             <select id="troubleshootingTemplate"></select>
 
         </div>
 
+
+        <!-- TEMPLATE PREVIEW -->
+
         <div class="ticket-field">
 
-            <label>Template Preview</label>
+            <label>
+                Template Preview
+            </label>
 
             <textarea
                 id="troubleshootingTemplatePreview"
                 readonly
             ></textarea>
 
-            <button type="button" id="copyTemplateButton">
+            <button
+                type="button"
+                id="copyTemplateButton"
+            >
                 Copy
             </button>
 
         </div>
 
-        <div class="ticket-field">
 
-            <label>Troubleshooting Steps</label>
+        <!-- =========================================================
+             TEMPLATE KNOWLEDGE BASE
+        ========================================================== -->
 
-            <textarea id="troubleshootingSteps"></textarea>
+        <div class="knowledge-base-panel">
+
+            <h3>
+                Knowledge Base — Troubleshooting Template
+            </h3>
+
+            <div id="templateKnowledgeBase">
+
+                <p>
+                    No Knowledge Base articles associated.
+                </p>
+
+            </div>
 
         </div>
 
-         <!-- Additional notes -->
+
+        <!-- =========================================================
+             TEMPLATE USED?
+        ========================================================== -->
 
         <div class="ticket-field">
 
-            <label>Additional Notes</label>
+            <label>
+                Did you use this template?
+            </label>
 
-            <textarea id="additionalNotes"></textarea>
+            <div>
+
+                <button
+                    type="button"
+                    id="useTemplateYes"
+                >
+                    Yes
+                </button>
+
+                <button
+                    type="button"
+                    id="useTemplateNo"
+                >
+                    No
+                </button>
+
+            </div>
 
         </div>
 
 
-        <!-- Configuration -->
+        <!-- =========================================================
+             USED KNOWLEDGE BASE
+        ========================================================== -->
+
+        <div class="knowledge-base-panel">
+
+            <h3>
+                Used Knowledge Base Articles
+            </h3>
+
+            <div id="usedKnowledgeBase">
+
+                <p>
+                    No Knowledge Base articles selected.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================================================
+             TROUBLESHOOTING STEPS
+        ========================================================== -->
+
+        <div class="ticket-field">
+
+            <label>
+                Troubleshooting Steps
+            </label>
+
+            <textarea
+                id="troubleshootingSteps"
+            ></textarea>
+
+        </div>
+
+
+        <!-- =========================================================
+             ADDITIONAL NOTES
+        ========================================================== -->
+
+        <div class="ticket-field">
+
+            <label>
+                Additional Notes
+            </label>
+
+            <textarea
+                id="additionalNotes"
+            ></textarea>
+
+        </div>
+
+
+        <!-- =========================================================
+             CONFIGURATION
+        ========================================================== -->
 
         <section class="ticket-section">
 
-            <h2>Configuration</h2>
+            <h2>
+                Configuration
+            </h2>
 
             <div class="ticket-grid">
 
                 <div>
-                    <label>Status</label>
+
+                    <label>
+                        Status
+                    </label>
+
                     <select id="status"></select>
+
                 </div>
 
+
                 <div>
-                    <label>Queue</label>
+
+                    <label>
+                        Queue
+                    </label>
+
                     <select id="queue"></select>
+
                 </div>
 
+
                 <div>
-                    <label>KB Article</label>
+
+                    <label>
+                        KB Article
+                    </label>
+
                     <p id="knowledgeBase"></p>
+
                 </div>
 
             </div>
@@ -228,27 +481,48 @@
         </section>
 
 
-        <!-- DATES -->
+        <!-- =========================================================
+             TICKET INFORMATION
+        ========================================================== -->
 
         <section class="ticket-section">
 
-            <h2>Información del ticket</h2>
+            <h2>
+                Ticket Information
+            </h2>
 
             <div class="ticket-grid">
 
                 <div>
-                    <label>Created</label>
+
+                    <label>
+                        Created
+                    </label>
+
                     <p id="createdAt"></p>
+
                 </div>
 
+
                 <div>
-                    <label>Updated</label>
+
+                    <label>
+                        Updated
+                    </label>
+
                     <p id="updatedAt"></p>
+
                 </div>
 
+
                 <div>
-                    <label>Closed</label>
+
+                    <label>
+                        Closed
+                    </label>
+
                     <p id="closedAt"></p>
+
                 </div>
 
             </div>
