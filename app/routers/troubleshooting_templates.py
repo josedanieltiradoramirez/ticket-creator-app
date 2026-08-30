@@ -7,6 +7,8 @@ from typing import Annotated
 
 from app.core.database import get_db
 from app.models.issue_types import IssueTypes
+from app.models.knowledge_base import KnowledgeBase
+from app.models.tools import Tools
 from app.models.troubleshooting_templates import TroubleshootingTemplates
 from app.models.users import Users
 from app.routers.auth import get_current_user
@@ -100,9 +102,28 @@ async def edit_troubleshooting_template(user: user_dependency, id: int, troubles
         )
         .all()
     )
+    knowledge_base = (
+        db.query(KnowledgeBase)
+        .filter(
+            KnowledgeBase.id.in_(troubleshooting_template.knowledge_base),
+            KnowledgeBase.created_by == user.id
+        )
+        .all()
+    )
+
+    tools = (
+        db.query(Tools)
+        .filter(
+            Tools.id.in_(troubleshooting_template.tools),
+            Tools.created_by == user.id
+        )
+        .all()
+    )
 
     existing_troubleshooting_template.issue_types = issue_types
-    
+    existing_troubleshooting_template.knowledge_base = knowledge_base
+    existing_troubleshooting_template.tools = tools
+
     db.commit()
     db.refresh(existing_troubleshooting_template)
     return existing_troubleshooting_template

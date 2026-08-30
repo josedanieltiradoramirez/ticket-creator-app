@@ -14,10 +14,13 @@ class TroubleshootingTemplateCreate(BaseModel):
 
 class TroubleshootingTemplateUpdate(BaseModel):
     name: str | None = None
-    steps: str
-    generated_description: str
+    steps: str | None = None
+    generated_description: str | None = None
     is_active: bool
-    issue_types: list[int] = []
+    issue_types: list[int] | None = None
+    knowledge_base: list[int] | None = None
+    tools: list[int] | None = None
+
 
 class TroubleshootingTemplateResponse(BaseModel):
     name: str | None = None
