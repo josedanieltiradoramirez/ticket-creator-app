@@ -94,35 +94,36 @@ async def edit_troubleshooting_template(user: user_dependency, id: int, troubles
     existing_troubleshooting_template.generated_description = troubleshooting_template.generated_description
     existing_troubleshooting_template.is_active = troubleshooting_template.is_active
 
-    issue_types = (
-        db.query(IssueTypes)
-        .filter(
-            IssueTypes.id.in_(troubleshooting_template.issue_types),
-            IssueTypes.created_by == user.id
+    if troubleshooting_template.issue_types is not None:
+        issue_types = (
+            db.query(IssueTypes)
+            .filter(
+                IssueTypes.id.in_(troubleshooting_template.issue_types),
+                IssueTypes.created_by == user.id
+            )
+            .all()
         )
-        .all()
-    )
-    knowledge_base = (
-        db.query(KnowledgeBase)
-        .filter(
-            KnowledgeBase.id.in_(troubleshooting_template.knowledge_base),
-            KnowledgeBase.created_by == user.id
+        existing_troubleshooting_template.issue_types = issue_types
+    if troubleshooting_template.knowledge_base is not None:
+        knowledge_base = (
+            db.query(KnowledgeBase)
+            .filter(
+                KnowledgeBase.id.in_(troubleshooting_template.knowledge_base),
+                KnowledgeBase.created_by == user.id
+            )
+            .all()
         )
-        .all()
-    )
-
-    tools = (
-        db.query(Tools)
-        .filter(
-            Tools.id.in_(troubleshooting_template.tools),
-            Tools.created_by == user.id
+        existing_troubleshooting_template.knowledge_base = knowledge_base
+    if troubleshooting_template.tools is not None:
+        tools = (
+            db.query(Tools)
+            .filter(
+                Tools.id.in_(troubleshooting_template.tools),
+                Tools.created_by == user.id
+            )
+            .all()
         )
-        .all()
-    )
-
-    existing_troubleshooting_template.issue_types = issue_types
-    existing_troubleshooting_template.knowledge_base = knowledge_base
-    existing_troubleshooting_template.tools = tools
+        existing_troubleshooting_template.tools = tools
 
     db.commit()
     db.refresh(existing_troubleshooting_template)

@@ -67,10 +67,14 @@ async def edit_knowledge_base_item(user: user_dependency, id: int, knowledge_bas
     existing_knowledge_base_item = db.query(KnowledgeBase).filter(KnowledgeBase.id == id, KnowledgeBase.created_by == user.id).first()
     if not existing_knowledge_base_item:
         raise HTTPException(status_code=404, detail="Knowledge base item not found")
-    existing_knowledge_base_item.article_number = knowledge_base_item.article_number
-    existing_knowledge_base_item.title = knowledge_base_item.title
-    existing_knowledge_base_item.url = knowledge_base_item.url
-    existing_knowledge_base_item.description = knowledge_base_item.description
+    if knowledge_base_item.article_number is not None:
+        existing_knowledge_base_item.article_number = knowledge_base_item.article_number
+    if knowledge_base_item.title is not None:
+        existing_knowledge_base_item.title = knowledge_base_item.title
+    if knowledge_base_item.url is not None:
+        existing_knowledge_base_item.url = knowledge_base_item.url
+    if knowledge_base_item.description is not None:
+        existing_knowledge_base_item.description = knowledge_base_item.description
 
     if knowledge_base_item.issue_types is not None:
         issue_types = (

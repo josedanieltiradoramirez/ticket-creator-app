@@ -1,6 +1,7 @@
 from sqlalchemy import Column, DateTime, Integer, String, ForeignKey, func, Boolean, Text
 from sqlalchemy.orm import relationship
 from app.core.database import Base
+from app.models.relation_tickets_knowledge_base import RelationTicketsKnowledgeBase
 
 
 class Tickets(Base):

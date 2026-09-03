@@ -58,7 +58,7 @@ class TicketResponse(TicketBase):
 class TicketDetailResponse(TicketResponse):
     tool: Optional[ToolSummary] = None
     issue_type: Optional[IssueTypeSummary] = None
-    knowledge_base: Optional[KnowledgeBaseSummary] = None
+    knowledge_base: list[KnowledgeBaseSummary] = []
     troubleshooting_template: Optional[TroubleshootingTemplateSummary] = None
     form_template: Optional[TicketFormSummary] = None
     queue: Optional[QueueSummary] = None

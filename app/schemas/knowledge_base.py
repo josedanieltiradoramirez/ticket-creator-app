@@ -14,10 +14,10 @@ class KnowledgeBaseItemCreate(BaseModel):
     description: str
 
 class KnowledgeBaseItemUpdate(BaseModel):
-    article_number: str
-    title: str
-    url: str
-    description: str
+    article_number: str | None = None
+    title: str | None = None
+    url: str | None = None
+    description: str | None = None
     tools : list[int] | None = None
     troubleshooting_templates : list[int] | None = None
     issue_types : list[int] | None = None

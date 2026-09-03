@@ -10,9 +10,11 @@ from app.core.database import get_db
 from app.models.tickets import Tickets
 from app.models.users import Users
 from app.routers.auth import get_current_user
+from app.schemas.summaries import KnowledgeBaseSummary
 from app.schemas.tickets import TicketCreate, TicketUpdate, TicketResponse, TicketDetailResponse, TicketListResponse
 from sqlalchemy.orm import selectinload
 from app.models.forms import Forms
+from app.models.knowledge_base import KnowledgeBase
 
 
 router = APIRouter(
@@ -37,7 +39,6 @@ async def get_tickets(
     location_id: Optional[int] = Query(None),
     created_by_id: Optional[int] = Query(None),
     ticket_number: Optional[str] = Query(None),
-    kb_article_id: Optional[int] = Query(None),
     user_name: Optional[str] = Query(None),
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=100),
@@ -68,8 +69,6 @@ async def get_tickets(
         query = query.filter(Tickets.created_by == created_by_id)
     if ticket_number:
         query = query.filter(Tickets.ticket_number.ilike(f"%{ticket_number}%"))
-    if kb_article_id is not None:
-        query = query.filter(Tickets.kb_article_id == kb_article_id)
     if user_name:
         query = query.filter(Tickets.user_name.ilike(f"%{user_name}%"))
 
@@ -95,6 +94,132 @@ async def get_tickets(
         "pages": pages,
     }
 
+@router.get("/{id}/knowledge-base", response_model=List[KnowledgeBaseSummary])
+async def get_ticket_knowledge_base(
+    id: int,
+    user: user_dependency,
+    db: db_dependency,
+):
+    ticket = (
+        db.query(Tickets)
+        .options(
+            selectinload(Tickets.knowledge_base)
+        )
+        .filter(
+            Tickets.id == id,
+            Tickets.created_by == user.id,
+        )
+        .first()
+    )
+
+    if not ticket:
+        raise HTTPException(
+            status_code=404,
+            detail="Ticket not found",
+        )
+
+    return ticket.knowledge_base
+
+@router.post("/{id}/knowledge-base/{knowledge_base_id}")
+async def add_ticket_knowledge_base(
+    id: int,
+    knowledge_base_id: int,
+    user: user_dependency,
+    db: db_dependency,
+):
+    ticket = (
+        db.query(Tickets)
+        .filter(
+            Tickets.id == id,
+            Tickets.created_by == user.id,
+        )
+        .first()
+    )
+
+    if not ticket:
+        raise HTTPException(
+            status_code=404,
+            detail="Ticket not found",
+        )
+
+    knowledge_base = (
+        db.query(KnowledgeBase)
+        .filter(
+            KnowledgeBase.id == knowledge_base_id,
+            KnowledgeBase.created_by == user.id,
+        )
+        .first()
+    )
+
+    if not knowledge_base:
+        raise HTTPException(
+            status_code=404,
+            detail="Knowledge base article not found",
+        )
+
+    if knowledge_base in ticket.knowledge_base:
+        return {
+            "message": "Knowledge base article already associated with ticket"
+        }
+
+    ticket.knowledge_base.append(knowledge_base)
+
+    db.commit()
+
+    return {
+        "message": "Knowledge base article added to ticket"
+    }
+
+@router.delete("/{id}/knowledge-base/{knowledge_base_id}")
+async def remove_ticket_knowledge_base(
+    id: int,
+    knowledge_base_id: int,
+    user: user_dependency,
+    db: db_dependency,
+):
+    ticket = (
+        db.query(Tickets)
+        .filter(
+            Tickets.id == id,
+            Tickets.created_by == user.id,
+        )
+        .first()
+    )
+
+    if not ticket:
+        raise HTTPException(
+            status_code=404,
+            detail="Ticket not found",
+        )
+
+    knowledge_base = (
+        db.query(KnowledgeBase)
+        .filter(
+            KnowledgeBase.id == knowledge_base_id,
+            KnowledgeBase.created_by == user.id,
+        )
+        .first()
+    )
+
+    if not knowledge_base:
+        raise HTTPException(
+            status_code=404,
+            detail="Knowledge base article not found",
+        )
+
+    if knowledge_base not in ticket.knowledge_base:
+        raise HTTPException(
+            status_code=404,
+            detail="Knowledge base article is not associated with this ticket",
+        )
+
+    ticket.knowledge_base.remove(knowledge_base)
+
+    db.commit()
+
+    return {
+        "message": "Knowledge base article removed from ticket"
+    } 
 
 @router.get("/{id}", response_model=TicketDetailResponse)
 async def get_ticket_by_id(
