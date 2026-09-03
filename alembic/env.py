@@ -26,6 +26,8 @@ from app.models.locations import Locations
 from app.models.priorities import Priorities
 from app.models.queues import Queues
 from app.models.warehouse_management_systems import WarehouseManagementSystems
+from app.models.relation_issue_types_knowledge_base import RelationIssueTypesKnowledgeBase
+from app.models.relation_tickets_knowledge_base import RelationTicketsKnowledgeBase
 
 
 load_dotenv()

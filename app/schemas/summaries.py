@@ -91,3 +91,12 @@ class PrioritySummary(BaseModel):
     class Config:
         orm_mode = True
 
+class TicketSummary(BaseModel):
+    id: int
+    ticket_number: str | None = None
+    title: str | None = None
+    user_name: str | None = None
+    issue_description: str | None = None
+
+    class Config:
+            orm_mode = True

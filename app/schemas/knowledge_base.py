@@ -3,7 +3,8 @@ from pydantic import BaseModel, ConfigDict
 from app.schemas.summaries import (
     ToolSummary,
     TroubleshootingTemplateSummary,
-    IssueTypeSummary
+    IssueTypeSummary,
+    TicketSummary
 )
 
 class KnowledgeBaseItemCreate(BaseModel):
@@ -17,6 +18,10 @@ class KnowledgeBaseItemUpdate(BaseModel):
     title: str
     url: str
     description: str
+    tools : list[int] | None = None
+    troubleshooting_templates : list[int] | None = None
+    issue_types : list[int] | None = None
+    tickets : list[int] | None = None
 
 class KnowledgeBaseItemResponse(BaseModel):
     id: int
@@ -31,3 +36,4 @@ class KnowledgeBaseDetailResponse(KnowledgeBaseItemResponse):
     tools: list[ToolSummary]
     troubleshooting_templates: list[TroubleshootingTemplateSummary]
     issue_types: list[IssueTypeSummary]
+    tickets: list[TicketSummary]

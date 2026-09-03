@@ -35,7 +35,6 @@ class Tickets(Base):
     generated_status_time_entry = Column(Text, nullable=True)
 
     issue_type_id = Column(Integer, ForeignKey("issue_types.id"), nullable=True)
-    kb_article_id = Column(Integer, ForeignKey("knowledge_base.id"), nullable=True)
 
     ticket_body = Column(Text, nullable=True)
     additional_notes = Column(Text, nullable=True)
@@ -92,7 +91,7 @@ class Tickets(Base):
     )
 
     knowledge_base = relationship(
-        "KnowledgeBase",
+        "KnowledgeBase", secondary="relation_tickets_knowledge_base",
         back_populates="tickets"
     )
 
