@@ -4,7 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Ticket Detail</title>
 
     <link rel="stylesheet" href="css/style.css">
@@ -12,101 +11,251 @@
 
 <body>
 
-    <div class="ticket-page">
+<div class="ticket-page">
 
-        <!-- =========================================================
+    <!-- =====================================================
+         MAIN TICKET
+         ===================================================== -->
+
+    <main class="ticket-main">
+
+        <!-- =================================================
              HEADER
-        ========================================================== -->
+             ================================================= -->
 
-        <div class="ticket-header">
+        <header class="ticket-header">
 
-            <div>
+            <div class="ticket-header-left">
 
-                <label>Ticket Number</label>
+                <div class="header-field">
 
-                <input
-                    type="text"
-                    id="ticketNumber"
-                >
+                    <label for="ticketNumber">
+                        Ticket Number
+                    </label>
 
-                <input
-                    type="text"
-                    id="ticketTitle"
-                >
+                    <input
+                        type="text"
+                        id="ticketNumber"
+                    >
+
+                </div>
+
+
+                <div class="header-field ticket-title-field">
+
+                    <label for="ticketTitle">
+                        Ticket Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="ticketTitle"
+                    >
+
+                </div>
 
             </div>
 
-            <button
-                type="button"
-                id="saveButton"
-            >
-                Save Changes
-            </button>
 
-            <button
-                type="button"
-                id="backButton"
-            >
-                ← Back
-            </button>
+            <div class="ticket-header-actions">
 
-        </div>
+                <button
+                    type="button"
+                    id="saveButton"
+                    class="button button-primary"
+                >
+                    Save Changes
+                </button>
 
 
-        <!-- =========================================================
+                <button
+                    type="button"
+                    id="backButton"
+                    class="button button-secondary"
+                >
+                    ← Back
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <!-- =================================================
              USER INFORMATION
-        ========================================================== -->
+             ================================================= -->
 
-        <section class="ticket-section">
+        <section class="ticket-section user-information-section">
 
-            <h2>User Information</h2>
+            <div class="section-title">
+                User Information
+            </div>
 
-            <div class="ticket-grid">
 
-                <div>
+            <div class="user-information-columns">
 
-                    <label>User</label>
+                <!-- =========================================
+                     COLUMN 1
+                     INITIAL INFORMATION
+                     ========================================= -->
 
-                    <input
-                        type="text"
-                        id="userName"
-                    >
+                <div class="user-information-column">
+
+                    <div class="user-column-title">
+                        Initial Information
+                    </div>
+
+
+                    <div class="ticket-field">
+
+                        <label for="priority">
+                            Ticket Priority
+                        </label>
+
+                        <select id="priority"></select>
+
+                    </div>
+
+
+                    <div class="ticket-field">
+
+                        <label for="userType">
+                            Customer / Employee / Contractor
+                        </label>
+
+                        <input
+                            type="text"
+                            id="userType"
+                        >
+
+                    </div>
+
+
+                    <div class="ticket-field">
+
+                        <label for="userName">
+                            Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="userName"
+                        >
+
+                    </div>
+
+
+                    <div class="ticket-field">
+
+                        <label for="location">
+                            Affected Location
+                        </label>
+
+                        <select id="location"></select>
+
+                    </div>
+
+
+                    <div class="ticket-field">
+
+                        <label for="userPhone">
+                            Primary Contact
+                        </label>
+
+                        <input
+                            type="text"
+                            id="userPhone"
+                        >
+
+                    </div>
 
                 </div>
 
 
-                <div>
+                <!-- =========================================
+                     COLUMN 2
+                     ADDITIONAL INFORMATION
+                     ========================================= -->
 
-                    <label>Email</label>
+                <div class="user-information-column secondary-information">
 
-                    <input
-                        type="email"
-                        id="userEmail"
-                    >
-
-                </div>
-
-
-                <div>
-
-                    <label>Phone</label>
-
-                    <input
-                        type="text"
-                        id="userPhone"
-                    >
-
-                </div>
+                    <div class="user-column-title">
+                        Additional Information
+                    </div>
 
 
-                <div>
+                    <div class="ticket-field">
 
-                    <label>User Type</label>
+                        <label>
+                            Secondary Contact
+                        </label>
 
-                    <input
-                        type="text"
-                        id="userType"
-                    >
+                        <input
+                            type="text"
+                            disabled
+                            placeholder="Not available yet"
+                        >
+
+                    </div>
+
+
+                    <div class="ticket-field">
+
+                        <label>
+                            Preferred Contact Method
+                        </label>
+
+                        <input
+                            type="text"
+                            disabled
+                            placeholder="Not available yet"
+                        >
+
+                    </div>
+
+
+                    <div class="ticket-field">
+
+                        <label for="userEmail">
+                            Email Address
+                        </label>
+
+                        <input
+                            type="email"
+                            id="userEmail"
+                        >
+
+                    </div>
+
+
+                    <div class="ticket-field">
+
+                        <label>
+                            Best Contact Hours
+                        </label>
+
+                        <input
+                            type="text"
+                            disabled
+                            placeholder="Not available yet"
+                        >
+
+                    </div>
+
+
+                    <div class="ticket-field">
+
+                        <label>
+                            Device Name
+                        </label>
+
+                        <input
+                            type="text"
+                            disabled
+                            placeholder="Not available yet"
+                        >
+
+                    </div>
 
                 </div>
 
@@ -115,110 +264,284 @@
         </section>
 
 
-        <!-- =========================================================
+        <!-- =================================================
              ISSUE
-        ========================================================== -->
+             ================================================= -->
 
         <section class="ticket-section">
 
-            <h2>Issue</h2>
-
-            <div class="ticket-grid">
-
-                <!-- ISSUE TYPE -->
-
-                <div>
-
-                    <label>Issue Type</label>
-
-                    <select id="issueType"></select>
-
-                </div>
+            <div class="section-title">
+                Issue
+            </div>
 
 
-                <!-- ISSUE TYPE KNOWLEDGE BASE -->
+            <div class="ticket-field full-width">
 
-                <div class="knowledge-base-panel">
+                <label for="shortIssue">
+                    Short Issue Description
+                </label>
 
-                    <h3>
-                        Knowledge Base — Issue Type
-                    </h3>
+                <input
+                    type="text"
+                    id="shortIssue"
+                >
 
-                    <div id="issueTypeKnowledgeBase">
-
-                        <p>
-                            No Knowledge Base articles selected.
-                        </p>
-
-                    </div>
-
-                </div>
+            </div>
 
 
-                <!-- TOOL -->
+            <div class="ticket-field full-width issue-description-field">
 
-                <div>
+                <label for="issueDescription">
+                    Detailed Issue Description
+                </label>
 
-                    <label>Tool</label>
+                <textarea
+                    id="issueDescription"
+                    class="large-textarea"
+                ></textarea>
+
+            </div>
+
+
+            <div class="issue-select-grid">
+
+                <div class="ticket-field">
+
+                    <label for="tool">
+                        Tool
+                    </label>
 
                     <select id="tool"></select>
 
                 </div>
 
 
-                <!-- TOOL KNOWLEDGE BASE -->
+                <div class="ticket-field">
 
-                <div class="knowledge-base-panel">
+                    <label for="issueType">
+                        Issue Type
+                    </label>
 
-                    <h3>
-                        Knowledge Base — Tool
-                    </h3>
-
-                    <div id="toolKnowledgeBase">
-
-                        <p>
-                            No Knowledge Base articles selected.
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-                <!-- LOCATION -->
-
-                <div>
-
-                    <label>Location</label>
-
-                    <select id="location"></select>
-
-                </div>
-
-
-                <!-- PRIORITY -->
-
-                <div>
-
-                    <label>Priority</label>
-
-                    <select id="priority"></select>
+                    <select id="issueType"></select>
 
                 </div>
 
             </div>
 
+        </section>
 
-            <!-- ISSUE DESCRIPTION -->
+
+        <!-- =================================================
+             INFORMATION
+             ================================================= -->
+
+        <section class="ticket-section">
+
+            <div class="section-title">
+                Information
+            </div>
+
+
+            <div class="component-grid">
+
+                <!-- =========================================
+                    COLUMN 1
+                    FORM CONTENT
+                    ========================================= -->
+
+                <div class="component-card">
+
+                    <div class="component-card-title">
+                        Form
+                    </div>
+
+
+                    <label for="formContent">
+                        Form
+                    </label>
+
+                    <textarea
+                        id="formContent"
+                        class="component-content"
+                        placeholder="Paste and complete the form here..."
+                    ></textarea>
+
+                </div>
+
+
+                <!-- =========================================
+                    COLUMN 2
+                    FORM TEMPLATE
+                    ========================================= -->
+
+                <div class="component-card">
+
+                    <div class="component-card-title">
+                        Form Template
+                    </div>
+
+
+                    <label for="form">
+                        Form Template
+                    </label>
+
+                    <select id="form"></select>
+
+
+                    <label for="formPreview">
+                        Template Preview
+                    </label>
+
+                    <textarea
+                        id="formPreview"
+                        class="component-preview"
+                        readonly
+                    ></textarea>
+
+
+                    <button
+                        type="button"
+                        id="copyFormButton"
+                        class="button button-secondary"
+                    >
+                        Copy Form
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- =================================================
+             TROUBLESHOOTING
+             ================================================= -->
+
+        <section class="ticket-section">
+
+            <div class="section-title">
+                Troubleshooting
+            </div>
+
+
+            <div class="component-grid">
+
+                <!-- =========================================
+                    COLUMN 1
+                    TROUBLESHOOTING FORM
+                    ========================================= -->
+
+                <div class="component-card">
+
+                    <div class="component-card-title">
+                        Troubleshooting Form
+                    </div>
+
+
+                    <label for="troubleshootingSteps">
+                        Troubleshooting Steps
+                    </label>
+
+                    <textarea
+                        id="troubleshootingSteps"
+                        class="component-content troubleshooting-content"
+                    ></textarea>
+
+                </div>
+
+
+                <!-- =========================================
+                    COLUMN 2
+                    TROUBLESHOOTING TEMPLATE
+                    ========================================= -->
+
+                <div class="component-card">
+
+                    <div class="component-card-title">
+                        Troubleshooting Template
+                    </div>
+
+
+                    <label for="troubleshootingTemplate">
+                        Troubleshooting Template
+                    </label>
+
+                    <select id="troubleshootingTemplate"></select>
+
+
+                    <label for="troubleshootingTemplatePreview">
+                        Template Preview
+                    </label>
+
+                    <textarea
+                        id="troubleshootingTemplatePreview"
+                        class="component-preview"
+                        readonly
+                    ></textarea>
+
+
+                    <button
+                        type="button"
+                        id="copyTemplateButton"
+                        class="button button-secondary"
+                    >
+                        Copy Troubleshooting
+                    </button>
+
+
+                    <div class="template-used">
+
+                        <div class="template-used-title">
+                            Did you use this template?
+                        </div>
+
+
+                        <div class="button-group">
+
+                            <button
+                                type="button"
+                                id="useTemplateYes"
+                                class="button button-primary"
+                            >
+                                Yes
+                            </button>
+
+
+                            <button
+                                type="button"
+                                id="useTemplateNo"
+                                class="button button-secondary"
+                            >
+                                No
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             ADDITIONAL NOTES
+             ================================================= -->
+
+        <section class="ticket-section">
+
+            <div class="section-title">
+                Additional Notes
+            </div>
+
 
             <div class="ticket-field">
 
-                <label>
-                    Issue Description
-                </label>
-
                 <textarea
-                    id="issueDescription"
+                    id="additionalNotes"
+                    class="large-textarea notes-textarea"
                 ></textarea>
 
             </div>
@@ -226,302 +549,54 @@
         </section>
 
 
-        <!-- =========================================================
-             FORM
-        ========================================================== -->
-
-        <div class="ticket-field">
-
-            <label>
-                Form
-            </label>
-
-            <select id="form"></select>
-
-        </div>
-
-
-        <!-- FORM PREVIEW -->
-
-        <div class="ticket-field">
-
-            <label>
-                Form Preview
-            </label>
-
-            <textarea
-                id="formPreview"
-                readonly
-            ></textarea>
-
-        </div>
-
-
-        <!-- COPY FORM -->
-
-        <div class="ticket-field">
-
-            <button
-                type="button"
-                id="copyFormButton"
-            >
-                Copy Form
-            </button>
-
-        </div>
-
-
-        <!-- FORM CONTENT -->
-
-        <div class="ticket-field">
-
-            <label>
-                Form Content
-            </label>
-
-            <textarea
-                id="formContent"
-                placeholder="Paste and complete the form here..."
-            ></textarea>
-
-        </div>
-
-
-        <!-- =========================================================
-             TROUBLESHOOTING
-        ========================================================== -->
-
-        <div class="ticket-field">
-
-            <label>
-                Troubleshooting Template
-            </label>
-
-            <select id="troubleshootingTemplate"></select>
-
-        </div>
-
-
-        <!-- TEMPLATE PREVIEW -->
-
-        <div class="ticket-field">
-
-            <label>
-                Template Preview
-            </label>
-
-            <textarea
-                id="troubleshootingTemplatePreview"
-                readonly
-            ></textarea>
-
-            <button
-                type="button"
-                id="copyTemplateButton"
-            >
-                Copy
-            </button>
-
-        </div>
-
-
-        <!-- =========================================================
-             TEMPLATE KNOWLEDGE BASE
-        ========================================================== -->
-
-        <div class="knowledge-base-panel">
-
-            <h3>
-                Knowledge Base — Troubleshooting Template
-            </h3>
-
-            <div id="templateKnowledgeBase">
-
-                <p>
-                    No Knowledge Base articles associated.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <!-- =========================================================
-             TEMPLATE USED?
-        ========================================================== -->
-
-        <div class="ticket-field">
-
-            <label>
-                Did you use this template?
-            </label>
-
-            <div>
-
-                <button
-                    type="button"
-                    id="useTemplateYes"
-                >
-                    Yes
-                </button>
-
-                <button
-                    type="button"
-                    id="useTemplateNo"
-                >
-                    No
-                </button>
-
-            </div>
-
-        </div>
-
-
-        <!-- =========================================================
-             USED KNOWLEDGE BASE
-        ========================================================== -->
-
-        <div class="knowledge-base-panel">
-
-            <h3>
-                Used Knowledge Base Articles
-            </h3>
-
-            <div id="usedKnowledgeBase">
-
-                <p>
-                    No Knowledge Base articles selected.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <!-- =========================================================
-             TROUBLESHOOTING STEPS
-        ========================================================== -->
-
-        <div class="ticket-field">
-
-            <label>
-                Troubleshooting Steps
-            </label>
-
-            <textarea
-                id="troubleshootingSteps"
-            ></textarea>
-
-        </div>
-
-
-        <!-- =========================================================
-             ADDITIONAL NOTES
-        ========================================================== -->
-
-        <div class="ticket-field">
-
-            <label>
-                Additional Notes
-            </label>
-
-            <textarea
-                id="additionalNotes"
-            ></textarea>
-
-        </div>
-
-
-        <!-- =========================================================
-             CONFIGURATION
-        ========================================================== -->
-
-        <section class="ticket-section">
-
-            <h2>
-                Configuration
-            </h2>
-
-            <div class="ticket-grid">
-
-                <div>
-
-                    <label>
-                        Status
-                    </label>
-
-                    <select id="status"></select>
-
-                </div>
-
-
-                <div>
-
-                    <label>
-                        Queue
-                    </label>
-
-                    <select id="queue"></select>
-
-                </div>
-
-
-                <div>
-
-                    <label>
-                        KB Article
-                    </label>
-
-                    <p id="knowledgeBase"></p>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- =========================================================
+        <!-- =================================================
              TICKET INFORMATION
-        ========================================================== -->
+             ================================================= -->
 
-        <section class="ticket-section">
+        <section class="ticket-section ticket-meta-section">
 
-            <h2>
+            <div class="section-title">
                 Ticket Information
-            </h2>
+            </div>
 
-            <div class="ticket-grid">
+
+            <div class="ticket-meta-grid">
 
                 <div>
 
-                    <label>
+                    <span class="meta-label">
                         Created
-                    </label>
+                    </span>
 
-                    <p id="createdAt"></p>
+                    <p id="createdAt">
+                        -
+                    </p>
 
                 </div>
 
 
                 <div>
 
-                    <label>
+                    <span class="meta-label">
                         Updated
-                    </label>
+                    </span>
 
-                    <p id="updatedAt"></p>
+                    <p id="updatedAt">
+                        -
+                    </p>
 
                 </div>
 
 
                 <div>
 
-                    <label>
+                    <span class="meta-label">
                         Closed
-                    </label>
+                    </span>
 
-                    <p id="closedAt"></p>
+                    <p id="closedAt">
+                        -
+                    </p>
 
                 </div>
 
@@ -529,12 +604,174 @@
 
         </section>
 
-    </div>
+    </main>
 
 
-    <script src="js/api.js"></script>
-    <script src="js/ticket-detail.js"></script>
+    <!-- =====================================================
+         RIGHT SIDEBAR
+         ===================================================== -->
+
+    <aside class="ticket-sidebar">
+
+        <!-- STATUS -->
+
+        <div class="sidebar-field">
+
+            <label for="status">
+                Status
+            </label>
+
+            <select id="status"></select>
+
+        </div>
+
+
+        <!-- =================================================
+             KB SUMMARY
+             ================================================= -->
+
+        <div class="sidebar-card kb-summary-card">
+
+            <div class="sidebar-card-title">
+                KB Summary
+            </div>
+
+
+            <!-- Issue Type -->
+
+            <div class="kb-summary-section">
+
+                <div class="kb-summary-label">
+                    Issue Type
+                </div>
+
+                <div id="issueTypeKnowledgeBase">
+
+                    <p>
+                        No Knowledge Base articles associated.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- Tool -->
+
+            <div class="kb-summary-section">
+
+                <div class="kb-summary-label">
+                    Tool
+                </div>
+
+                <div id="toolKnowledgeBase">
+
+                    <p>
+                        No Knowledge Base articles associated.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- Troubleshooting Template -->
+
+            <div class="kb-summary-section">
+
+                <div class="kb-summary-label">
+                    Troubleshooting Template
+                </div>
+
+                <div id="templateKnowledgeBase">
+
+                    <p>
+                        No Knowledge Base articles associated.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- Used Knowledge Base -->
+
+            <div class="kb-summary-section used-kb-summary">
+
+                <div class="kb-summary-label">
+                    Used Knowledge Base
+                </div>
+
+                <div id="usedKnowledgeBase">
+
+                    <p>
+                        No Knowledge Base articles selected.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- QUEUE -->
+
+        <div class="sidebar-field">
+
+            <label for="queue">
+                Queue
+            </label>
+
+            <select id="queue"></select>
+
+        </div>
+
+
+        <!-- TICKET PREVIEW -->
+
+        <div class="sidebar-card sidebar-preview-card">
+
+            <div class="sidebar-card-title">
+                Ticket Preview
+            </div>
+
+
+            <div
+                id="ticketPreview"
+                class="sidebar-preview"
+            >
+                -
+            </div>
+
+        </div>
+
+
+        <!-- TIME ENTRY PREVIEW -->
+
+        <div class="sidebar-card sidebar-preview-card">
+
+            <div class="sidebar-card-title">
+                Time Entry Preview
+            </div>
+
+
+            <div
+                id="timeEntryPreview"
+                class="sidebar-preview"
+            >
+                -
+            </div>
+
+        </div>
+
+    </aside>
+
+</div>
+
+
+<script src="js/api.js"></script>
+<script src="js/ticket-detail.js"></script>
 
 </body>
-
 </html>

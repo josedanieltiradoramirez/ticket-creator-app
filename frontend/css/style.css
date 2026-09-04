@@ -1,98 +1,577 @@
-#ticketsTable {
-    width: 100%;
-    border-collapse: collapse;
-}
+/* ============================================================
+   GLOBAL
+   ============================================================ */
 
-#ticketsTable th,
-#ticketsTable td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-}
-
-#ticketsTable th {
-    font-weight: 600;
-}
-
-.ticket-row {
-    cursor: pointer;
-}
-
-.ticket-row:hover {
-    background-color: #f5f5f5;
-}
-
-
-.ticket-page {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 30px;
-}
-
-.ticket-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-}
-
-.ticket-header h1 {
-    margin: 0;
-}
-
-.ticket-header p {
-    margin-top: 5px;
-}
-
-.ticket-header button {
-    padding: 10px 16px;
-    cursor: pointer;
-}
-
-
-.ticket-section {
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 20px;
-}
-
-.ticket-section h2 {
-    margin-top: 0;
-    margin-bottom: 20px;
-}
-
-
-.ticket-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-}
-
-
-.ticket-grid label,
-.ticket-field label {
-    display: block;
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 5px;
-}
-
-
-.ticket-grid p,
-.ticket-field p {
-    margin: 0;
-    min-height: 20px;
-}
-
-
-.ticket-field {
-    margin-top: 20px;
+* {
+    box-sizing: border-box;
 }
 
 body {
     margin: 0;
-    background-color: #f5f5f5;
-    font-family: Arial, sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f4f5f7;
+    color: #202124;
+}
+
+
+/* ============================================================
+   PAGE LAYOUT
+   ============================================================ */
+
+.ticket-page {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    min-height: 100vh;
+}
+
+
+/* ============================================================
+   MAIN
+   ============================================================ */
+
+.ticket-main {
+    width: 100%;
+    max-width: 1050px;
+    margin: 0 auto;
+    padding: 28px 38px 60px;
+}
+
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+
+.ticket-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 30px;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #d9dce1;
+}
+
+.ticket-header-left {
+    display: flex;
+    gap: 24px;
+    flex: 1;
+}
+
+.header-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.ticket-title-field {
+    flex: 1;
+}
+
+.ticket-header-actions {
+    display: flex;
+    gap: 10px;
+}
+
+
+/* ============================================================
+   SECTIONS
+   ============================================================ */
+
+.ticket-section {
+    margin-bottom: 26px;
+    padding: 22px;
+    background: #ffffff;
+    border: 1px solid #dfe2e6;
+    border-radius: 10px;
+}
+
+.section-title {
+    margin-bottom: 20px;
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #3c4043;
+}
+
+
+/* ============================================================
+   FIELDS
+   ============================================================ */
+
+.ticket-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.issue-description-field {
+    margin-top: 18px;
+}
+
+.issue-select-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-top: 18px;
+}
+
+label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #5f6368;
+}
+
+
+/* ============================================================
+   INPUTS
+   ============================================================ */
+
+input,
+select,
+textarea {
+    width: 100%;
+    font-family: inherit;
+    font-size: 14px;
+    color: #202124;
+    background: #ffffff;
+    border: 1px solid #c9cdd2;
+    border-radius: 6px;
+    outline: none;
+    transition:
+        border-color 0.15s,
+        box-shadow 0.15s;
+}
+
+input,
+select {
+    height: 40px;
+    padding: 0 11px;
+}
+
+textarea {
+    padding: 11px;
+    resize: vertical;
+    min-height: 100px;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: #4f6bed;
+    box-shadow: 0 0 0 2px rgba(79, 107, 237, 0.12);
+}
+
+input:disabled {
+    background: #f1f3f4;
+    color: #8a8f94;
+    cursor: not-allowed;
+}
+
+.large-textarea {
+    min-height: 145px;
+}
+
+.notes-textarea {
+    min-height: 170px;
+}
+
+
+/* ============================================================
+   USER INFORMATION
+   ============================================================ */
+
+.user-information-columns {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 24px;
+    width: 100%;
+}
+
+.user-information-column {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+}
+
+.user-information-column + .user-information-column {
+    padding-left: 24px;
+    border-left: 1px solid #e1e4e8;
+}
+
+.user-column-title {
+    margin-bottom: 2px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #777c82;
+}
+
+.secondary-information {
+    opacity: 0.92;
+}
+
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
+.button {
+    border: none;
+    border-radius: 6px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        background 0.15s,
+        transform 0.05s;
+}
+
+.button:active {
+    transform: translateY(1px);
+}
+
+.button-primary {
+    background: #2f5bea;
+    color: #ffffff;
+}
+
+.button-primary:hover {
+    background: #244dcc;
+}
+
+.button-secondary {
+    background: #e9ebef;
+    color: #30343a;
+}
+
+.button-secondary:hover {
+    background: #dfe2e7;
+}
+
+.button-group {
+    display: flex;
+    gap: 8px;
+}
+
+
+/* ============================================================
+   COMPONENT GRID
+   ============================================================ */
+
+.component-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(260px, 1fr);
+    gap: 18px;
+}
+
+.component-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 18px;
+    background: #fafbfc;
+    border: 1px solid #dfe2e6;
+    border-radius: 9px;
+}
+
+.component-card-title {
+    margin-bottom: 4px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #30343a;
+}
+
+.component-preview {
+    min-height: 150px;
+    background: #f1f3f4;
+    color: #444444;
+}
+
+.component-content {
+    min-height: 150px;
+}
+
+.troubleshooting-content {
+    min-height: 280px;
+}
+
+
+/* ============================================================
+   TROUBLESHOOTING
+   ============================================================ */
+
+.template-used {
+    margin-top: 8px;
+    padding-top: 14px;
+    border-top: 1px solid #e0e3e7;
+}
+
+.template-used-title {
+    margin-bottom: 9px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #5f6368;
+}
+
+
+/* ============================================================
+   RIGHT SIDEBAR
+   ============================================================ */
+
+.ticket-sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 28px 24px;
+    background: #ffffff;
+    border-left: 1px solid #dfe2e6;
+}
+
+.sidebar-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 20px;
+}
+
+.sidebar-card {
+    margin-bottom: 20px;
+    padding: 17px;
+    background: #f7f8fa;
+    border: 1px solid #dfe2e6;
+    border-radius: 8px;
+}
+
+.sidebar-card-title {
+    margin-bottom: 14px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #555a60;
+}
+
+
+/* ============================================================
+   KB SUMMARY
+   ============================================================ */
+
+.kb-summary-section {
+    padding: 11px 0;
+    border-bottom: 1px solid #e2e5e8;
+}
+
+.kb-summary-section:first-of-type {
+    padding-top: 0;
+}
+
+.kb-summary-section:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.kb-summary-label {
+    margin-bottom: 7px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #777c82;
+}
+
+.kb-summary-section p {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.45;
+    color: #888d92;
+}
+
+.kb-summary-section > div:not(.kb-summary-label) > div {
+    padding: 4px 0;
+    font-size: 12px;
+    line-height: 1.4;
+    color: #444a50;
+}
+
+.used-kb-summary {
+    margin-top: 2px;
+}
+
+
+/* ============================================================
+   USED KB
+   ============================================================ */
+
+#usedKnowledgeBase > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 0;
+    border-bottom: 1px solid #e3e5e8;
+}
+
+#usedKnowledgeBase > div:last-child {
+    border-bottom: none;
+}
+
+#usedKnowledgeBase button {
+    flex-shrink: 0;
+    padding: 4px 8px;
+    border: none;
+    border-radius: 5px;
+    background: #e9ebef;
+    color: #4a4e53;
+    font-size: 10px;
+    cursor: pointer;
+}
+
+#usedKnowledgeBase button:hover {
+    background: #dfe2e6;
+}
+
+
+/* ============================================================
+   SIDEBAR PREVIEWS
+   ============================================================ */
+
+.sidebar-preview-card {
+    min-height: 190px;
+}
+
+.sidebar-preview {
+    min-height: 130px;
+    padding: 10px;
+    background: #ffffff;
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
+    font-size: 13px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    color: #555555;
+}
+
+
+/* ============================================================
+   TICKET INFORMATION
+   ============================================================ */
+
+.ticket-meta-section {
+    background: #fafbfc;
+}
+
+.ticket-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    width: 100%;
+}
+
+.meta-label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #7a7f85;
+}
+
+.ticket-meta-grid p {
+    margin: 0;
+    font-size: 13px;
+    color: #444444;
+}
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 1050px) {
+
+    .ticket-page {
+        grid-template-columns: minmax(0, 1fr) 310px;
+    }
+
+    .ticket-main {
+        padding-left: 22px;
+        padding-right: 22px;
+    }
+
+    .component-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+
+@media (max-width: 800px) {
+
+    .ticket-page {
+        display: block;
+    }
+
+
+    .ticket-sidebar {
+        position: relative;
+        height: auto;
+        border-left: none;
+        border-top: 1px solid #dfe2e6;
+    }
+
+
+    .ticket-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+
+    .ticket-header-left {
+        flex-direction: column;
+    }
+
+
+    .ticket-header-actions {
+        justify-content: flex-end;
+    }
+
+
+    .issue-select-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    /* User Information becomes one column only on mobile */
+
+    .user-information-columns {
+        grid-template-columns: 1fr;
+    }
+
+
+    .user-information-column + .user-information-column {
+        padding-left: 0;
+        padding-top: 18px;
+        border-left: none;
+        border-top: 1px solid #e1e4e8;
+    }
+
+
+    .ticket-meta-grid {
+        grid-template-columns: 1fr;
+    }
+
 }
