@@ -42,16 +42,38 @@
 
 
                 <div class="header-field ticket-title-field">
+                    <label for="ticketTitle">Ticket Name</label>
+                    <input type="text" id="ticketTitle">
 
-                    <label for="ticketTitle">
-                        Ticket Name
-                    </label>
+                    <div class="title-suggestion">
+                        <div class="title-suggestion-label">
+                            Suggested Title
+                        </div>
 
-                    <input
-                        type="text"
-                        id="ticketTitle"
-                    >
+                        <div class="title-suggestion-content">
+                            <span id="titleSuggestion">
+                                -
+                            </span>
 
+                            <div class="title-suggestion-actions">
+                                <button
+                                    type="button"
+                                    id="copyTitleSuggestionButton"
+                                    class="button button-secondary"
+                                >
+                                    Copy
+                                </button>
+
+                                <button
+                                    type="button"
+                                    id="useTitleSuggestionButton"
+                                    class="button button-secondary"
+                                >
+                                    Use as title
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
             </div>

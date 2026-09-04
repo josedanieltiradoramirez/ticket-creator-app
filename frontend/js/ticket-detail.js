@@ -182,6 +182,11 @@ async function loadTicket() {
         ).value =
             ticket.issue_description ?? "";
 
+        document.getElementById(
+            "shortIssue"
+        ).value =
+            ticket.short_issue ?? "";
+
 
         // ====================================================
         // TROUBLESHOOTING
@@ -212,15 +217,7 @@ async function loadTicket() {
         ).value =
             ticket.form_content ?? "";
 
-
-        // ====================================================
-        // CONFIGURATION
-        // ====================================================
-
-        document.getElementById(
-            "knowledgeBase"
-        ).textContent =
-            ticket.knowledge_base?.title ?? "";
+        updateTitleSuggestion();
 
 
         // ====================================================
@@ -602,6 +599,9 @@ async function loadLocations(
             option.textContent =
                 location.name;
 
+            option.dataset.code =
+                location.code ?? "";
+
 
             if (
                 location.id ===
@@ -761,112 +761,66 @@ async function loadTroubleshootingTemplates(
     issueTypeId,
     currentTemplateId = null
 ) {
-
     const relatedTemplates =
-        issueTypeId
-            ? await getIssueTypeTroubleshootingTemplates(
-                issueTypeId
-            )
-            : [];
-
+        await getIssueTypeTroubleshootingTemplates(issueTypeId);
 
     const allTemplates =
         await getTroubleshootingTemplates();
-
-
-    troubleshootingTemplates =
-        allTemplates;
-
 
     const templateSelect =
         document.getElementById(
             "troubleshootingTemplate"
         );
 
-
     templateSelect.innerHTML = "";
+
+    troubleshootingTemplates = allTemplates;
 
 
     // Empty option
 
     const emptyOption =
-        document.createElement(
-            "option"
-        );
-
+        document.createElement("option");
 
     emptyOption.value = "";
+    emptyOption.textContent = "Select a template";
 
-    emptyOption.textContent =
-        "Select a template";
-
-
-    templateSelect.appendChild(
-        emptyOption
-    );
+    templateSelect.appendChild(emptyOption);
 
 
     // Related template IDs
 
-    const relatedIds =
-        new Set(
-            relatedTemplates.map(
-                template =>
-                    template.id
-            )
-        );
+    const relatedIds = new Set(
+        relatedTemplates.map(
+            template => template.id
+        )
+    );
 
 
     // Related templates
 
-    if (
-        relatedTemplates.length > 0
-    ) {
+    if (relatedTemplates.length > 0) {
 
         const relatedGroup =
-            document.createElement(
-                "optgroup"
-            );
+            document.createElement("optgroup");
+
+        relatedGroup.label = "Related";
 
 
-        relatedGroup.label =
-            "Related";
+        relatedTemplates.forEach(template => {
 
+            const option =
+                document.createElement("option");
 
-        relatedTemplates.forEach(
-            template => {
+            option.value = template.id;
 
-                const option =
-                    document.createElement(
-                        "option"
-                    );
+            option.textContent =
+                template.name ??
+                template.generated_description;
 
+            relatedGroup.appendChild(option);
 
-                option.value =
-                    template.id;
-
-
-                option.textContent =
-                    template.name ??
-                    template.generated_description ??
-                    `Template ${template.id}`;
-
-
-                if (
-                    template.id ===
-                    currentTemplateId
-                ) {
-
-                    option.selected =
-                        true;
-                }
-
-
-                relatedGroup.appendChild(
-                    option
-                );
-            }
-        );
+        });
 
 
         templateSelect.appendChild(
@@ -880,60 +834,32 @@ async function loadTroubleshootingTemplates(
     const otherTemplates =
         allTemplates.filter(
             template =>
-                !relatedIds.has(
-                    template.id
-                )
+                !relatedIds.has(template.id)
         );
 
 
-    if (
-        otherTemplates.length > 0
-    ) {
+    if (otherTemplates.length > 0) {
 
         const allGroup =
-            document.createElement(
-                "optgroup"
-            );
+            document.createElement("optgroup");
+
+        allGroup.label = "All";
 
 
-        allGroup.label =
-            "All";
+        otherTemplates.forEach(template => {
 
+            const option =
+                document.createElement("option");
 
-        otherTemplates.forEach(
-            template => {
+            option.value = template.id;
 
-                const option =
-                    document.createElement(
-                        "option"
-                    );
+            option.textContent =
+                template.name ??
+                template.generated_description;
 
+            allGroup.appendChild(option);
 
-                option.value =
-                    template.id;
-
-
-                option.textContent =
-                    template.name ??
-                    template.generated_description ??
-                    `Template ${template.id}`;
-
-
-                if (
-                    template.id ===
-                    currentTemplateId
-                ) {
-
-                    option.selected =
-                        true;
-                }
-
-
-                allGroup.appendChild(
-                    option
-                );
-            }
-        );
+        });
 
 
         templateSelect.appendChild(
@@ -942,22 +868,43 @@ async function loadTroubleshootingTemplates(
     }
 
 
-    // Select first related template
-    // only for a new ticket
+    // ================================================
+    // SELECT TEMPLATE
+    // ================================================
 
     if (
-        currentTemplateId === null &&
+        currentTemplateId !== null &&
+        currentTemplateId !== undefined
+    ) {
+
+        templateSelect.value =
+            String(currentTemplateId);
+
+    } else if (
         relatedTemplates.length > 0
     ) {
 
         templateSelect.value =
-            relatedTemplates[0].id;
+            String(relatedTemplates[0].id);
+
+    } else {
+
+        templateSelect.value = "";
+
     }
 
 
-    await loadSelectedTemplate();
-}
+    // Update preview
 
+    loadTemplatePreview();
+
+
+    // Update template KB
+
+    await loadTemplateKnowledgeBase(
+        templateSelect.value
+    );
+}
 
 // ============================================================
 // SELECTED TEMPLATE
@@ -1123,28 +1070,16 @@ async function loadForms(
     issueTypeId,
     currentFormId = null
 ) {
-
     const relatedForms =
-        issueTypeId
-            ? await getIssueTypeForm(
-                issueTypeId
-            )
-            : [];
-
+        await getIssueTypeForm(issueTypeId);
 
     const allForms =
         await getForms();
 
-
-    forms =
-        allForms;
-
+    forms = allForms;
 
     const formSelect =
-        document.getElementById(
-            "form"
-        );
-
+        document.getElementById("form");
 
     formSelect.innerHTML = "";
 
@@ -1152,70 +1087,44 @@ async function loadForms(
     // Empty option
 
     const emptyOption =
-        document.createElement(
-            "option"
-        );
-
+        document.createElement("option");
 
     emptyOption.value = "";
+    emptyOption.textContent = "Select a form";
 
-    emptyOption.textContent =
-        "Select a form";
+    formSelect.appendChild(emptyOption);
 
 
-    formSelect.appendChild(
-        emptyOption
+    // Related form IDs
+
+    const relatedIds = new Set(
+        relatedForms.map(
+            form => form.id
+        )
     );
 
 
     // Related forms
 
-    if (
-        relatedForms.length > 0
-    ) {
+    if (relatedForms.length > 0) {
 
         const relatedGroup =
-            document.createElement(
-                "optgroup"
-            );
+            document.createElement("optgroup");
+
+        relatedGroup.label = "Related";
 
 
-        relatedGroup.label =
-            "Related";
+        relatedForms.forEach(form => {
 
+            const option =
+                document.createElement("option");
 
-        relatedForms.forEach(
-            form => {
+            option.value = form.id;
+            option.textContent = form.name;
 
-                const option =
-                    document.createElement(
-                        "option"
-                    );
+            relatedGroup.appendChild(option);
 
-
-                option.value =
-                    form.id;
-
-
-                option.textContent =
-                    form.name;
-
-
-                if (
-                    form.id ===
-                    currentFormId
-                ) {
-
-                    option.selected =
-                        true;
-                }
-
-
-                relatedGroup.appendChild(
-                    option
-                );
-            }
-        );
+        });
 
 
         formSelect.appendChild(
@@ -1224,74 +1133,34 @@ async function loadForms(
     }
 
 
-    // Related IDs
-
-    const relatedIds =
-        new Set(
-            relatedForms.map(
-                form =>
-                    form.id
-            )
-        );
-
-
     // Other forms
 
     const otherForms =
         allForms.filter(
             form =>
-                !relatedIds.has(
-                    form.id
-                )
+                !relatedIds.has(form.id)
         );
 
 
-    if (
-        otherForms.length > 0
-    ) {
+    if (otherForms.length > 0) {
 
         const allGroup =
-            document.createElement(
-                "optgroup"
-            );
+            document.createElement("optgroup");
+
+        allGroup.label = "All";
 
 
-        allGroup.label =
-            "All";
+        otherForms.forEach(form => {
 
+            const option =
+                document.createElement("option");
 
-        otherForms.forEach(
-            form => {
+            option.value = form.id;
+            option.textContent = form.name;
 
-                const option =
-                    document.createElement(
-                        "option"
-                    );
+            allGroup.appendChild(option);
 
-
-                option.value =
-                    form.id;
-
-
-                option.textContent =
-                    form.name;
-
-
-                if (
-                    form.id ===
-                    currentFormId
-                ) {
-
-                    option.selected =
-                        true;
-                }
-
-
-                allGroup.appendChild(
-                    option
-                );
-            }
-        );
+        });
 
 
         formSelect.appendChild(
@@ -1300,18 +1169,33 @@ async function loadForms(
     }
 
 
-    // Select first related form
-    // only for a new ticket
+    // ================================================
+    // SELECT FORM
+    // ================================================
 
     if (
-        currentFormId === null &&
+        currentFormId !== null &&
+        currentFormId !== undefined
+    ) {
+
+        formSelect.value =
+            String(currentFormId);
+
+    } else if (
         relatedForms.length > 0
     ) {
 
         formSelect.value =
-            relatedForms[0].id;
+            String(relatedForms[0].id);
+
+    } else {
+
+        formSelect.value = "";
+
     }
 
+
+    // Update preview
 
     await loadSelectedForm(
         formSelect.value
@@ -1745,7 +1629,65 @@ function doNotUseTemplate() {
     // KBs are added only when the user explicitly clicks Yes.
 }
 
+// ============================================================
+// TITLE SUGGESTION
+// ============================================================
 
+// ============================================================
+// TITLE SUGGESTION
+// ============================================================
+
+function updateTitleSuggestion() {
+
+    const locationSelect =
+        document.getElementById("location");
+
+    const toolSelect =
+        document.getElementById("tool");
+
+    const shortIssueInput =
+        document.getElementById("shortIssue");
+
+    const suggestion =
+        document.getElementById("titleSuggestion");
+
+
+    // LOCATION CODE
+    const selectedLocation =
+        locationSelect.options[
+            locationSelect.selectedIndex
+        ];
+
+    const locationCode =
+        selectedLocation?.dataset.code ?? "";
+
+
+    // TOOL NAME
+    const toolName =
+        toolSelect.options[
+            toolSelect.selectedIndex
+        ]?.textContent ?? "";
+
+
+    // SHORT ISSUE
+    const shortIssue =
+        shortIssueInput.value.trim();
+
+
+    const parts = [
+        locationCode.trim(),
+        toolName.trim(),
+        shortIssue
+    ].filter(
+        part => part !== ""
+    );
+
+
+    suggestion.textContent =
+        parts.length > 0
+            ? parts.join(" - ")
+            : "-";
+}
 // ============================================================
 // SETUP EVENT LISTENERS
 // ============================================================
@@ -1901,43 +1843,131 @@ function setupEventListeners() {
     // ========================================================
 
     document.getElementById(
-        "issueType"
+    "issueType"
     ).addEventListener(
         "change",
-        async event => {
+        async (event) => {
 
             const issueTypeId =
                 event.target.value
-                    ? Number(
-                        event.target.value
-                    )
+                    ? Number(event.target.value)
                     : null;
 
 
-            // Reload forms
+            if (!issueTypeId) {
+
+                await loadForms(null);
+
+                await loadTroubleshootingTemplates(null);
+
+                await loadIssueTypeKnowledgeBase(null);
+
+                return;
+            }
+
+
+            // Change Form Template
 
             await loadForms(
-                issueTypeId
+                issueTypeId,
+                null
             );
 
 
-            // Reload troubleshooting templates
+            // Change Troubleshooting Template
 
             await loadTroubleshootingTemplates(
-                issueTypeId
+                issueTypeId,
+                null
             );
 
 
-            // Reload Issue Type KB
+            // Change Issue Type KB
 
             await loadIssueTypeKnowledgeBase(
                 issueTypeId
             );
+
         }
     );
+    // ========================================================
+    // TITLE SUGGESTION
+    // ========================================================
+
+    document.getElementById(
+        "location"
+    ).addEventListener(
+        "change",
+        updateTitleSuggestion
+    );
+
+
+    document.getElementById(
+        "issueType"
+    ).addEventListener(
+        "change",
+        updateTitleSuggestion
+    );
+
+
+    document.getElementById(
+        "shortIssue"
+    ).addEventListener(
+        "input",
+        updateTitleSuggestion
+    );
+
+    // ========================================================
+    // COPY TITLE SUGGESTION
+    // ========================================================
+
+    document.getElementById(
+        "copyTitleSuggestionButton"
+    ).addEventListener(
+        "click",
+        async () => {
+
+            const suggestion =
+                document.getElementById(
+                    "titleSuggestion"
+                ).textContent;
+
+            if (!suggestion || suggestion === "-") {
+                return;
+            }
+
+            await navigator.clipboard.writeText(
+                suggestion
+            );
+        }
+    );
+
+    // ========================================================
+    // USE TITLE SUGGESTION
+    // ========================================================
+
+    document.getElementById(
+        "useTitleSuggestionButton"
+    ).addEventListener(
+        "click",
+        () => {
+
+            const suggestion =
+                document.getElementById(
+                    "titleSuggestion"
+                ).textContent;
+
+            if (!suggestion || suggestion === "-") {
+                return;
+            }
+
+            document.getElementById(
+                "ticketTitle"
+            ).value = suggestion;
+        }
+    );
+
 }
-
-
 // ============================================================
 // SAVE TICKET
 // ============================================================
@@ -1980,7 +2010,11 @@ async function saveTicket() {
             document.getElementById(
                 "userType"
             ).value,
-
+        
+        short_issue:
+            document.getElementById(
+                "shortIssue"
+            ).value,
 
         issue_description:
             document.getElementById(
