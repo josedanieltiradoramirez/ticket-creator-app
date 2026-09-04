@@ -1723,6 +1723,27 @@ function setupEventListeners() {
         saveTicket
     );
 
+    // ========================================================
+    // GENERATE TICKET
+    // ========================================================
+
+    document.getElementById(
+        "generateTicketButton"
+    ).addEventListener(
+        "click",
+        generateTicket
+    );
+
+    // ========================================================
+    // GENERATE TIME ENTRY
+    // ========================================================
+    document.getElementById(
+        "generateTimeEntryButton"
+    ).addEventListener(
+        "click",
+        generateTimeEntry
+    );
+
 
     // ========================================================
     // COPY FORM
@@ -1968,6 +1989,327 @@ function setupEventListeners() {
     );
 
 }
+
+// ============================================================
+// GENERATE TICKET
+// ============================================================
+
+function generateTicket() {
+
+    const prioritySelect =
+        document.getElementById("priority");
+
+    const userType =
+        document.getElementById("userType")
+            .value.trim();
+
+    const userName =
+        document.getElementById("userName")
+            .value.trim();
+
+    const locationSelect =
+        document.getElementById("location");
+
+    const userPhone =
+        document.getElementById("userPhone")
+            .value.trim();
+
+    const userEmail =
+        document.getElementById("userEmail")
+            .value.trim();
+
+    const shortIssue =
+        document.getElementById("shortIssue")
+            .value.trim();
+
+    const issueDescription =
+        document.getElementById("issueDescription")
+            .value.trim();
+
+    const formContent =
+        document.getElementById("formContent")
+            .value.trim();
+
+    const troubleshootingSteps =
+        document.getElementById("troubleshootingSteps")
+            .value.trim();
+
+    const additionalNotes =
+        document.getElementById("additionalNotes")
+            .value.trim();
+
+
+    // ========================================================
+    // PRIORITY
+    // ========================================================
+
+    const priority =
+        prioritySelect.options[
+            prioritySelect.selectedIndex
+        ]?.textContent.trim() ?? "";
+
+
+    // ========================================================
+    // LOCATION
+    // ========================================================
+
+    const selectedLocation =
+        locationSelect.options[
+            locationSelect.selectedIndex
+        ];
+
+    const locationName =
+        selectedLocation?.textContent.trim() ?? "";
+
+    const locationCode =
+        selectedLocation?.dataset.code?.trim() ?? "";
+
+    let affectedLocation = "";
+
+    if (locationName && locationCode) {
+
+        affectedLocation =
+            `${locationName}. ${locationCode}`;
+
+    } else if (locationName) {
+
+        affectedLocation =
+            locationName;
+
+    } else if (locationCode) {
+
+        affectedLocation =
+            locationCode;
+    }
+
+
+    // ========================================================
+    // BUILD USER INFORMATION
+    // ========================================================
+
+    const userInformation = [];
+
+
+    if (priority) {
+
+        userInformation.push(
+            `Ticket Priority: ${priority}`
+        );
+    }
+
+
+    if (userType) {
+
+        userInformation.push(
+            `Customer/Employee/Contractor: ${userType}`
+        );
+    }
+
+
+    if (userName) {
+
+        userInformation.push(
+            `Name: ${userName}`
+        );
+    }
+
+
+    if (affectedLocation) {
+
+        userInformation.push(
+            `Affected Location: ${affectedLocation}`
+        );
+    }
+
+
+    if (userPhone) {
+
+        userInformation.push(
+            `Primary Contact: ${userPhone}`
+        );
+    }
+
+
+    if (userEmail) {
+
+        userInformation.push(
+            `Email Address: ${userEmail}`
+        );
+    }
+
+
+    // ========================================================
+    // BUILD TICKET
+    // ========================================================
+
+    const sections = [];
+
+
+    if (userInformation.length > 0) {
+
+        sections.push(
+            userInformation.join("\n")
+        );
+    }
+
+
+    if (shortIssue) {
+
+        sections.push(
+            `Short Description:\n${shortIssue}`
+        );
+    }
+
+
+    if (issueDescription) {
+
+        sections.push(
+            `Detailed Issue Description:\n${issueDescription}`
+        );
+    }
+
+
+    if (formContent) {
+
+        sections.push(
+            `Information:\n${formContent}`
+        );
+    }
+
+
+    if (troubleshootingSteps) {
+
+        sections.push(
+            `Troubleshooting:\n${troubleshootingSteps}`
+        );
+    }
+
+
+    if (additionalNotes) {
+
+        sections.push(
+            `Additional Notes:\n${additionalNotes}`
+        );
+    }
+
+
+    const ticketText =
+        sections.join("\n\n");
+
+
+    // ========================================================
+    // UPDATE PREVIEW
+    // ========================================================
+
+    document.getElementById(
+        "ticketPreview"
+    ).textContent =
+        ticketText || "-";
+}
+
+// ============================================================
+// GENERATE TIME ENTRY
+// ============================================================
+
+function generateTimeEntry() {
+
+    const issueDescription =
+        document.getElementById("issueDescription")
+            .value.trim();
+
+    const troubleshootingSteps =
+        document.getElementById("troubleshootingSteps")
+            .value.trim();
+
+    const userName =
+        document.getElementById("userName")
+            .value.trim();
+
+    const userPhone =
+        document.getElementById("userPhone")
+            .value.trim();
+
+    const userEmail =
+        document.getElementById("userEmail")
+            .value.trim();
+
+    const formContent =
+        document.getElementById("formContent")
+            .value.trim();
+
+
+    // ========================================================
+    // DETAILS
+    // ========================================================
+
+    const details = [];
+
+
+    if (userName) {
+        details.push(`Name: ${userName}`);
+    }
+
+
+    if (userPhone) {
+        details.push(`Primary Contact: ${userPhone}`);
+    }
+
+
+    if (userEmail) {
+        details.push(`Email Address: ${userEmail}`);
+    }
+
+
+    if (formContent) {
+        details.push(`Form:\n${formContent}`);
+    }
+
+
+    // ========================================================
+    // BUILD TIME ENTRY
+    // ========================================================
+
+    const timeEntrySections = [];
+
+
+    // Situation
+    timeEntrySections.push(
+        `Situation:\n${issueDescription}`
+    );
+
+
+    // Action Taken
+    timeEntrySections.push(
+        `Action Taken:\n${troubleshootingSteps}`
+    );
+
+
+    // Next Steps
+    timeEntrySections.push(
+        `Next Steps:`
+    );
+
+
+    // Details
+    timeEntrySections.push(
+        `Details:\n${details.join("\n")}`
+    );
+
+
+    const timeEntryText =
+        timeEntrySections.join("\n\n");
+
+
+    // ========================================================
+    // UPDATE PREVIEW
+    // ========================================================
+
+    document.getElementById(
+        "timeEntryPreview"
+    ).textContent =
+        timeEntryText;
+}
+
 // ============================================================
 // SAVE TICKET
 // ============================================================
