@@ -506,3 +506,61 @@ async function getFormFields(
 
     return await response.json();
 }
+
+// ============================================================
+// KNOWLEDGE BASE ARTICLES
+// ============================================================
+async function getTicketKnowledgeBase(ticketId) {
+    const response = await fetch(
+        `${API_URL}/api/tickets/${ticketId}/knowledge-base`,
+        {
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+            }
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error while fetching ticket knowledge base");
+    }
+
+    return await response.json();
+}
+
+
+async function addTicketKnowledgeBase(ticketId, knowledgeBaseId) {
+    const response = await fetch(
+        `${API_URL}/api/tickets/${ticketId}/knowledge-base/${knowledgeBaseId}`,
+        {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+            }
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error while adding knowledge base article");
+    }
+
+    return await response.json();
+}
+
+
+async function removeTicketKnowledgeBase(ticketId, knowledgeBaseId) {
+    const response = await fetch(
+        `${API_URL}/api/tickets/${ticketId}/knowledge-base/${knowledgeBaseId}`,
+        {
+            method: "DELETE",
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+            }
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error while removing knowledge base article");
+    }
+
+    return await response.json();
+}

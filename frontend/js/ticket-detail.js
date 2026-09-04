@@ -13,7 +13,6 @@ let troubleshootingTemplates = [];
 
 let forms = [];
 
-
 // KBs that the user explicitly marked as used
 let usedKnowledgeBase = [];
 
@@ -54,6 +53,13 @@ async function loadTicket() {
 
         const ticket =
             await getTicket(ticketId);
+
+
+        // ====================================================
+        // LOAD USED KNOWLEDGE BASE
+        // ====================================================
+
+        await loadUsedKnowledgeBase();
 
 
         // ====================================================
@@ -200,14 +206,6 @@ async function loadTicket() {
         // ====================================================
         // FORM CONTENT
         // ====================================================
-        //
-        // NOTE:
-        // The current Ticket model/schema does not contain
-        // form_content.
-        //
-        // Therefore we only load it if the API happens to
-        // return it.
-        //
 
         document.getElementById(
             "formContent"
@@ -1416,6 +1414,7 @@ async function loadFormPreview(
             error
         );
 
+
         preview.value =
             form.description ?? "";
     }
@@ -1503,6 +1502,42 @@ async function copyTemplatePreview() {
 
 
 // ============================================================
+// LOAD USED KNOWLEDGE BASE
+// ============================================================
+
+async function loadUsedKnowledgeBase() {
+
+    try {
+
+        const knowledgeBaseItems =
+            await getTicketKnowledgeBase(
+                ticketId
+            );
+
+
+        usedKnowledgeBase =
+            knowledgeBaseItems ?? [];
+
+
+        renderUsedKnowledgeBase();
+
+
+    } catch (error) {
+
+        console.error(
+            "Error loading Used Knowledge Base:",
+            error
+        );
+
+
+        usedKnowledgeBase = [];
+
+        renderUsedKnowledgeBase();
+    }
+}
+
+
+// ============================================================
 // USED KNOWLEDGE BASE
 // ============================================================
 
@@ -1553,25 +1588,32 @@ async function useCurrentTemplate() {
         }
 
 
-        knowledgeBase.forEach(
-            kb => {
+        for (
+            const kb of knowledgeBase
+        ) {
 
-                const alreadyExists =
-                    usedKnowledgeBase.some(
-                        existingKb =>
-                            existingKb.id ===
-                            kb.id
-                    );
+            const alreadyExists =
+                usedKnowledgeBase.some(
+                    existingKb =>
+                        existingKb.id ===
+                        kb.id
+                );
 
 
-                if (!alreadyExists) {
+            if (
+                !alreadyExists
+            ) {
 
-                    usedKnowledgeBase.push(
-                        kb
-                    );
-                }
+                await addTicketKnowledgeBase(
+                    ticketId,
+                    kb.id
+                );
+
+                usedKnowledgeBase.push(
+                    kb
+                );
             }
-        );
+        }
 
 
         renderUsedKnowledgeBase();
@@ -1586,7 +1628,7 @@ async function useCurrentTemplate() {
 
 
         alert(
-            "Error loading Knowledge Base articles."
+            "Error adding Knowledge Base articles."
         );
     }
 }
@@ -1627,8 +1669,18 @@ function renderUsedKnowledgeBase() {
                 );
 
 
-            item.textContent =
-                `${kb.article_number} - ${kb.title}`;
+            item.innerHTML = `
+                <span>
+                    ${kb.article_number} - ${kb.title}
+                </span>
+
+                <button
+                    type="button"
+                    onclick="removeUsedKnowledgeBase(${kb.id})"
+                >
+                    Remove
+                </button>
+            `;
 
 
             container.appendChild(
@@ -1636,6 +1688,48 @@ function renderUsedKnowledgeBase() {
             );
         }
     );
+}
+
+
+// ============================================================
+// REMOVE USED KNOWLEDGE BASE
+// ============================================================
+
+async function removeUsedKnowledgeBase(
+    knowledgeBaseId
+) {
+
+    try {
+
+        await removeTicketKnowledgeBase(
+            ticketId,
+            knowledgeBaseId
+        );
+
+
+        usedKnowledgeBase =
+            usedKnowledgeBase.filter(
+                kb =>
+                    kb.id !==
+                    knowledgeBaseId
+            );
+
+
+        renderUsedKnowledgeBase();
+
+
+    } catch (error) {
+
+        console.error(
+            "Error removing Knowledge Base:",
+            error
+        );
+
+
+        alert(
+            "Error removing Knowledge Base article."
+        );
+    }
 }
 
 
@@ -1671,6 +1765,7 @@ function setupEventListeners() {
 
             window.location.href =
                 "index.html";
+
         }
     );
 
@@ -1904,10 +1999,6 @@ async function saveTicket() {
                 "additionalNotes"
             ).value,
 
-
-        // IMPORTANT:
-        // The backend schema currently uses
-        // form_template_id, not form_id.
 
         form_template_id:
             document.getElementById(
