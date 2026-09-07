@@ -645,3 +645,27 @@ input:disabled {
     padding: 0;
     cursor: pointer;
 }
+
+.preview-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.preview-actions {
+    display: flex;
+    gap: 4px;
+}
+
+.preview-copy-button {
+    padding: 4px 8px;
+    font-size: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: transparent;
+    cursor: pointer;
+}
+
+.preview-copy-button:hover {
+    opacity: 0.8;
+}

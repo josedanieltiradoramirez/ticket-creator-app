@@ -1497,6 +1497,81 @@ async function copyFormPreview() {
     }
 }
 
+// ============================================================
+// COPY TICKET PREVIEW
+// ============================================================
+
+async function copyTicketPreview() {
+
+    const preview =
+        document.getElementById(
+            "ticketPreview"
+        );
+
+    const text =
+        preview.textContent.trim();
+
+    if (!text || text === "-") {
+        return;
+    }
+
+    try {
+
+        await navigator.clipboard.writeText(
+            text
+        );
+
+        alert(
+            "Ticket copied to clipboard."
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Error copying ticket:",
+            error
+        );
+    }
+}
+
+
+// ============================================================
+// COPY TIME ENTRY PREVIEW
+// ============================================================
+
+async function copyTimeEntryPreview() {
+
+    const preview =
+        document.getElementById(
+            "timeEntryPreview"
+        );
+
+    const text =
+        preview.textContent.trim();
+
+    if (!text || text === "-") {
+        return;
+    }
+
+    try {
+
+        await navigator.clipboard.writeText(
+            text
+        );
+
+        alert(
+            "Time Entry copied to clipboard."
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Error copying time entry:",
+            error
+        );
+    }
+}
+
 
 // ============================================================
 // COPY TEMPLATE
@@ -1897,6 +1972,28 @@ function setupEventListeners() {
         generateTimeEntry
     );
 
+    // ========================================================
+    // COPY TICKET
+    // ========================================================
+
+    document.getElementById(
+        "copyTicketButton"
+    ).addEventListener(
+        "click",
+        copyTicketPreview
+    );
+
+
+    // ========================================================
+    // COPY TIME ENTRY
+    // ========================================================
+
+    document.getElementById(
+        "copyTimeEntryButton"
+    ).addEventListener(
+        "click",
+        copyTimeEntryPreview
+    );
 
     // ========================================================
     // COPY FORM

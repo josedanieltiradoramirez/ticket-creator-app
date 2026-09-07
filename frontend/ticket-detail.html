@@ -44,36 +44,6 @@
                 <div class="header-field ticket-title-field">
                     <label for="ticketTitle">Ticket Name</label>
                     <input type="text" id="ticketTitle">
-
-                    <div class="title-suggestion">
-                        <div class="title-suggestion-label">
-                            Suggested Title
-                        </div>
-
-                        <div class="title-suggestion-content">
-                            <span id="titleSuggestion">
-                                -
-                            </span>
-
-                            <div class="title-suggestion-actions">
-                                <button
-                                    type="button"
-                                    id="copyTitleSuggestionButton"
-                                    class="button button-secondary"
-                                >
-                                    Copy
-                                </button>
-
-                                <button
-                                    type="button"
-                                    id="useTitleSuggestionButton"
-                                    class="button button-secondary"
-                                >
-                                    Use as title
-                                </button>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
             </div>
@@ -88,23 +58,6 @@
                 >
                     Save Changes
                 </button>
-
-                <button
-                    type="button"
-                    id="generateTicketButton"
-                    class="button button-secondary"
-                >
-                    Generate Ticket
-                </button>
-
-                <button
-                    type="button"
-                    id="generateTimeEntryButton"
-                    class="button button-secondary"
-                >
-                    Generate Time Entry
-                </button>
-
 
                 <button
                     type="button"
@@ -773,19 +726,80 @@
             <input
                 type="checkbox"
                 id="isRouted"
-                class="small-checkbox"
+                class="small-checkbox"            
             >
+        </div>
+
+        <!-- TITLE SUGGESTION -->
+        <div class="sidebar-card sidebar-preview-card">
+            <div class="sidebar-card-title">
+                    Suggested Title
+            </div>
+            
+
+        
+
+            <div class="title-suggestion-content">
+                <span id="titleSuggestion">
+                    -
+                </span>
+            
+            </div>
+            <div class="title-suggestion-actions">
+                <button
+                    type="button"
+                    id="copyTitleSuggestionButton"
+                    class="button button-secondary"
+                >
+                    Copy
+                </button>
+
+                <button
+                    type="button"
+                    id="useTitleSuggestionButton"
+                    class="button button-secondary"
+                >
+                    Use as title
+                </button>
+            </div>
+            
         </div>
 
 
         <!-- TICKET PREVIEW -->
 
+        <!-- TICKET PREVIEW -->
+
         <div class="sidebar-card sidebar-preview-card">
 
-            <div class="sidebar-card-title">
-                Ticket Preview
-            </div>
+            <div class="sidebar-card-title preview-title-row">
 
+                <span>
+                    Ticket Preview
+                </span>
+
+                <div class="preview-actions">
+
+                    <button
+                        type="button"
+                        id="generateTicketButton"
+                        class="preview-copy-button"
+                    >
+                        Generate
+                    </button>
+
+                    <button
+                        type="button"
+                        id="copyTicketButton"
+                        class="preview-copy-button"
+                        title="Copy Ticket"
+                    >
+                        Copy
+                    </button>
+
+                </div>
+
+            </div>
 
             <div
                 id="ticketPreview"
@@ -796,15 +810,38 @@
 
         </div>
 
-
         <!-- TIME ENTRY PREVIEW -->
 
         <div class="sidebar-card sidebar-preview-card">
 
-            <div class="sidebar-card-title">
-                Time Entry Preview
-            </div>
+            <div class="sidebar-card-title preview-title-row">
 
+                <span>
+                    Time Entry Preview
+                </span>
+
+                <div class="preview-actions">
+
+                    <button
+                        type="button"
+                        id="generateTimeEntryButton"
+                        class="preview-copy-button"
+                    >
+                        Generate
+                    </button>
+
+                    <button
+                        type="button"
+                        id="copyTimeEntryButton"
+                        class="preview-copy-button"
+                        title="Copy Time Entry"
+                    >
+                        Copy
+                    </button>
+
+                </div>
+
+            </div>
 
             <div
                 id="timeEntryPreview"
@@ -814,10 +851,6 @@
             </div>
 
         </div>
-
-    </aside>
-
-</div>
 
 
 <script src="js/api.js"></script>
