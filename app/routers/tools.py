@@ -8,6 +8,8 @@ from typing import Annotated
 from app.core.database import get_db
 from app.models.tools import Tools
 from app.models.users import Users
+from app.models.issue_types import IssueTypes
+from app.models.knowledge_base import KnowledgeBase
 from app.routers.auth import get_current_user
 
 from app.schemas.tools import ToolCreate, ToolUpdate, ToolResponse, ToolDetailResponse
@@ -71,6 +73,132 @@ async def get_tool_knowledge_base(
         )
 
     return tool.knowledge_base
+
+
+@router.get("/{id}/issue-types")
+async def get_tool_issue_types(
+    user: user_dependency,
+    id: int,
+    db: db_dependency
+):
+    tool = (
+        db.query(Tools)
+        .filter(
+            Tools.id == id,
+            Tools.created_by == user.id
+        )
+        .first()
+    )
+
+    if not tool:
+        raise HTTPException(
+            status_code=404,
+            detail="Tool not found"
+        )
+
+    return tool.issue_types
+
+@router.post("/{id}/issue-types/{issue_type_id}")
+async def add_tool_issue_type(
+    user: user_dependency,
+    id: int,
+    issue_type_id: int,
+    db: db_dependency
+):
+    tool = (
+        db.query(Tools)
+        .filter(
+            Tools.id == id,
+            Tools.created_by == user.id
+        )
+        .first()
+    )
+
+    if not tool:
+        raise HTTPException(
+            status_code=404,
+            detail="Tool not found"
+        )
+
+    issue_type = (
+        db.query(IssueTypes)
+        .filter(
+            IssueTypes.id == issue_type_id,
+            IssueTypes.created_by == user.id
+        )
+        .first()
+    )
+
+    if not issue_type:
+        raise HTTPException(
+            status_code=404,
+            detail="Issue type not found"
+        )
+
+    if issue_type in tool.issue_types:
+        return {
+            "message": "Issue type already associated with tool"
+        }
+
+    tool.issue_types.append(issue_type)
+
+    db.commit()
+
+    return {
+        "message": "Issue type added to tool"
+    }
+
+
+@router.delete("/{id}/issue-types/{issue_type_id}")
+async def remove_tool_issue_type(
+    user: user_dependency,
+    id: int,
+    issue_type_id: int,
+    db: db_dependency
+):
+    tool = (
+        db.query(Tools)
+        .filter(
+            Tools.id == id,
+            Tools.created_by == user.id
+        )
+        .first()
+    )
+
+    if not tool:
+        raise HTTPException(
+            status_code=404,
+            detail="Tool not found"
+        )
+
+    issue_type = (
+        db.query(IssueTypes)
+        .filter(
+            IssueTypes.id == issue_type_id,
+            IssueTypes.created_by == user.id
+        )
+        .first()
+    )
+
+    if not issue_type:
+        raise HTTPException(
+            status_code=404,
+            detail="Issue type not found"
+        )
+
+    if issue_type not in tool.issue_types:
+        raise HTTPException(
+            status_code=404,
+            detail="Issue type is not associated with this tool"
+        )
+
+    tool.issue_types.remove(issue_type)
+
+    db.commit()
+
+    return {
+        "message": "Issue type removed from tool"
+    }
 
 @router.post("/", response_model=ToolResponse, status_code=201)
 async def create_tool(user : user_dependency, tool: ToolCreate, db: db_dependency):

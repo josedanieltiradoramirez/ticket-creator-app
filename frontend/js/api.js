@@ -381,6 +381,23 @@ async function getToolKnowledgeBase(
     return await response.json();
 }
 
+async function getToolIssueTypes(toolId) {
+    const response = await fetch(
+        `${API_URL}/api/tools/${toolId}/issue-types`,
+        {
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+            }
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error while fetching tool issue types");
+    }
+
+    return await response.json();
+}
+
 
 // ============================================================
 // LOCATIONS

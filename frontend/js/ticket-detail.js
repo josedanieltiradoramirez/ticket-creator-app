@@ -673,7 +673,126 @@ async function loadIssueTypes(
     );
 }
 
+// ============================================================
+// ISSUE TYPES BY TOOL — RECOMMENDATIONS
+// ============================================================
 
+async function loadIssueTypesByTool(toolId) {
+
+    const issueTypeSelect =
+        document.getElementById("issueType");
+
+    if (!toolId) {
+        return;
+    }
+
+    try {
+
+        const recommendedIssueTypes =
+            await getToolIssueTypes(toolId);
+
+        const currentIssueTypeId =
+            issueTypeSelect.value;
+
+        // Get all existing options
+        const allOptions =
+            Array.from(issueTypeSelect.options);
+
+        // Separate the options
+        const recommendedIds =
+            new Set(
+                recommendedIssueTypes.map(
+                    issueType => String(issueType.id)
+                )
+            );
+
+        const recommendedOptions = [];
+        const otherOptions = [];
+
+        allOptions.forEach(option => {
+
+            // Keep the default option at the top
+            if (!option.value) {
+                return;
+            }
+
+            if (recommendedIds.has(option.value)) {
+                recommendedOptions.push(option);
+            } else {
+                otherOptions.push(option);
+            }
+        });
+
+        // Rebuild the dropdown
+        issueTypeSelect.innerHTML = "";
+
+        // Default option
+        const defaultOption =
+            document.createElement("option");
+
+        defaultOption.value = "";
+        defaultOption.textContent =
+            "Select Issue Type";
+
+        issueTypeSelect.appendChild(
+            defaultOption
+        );
+
+        // Recommended group
+        if (recommendedOptions.length > 0) {
+
+            const recommendedGroup =
+                document.createElement("optgroup");
+
+            recommendedGroup.label =
+                "Recommended for selected Tool";
+
+            recommendedOptions.forEach(option => {
+                recommendedGroup.appendChild(option);
+            });
+
+            issueTypeSelect.appendChild(
+                recommendedGroup
+            );
+        }
+
+        // Other Issue Types
+        if (otherOptions.length > 0) {
+
+            const otherGroup =
+                document.createElement("optgroup");
+
+            otherGroup.label =
+                "Other Issue Types";
+
+            otherOptions.forEach(option => {
+                otherGroup.appendChild(option);
+            });
+
+            issueTypeSelect.appendChild(
+                otherGroup
+            );
+        }
+
+        // Restore the Issue Type that was already selected
+        if (
+            currentIssueTypeId &&
+            issueTypeSelect.querySelector(
+                `option[value="${currentIssueTypeId}"]`
+            )
+        ) {
+            issueTypeSelect.value =
+                currentIssueTypeId;
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Error loading Issue Type recommendations:",
+            error
+        );
+    }
+}
 // ============================================================
 // ISSUE TYPE KNOWLEDGE BASE
 // ============================================================
@@ -1834,9 +1953,9 @@ function setupEventListeners() {
     );
 
 
-    // ========================================================
+    // ============================================================
     // TOOL CHANGE
-    // ========================================================
+    // ============================================================
 
     document.getElementById(
         "tool"
@@ -1851,8 +1970,11 @@ function setupEventListeners() {
                     )
                     : null;
 
-
             await loadToolKnowledgeBase(
+                toolId
+            );
+
+            await loadIssueTypesByTool(
                 toolId
             );
         }
@@ -1877,11 +1999,6 @@ function setupEventListeners() {
 
             if (!issueTypeId) {
 
-                await loadForms(null);
-
-                await loadTroubleshootingTemplates(null);
-
-                await loadIssueTypeKnowledgeBase(null);
 
                 return;
             }
