@@ -186,7 +186,15 @@ async function loadTicket() {
             "shortIssue"
         ).value =
             ticket.short_issue ?? "";
+        
+        // ====================================================
+        // FORM
+        // ====================================================
 
+        document.getElementById(
+            "formContent"
+        ).value =
+            ticket.form_content ?? "";
 
         // ====================================================
         // TROUBLESHOOTING
@@ -209,13 +217,31 @@ async function loadTicket() {
 
 
         // ====================================================
-        // FORM CONTENT
+        // GENERATED TICKET
         // ====================================================
 
-        document.getElementById(
-            "formContent"
-        ).value =
-            ticket.form_content ?? "";
+        const generatedTicket =
+            ticket.generated_ticket;
+
+        document.getElementById("ticketPreview").textContent =
+            generatedTicket &&
+            generatedTicket !== "string"
+                ? generatedTicket
+                : "-";
+
+
+        // ====================================================
+        // GENERATED TIME ENTRY
+        // ====================================================
+
+        const generatedTimeEntry =
+            ticket.generated_time_entry;
+
+        document.getElementById("timeEntryPreview").textContent =
+            generatedTimeEntry &&
+            generatedTimeEntry !== "string"
+                ? generatedTimeEntry
+                : "-";
 
         updateTitleSuggestion();
 
@@ -2492,6 +2518,22 @@ async function saveTicket() {
                 "additionalNotes"
             ).value,
 
+        form_content:
+            document.getElementById(
+                "formContent"
+            ).value,
+
+        generated_ticket:
+            document.getElementById(
+                "ticketPreview"
+            ).textContent,
+
+
+        generated_time_entry:
+            document.getElementById(
+                "timeEntryPreview"
+            ).textContent,
+
 
         form_template_id:
             document.getElementById(
@@ -2587,6 +2629,8 @@ async function saveTicket() {
                     ).value
                 )
                 : null
+        
+        
     };
 
 
