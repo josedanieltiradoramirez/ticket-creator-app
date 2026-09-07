@@ -215,6 +215,14 @@ async function loadTicket() {
         ).value =
             ticket.additional_notes ?? "";
 
+        // ====================================================
+        // GENERATED TICKET
+        // ====================================================
+
+        document.getElementById(
+            "isRouted"
+        ).checked =
+            ticket.is_routed ?? false;
 
         // ====================================================
         // GENERATED TICKET
@@ -2428,8 +2436,17 @@ function generateTimeEntry() {
 
 
     // Next Steps
+
+    const isRouted =
+        document.getElementById("isRouted").checked;
+
+    const nextSteps =
+        isRouted
+            ? "Route ticket to the solver team"
+            : "Complete the ticket";
+
     timeEntrySections.push(
-        `Next Steps:`
+        `Next Steps:\n${nextSteps}`
     );
 
 
@@ -2522,6 +2539,11 @@ async function saveTicket() {
             document.getElementById(
                 "formContent"
             ).value,
+
+        is_routed:
+            document.getElementById(
+                "isRouted"
+            ).checked,
 
         generated_ticket:
             document.getElementById(
