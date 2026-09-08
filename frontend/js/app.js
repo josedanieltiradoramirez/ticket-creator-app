@@ -62,6 +62,12 @@ document
         window.location.href = "queues.html";
     });
 
+document
+    .getElementById("warehouseManagementSystemsButton")
+    .addEventListener("click", () => {
+        window.location.href = "warehouse-management-systems.html";
+    });
+
     
 // =========================
 // TICKETS

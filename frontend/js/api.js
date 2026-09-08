@@ -1046,3 +1046,152 @@ async function deleteQueueApi(queueId) {
     return await response.json();
 
 }
+
+// ============================================================
+// WAREHOUSE MANAGEMENT SYSTEMS SECTION
+// ============================================================
+async function getWarehouseManagementSystems() {
+
+    const response = await fetch(
+        `${API_URL}/api/warehouse_management_systems/`,
+        {
+            headers: getAuthHeaders()
+        }
+    );
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Error loading WMS"
+        );
+
+    }
+
+
+    return await response.json();
+
+}
+
+
+async function getWarehouseManagementSystem(wmsId) {
+
+    const response = await fetch(
+        `${API_URL}/api/warehouse_management_systems/${wmsId}`,
+        {
+            headers: getAuthHeaders()
+        }
+    );
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Error loading WMS"
+        );
+
+    }
+
+
+    return await response.json();
+
+}
+
+
+async function createWarehouseManagementSystem(
+    wmsData
+) {
+
+    const response = await fetch(
+        `${API_URL}/api/warehouse_management_systems/`,
+        {
+            method: "POST",
+
+            headers: {
+                ...getAuthHeaders(),
+                "Content-Type":
+                    "application/json"
+            },
+
+            body:
+                JSON.stringify(wmsData)
+        }
+    );
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Error creating WMS"
+        );
+
+    }
+
+
+    return await response.json();
+
+}
+
+
+async function updateWarehouseManagementSystem(
+    wmsId,
+    wmsData
+) {
+
+    const response = await fetch(
+        `${API_URL}/api/warehouse_management_systems/${wmsId}`,
+        {
+            method: "PUT",
+
+            headers: {
+                ...getAuthHeaders(),
+                "Content-Type":
+                    "application/json"
+            },
+
+            body:
+                JSON.stringify(wmsData)
+        }
+    );
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Error updating WMS"
+        );
+
+    }
+
+
+    return await response.json();
+
+}
+
+
+async function deleteWarehouseManagementSystem(
+    wmsId
+) {
+
+    const response = await fetch(
+        `${API_URL}/api/warehouse_management_systems/${wmsId}`,
+        {
+            method: "DELETE",
+
+            headers: getAuthHeaders()
+        }
+    );
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Error deleting WMS"
+        );
+
+    }
+
+
+    return await response.json();
+
+}
