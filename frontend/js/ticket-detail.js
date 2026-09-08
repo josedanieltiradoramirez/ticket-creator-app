@@ -2706,208 +2706,122 @@ function generateTimeEntry() {
 async function saveTicket() {
 
     const ticketData = {
-
         ticket_number:
-            document.getElementById(
-                "ticketNumber"
-            ).value,
-
+            document.getElementById("ticketNumber").value,
 
         title:
-            document.getElementById(
-                "ticketTitle"
-            ).value,
-
+            document.getElementById("ticketTitle").value,
 
         user_name:
-            document.getElementById(
-                "userName"
-            ).value,
-
+            document.getElementById("userName").value,
 
         user_email:
-            document.getElementById(
-                "userEmail"
-            ).value,
-
+            document.getElementById("userEmail").value,
 
         user_best_contact_number:
-            document.getElementById(
-                "userPhone"
-            ).value,
-
+            document.getElementById("userPhone").value,
 
         user_type:
-            document.getElementById(
-                "userType"
-            ).value,
-        
+            document.getElementById("userType").value,
+
         short_issue:
-            document.getElementById(
-                "shortIssue"
-            ).value,
+            document.getElementById("shortIssue").value,
 
         issue_description:
-            document.getElementById(
-                "issueDescription"
-            ).value,
-
+            document.getElementById("issueDescription").value,
 
         troubleshooting_steps:
-            document.getElementById(
-                "troubleshootingSteps"
-            ).value,
-
+            document.getElementById("troubleshootingSteps").value,
 
         additional_notes:
-            document.getElementById(
-                "additionalNotes"
-            ).value,
+            document.getElementById("additionalNotes").value,
 
         form_content:
-            document.getElementById(
-                "formContent"
-            ).value,
+            document.getElementById("formContent").value,
 
         is_routed:
-            document.getElementById(
-                "isRouted"
-            ).checked,
+            document.getElementById("isRouted").checked,
 
         generated_ticket:
-            document.getElementById(
-                "ticketPreview"
-            ).textContent,
-
+            document.getElementById("ticketPreview").textContent,
 
         generated_time_entry:
-            document.getElementById(
-                "timeEntryPreview"
-            ).textContent,
-
+            document.getElementById("timeEntryPreview").textContent,
 
         form_template_id:
-            document.getElementById(
-                "form"
-            ).value
-                ? Number(
-                    document.getElementById(
-                        "form"
-                    ).value
-                )
+            document.getElementById("form").value
+                ? Number(document.getElementById("form").value)
                 : null,
-
 
         tool_id:
-            document.getElementById(
-                "tool"
-            ).value
-                ? Number(
-                    document.getElementById(
-                        "tool"
-                    ).value
-                )
+            document.getElementById("tool").value
+                ? Number(document.getElementById("tool").value)
                 : null,
-
 
         location_id:
-            document.getElementById(
-                "location"
-            ).value
-                ? Number(
-                    document.getElementById(
-                        "location"
-                    ).value
-                )
+            document.getElementById("location").value
+                ? Number(document.getElementById("location").value)
                 : null,
-
 
         priority_id:
-            document.getElementById(
-                "priority"
-            ).value
-                ? Number(
-                    document.getElementById(
-                        "priority"
-                    ).value
-                )
+            document.getElementById("priority").value
+                ? Number(document.getElementById("priority").value)
                 : null,
-
 
         issue_type_id:
-            document.getElementById(
-                "issueType"
-            ).value
-                ? Number(
-                    document.getElementById(
-                        "issueType"
-                    ).value
-                )
+            document.getElementById("issueType").value
+                ? Number(document.getElementById("issueType").value)
                 : null,
-
 
         troubleshooting_template_id:
-            document.getElementById(
-                "troubleshootingTemplate"
-            ).value
-                ? Number(
-                    document.getElementById(
-                        "troubleshootingTemplate"
-                    ).value
-                )
+            document.getElementById("troubleshootingTemplate").value
+                ? Number(document.getElementById("troubleshootingTemplate").value)
                 : null,
-
 
         status_id:
-            document.getElementById(
-                "status"
-            ).value
-                ? Number(
-                    document.getElementById(
-                        "status"
-                    ).value
-                )
+            document.getElementById("status").value
+                ? Number(document.getElementById("status").value)
                 : null,
 
-
         queue_id:
-            document.getElementById(
-                "queue"
-            ).value
-                ? Number(
-                    document.getElementById(
-                        "queue"
-                    ).value
-                )
+            document.getElementById("queue").value
+                ? Number(document.getElementById("queue").value)
                 : null
-        
-        
     };
-
 
     try {
 
+        // NEW TICKET
+        if (isNewTicket) {
+
+            const createdTicket =
+                await createTicket(ticketData);
+
+            window.location.href =
+                `ticket-detail.html?id=${createdTicket.id}`;
+
+            return;
+        }
+
+        // EXISTING TICKET
         await updateTicket(
             ticketId,
             ticketData
         );
 
-
         alert(
             "Ticket updated successfully."
         );
 
-
     } catch (error) {
 
         console.error(
-            "Error updating ticket:",
+            "Error saving ticket:",
             error
         );
 
-
         alert(
-            "Error updating ticket."
+            "Error saving ticket."
         );
     }
 }

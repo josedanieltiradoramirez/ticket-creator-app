@@ -108,7 +108,33 @@ async function updateTicket(ticketId, ticketData) {
     return await response.json();
 }
 
+async function createTicket(ticketData) {
 
+    const response = await fetch(
+        `${API_URL}/api/tickets/`,
+        {
+            method: "POST",
+
+            headers: {
+                ...getAuthHeaders(),
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify(ticketData)
+        }
+    );
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Error creating ticket"
+        );
+    }
+
+
+    return await response.json();
+}
 // ============================================================
 // AUTH
 // ============================================================

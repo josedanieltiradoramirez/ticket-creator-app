@@ -29,7 +29,6 @@ class TicketBase(BaseModel):
     is_status: bool = False
 
     issue_type_id: Optional[int] = None
-    kb_article_id: Optional[int] = None
 
     ticket_body: Optional[str] = None
     additional_notes: Optional[str] = None
