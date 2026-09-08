@@ -135,6 +135,8 @@ async function createTicket(ticketData) {
 
     return await response.json();
 }
+
+
 // ============================================================
 // AUTH
 // ============================================================
@@ -606,4 +608,149 @@ async function removeTicketKnowledgeBase(ticketId, knowledgeBaseId) {
     }
 
     return await response.json();
+}
+
+// ============================================================
+// TOOLS SECTION
+// ============================================================
+async function getTools() {
+
+    const response = await fetch(
+        `${API_URL}/api/tools/`,
+        {
+            headers: getAuthHeaders()
+        }
+    );
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Error loading tools"
+        );
+
+    }
+
+
+    return await response.json();
+
+}
+
+
+async function getTool(toolId) {
+
+    const response = await fetch(
+        `${API_URL}/api/tools/${toolId}`,
+        {
+            headers: getAuthHeaders()
+        }
+    );
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Error loading tool"
+        );
+
+    }
+
+
+    return await response.json();
+
+}
+
+
+async function createTool(toolData) {
+
+    const response = await fetch(
+        `${API_URL}/api/tools/`,
+        {
+            method: "POST",
+
+            headers: {
+                ...getAuthHeaders(),
+                "Content-Type":
+                    "application/json"
+            },
+
+            body:
+                JSON.stringify(toolData)
+        }
+    );
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Error creating tool"
+        );
+
+    }
+
+
+    return await response.json();
+
+}
+
+
+async function updateTool(
+    toolId,
+    toolData
+) {
+
+    const response = await fetch(
+        `${API_URL}/api/tools/${toolId}`,
+        {
+            method: "PUT",
+
+            headers: {
+                ...getAuthHeaders(),
+                "Content-Type":
+                    "application/json"
+            },
+
+            body:
+                JSON.stringify(toolData)
+        }
+    );
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Error updating tool"
+        );
+
+    }
+
+
+    return await response.json();
+
+}
+
+
+async function deleteToolApi(toolId) {
+
+    const response = await fetch(
+        `${API_URL}/api/tools/${toolId}`,
+        {
+            method: "DELETE",
+
+            headers: getAuthHeaders()
+        }
+    );
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Error deleting tool"
+        );
+
+    }
+
+
+    return await response.json();
+
 }

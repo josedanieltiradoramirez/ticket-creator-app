@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Tools</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/tools.css">
+</head>
+
+<body>
+
+    <div class="page-container">
+
+        <div class="crud-header">
+
+            <h2>Tools</h2>
+
+            <button id="newToolButton">
+                + New Tool
+            </button>
+
+            <button id="backButton">
+                Back
+            </button>
+
+        </div>
+
+
+        <div class="crud-toolbar">
+
+            <input
+                type="text"
+                id="searchTools"
+                placeholder="Search tools..."
+            >
+
+        </div>
+
+
+        <div class="crud-table-container">
+
+            <table class="crud-table">
+
+                <thead>
+
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="toolsTableBody">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- TOOL MODAL -->
+
+    <div
+        id="toolModal"
+        class="modal hidden"
+    >
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h3 id="modalTitle">
+                    Create Tool
+                </h3>
+
+                <button
+                    id="closeToolModal"
+                    class="modal-close"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <form id="toolForm">
+
+                <div class="form-group">
+
+                    <label for="toolName">
+                        Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="toolName"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="toolDescription">
+                        Description
+                    </label>
+
+                    <textarea
+                        id="toolDescription"
+                        rows="4"
+                        required
+                    ></textarea>
+
+                </div>
+
+
+                <div class="form-group checkbox-group">
+
+                    <input
+                        type="checkbox"
+                        id="toolActive"
+                        checked
+                    >
+
+                    <label for="toolActive">
+                        Active
+                    </label>
+
+                </div>
+
+
+                <div class="modal-actions">
+
+                    <button
+                        type="button"
+                        id="cancelToolButton"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        type="submit"
+                        id="saveToolButton"
+                    >
+                        Save
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <script src="js/api.js"></script>
+    <script src="js/tools.js"></script>
+
+</body>
+
+</html>

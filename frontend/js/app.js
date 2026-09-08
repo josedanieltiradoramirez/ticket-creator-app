@@ -32,7 +32,25 @@ if (loginForm) {
     });
 }
 
+// =========================
+// MENU
+// =========================
 
+document
+    .getElementById("ticketsButton")
+    .addEventListener("click", () => {
+        window.location.href = "index.html";
+    });
+
+
+
+document
+    .getElementById("toolsButton")
+    .addEventListener("click", () => {
+        window.location.href = "tools.html";
+    });
+
+    
 // =========================
 // TICKETS
 // =========================
