@@ -56,6 +56,12 @@ document
         window.location.href = "locations.html";
     });
 
+document
+    .getElementById("queuesButton")
+    .addEventListener("click", () => {
+        window.location.href = "queues.html";
+    });
+
     
 // =========================
 // TICKETS

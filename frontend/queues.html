@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Queues</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/tools.css">
+</head>
+
+<body>
+
+    <div class="page-container">
+
+        <div class="crud-header">
+
+            <h2>Queues</h2>
+
+            <div>
+
+                <button id="backButton">
+                    Back
+                </button>
+
+                <button id="newQueueButton">
+                    + New Queue
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="crud-toolbar">
+
+            <input
+                type="text"
+                id="searchQueues"
+                placeholder="Search queues..."
+            >
+
+        </div>
+
+
+        <div class="crud-table-container">
+
+            <table class="crud-table">
+
+                <thead>
+
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="queuesTableBody">
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- QUEUE MODAL -->
+
+    <div
+        id="queueModal"
+        class="modal hidden"
+    >
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h3 id="modalTitle">
+                    Create Queue
+                </h3>
+
+                <button
+                    id="closeQueueModal"
+                    class="modal-close"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <form id="queueForm">
+
+                <div class="form-group">
+
+                    <label for="queueName">
+                        Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="queueName"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="queueDescription">
+                        Description
+                    </label>
+
+                    <textarea
+                        id="queueDescription"
+                        rows="4"
+                        required
+                    ></textarea>
+
+                </div>
+
+
+                <div class="form-group checkbox-group">
+
+                    <input
+                        type="checkbox"
+                        id="queueActive"
+                        checked
+                    >
+
+                    <label for="queueActive">
+                        Active
+                    </label>
+
+                </div>
+
+
+                <div class="modal-actions">
+
+                    <button
+                        type="button"
+                        id="cancelQueueButton"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        type="submit"
+                        id="saveQueueButton"
+                    >
+                        Save
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <script src="js/api.js"></script>
+    <script src="js/queues.js"></script>
+
+</body>
+
+</html>

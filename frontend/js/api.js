@@ -900,3 +900,149 @@ async function deleteLocationApi(locationId) {
     return await response.json();
 
 }
+
+// ============================================================
+// QUEUES SECTION
+// ============================================================
+
+async function getQueues() {
+
+    const response = await fetch(
+        `${API_URL}/api/queues/`,
+        {
+            headers: getAuthHeaders()
+        }
+    );
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Error loading queues"
+        );
+
+    }
+
+
+    return await response.json();
+
+}
+
+
+async function getQueue(queueId) {
+
+    const response = await fetch(
+        `${API_URL}/api/queues/${queueId}`,
+        {
+            headers: getAuthHeaders()
+        }
+    );
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Error loading queue"
+        );
+
+    }
+
+
+    return await response.json();
+
+}
+
+
+async function createQueue(queueData) {
+
+    const response = await fetch(
+        `${API_URL}/api/queues/`,
+        {
+            method: "POST",
+
+            headers: {
+                ...getAuthHeaders(),
+                "Content-Type":
+                    "application/json"
+            },
+
+            body:
+                JSON.stringify(queueData)
+        }
+    );
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Error creating queue"
+        );
+
+    }
+
+
+    return await response.json();
+
+}
+
+
+async function updateQueue(
+    queueId,
+    queueData
+) {
+
+    const response = await fetch(
+        `${API_URL}/api/queues/${queueId}`,
+        {
+            method: "PUT",
+
+            headers: {
+                ...getAuthHeaders(),
+                "Content-Type":
+                    "application/json"
+            },
+
+            body:
+                JSON.stringify(queueData)
+        }
+    );
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Error updating queue"
+        );
+
+    }
+
+
+    return await response.json();
+
+}
+
+
+async function deleteQueueApi(queueId) {
+
+    const response = await fetch(
+        `${API_URL}/api/queues/${queueId}`,
+        {
+            method: "DELETE",
+
+            headers: getAuthHeaders()
+        }
+    );
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Error deleting queue"
+        );
+
+    }
+
+
+    return await response.json();
+
+}
