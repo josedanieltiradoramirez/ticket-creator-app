@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Locations</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/tools.css">
+</head>
+
+<body>
+
+    <div class="page-container">
+
+        <div class="crud-header">
+
+            <h2>Locations</h2>
+
+            <div>
+                <button id="backButton">
+                    Back
+                </button>
+
+                <button id="newLocationButton">
+                    + New Location
+                </button>
+            </div>
+
+        </div>
+
+
+        <div class="crud-toolbar">
+
+            <input
+                type="text"
+                id="searchLocations"
+                placeholder="Search locations..."
+            >
+
+        </div>
+
+
+        <div class="crud-table-container">
+
+            <table class="crud-table">
+
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>City</th>
+                        <th>State</th>
+                        <th>Code</th>
+                        <th>Status</th>
+                        <th>WMS</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody id="locationsTableBody">
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- LOCATION MODAL -->
+
+    <div
+        id="locationModal"
+        class="modal hidden"
+    >
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h3 id="modalTitle">
+                    Create Location
+                </h3>
+
+                <button
+                    id="closeLocationModal"
+                    class="modal-close"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <form id="locationForm">
+
+                <div class="form-group">
+
+                    <label for="locationName">
+                        Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="locationName"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="locationCity">
+                        City
+                    </label>
+
+                    <input
+                        type="text"
+                        id="locationCity"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="locationState">
+                        State
+                    </label>
+
+                    <input
+                        type="text"
+                        id="locationState"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="locationCode">
+                        Code
+                    </label>
+
+                    <input
+                        type="text"
+                        id="locationCode"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="locationWms">
+                        WMS
+                    </label>
+
+                    <select id="locationWms">
+                        <option value="">
+                            No WMS
+                        </option>
+                    </select>
+
+                </div>
+
+
+                <div class="form-group checkbox-group">
+
+                    <input
+                        type="checkbox"
+                        id="locationActive"
+                        checked
+                    >
+
+                    <label for="locationActive">
+                        Active
+                    </label>
+
+                </div>
+
+
+                <div class="modal-actions">
+
+                    <button
+                        type="button"
+                        id="cancelLocationButton"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        type="submit"
+                        id="saveLocationButton"
+                    >
+                        Save
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <script src="js/api.js"></script>
+    <script src="js/locations.js"></script>
+
+</body>
+
+</html>

@@ -754,3 +754,149 @@ async function deleteToolApi(toolId) {
     return await response.json();
 
 }
+
+// ============================================================
+// LOCATIONS SECTION
+// ============================================================
+
+async function getLocations() {
+
+    const response = await fetch(
+        `${API_URL}/api/locations/`,
+        {
+            headers: getAuthHeaders()
+        }
+    );
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Error loading locations"
+        );
+
+    }
+
+
+    return await response.json();
+
+}
+
+
+async function getLocation(locationId) {
+
+    const response = await fetch(
+        `${API_URL}/api/locations/${locationId}`,
+        {
+            headers: getAuthHeaders()
+        }
+    );
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Error loading location"
+        );
+
+    }
+
+
+    return await response.json();
+
+}
+
+
+async function createLocation(locationData) {
+
+    const response = await fetch(
+        `${API_URL}/api/locations/`,
+        {
+            method: "POST",
+
+            headers: {
+                ...getAuthHeaders(),
+                "Content-Type":
+                    "application/json"
+            },
+
+            body:
+                JSON.stringify(locationData)
+        }
+    );
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Error creating location"
+        );
+
+    }
+
+
+    return await response.json();
+
+}
+
+
+async function updateLocation(
+    locationId,
+    locationData
+) {
+
+    const response = await fetch(
+        `${API_URL}/api/locations/${locationId}`,
+        {
+            method: "PUT",
+
+            headers: {
+                ...getAuthHeaders(),
+                "Content-Type":
+                    "application/json"
+            },
+
+            body:
+                JSON.stringify(locationData)
+        }
+    );
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Error updating location"
+        );
+
+    }
+
+
+    return await response.json();
+
+}
+
+
+async function deleteLocationApi(locationId) {
+
+    const response = await fetch(
+        `${API_URL}/api/locations/${locationId}`,
+        {
+            method: "DELETE",
+
+            headers: getAuthHeaders()
+        }
+    );
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Error deleting location"
+        );
+
+    }
+
+
+    return await response.json();
+
+}

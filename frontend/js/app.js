@@ -50,6 +50,12 @@ document
         window.location.href = "tools.html";
     });
 
+document
+    .getElementById("locationsButton")
+    .addEventListener("click", () => {
+        window.location.href = "locations.html";
+    });
+
     
 // =========================
 // TICKETS
