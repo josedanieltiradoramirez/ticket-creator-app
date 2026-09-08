@@ -2,18 +2,13 @@
 // GLOBAL VARIABLES
 // ============================================================
 
-const params =
-    new URLSearchParams(window.location.search);
+const params = new URLSearchParams(window.location.search);
 
-const ticketId =
-    params.get("id");
-
+const ticketId = params.get("id");
+const isNewTicket = params.get("new") === "true";
 
 let troubleshootingTemplates = [];
-
 let forms = [];
-
-// KBs that the user explicitly marked as used
 let usedKnowledgeBase = [];
 
 
@@ -39,7 +34,45 @@ async function initializeTicketPage() {
 
     setupEventListeners();
 
-    await loadTicket();
+    if (isNewTicket) {
+        await initializeNewTicket();
+    } else {
+        await loadTicket();
+    }
+}
+
+async function initializeNewTicket() {
+
+    await loadPriorities(null);
+    const prioritySelect =
+        document.getElementById("priority");
+
+    const mediumOption =
+        Array.from(prioritySelect.options)
+            .find(
+                option =>
+                    option.textContent.trim().toLowerCase() ===
+                    "medium"
+            );
+
+    if (mediumOption) {
+        prioritySelect.value =
+            mediumOption.value;
+    }
+    await loadStatuses(null);
+    await loadQueues(null);
+    await loadLocations(null);
+    await loadTools(null);
+
+    // Load all Issue Types
+    await loadIssueTypes(null);
+
+    // Load all Forms and Troubleshooting Templates
+    await loadForms();
+    await loadTroubleshootingTemplates();
+
+
+    updateTitleSuggestion();
 }
 
 
@@ -483,7 +516,16 @@ async function loadTools(
 
 
     toolSelect.innerHTML = "";
+    const emptyOption =
+        document.createElement("option");
 
+    emptyOption.value = "";
+    emptyOption.textContent =
+        "Select a Tool";
+
+    toolSelect.appendChild(
+        emptyOption
+    );   
 
     tools.forEach(
         tool => {
@@ -617,6 +659,16 @@ async function loadLocations(
 
     locationSelect.innerHTML = "";
 
+    const emptyOption =
+        document.createElement("option");
+
+    emptyOption.value = "";
+    emptyOption.textContent =
+        "Select a Location";
+
+    locationSelect.appendChild(
+        emptyOption
+    );
 
     locations.forEach(
         location => {
@@ -673,7 +725,16 @@ async function loadIssueTypes(
 
 
     issueTypeSelect.innerHTML = "";
+    const emptyOption =
+        document.createElement("option");
 
+    emptyOption.value = "";
+    emptyOption.textContent =
+        "Select an Issue Type";
+
+    issueTypeSelect.appendChild(
+        emptyOption
+    );    
 
     issueTypes.forEach(
         issueType => {
@@ -911,14 +972,22 @@ async function loadIssueTypeKnowledgeBase(
 // ============================================================
 
 async function loadTroubleshootingTemplates(
-    issueTypeId,
+    issueTypeId = null,
     currentTemplateId = null
 ) {
-    const relatedTemplates =
-        await getIssueTypeTroubleshootingTemplates(issueTypeId);
 
     const allTemplates =
         await getTroubleshootingTemplates();
+
+    let relatedTemplates = [];
+
+    // Only load related templates if an Issue Type was selected
+    if (issueTypeId) {
+        relatedTemplates =
+            await getIssueTypeTroubleshootingTemplates(
+                issueTypeId
+            );
+    }
 
     const templateSelect =
         document.getElementById(
@@ -936,18 +1005,22 @@ async function loadTroubleshootingTemplates(
         document.createElement("option");
 
     emptyOption.value = "";
-    emptyOption.textContent = "Select a template";
+    emptyOption.textContent =
+        "Select a Troubleshooting Template";
 
-    templateSelect.appendChild(emptyOption);
+    templateSelect.appendChild(
+        emptyOption
+    );
 
 
     // Related template IDs
 
-    const relatedIds = new Set(
-        relatedTemplates.map(
-            template => template.id
-        )
-    );
+    const relatedIds =
+        new Set(
+            relatedTemplates.map(
+                template => template.id
+            )
+        );
 
 
     // Related templates
@@ -960,21 +1033,26 @@ async function loadTroubleshootingTemplates(
         relatedGroup.label = "Related";
 
 
-        relatedTemplates.forEach(template => {
+        relatedTemplates.forEach(
+            template => {
 
-            const option =
-                document.createElement("option");
+                const option =
+                    document.createElement(
+                        "option"
+                    );
 
-            option.value = template.id;
+                option.value =
+                    template.id;
 
-            option.textContent =
-                template.name ??
-                template.generated_description;
+                option.textContent =
+                    template.name ??
+                    template.generated_description;
 
-            relatedGroup.appendChild(option);
-
-        });
-
+                relatedGroup.appendChild(
+                    option
+                );
+            }
+        );
 
         templateSelect.appendChild(
             relatedGroup
@@ -987,33 +1065,45 @@ async function loadTroubleshootingTemplates(
     const otherTemplates =
         allTemplates.filter(
             template =>
-                !relatedIds.has(template.id)
+                !relatedIds.has(
+                    template.id
+                )
         );
 
 
     if (otherTemplates.length > 0) {
 
         const allGroup =
-            document.createElement("optgroup");
+            document.createElement(
+                "optgroup"
+            );
 
-        allGroup.label = "All";
+        allGroup.label =
+            issueTypeId
+                ? "All"
+                : "All Templates";
 
 
-        otherTemplates.forEach(template => {
+        otherTemplates.forEach(
+            template => {
 
-            const option =
-                document.createElement("option");
+                const option =
+                    document.createElement(
+                        "option"
+                    );
 
-            option.value = template.id;
+                option.value =
+                    template.id;
 
-            option.textContent =
-                template.name ??
-                template.generated_description;
+                option.textContent =
+                    template.name ??
+                    template.generated_description;
 
-            allGroup.appendChild(option);
-
-        });
-
+                allGroup.appendChild(
+                    option
+                );
+            }
+        );
 
         templateSelect.appendChild(
             allGroup
@@ -1021,9 +1111,7 @@ async function loadTroubleshootingTemplates(
     }
 
 
-    // ================================================
-    // SELECT TEMPLATE
-    // ================================================
+    // Select template
 
     if (
         currentTemplateId !== null &&
@@ -1038,12 +1126,13 @@ async function loadTroubleshootingTemplates(
     ) {
 
         templateSelect.value =
-            String(relatedTemplates[0].id);
+            String(
+                relatedTemplates[0].id
+            );
 
     } else {
 
         templateSelect.value = "";
-
     }
 
 
@@ -1058,6 +1147,9 @@ async function loadTroubleshootingTemplates(
         templateSelect.value
     );
 }
+
+
+    
 
 // ============================================================
 // SELECTED TEMPLATE
@@ -1220,14 +1312,22 @@ async function loadTemplateKnowledgeBase(
 // ============================================================
 
 async function loadForms(
-    issueTypeId,
+    issueTypeId = null,
     currentFormId = null
 ) {
-    const relatedForms =
-        await getIssueTypeForm(issueTypeId);
 
     const allForms =
         await getForms();
+
+    let relatedForms = [];
+
+    // Only load related forms if an Issue Type was selected
+    if (issueTypeId) {
+        relatedForms =
+            await getIssueTypeForm(
+                issueTypeId
+            );
+    }
 
     forms = allForms;
 
@@ -1243,18 +1343,22 @@ async function loadForms(
         document.createElement("option");
 
     emptyOption.value = "";
-    emptyOption.textContent = "Select a form";
+    emptyOption.textContent =
+        "Select a Form";
 
-    formSelect.appendChild(emptyOption);
+    formSelect.appendChild(
+        emptyOption
+    );
 
 
     // Related form IDs
 
-    const relatedIds = new Set(
-        relatedForms.map(
-            form => form.id
-        )
-    );
+    const relatedIds =
+        new Set(
+            relatedForms.map(
+                form => form.id
+            )
+        );
 
 
     // Related forms
@@ -1262,23 +1366,33 @@ async function loadForms(
     if (relatedForms.length > 0) {
 
         const relatedGroup =
-            document.createElement("optgroup");
+            document.createElement(
+                "optgroup"
+            );
 
-        relatedGroup.label = "Related";
+        relatedGroup.label =
+            "Related";
 
 
-        relatedForms.forEach(form => {
+        relatedForms.forEach(
+            form => {
 
-            const option =
-                document.createElement("option");
+                const option =
+                    document.createElement(
+                        "option"
+                    );
 
-            option.value = form.id;
-            option.textContent = form.name;
+                option.value =
+                    form.id;
 
-            relatedGroup.appendChild(option);
+                option.textContent =
+                    form.name;
 
-        });
-
+                relatedGroup.appendChild(
+                    option
+                );
+            }
+        );
 
         formSelect.appendChild(
             relatedGroup
@@ -1291,30 +1405,44 @@ async function loadForms(
     const otherForms =
         allForms.filter(
             form =>
-                !relatedIds.has(form.id)
+                !relatedIds.has(
+                    form.id
+                )
         );
 
 
     if (otherForms.length > 0) {
 
         const allGroup =
-            document.createElement("optgroup");
+            document.createElement(
+                "optgroup"
+            );
 
-        allGroup.label = "All";
+        allGroup.label =
+            issueTypeId
+                ? "All"
+                : "All Forms";
 
 
-        otherForms.forEach(form => {
+        otherForms.forEach(
+            form => {
 
-            const option =
-                document.createElement("option");
+                const option =
+                    document.createElement(
+                        "option"
+                    );
 
-            option.value = form.id;
-            option.textContent = form.name;
+                option.value =
+                    form.id;
 
-            allGroup.appendChild(option);
+                option.textContent =
+                    form.name;
 
-        });
-
+                allGroup.appendChild(
+                    option
+                );
+            }
+        );
 
         formSelect.appendChild(
             allGroup
@@ -1322,9 +1450,7 @@ async function loadForms(
     }
 
 
-    // ================================================
-    // SELECT FORM
-    // ================================================
+    // Select form
 
     if (
         currentFormId !== null &&
@@ -1339,12 +1465,13 @@ async function loadForms(
     ) {
 
         formSelect.value =
-            String(relatedForms[0].id);
+            String(
+                relatedForms[0].id
+            );
 
     } else {
 
         formSelect.value = "";
-
     }
 
 
@@ -2306,30 +2433,35 @@ function generateTicket() {
             locationSelect.selectedIndex
         ];
 
-    const locationName =
-        selectedLocation?.textContent.trim() ?? "";
-
-    const locationCode =
-        selectedLocation?.dataset.code?.trim() ?? "";
+    const locationValue =
+        locationSelect.value;
 
     let affectedLocation = "";
 
-    if (locationName && locationCode) {
+    if (locationValue) {
 
-        affectedLocation =
-            `${locationName}. ${locationCode}`;
+        const locationName =
+            selectedLocation?.textContent.trim() ?? "";
 
-    } else if (locationName) {
+        const locationCode =
+            selectedLocation?.dataset.code?.trim() ?? "";
 
-        affectedLocation =
-            locationName;
+        if (locationName && locationCode) {
 
-    } else if (locationCode) {
+            affectedLocation =
+                `${locationName}. ${locationCode}`;
 
-        affectedLocation =
-            locationCode;
+        } else if (locationName) {
+
+            affectedLocation =
+                locationName;
+
+        } else if (locationCode) {
+
+            affectedLocation =
+                locationCode;
+        }
     }
-
 
     // ========================================================
     // BUILD USER INFORMATION

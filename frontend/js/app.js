@@ -334,6 +334,14 @@ async function loadLocations() {
 
     }
 }
+// =========================
+// NEW TICKET
+// =========================
+
+document.getElementById("newTicketButton")
+    .addEventListener("click", () => {
+        window.location.href = "ticket-detail.html?new=true";
+    });
 
 
 
