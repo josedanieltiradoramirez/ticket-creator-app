@@ -73,6 +73,13 @@ document
     .addEventListener("click", () => {
         window.location.href = "issue-types.html";
     });
+
+document
+    .getElementById("formsButton")
+    .addEventListener("click", () => {
+        window.location.href = "forms.html";
+    }); 
+
     
 // =========================
 // TICKETS

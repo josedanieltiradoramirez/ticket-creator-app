@@ -1289,3 +1289,96 @@ async function deleteIssueType(issueTypeId) {
 
     return await response.json();
 }
+
+// ============================================================
+// ISSUE TYPES SECTION
+// ============================================================
+async function getForms() {
+    const response = await fetch(
+        `${API_URL}/api/forms/`,
+        {
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error loading forms");
+    }
+
+    return await response.json();
+}
+
+
+async function getForm(formId) {
+    const response = await fetch(
+        `${API_URL}/api/forms/${formId}`,
+        {
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error loading form");
+    }
+
+    return await response.json();
+}
+
+
+async function createForm(formData) {
+    const response = await fetch(
+        `${API_URL}/api/forms/`,
+        {
+            method: "POST",
+            headers: {
+                ...getAuthHeaders(),
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(formData)
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error creating form");
+    }
+
+    return await response.json();
+}
+
+
+async function updateForm(formId, formData) {
+    const response = await fetch(
+        `${API_URL}/api/forms/${formId}`,
+        {
+            method: "PUT",
+            headers: {
+                ...getAuthHeaders(),
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(formData)
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error updating form");
+    }
+
+    return await response.json();
+}
+
+
+async function deleteForm(formId) {
+    const response = await fetch(
+        `${API_URL}/api/forms/${formId}`,
+        {
+            method: "DELETE",
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error deleting form");
+    }
+
+    return await response.json();
+}
