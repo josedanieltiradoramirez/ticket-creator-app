@@ -1479,3 +1479,102 @@ async function deleteTroubleshootingTemplate(templateId) {
 
     return await response.json();
 }
+
+// ============================================================
+// KNOWLEDGE BASE SECTION
+// ============================================================
+
+async function getKnowledgeBaseItems() {
+    const response = await fetch(
+        `${API_URL}/api/knowledge_base/`,
+        {
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error loading knowledge base");
+    }
+
+    return await response.json();
+}
+
+
+async function getKnowledgeBaseItem(knowledgeBaseId) {
+    const response = await fetch(
+        `${API_URL}/api/knowledge_base/${knowledgeBaseId}`,
+        {
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error loading knowledge base item");
+    }
+
+    return await response.json();
+}
+
+
+async function createKnowledgeBaseItem(itemData) {
+    const response = await fetch(
+        `${API_URL}/api/knowledge_base/`,
+        {
+            method: "POST",
+            headers: {
+                ...getAuthHeaders(),
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(itemData)
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error creating knowledge base item");
+    }
+
+    return await response.json();
+}
+
+
+async function updateKnowledgeBaseItem(
+    knowledgeBaseId,
+    itemData
+) {
+    const response = await fetch(
+        `${API_URL}/api/knowledge_base/${knowledgeBaseId}`,
+        {
+            method: "PUT",
+            headers: {
+                ...getAuthHeaders(),
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(itemData)
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error updating knowledge base item");
+    }
+
+    return await response.json();
+}
+
+
+async function deleteKnowledgeBaseItem(
+    knowledgeBaseId
+) {
+    const response = await fetch(
+        `${API_URL}/api/knowledge_base/${knowledgeBaseId}`,
+        {
+            method: "DELETE",
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error deleting knowledge base item");
+    }
+
+    return await response.json();
+}

@@ -89,6 +89,14 @@ document
 
     });
 
+document
+    .getElementById("knowledgeBaseButton")
+    .addEventListener("click", () => {
+
+        window.location.href =
+            "knowledge-base.html";
+
+    });
     
 // =========================
 // TICKETS
