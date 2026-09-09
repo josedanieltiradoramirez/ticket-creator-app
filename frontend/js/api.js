@@ -1291,7 +1291,7 @@ async function deleteIssueType(issueTypeId) {
 }
 
 // ============================================================
-// ISSUE TYPES SECTION
+// FORMS SECTION
 // ============================================================
 async function getForms() {
     const response = await fetch(
@@ -1378,6 +1378,103 @@ async function deleteForm(formId) {
 
     if (!response.ok) {
         throw new Error("Error deleting form");
+    }
+
+    return await response.json();
+}
+
+// ============================================================
+// TROUBLESHOOTING TEMPLATES SECTION
+// ============================================================
+
+async function getTroubleshootingTemplates() {
+    const response = await fetch(
+        `${API_URL}/api/troubleshooting_templates/`,
+        {
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error loading troubleshooting templates");
+    }
+
+    return await response.json();
+}
+
+
+async function getTroubleshootingTemplate(templateId) {
+    const response = await fetch(
+        `${API_URL}/api/troubleshooting_templates/${templateId}`,
+        {
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error loading troubleshooting template");
+    }
+
+    return await response.json();
+}
+
+
+async function createTroubleshootingTemplate(templateData) {
+    const response = await fetch(
+        `${API_URL}/api/troubleshooting_templates/`,
+        {
+            method: "POST",
+            headers: {
+                ...getAuthHeaders(),
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(templateData)
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error creating troubleshooting template");
+    }
+
+    return await response.json();
+}
+
+
+async function updateTroubleshootingTemplate(
+    templateId,
+    templateData
+) {
+    const response = await fetch(
+        `${API_URL}/api/troubleshooting_templates/${templateId}`,
+        {
+            method: "PUT",
+            headers: {
+                ...getAuthHeaders(),
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(templateData)
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error updating troubleshooting template");
+    }
+
+    return await response.json();
+}
+
+
+async function deleteTroubleshootingTemplate(templateId) {
+    const response = await fetch(
+        `${API_URL}/api/troubleshooting_templates/${templateId}`,
+        {
+            method: "DELETE",
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error deleting troubleshooting template");
     }
 
     return await response.json();

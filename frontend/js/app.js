@@ -80,6 +80,15 @@ document
         window.location.href = "forms.html";
     }); 
 
+document
+    .getElementById("troubleshootingTemplatesButton")
+    .addEventListener("click", () => {
+
+        window.location.href =
+            "troubleshooting-templates.html";
+
+    });
+
     
 // =========================
 // TICKETS
