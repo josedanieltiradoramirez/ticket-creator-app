@@ -1195,3 +1195,97 @@ async function deleteWarehouseManagementSystem(
     return await response.json();
 
 }
+
+// ============================================================
+// ISSUE TYPES SECTION
+// ============================================================
+
+async function getIssueTypes() {
+    const response = await fetch(
+        `${API_URL}/api/issue_types/`,
+        {
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error loading issue types");
+    }
+
+    return await response.json();
+}
+
+
+async function getIssueType(issueTypeId) {
+    const response = await fetch(
+        `${API_URL}/api/issue_types/${issueTypeId}`,
+        {
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error loading issue type");
+    }
+
+    return await response.json();
+}
+
+
+async function createIssueType(issueTypeData) {
+    const response = await fetch(
+        `${API_URL}/api/issue_types/`,
+        {
+            method: "POST",
+            headers: {
+                ...getAuthHeaders(),
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(issueTypeData)
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error creating issue type");
+    }
+
+    return await response.json();
+}
+
+
+async function updateIssueType(issueTypeId, issueTypeData) {
+    const response = await fetch(
+        `${API_URL}/api/issue_types/${issueTypeId}`,
+        {
+            method: "PUT",
+            headers: {
+                ...getAuthHeaders(),
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(issueTypeData)
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error updating issue type");
+    }
+
+    return await response.json();
+}
+
+
+async function deleteIssueType(issueTypeId) {
+    const response = await fetch(
+        `${API_URL}/api/issue_types/${issueTypeId}`,
+        {
+            method: "DELETE",
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error deleting issue type");
+    }
+
+    return await response.json();
+}

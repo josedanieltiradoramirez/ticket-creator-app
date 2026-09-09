@@ -68,6 +68,11 @@ document
         window.location.href = "warehouse-management-systems.html";
     });
 
+document
+    .getElementById("issueTypesButton")
+    .addEventListener("click", () => {
+        window.location.href = "issue-types.html";
+    });
     
 // =========================
 // TICKETS

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Issue Types</title>
+
+    <link
+        rel="stylesheet"
+        href="css/tools.css"
+    >
+
+</head>
+
+<body>
+
+    <header>
+
+        <h1>Issue Types</h1>
+
+        <button id="backButton">
+            Back
+        </button>
+
+    </header>
+
+
+    <main>
+
+        <div class="crud-header">
+
+            <h2>Issue Types</h2>
+
+            <button id="addIssueTypeButton">
+                New Issue Type
+            </button>
+
+        </div>
+
+
+        <div class="crud-toolbar">
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Search issue types..."
+            >
+
+        </div>
+
+
+        <div class="crud-table-container">
+
+            <table class="crud-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Name</th>
+
+                        <th>Category</th>
+
+                        <th>Display Name</th>
+
+                        <th>Form</th>
+
+                        <th>Status</th>
+
+                        <th>Actions</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="issueTypesTableBody">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </main>
+
+
+    <!-- MODAL -->
+
+    <div
+        id="issueTypeModal"
+        class="modal hidden"
+    >
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h2 id="modalTitle">
+                    New Issue Type
+                </h2>
+
+                <button
+                    id="closeModalButton"
+                    class="modal-close"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <form id="issueTypeForm">
+
+
+                <div class="form-group">
+
+                    <label for="name">
+                        Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="name"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="description">
+                        Description
+                    </label>
+
+                    <textarea
+                        id="description"
+                        rows="4"
+                        required
+                    ></textarea>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="category">
+                        Category
+                    </label>
+
+                    <input
+                        type="text"
+                        id="category"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="displayName">
+                        Display Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="displayName"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="searchKeywords">
+                        Search Keywords
+                    </label>
+
+                    <input
+                        type="text"
+                        id="searchKeywords"
+                        placeholder="Example: password, reset, AD"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="formTemplate">
+                        Form Template
+                    </label>
+
+                    <select id="formTemplate">
+
+                        <option value="">
+                            No Form
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group checkbox-group">
+
+                    <input
+                        type="checkbox"
+                        id="isActive"
+                        checked
+                    >
+
+                    <label for="isActive">
+                        Active
+                    </label>
+
+                </div>
+
+
+                <div class="modal-actions">
+
+                    <button
+                        type="button"
+                        id="cancelButton"
+                    >
+                        Cancel
+                    </button>
+
+                    <button type="submit">
+                        Save
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <script src="js/api.js"></script>
+    <script src="js/issue-types.js"></script>
+
+</body>
+
+</html>

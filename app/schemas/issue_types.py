@@ -40,7 +40,7 @@ class IssueTypeResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 class IssueTypeDetailResponse(IssueTypeResponse):
-    form: FormResponse
-    tools: list[ToolSummary]
-    troubleshooting_templates: list[TroubleshootingTemplateSummary]
-    knowledge_base: list[KnowledgeBaseSummary]
+    form: Optional[FormResponse] = None
+    tools: list[ToolSummary] = []
+    troubleshooting_templates: list[TroubleshootingTemplateSummary] = []
+    knowledge_base: list[KnowledgeBaseSummary] = []
