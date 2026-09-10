@@ -166,6 +166,13 @@ function renderIssueTypes() {
 
                 <button
                     class="action-button"
+                    onclick="openIssueTypeDetail(${issueType.id})"
+                >
+                    View
+                </button>
+
+                <button
+                    class="action-button"
                     onclick="openEditModal(${issueType.id})"
                 >
                     Edit
@@ -449,5 +456,12 @@ async function deleteIssueTypeConfirm(issueTypeId) {
         );
 
     }
+
+}
+
+function openIssueTypeDetail(issueTypeId) {
+
+    window.location.href =
+        `issue-type-detail.html?id=${issueTypeId}`;
 
 }

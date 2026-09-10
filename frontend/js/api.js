@@ -1231,6 +1231,204 @@ async function getIssueType(issueTypeId) {
     return await response.json();
 }
 
+// ============================================================
+// ISSUE TYPE RELATIONSHIPS
+// ============================================================
+
+
+// ------------------------------------------------------------
+// TOOLS
+// ------------------------------------------------------------
+
+async function getIssueTypeTools(issueTypeId) {
+
+    const response = await fetch(
+        `${API_URL}/api/issue_types/${issueTypeId}/tools`,
+        {
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error loading issue type tools");
+    }
+
+    return await response.json();
+}
+
+
+async function addIssueTypeTool(issueTypeId, toolId) {
+
+    const response = await fetch(
+        `${API_URL}/api/issue_types/${issueTypeId}/tools/${toolId}`,
+        {
+            method: "POST",
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error adding tool to issue type");
+    }
+
+    return await response.json();
+}
+
+
+async function removeIssueTypeTool(issueTypeId, toolId) {
+
+    const response = await fetch(
+        `${API_URL}/api/issue_types/${issueTypeId}/tools/${toolId}`,
+        {
+            method: "DELETE",
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Error removing tool from issue type");
+    }
+
+    return await response.json();
+}
+
+
+// ------------------------------------------------------------
+// TROUBLESHOOTING TEMPLATES
+// ------------------------------------------------------------
+
+async function getIssueTypeTroubleshootingTemplates(issueTypeId) {
+
+    const response = await fetch(
+        `${API_URL}/api/issue_types/${issueTypeId}/troubleshooting-templates`,
+        {
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error loading issue type troubleshooting templates"
+        );
+    }
+
+    return await response.json();
+}
+
+
+async function addIssueTypeTroubleshootingTemplate(
+    issueTypeId,
+    templateId
+) {
+
+    const response = await fetch(
+        `${API_URL}/api/issue_types/${issueTypeId}/troubleshooting-templates/${templateId}`,
+        {
+            method: "POST",
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error adding troubleshooting template to issue type"
+        );
+    }
+
+    return await response.json();
+}
+
+
+async function removeIssueTypeTroubleshootingTemplate(
+    issueTypeId,
+    templateId
+) {
+
+    const response = await fetch(
+        `${API_URL}/api/issue_types/${issueTypeId}/troubleshooting-templates/${templateId}`,
+        {
+            method: "DELETE",
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error removing troubleshooting template from issue type"
+        );
+    }
+
+    return await response.json();
+}
+
+
+// ------------------------------------------------------------
+// KNOWLEDGE BASE
+// ------------------------------------------------------------
+
+async function getIssueTypeKnowledgeBase(issueTypeId) {
+
+    const response = await fetch(
+        `${API_URL}/api/issue_types/${issueTypeId}/knowledge-base`,
+        {
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error loading issue type knowledge base"
+        );
+    }
+
+    return await response.json();
+}
+
+
+async function addIssueTypeKnowledgeBase(
+    issueTypeId,
+    knowledgeBaseId
+) {
+
+    const response = await fetch(
+        `${API_URL}/api/issue_types/${issueTypeId}/knowledge-base/${knowledgeBaseId}`,
+        {
+            method: "POST",
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error adding knowledge base to issue type"
+        );
+    }
+
+    return await response.json();
+}
+
+
+async function removeIssueTypeKnowledgeBase(
+    issueTypeId,
+    knowledgeBaseId
+) {
+
+    const response = await fetch(
+        `${API_URL}/api/issue_types/${issueTypeId}/knowledge-base/${knowledgeBaseId}`,
+        {
+            method: "DELETE",
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error removing knowledge base from issue type"
+        );
+    }
+
+    return await response.json();
+}
 
 async function createIssueType(issueTypeData) {
     const response = await fetch(
