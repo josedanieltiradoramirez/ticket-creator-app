@@ -1,9 +1,19 @@
 let forms = [];
-
 let editingFormId = null;
 
 
 document.addEventListener("DOMContentLoaded", async () => {
+
+    setupEventListeners();
+
+    await loadForms();
+
+    handleEditQueryParameter();
+
+});
+
+
+function setupEventListeners() {
 
     document
         .getElementById("backButton")
@@ -38,10 +48,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         .getElementById("searchInput")
         .addEventListener("input", renderForms);
 
-
-    await loadForms();
-
-});
+}
 
 
 async function loadForms() {
@@ -54,14 +61,9 @@ async function loadForms() {
 
     } catch (error) {
 
-        console.error(
-            "Error loading forms:",
-            error
-        );
+        console.error("Error loading forms:", error);
 
-        alert(
-            "Error loading forms."
-        );
+        alert("Error loading forms.");
 
     }
 
@@ -71,39 +73,56 @@ async function loadForms() {
 function renderForms() {
 
     const tableBody =
-        document.getElementById(
-            "formsTableBody"
-        );
-
+        document.getElementById("formsTableBody");
 
     const search =
         document
             .getElementById("searchInput")
             .value
+            .trim()
             .toLowerCase();
 
 
     tableBody.innerHTML = "";
 
 
-    const filteredForms =
-        forms.filter(form => {
+    const filteredForms = forms.filter(form => {
 
-            return (
+        const name =
+            form.name
+                ? form.name.toLowerCase()
+                : "";
 
-                form.name
-                    .toLowerCase()
-                    .includes(search)
+        const description =
+            form.description
+                ? form.description.toLowerCase()
+                : "";
 
-                ||
 
-                form.description
-                    .toLowerCase()
-                    .includes(search)
+        return (
+            name.includes(search) ||
+            description.includes(search)
+        );
 
-            );
+    });
 
-        });
+
+    if (filteredForms.length === 0) {
+
+        const row =
+            document.createElement("tr");
+
+        row.innerHTML = `
+            <td colspan="4" style="text-align: center;">
+                No forms found.
+            </td>
+        `;
+
+        tableBody.appendChild(row);
+
+        return;
+
+    }
 
 
     filteredForms.forEach(form => {
@@ -115,11 +134,11 @@ function renderForms() {
         row.innerHTML = `
 
             <td>
-                ${form.name}
+                ${escapeHtml(form.name)}
             </td>
 
             <td>
-                ${form.description}
+                ${escapeHtml(form.description)}
             </td>
 
             <td>
@@ -145,15 +164,22 @@ function renderForms() {
             <td>
 
                 <button
-                    class="action-button"
-                    onclick="openEditModal(${form.id})"
+                    class="action-button view-button"
+                    data-id="${form.id}"
+                >
+                    View
+                </button>
+
+                <button
+                    class="action-button edit-button"
+                    data-id="${form.id}"
                 >
                     Edit
                 </button>
 
                 <button
-                    class="action-button"
-                    onclick="deleteFormConfirm(${form.id})"
+                    class="action-button delete-button"
+                    data-id="${form.id}"
                 >
                     Delete
                 </button>
@@ -163,9 +189,44 @@ function renderForms() {
         `;
 
 
+        row
+            .querySelector(".view-button")
+            .addEventListener("click", () => {
+
+                openFormDetail(form.id);
+
+            });
+
+
+        row
+            .querySelector(".edit-button")
+            .addEventListener("click", () => {
+
+                openEditModal(form.id);
+
+            });
+
+
+        row
+            .querySelector(".delete-button")
+            .addEventListener("click", () => {
+
+                deleteFormConfirm(form.id);
+
+            });
+
+
         tableBody.appendChild(row);
 
     });
+
+}
+
+
+function openFormDetail(formId) {
+
+    window.location.href =
+        `form-detail.html?id=${formId}`;
 
 }
 
@@ -205,8 +266,7 @@ async function openEditModal(formId) {
             await getForm(formId);
 
 
-        editingFormId =
-            formId;
+        editingFormId = formId;
 
 
         document.getElementById(
@@ -217,13 +277,13 @@ async function openEditModal(formId) {
         document.getElementById(
             "name"
         ).value =
-            form.name;
+            form.name || "";
 
 
         document.getElementById(
             "description"
         ).value =
-            form.description;
+            form.description || "";
 
 
         document.getElementById(
@@ -244,9 +304,7 @@ async function openEditModal(formId) {
             error
         );
 
-        alert(
-            "Error loading form."
-        );
+        alert("Error loading form.");
 
     }
 
@@ -272,12 +330,12 @@ async function saveForm(event) {
         name:
             document.getElementById(
                 "name"
-            ).value,
+            ).value.trim(),
 
         description:
             document.getElementById(
                 "description"
-            ).value,
+            ).value.trim(),
 
         is_active:
             document.getElementById(
@@ -291,9 +349,7 @@ async function saveForm(event) {
 
         if (editingFormId === null) {
 
-            await createForm(
-                formData
-            );
+            await createForm(formData);
 
             alert(
                 "Form created successfully."
@@ -349,9 +405,7 @@ async function deleteFormConfirm(formId) {
 
     try {
 
-        await deleteForm(
-            formId
-        );
+        await deleteForm(formId);
 
 
         alert(
@@ -374,5 +428,46 @@ async function deleteFormConfirm(formId) {
         );
 
     }
+
+}
+
+
+function handleEditQueryParameter() {
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+
+    const editId =
+        params.get("edit");
+
+
+    if (!editId) {
+        return;
+    }
+
+
+    openEditModal(
+        Number(editId)
+    );
+
+}
+
+
+function escapeHtml(value) {
+
+    if (value === null || value === undefined) {
+        return "";
+    }
+
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 
 }

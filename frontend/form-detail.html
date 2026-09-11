@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Form Detail</title>
+
+    <link
+        rel="stylesheet"
+        href="css/tools.css"
+    >
+
+</head>
+
+<body>
+
+    <header>
+
+        <h1 id="formNameHeader">
+            Form Detail
+        </h1>
+
+        <button id="backButton">
+            Back
+        </button>
+
+    </header>
+
+
+    <main>
+
+        <!-- FORM INFORMATION -->
+
+        <section>
+
+            <div class="crud-header">
+
+                <h2>
+                    Basic Information
+                </h2>
+
+            </div>
+
+
+            <div class="crud-table-container">
+
+                <table class="crud-table">
+
+                    <tbody>
+
+                        <tr>
+
+                            <th>
+                                Name
+                            </th>
+
+                            <td>
+
+                                <input
+                                    type="text"
+                                    id="formName"
+                                    required
+                                >
+
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <th>
+                                Description
+                            </th>
+
+                            <td>
+
+                                <textarea
+                                    id="formDescription"
+                                    rows="8"
+                                    required
+                                ></textarea>
+
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <td>
+
+                                <label class="checkbox-group">
+
+                                    <input
+                                        type="checkbox"
+                                        id="formIsActive"
+                                    >
+
+                                    <span>
+                                        Active
+                                    </span>
+
+                                </label>
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button id="saveFormButton">
+                    Save Changes
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- RELATED ISSUE TYPES -->
+
+        <section>
+
+            <div class="crud-header">
+
+                <h2>
+                    Related Issue Types
+                </h2>
+
+                <button id="addIssueTypeButton">
+                    Add Issue Type
+                </button>
+
+            </div>
+
+
+            <div class="crud-table-container">
+
+                <table class="crud-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Name
+                            </th>
+
+                            <th>
+                                Category
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Actions
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="issueTypesTableBody">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ADD ISSUE TYPE MODAL -->
+
+    <div
+        id="issueTypeModal"
+        class="modal hidden"
+    >
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h2>
+                    Add Issue Type
+                </h2>
+
+                <button
+                    id="closeIssueTypeModal"
+                    class="modal-close"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="issueTypeSelect">
+                    Issue Type
+                </label>
+
+                <select id="issueTypeSelect">
+
+                    <option value="">
+                        Select an Issue Type
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    id="cancelIssueTypeButton"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="button"
+                    id="saveIssueTypeButton"
+                >
+                    Add
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script src="js/api.js"></script>
+    <script src="js/form-detail.js"></script>
+
+</body>
+
+</html>
