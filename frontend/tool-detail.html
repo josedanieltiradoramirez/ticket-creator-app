@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Tool Detail</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/tools.css">
+</head>
+
+<body>
+
+    <!-- =========================================================
+         NAVIGATION
+    ========================================================== -->
+
+    <nav class="top-nav">
+
+        <button id="ticketsButton">
+            Tickets
+        </button>
+
+        <button id="toolsButton">
+            Tools
+        </button>
+
+        <button id="locationsButton">
+            Locations
+        </button>
+
+        <button id="queuesButton">
+            Queues
+        </button>
+
+        <button id="wmsButton">
+            WMS
+        </button>
+
+        <button id="formsButton">
+            Forms
+        </button>
+
+        <button id="troubleshootingTemplatesButton">
+            Troubleshooting Templates
+        </button>
+
+        <button id="knowledgeBaseButton">
+            Knowledge Base
+        </button>
+
+    </nav>
+
+
+    <!-- =========================================================
+         MAIN CONTENT
+    ========================================================== -->
+
+    <main class="container">
+
+        <!-- HEADER -->
+
+        <div class="crud-header">
+
+            <div>
+
+                <h1 id="toolName">
+                    Tool
+                </h1>
+
+                <p id="toolDescription">
+                </p>
+
+            </div>
+
+            <button
+                id="backButton"
+                class="action-button">
+                Back
+            </button>
+
+        </div>
+
+
+        <!-- =====================================================
+             BASIC INFORMATION
+        ====================================================== -->
+
+        <section class="crud-section">
+
+            <h2>Basic Information</h2>
+
+            <div class="crud-table-container">
+
+                <table class="crud-table">
+
+                    <tbody>
+
+                        <tr>
+                            <th>ID</th>
+                            <td id="toolId"></td>
+                        </tr>
+
+                        <tr>
+                            <th>Name</th>
+                            <td id="toolNameValue"></td>
+                        </tr>
+
+                        <tr>
+                            <th>Description</th>
+                            <td id="toolDescriptionValue"></td>
+                        </tr>
+
+                        <tr>
+                            <th>Status</th>
+                            <td>
+                                <span
+                                    id="toolStatus"
+                                    class="status-badge">
+                                </span>
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ISSUE TYPES
+        ====================================================== -->
+
+        <section class="crud-section">
+
+            <div class="crud-header">
+
+                <h2>Related Issue Types</h2>
+
+                <button
+                    id="addIssueTypeButton"
+                    class="action-button">
+                    Add Issue Type
+                </button>
+
+            </div>
+
+
+            <p
+                id="issueTypesEmptyMessage"
+                class="empty-message hidden">
+                No Issue Types associated with this Tool.
+            </p>
+
+
+            <div
+                id="issueTypesTableContainer"
+                class="crud-table-container">
+
+                <table
+                    id="issueTypesTable"
+                    class="crud-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Display Name</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="issueTypesTableBody">
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             KNOWLEDGE BASE
+        ====================================================== -->
+
+        <section class="crud-section">
+
+            <div class="crud-header">
+
+                <h2>Related Knowledge Base</h2>
+
+                <button
+                    id="addKnowledgeBaseButton"
+                    class="action-button">
+                    Add Knowledge Base
+                </button>
+
+            </div>
+
+
+            <p
+                id="knowledgeBaseEmptyMessage"
+                class="empty-message hidden">
+                No Knowledge Base articles associated with this Tool.
+            </p>
+
+
+            <div
+                id="knowledgeBaseTableContainer"
+                class="crud-table-container">
+
+                <table
+                    id="knowledgeBaseTable"
+                    class="crud-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>Article Number</th>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Actions</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="knowledgeBaseTableBody">
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             TROUBLESHOOTING TEMPLATES
+        ====================================================== -->
+
+        <section class="crud-section">
+
+            <div class="crud-header">
+
+                <h2>Related Troubleshooting Templates</h2>
+
+                <button
+                    id="addTroubleshootingTemplateButton"
+                    class="action-button">
+                    Add Troubleshooting Template
+                </button>
+
+            </div>
+
+
+            <p
+                id="troubleshootingTemplatesEmptyMessage"
+                class="empty-message hidden">
+                No Troubleshooting Templates associated with this Tool.
+            </p>
+
+
+            <div
+                id="troubleshootingTemplatesTableContainer"
+                class="crud-table-container">
+
+                <table
+                    id="troubleshootingTemplatesTable"
+                    class="crud-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="troubleshootingTemplatesTableBody">
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================================================
+         ISSUE TYPE MODAL
+    ========================================================== -->
+
+    <div
+        id="issueTypeModal"
+        class="modal hidden">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h2>Add Issue Type</h2>
+
+                <button
+                    id="closeIssueTypeModal"
+                    class="modal-close">
+                    ×
+                </button>
+
+            </div>
+
+            <form id="issueTypeForm">
+
+                <div class="form-group">
+
+                    <label for="issueTypeSelect">
+                        Issue Type
+                    </label>
+
+                    <select
+                        id="issueTypeSelect"
+                        required>
+
+                        <option value="">
+                            Select an Issue Type
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="modal-actions">
+
+                    <button
+                        type="button"
+                        id="cancelIssueTypeButton">
+                        Cancel
+                    </button>
+
+                    <button
+                        type="submit">
+                        Add
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         KNOWLEDGE BASE MODAL
+    ========================================================== -->
+
+    <div
+        id="knowledgeBaseModal"
+        class="modal hidden">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h2>Add Knowledge Base</h2>
+
+                <button
+                    id="closeKnowledgeBaseModal"
+                    class="modal-close">
+                    ×
+                </button>
+
+            </div>
+
+            <form id="knowledgeBaseForm">
+
+                <div class="form-group">
+
+                    <label for="knowledgeBaseSelect">
+                        Knowledge Base
+                    </label>
+
+                    <select
+                        id="knowledgeBaseSelect"
+                        required>
+
+                        <option value="">
+                            Select an Article
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="modal-actions">
+
+                    <button
+                        type="button"
+                        id="cancelKnowledgeBaseButton">
+                        Cancel
+                    </button>
+
+                    <button
+                        type="submit">
+                        Add
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         TROUBLESHOOTING TEMPLATE MODAL
+    ========================================================== -->
+
+    <div
+        id="troubleshootingTemplateModal"
+        class="modal hidden">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h2>Add Troubleshooting Template</h2>
+
+                <button
+                    id="closeTroubleshootingTemplateModal"
+                    class="modal-close">
+                    ×
+                </button>
+
+            </div>
+
+            <form id="troubleshootingTemplateForm">
+
+                <div class="form-group">
+
+                    <label for="troubleshootingTemplateSelect">
+                        Troubleshooting Template
+                    </label>
+
+                    <select
+                        id="troubleshootingTemplateSelect"
+                        required>
+
+                        <option value="">
+                            Select a Template
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="modal-actions">
+
+                    <button
+                        type="button"
+                        id="cancelTroubleshootingTemplateButton">
+                        Cancel
+                    </button>
+
+                    <button
+                        type="submit">
+                        Add
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         JAVASCRIPT
+    ========================================================== -->
+
+    <script src="js/api.js"></script>
+    <script src="js/tool-detail.js"></script>
+
+</body>
+
+</html>

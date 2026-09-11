@@ -40,7 +40,7 @@ function setupToolEventListeners() {
             closeToolModal
         );
 
-    
+
     document
         .getElementById("toolForm")
         .addEventListener(
@@ -48,11 +48,16 @@ function setupToolEventListeners() {
             saveTool
         );
 
+
     document
         .getElementById("backButton")
-        .addEventListener("click", () => {
-            window.location.href = "index.html";
-        });
+        .addEventListener(
+            "click",
+            () => {
+                window.location.href = "index.html";
+            }
+        );
+
 
     document
         .getElementById("searchTools")
@@ -114,7 +119,9 @@ function renderTools() {
                 tool.name
                     .toLowerCase()
                     .includes(search)
+
                 ||
+
                 tool.description
                     .toLowerCase()
                     .includes(search)
@@ -160,6 +167,13 @@ function renderTools() {
             <td>
 
                 <button
+                    class="action-button view-button"
+                    data-id="${tool.id}"
+                >
+                    View
+                </button>
+
+                <button
                     class="action-button edit-button"
                     data-id="${tool.id}"
                 >
@@ -176,6 +190,14 @@ function renderTools() {
             </td>
 
         `;
+
+
+        row
+            .querySelector(".view-button")
+            .addEventListener(
+                "click",
+                () => openToolDetail(tool.id)
+            );
 
 
         row
@@ -412,5 +434,13 @@ function escapeHtml(value) {
     div.textContent = value;
 
     return div.innerHTML;
+
+}
+
+
+function openToolDetail(toolId) {
+
+    window.location.href =
+        `tool-detail.html?id=${toolId}`;
 
 }
