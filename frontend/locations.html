@@ -15,23 +15,27 @@
 
     <div class="page-container">
 
+        <!-- HEADER -->
         <div class="crud-header">
 
             <h2>Locations</h2>
 
             <div>
-                <button id="backButton">
+
+                <button id="backButton" type="button">
                     Back
                 </button>
 
-                <button id="newLocationButton">
+                <button id="newLocationButton" type="button">
                     + New Location
                 </button>
+
             </div>
 
         </div>
 
 
+        <!-- SEARCH -->
         <div class="crud-toolbar">
 
             <input
@@ -43,11 +47,13 @@
         </div>
 
 
+        <!-- TABLE -->
         <div class="crud-table-container">
 
             <table class="crud-table">
 
                 <thead>
+
                     <tr>
                         <th>Name</th>
                         <th>City</th>
@@ -57,6 +63,7 @@
                         <th>WMS</th>
                         <th>Actions</th>
                     </tr>
+
                 </thead>
 
                 <tbody id="locationsTableBody">
@@ -64,12 +71,21 @@
 
             </table>
 
+            <div
+                id="emptyLocationsMessage"
+                class="empty-message hidden"
+            >
+                No locations found.
+            </div>
+
         </div>
 
     </div>
 
 
+    <!-- ===================================================== -->
     <!-- LOCATION MODAL -->
+    <!-- ===================================================== -->
 
     <div
         id="locationModal"
@@ -87,6 +103,7 @@
                 <button
                     id="closeLocationModal"
                     class="modal-close"
+                    type="button"
                 >
                     ×
                 </button>
@@ -96,6 +113,7 @@
 
             <form id="locationForm">
 
+                <!-- NAME -->
                 <div class="form-group">
 
                     <label for="locationName">
@@ -111,6 +129,7 @@
                 </div>
 
 
+                <!-- CITY -->
                 <div class="form-group">
 
                     <label for="locationCity">
@@ -126,6 +145,7 @@
                 </div>
 
 
+                <!-- STATE -->
                 <div class="form-group">
 
                     <label for="locationState">
@@ -141,6 +161,7 @@
                 </div>
 
 
+                <!-- CODE -->
                 <div class="form-group">
 
                     <label for="locationCode">
@@ -156,21 +177,25 @@
                 </div>
 
 
+                <!-- WMS -->
                 <div class="form-group">
 
                     <label for="locationWms">
-                        WMS
+                        Warehouse Management System
                     </label>
 
                     <select id="locationWms">
+
                         <option value="">
                             No WMS
                         </option>
+
                     </select>
 
                 </div>
 
 
+                <!-- ACTIVE -->
                 <div class="form-group checkbox-group">
 
                     <input
@@ -186,6 +211,7 @@
                 </div>
 
 
+                <!-- ACTIONS -->
                 <div class="modal-actions">
 
                     <button

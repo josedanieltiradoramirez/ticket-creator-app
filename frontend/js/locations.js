@@ -1,30 +1,56 @@
 let locations = [];
 
+let warehouseManagementSystems = [];
+
 let editingLocationId = null;
 
 
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
+// ============================================================
+// INITIALIZATION
+// ============================================================
 
-        loadLocations();
+document.addEventListener("DOMContentLoaded", async () => {
 
-        setupLocationEventListeners();
+    setupLocationEventListeners();
+
+    await loadWarehouseManagementSystems();
+
+    await loadLocations();
+
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const editId =
+        Number(
+            params.get("edit")
+        );
+
+
+    if (editId) {
+
+        editLocation(editId);
 
     }
-);
 
+});
+
+
+// ============================================================
+// EVENT LISTENERS
+// ============================================================
 
 function setupLocationEventListeners() {
 
     document
         .getElementById("backButton")
-        .addEventListener(
-            "click",
-            () => {
-                window.location.href = "index.html";
-            }
-        );
+        .addEventListener("click", () => {
+
+            window.location.href = "index.html";
+
+        });
 
 
     document
@@ -69,6 +95,10 @@ function setupLocationEventListeners() {
 }
 
 
+// ============================================================
+// LOAD LOCATIONS
+// ============================================================
+
 async function loadLocations() {
 
     try {
@@ -93,6 +123,80 @@ async function loadLocations() {
 }
 
 
+// ============================================================
+// LOAD WMS
+// ============================================================
+
+async function loadWarehouseManagementSystems() {
+
+    try {
+
+        warehouseManagementSystems =
+            await getWarehouseManagementSystems();
+
+        populateWmsSelect();
+
+    } catch (error) {
+
+        console.error(
+            "Error loading Warehouse Management Systems:",
+            error
+        );
+
+        warehouseManagementSystems = [];
+
+        populateWmsSelect();
+
+    }
+
+}
+
+
+// ============================================================
+// POPULATE WMS SELECT
+// ============================================================
+
+function populateWmsSelect() {
+
+    const select =
+        document.getElementById(
+            "locationWms"
+        );
+
+
+    select.innerHTML = "";
+
+
+    const noWmsOption =
+        document.createElement("option");
+
+    noWmsOption.value = "";
+
+    noWmsOption.textContent = "No WMS";
+
+    select.appendChild(noWmsOption);
+
+
+    warehouseManagementSystems.forEach(wms => {
+
+        const option =
+            document.createElement("option");
+
+        option.value = wms.id;
+
+        option.textContent = wms.name;
+
+        select.appendChild(option);
+
+    });
+
+}
+
+
+// ============================================================
+// RENDER LOCATIONS
+// ============================================================
+
 function renderLocations() {
 
     const tableBody =
@@ -101,10 +205,17 @@ function renderLocations() {
         );
 
 
+    const emptyMessage =
+        document.getElementById(
+            "emptyLocationsMessage"
+        );
+
+
     const search =
         document.getElementById(
             "searchLocations"
-        ).value
+        )
+        .value
         .trim()
         .toLowerCase();
 
@@ -115,37 +226,62 @@ function renderLocations() {
     const filteredLocations =
         locations.filter(location => {
 
+            const name =
+                String(location.name ?? "")
+                    .toLowerCase();
+
+            const city =
+                String(location.city ?? "")
+                    .toLowerCase();
+
+            const state =
+                String(location.state ?? "")
+                    .toLowerCase();
+
+            const code =
+                String(location.code ?? "")
+                    .toLowerCase();
+
+            const wmsName =
+                getWmsName(
+                    location.warehouse_management_system_id
+                )
+                .toLowerCase();
+
+
             return (
-                location.name
-                    .toLowerCase()
-                    .includes(search)
-
-                ||
-
-                location.city
-                    .toLowerCase()
-                    .includes(search)
-
-                ||
-
-                location.state
-                    .toLowerCase()
-                    .includes(search)
-
-                ||
-
-                location.code
-                    .toLowerCase()
-                    .includes(search)
+                name.includes(search) ||
+                city.includes(search) ||
+                state.includes(search) ||
+                code.includes(search) ||
+                wmsName.includes(search)
             );
 
         });
+
+
+    if (filteredLocations.length === 0) {
+
+        emptyMessage.classList.remove("hidden");
+
+        return;
+
+    }
+
+
+    emptyMessage.classList.add("hidden");
 
 
     filteredLocations.forEach(location => {
 
         const row =
             document.createElement("tr");
+
+
+        const wmsName =
+            getWmsName(
+                location.warehouse_management_system_id
+            );
 
 
         row.innerHTML = `
@@ -186,8 +322,8 @@ function renderLocations() {
 
             <td>
                 ${
-                    location.warehouse_management_system_id
-                        ? location.warehouse_management_system_id
+                    wmsName
+                        ? escapeHtml(wmsName)
                         : "None"
                 }
             </td>
@@ -195,12 +331,21 @@ function renderLocations() {
             <td>
 
                 <button
+                    type="button"
+                    class="action-button view-button"
+                >
+                    View
+                </button>
+
+                <button
+                    type="button"
                     class="action-button edit-button"
                 >
                     Edit
                 </button>
 
                 <button
+                    type="button"
                     class="action-button delete-button"
                 >
                     Delete
@@ -211,6 +356,18 @@ function renderLocations() {
         `;
 
 
+        // VIEW
+
+        row
+            .querySelector(".view-button")
+            .addEventListener(
+                "click",
+                () => openLocationDetail(location.id)
+            );
+
+
+        // EDIT
+
         row
             .querySelector(".edit-button")
             .addEventListener(
@@ -218,6 +375,8 @@ function renderLocations() {
                 () => editLocation(location.id)
             );
 
+
+        // DELETE
 
         row
             .querySelector(".delete-button")
@@ -234,6 +393,53 @@ function renderLocations() {
 }
 
 
+// ============================================================
+// OPEN LOCATION DETAIL
+// ============================================================
+
+function openLocationDetail(locationId) {
+
+    window.location.href =
+        `location-detail.html?id=${locationId}`;
+
+}
+
+
+// ============================================================
+// GET WMS NAME
+// ============================================================
+
+function getWmsName(wmsId) {
+
+    if (!wmsId) {
+
+        return "";
+
+    }
+
+
+    const wms =
+        warehouseManagementSystems.find(
+            item => item.id === Number(wmsId)
+        );
+
+
+    if (!wms) {
+
+        return `WMS #${wmsId}`;
+
+    }
+
+
+    return wms.name;
+
+}
+
+
+// ============================================================
+// CREATE LOCATION
+// ============================================================
+
 function openCreateLocationModal() {
 
     editingLocationId = null;
@@ -241,7 +447,8 @@ function openCreateLocationModal() {
 
     document.getElementById(
         "modalTitle"
-    ).textContent = "Create Location";
+    ).textContent =
+        "Create Location";
 
 
     document.getElementById(
@@ -274,12 +481,16 @@ function openCreateLocationModal() {
     ).checked = true;
 
 
-    document.getElementById(
-        "locationModal"
-    ).classList.remove("hidden");
+    document
+        .getElementById("locationModal")
+        .classList.remove("hidden");
 
 }
 
+
+// ============================================================
+// EDIT LOCATION
+// ============================================================
 
 function editLocation(locationId) {
 
@@ -290,7 +501,13 @@ function editLocation(locationId) {
 
 
     if (!location) {
+
+        alert(
+            "Location not found."
+        );
+
         return;
+
     }
 
 
@@ -299,27 +516,32 @@ function editLocation(locationId) {
 
     document.getElementById(
         "modalTitle"
-    ).textContent = "Edit Location";
+    ).textContent =
+        "Edit Location";
 
 
     document.getElementById(
         "locationName"
-    ).value = location.name;
+    ).value =
+        location.name ?? "";
 
 
     document.getElementById(
         "locationCity"
-    ).value = location.city;
+    ).value =
+        location.city ?? "";
 
 
     document.getElementById(
         "locationState"
-    ).value = location.state;
+    ).value =
+        location.state ?? "";
 
 
     document.getElementById(
         "locationCode"
-    ).value = location.code;
+    ).value =
+        location.code ?? "";
 
 
     document.getElementById(
@@ -330,69 +552,101 @@ function editLocation(locationId) {
 
     document.getElementById(
         "locationActive"
-    ).checked = location.is_active;
+    ).checked =
+        location.is_active ?? true;
 
 
-    document.getElementById(
-        "locationModal"
-    ).classList.remove("hidden");
+    document
+        .getElementById("locationModal")
+        .classList.remove("hidden");
 
 }
 
+
+// ============================================================
+// CLOSE MODAL
+// ============================================================
 
 function closeLocationModal() {
 
-    document.getElementById(
-        "locationModal"
-    ).classList.add("hidden");
+    document
+        .getElementById("locationModal")
+        .classList.add("hidden");
+
+
+    editingLocationId = null;
 
 }
 
+
+// ============================================================
+// SAVE LOCATION
+// ============================================================
 
 async function saveLocation(event) {
 
     event.preventDefault();
 
 
-    const wmsValue =
-        document.getElementById(
-            "locationWms"
-        ).value;
-
-
     const locationData = {
 
         name:
-            document.getElementById(
-                "locationName"
-            ).value.trim(),
+            document
+                .getElementById("locationName")
+                .value
+                .trim(),
 
         city:
-            document.getElementById(
-                "locationCity"
-            ).value.trim(),
+            document
+                .getElementById("locationCity")
+                .value
+                .trim(),
 
         state:
-            document.getElementById(
-                "locationState"
-            ).value.trim(),
+            document
+                .getElementById("locationState")
+                .value
+                .trim(),
 
         code:
-            document.getElementById(
-                "locationCode"
-            ).value.trim(),
+            document
+                .getElementById("locationCode")
+                .value
+                .trim(),
 
         is_active:
-            document.getElementById(
-                "locationActive"
-            ).checked,
+            document
+                .getElementById("locationActive")
+                .checked,
 
         warehouse_management_system_id:
-            wmsValue
-                ? Number(wmsValue)
+            document
+                .getElementById("locationWms")
+                .value
+                ? Number(
+                    document
+                        .getElementById("locationWms")
+                        .value
+                )
                 : null
 
     };
+
+
+    if (
+        !locationData.name ||
+        !locationData.city ||
+        !locationData.state ||
+        !locationData.code
+    ) {
+
+        alert(
+            "Please complete all required fields."
+        );
+
+        return;
+
+    }
 
 
     try {
@@ -402,6 +656,7 @@ async function saveLocation(event) {
             await createLocation(
                 locationData
             );
+
 
             alert(
                 "Location created successfully."
@@ -413,6 +668,7 @@ async function saveLocation(event) {
                 editingLocationId,
                 locationData
             );
+
 
             alert(
                 "Location updated successfully."
@@ -432,7 +688,9 @@ async function saveLocation(event) {
             error
         );
 
+
         alert(
+            error.message ||
             "Error saving location."
         );
 
@@ -440,6 +698,10 @@ async function saveLocation(event) {
 
 }
 
+
+// ============================================================
+// DELETE LOCATION
+// ============================================================
 
 async function deleteLocation(locationId) {
 
@@ -450,7 +712,9 @@ async function deleteLocation(locationId) {
 
 
     if (!location) {
+
         return;
+
     }
 
 
@@ -461,7 +725,9 @@ async function deleteLocation(locationId) {
 
 
     if (!confirmed) {
+
         return;
+
     }
 
 
@@ -471,9 +737,11 @@ async function deleteLocation(locationId) {
             locationId
         );
 
+
         alert(
             "Location deleted successfully."
         );
+
 
         await loadLocations();
 
@@ -484,7 +752,9 @@ async function deleteLocation(locationId) {
             error
         );
 
+
         alert(
+            error.message ||
             "Error deleting location."
         );
 
@@ -493,12 +763,19 @@ async function deleteLocation(locationId) {
 }
 
 
+// ============================================================
+// ESCAPE HTML
+// ============================================================
+
 function escapeHtml(value) {
 
     const div =
         document.createElement("div");
 
-    div.textContent = value;
+
+    div.textContent =
+        String(value ?? "");
+
 
     return div.innerHTML;
 
