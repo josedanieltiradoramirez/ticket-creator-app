@@ -2,30 +2,57 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>WMS</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/tools.css">
+    <title>Warehouse Management Systems</title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/tools.css"
+    >
+
 </head>
+
 
 <body>
 
     <div class="page-container">
 
+
+        <!-- HEADER -->
+
         <div class="crud-header">
 
-            <h2>Warehouse Management Systems</h2>
+            <h2>
+                Warehouse Management Systems
+            </h2>
+
 
             <div>
 
-                <button id="backButton">
+                <button
+                    id="backButton"
+                    type="button"
+                >
                     Back
                 </button>
 
-                <button id="newWmsButton">
+
+                <button
+                    id="newWmsButton"
+                    type="button"
+                >
                     + New WMS
                 </button>
 
@@ -33,6 +60,8 @@
 
         </div>
 
+
+        <!-- SEARCH -->
 
         <div class="crud-toolbar">
 
@@ -45,6 +74,8 @@
         </div>
 
 
+        <!-- TABLE -->
+
         <div class="crud-table-container">
 
             <table class="crud-table">
@@ -52,24 +83,45 @@
                 <thead>
 
                     <tr>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th>Actions</th>
+
+                        <th>
+                            Name
+                        </th>
+
+                        <th>
+                            Description
+                        </th>
+
+                        <th>
+                            Actions
+                        </th>
+
                     </tr>
 
                 </thead>
+
 
                 <tbody id="wmsTableBody">
                 </tbody>
 
             </table>
 
+
+            <div
+                id="emptyWmsMessage"
+                class="empty-message hidden"
+            >
+                No Warehouse Management Systems found.
+            </div>
+
         </div>
 
     </div>
 
 
+    <!-- ===================================================== -->
     <!-- WMS MODAL -->
+    <!-- ===================================================== -->
 
     <div
         id="wmsModal"
@@ -78,15 +130,18 @@
 
         <div class="modal-content">
 
+
             <div class="modal-header">
 
                 <h3 id="modalTitle">
                     Create WMS
                 </h3>
 
+
                 <button
                     id="closeWmsModal"
                     class="modal-close"
+                    type="button"
                 >
                     ×
                 </button>
@@ -96,11 +151,15 @@
 
             <form id="wmsForm">
 
+
+                <!-- NAME -->
+
                 <div class="form-group">
 
                     <label for="wmsName">
                         Name
                     </label>
+
 
                     <input
                         type="text"
@@ -111,11 +170,14 @@
                 </div>
 
 
+                <!-- DESCRIPTION -->
+
                 <div class="form-group">
 
                     <label for="wmsDescription">
                         Description
                     </label>
+
 
                     <textarea
                         id="wmsDescription"
@@ -126,6 +188,8 @@
                 </div>
 
 
+                <!-- ACTIONS -->
+
                 <div class="modal-actions">
 
                     <button
@@ -134,6 +198,7 @@
                     >
                         Cancel
                     </button>
+
 
                     <button
                         type="submit"
@@ -152,6 +217,7 @@
 
 
     <script src="js/api.js"></script>
+
     <script src="js/warehouse-management-systems.js"></script>
 
 </body>

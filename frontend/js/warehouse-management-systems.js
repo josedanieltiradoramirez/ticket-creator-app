@@ -3,17 +3,43 @@ let warehouseManagementSystems = [];
 let editingWmsId = null;
 
 
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
+// ============================================================
+// INITIALIZATION
+// ============================================================
 
-        loadWms();
+document.addEventListener("DOMContentLoaded", async () => {
 
-        setupWmsEventListeners();
+    setupWmsEventListeners();
+
+    await loadWms();
+
+
+    // If coming from WMS Detail -> Edit
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+
+    const editId =
+        Number(
+            params.get("edit")
+        );
+
+
+    if (editId) {
+
+        editWms(editId);
 
     }
-);
 
+});
+
+
+// ============================================================
+// EVENT LISTENERS
+// ============================================================
 
 function setupWmsEventListeners() {
 
@@ -22,7 +48,10 @@ function setupWmsEventListeners() {
         .addEventListener(
             "click",
             () => {
-                window.location.href = "index.html";
+
+                window.location.href =
+                    "index.html";
+
             }
         );
 
@@ -69,12 +98,17 @@ function setupWmsEventListeners() {
 }
 
 
+// ============================================================
+// LOAD WMS
+// ============================================================
+
 async function loadWms() {
 
     try {
 
         warehouseManagementSystems =
             await getWarehouseManagementSystems();
+
 
         renderWms();
 
@@ -85,7 +119,9 @@ async function loadWms() {
             error
         );
 
+
         alert(
+            error.message ||
             "Error loading WMS."
         );
 
@@ -93,6 +129,10 @@ async function loadWms() {
 
 }
 
+
+// ============================================================
+// RENDER WMS
+// ============================================================
 
 function renderWms() {
 
@@ -102,10 +142,17 @@ function renderWms() {
         );
 
 
+    const emptyMessage =
+        document.getElementById(
+            "emptyWmsMessage"
+        );
+
+
     const search =
         document.getElementById(
             "searchWms"
-        ).value
+        )
+        .value
         .trim()
         .toLowerCase();
 
@@ -114,24 +161,49 @@ function renderWms() {
 
 
     const filteredWms =
-        warehouseManagementSystems.filter(
-            wms => {
+        warehouseManagementSystems.filter(wms => {
 
-                return (
-                    wms.name
-                        .toLowerCase()
-                        .includes(search)
+            const name =
+                String(
+                    wms.name ?? ""
+                )
+                .toLowerCase();
 
-                    ||
 
-                    wms.description
-                        .toLowerCase()
-                        .includes(search)
-                );
+            const description =
+                String(
+                    wms.description ?? ""
+                )
+                .toLowerCase();
 
-            }
+
+            return (
+                name.includes(search) ||
+                description.includes(search)
+            );
+
+        });
+
+
+    // EMPTY STATE
+
+    if (filteredWms.length === 0) {
+
+        emptyMessage.classList.remove(
+            "hidden"
         );
 
+        return;
+
+    }
+
+
+    emptyMessage.classList.add(
+        "hidden"
+    );
+
+
+    // TABLE ROWS
 
     filteredWms.forEach(wms => {
 
@@ -152,12 +224,21 @@ function renderWms() {
             <td>
 
                 <button
+                    type="button"
+                    class="action-button view-button"
+                >
+                    View
+                </button>
+
+                <button
+                    type="button"
                     class="action-button edit-button"
                 >
                     Edit
                 </button>
 
                 <button
+                    type="button"
                     class="action-button delete-button"
                 >
                     Delete
@@ -168,6 +249,18 @@ function renderWms() {
         `;
 
 
+        // VIEW
+
+        row
+            .querySelector(".view-button")
+            .addEventListener(
+                "click",
+                () => openWmsDetail(wms.id)
+            );
+
+
+        // EDIT
+
         row
             .querySelector(".edit-button")
             .addEventListener(
@@ -175,6 +268,8 @@ function renderWms() {
                 () => editWms(wms.id)
             );
 
+
+        // DELETE
 
         row
             .querySelector(".delete-button")
@@ -191,6 +286,22 @@ function renderWms() {
 }
 
 
+// ============================================================
+// OPEN WMS DETAIL
+// ============================================================
+
+function openWmsDetail(wmsId) {
+
+    window.location.href =
+        `warehouse-management-system-detail.html?id=${wmsId}`;
+
+}
+
+
+// ============================================================
+// CREATE WMS
+// ============================================================
+
 function openCreateWmsModal() {
 
     editingWmsId = null;
@@ -198,7 +309,8 @@ function openCreateWmsModal() {
 
     document.getElementById(
         "modalTitle"
-    ).textContent = "Create WMS";
+    ).textContent =
+        "Create WMS";
 
 
     document.getElementById(
@@ -211,12 +323,16 @@ function openCreateWmsModal() {
     ).value = "";
 
 
-    document.getElementById(
-        "wmsModal"
-    ).classList.remove("hidden");
+    document
+        .getElementById("wmsModal")
+        .classList.remove("hidden");
 
 }
 
+
+// ============================================================
+// EDIT WMS
+// ============================================================
 
 function editWms(wmsId) {
 
@@ -227,7 +343,13 @@ function editWms(wmsId) {
 
 
     if (!wms) {
+
+        alert(
+            "WMS not found."
+        );
+
         return;
+
     }
 
 
@@ -236,34 +358,48 @@ function editWms(wmsId) {
 
     document.getElementById(
         "modalTitle"
-    ).textContent = "Edit WMS";
+    ).textContent =
+        "Edit WMS";
 
 
     document.getElementById(
         "wmsName"
-    ).value = wms.name;
+    ).value =
+        wms.name ?? "";
 
 
     document.getElementById(
         "wmsDescription"
-    ).value = wms.description;
+    ).value =
+        wms.description ?? "";
 
 
-    document.getElementById(
-        "wmsModal"
-    ).classList.remove("hidden");
+    document
+        .getElementById("wmsModal")
+        .classList.remove("hidden");
 
 }
 
+
+// ============================================================
+// CLOSE MODAL
+// ============================================================
 
 function closeWmsModal() {
 
-    document.getElementById(
-        "wmsModal"
-    ).classList.add("hidden");
+    document
+        .getElementById("wmsModal")
+        .classList.add("hidden");
+
+
+    editingWmsId = null;
 
 }
 
+
+// ============================================================
+// SAVE WMS
+// ============================================================
 
 async function saveWms(event) {
 
@@ -273,19 +409,34 @@ async function saveWms(event) {
     const wmsData = {
 
         name:
-            document.getElementById(
-                "wmsName"
-            ).value.trim(),
+            document
+                .getElementById("wmsName")
+                .value
+                .trim(),
 
         description:
-            document.getElementById(
-                "wmsDescription"
-            ).value.trim()
+            document
+                .getElementById("wmsDescription")
+                .value
+                .trim()
 
     };
 
 
+    if (!wmsData.name) {
+
+        alert(
+            "Please enter a WMS name."
+        );
+
+        return;
+
+    }
+
+
     try {
+
+        // CREATE
 
         if (editingWmsId === null) {
 
@@ -293,16 +444,22 @@ async function saveWms(event) {
                 wmsData
             );
 
+
             alert(
                 "WMS created successfully."
             );
 
-        } else {
+        }
+
+        // UPDATE
+
+        else {
 
             await updateWarehouseManagementSystem(
                 editingWmsId,
                 wmsData
             );
+
 
             alert(
                 "WMS updated successfully."
@@ -322,7 +479,9 @@ async function saveWms(event) {
             error
         );
 
+
         alert(
+            error.message ||
             "Error saving WMS."
         );
 
@@ -330,6 +489,10 @@ async function saveWms(event) {
 
 }
 
+
+// ============================================================
+// DELETE WMS
+// ============================================================
 
 async function deleteWms(wmsId) {
 
@@ -340,7 +503,9 @@ async function deleteWms(wmsId) {
 
 
     if (!wms) {
+
         return;
+
     }
 
 
@@ -351,7 +516,9 @@ async function deleteWms(wmsId) {
 
 
     if (!confirmed) {
+
         return;
+
     }
 
 
@@ -361,9 +528,11 @@ async function deleteWms(wmsId) {
             wmsId
         );
 
+
         alert(
             "WMS deleted successfully."
         );
+
 
         await loadWms();
 
@@ -374,7 +543,9 @@ async function deleteWms(wmsId) {
             error
         );
 
+
         alert(
+            error.message ||
             "Error deleting WMS."
         );
 
@@ -383,12 +554,19 @@ async function deleteWms(wmsId) {
 }
 
 
+// ============================================================
+// ESCAPE HTML
+// ============================================================
+
 function escapeHtml(value) {
 
     const div =
         document.createElement("div");
 
-    div.textContent = value;
+
+    div.textContent =
+        String(value ?? "");
+
 
     return div.innerHTML;
 
