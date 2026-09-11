@@ -15,17 +15,25 @@
 
     <div class="page-container">
 
+        <!-- HEADER -->
+
         <div class="crud-header">
 
             <h2>Queues</h2>
 
             <div>
 
-                <button id="backButton">
+                <button
+                    id="backButton"
+                    type="button"
+                >
                     Back
                 </button>
 
-                <button id="newQueueButton">
+                <button
+                    id="newQueueButton"
+                    type="button"
+                >
                     + New Queue
                 </button>
 
@@ -33,6 +41,8 @@
 
         </div>
 
+
+        <!-- SEARCH -->
 
         <div class="crud-toolbar">
 
@@ -44,6 +54,8 @@
 
         </div>
 
+
+        <!-- TABLE -->
 
         <div class="crud-table-container">
 
@@ -65,12 +77,21 @@
 
             </table>
 
+            <div
+                id="emptyQueuesMessage"
+                class="empty-message hidden"
+            >
+                No queues found.
+            </div>
+
         </div>
 
     </div>
 
 
+    <!-- ===================================================== -->
     <!-- QUEUE MODAL -->
+    <!-- ===================================================== -->
 
     <div
         id="queueModal"
@@ -88,6 +109,7 @@
                 <button
                     id="closeQueueModal"
                     class="modal-close"
+                    type="button"
                 >
                     ×
                 </button>
@@ -96,6 +118,8 @@
 
 
             <form id="queueForm">
+
+                <!-- NAME -->
 
                 <div class="form-group">
 
@@ -112,6 +136,8 @@
                 </div>
 
 
+                <!-- DESCRIPTION -->
+
                 <div class="form-group">
 
                     <label for="queueDescription">
@@ -127,6 +153,8 @@
                 </div>
 
 
+                <!-- ACTIVE -->
+
                 <div class="form-group checkbox-group">
 
                     <input
@@ -141,6 +169,8 @@
 
                 </div>
 
+
+                <!-- ACTIONS -->
 
                 <div class="modal-actions">
 

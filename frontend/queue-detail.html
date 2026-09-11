@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Queue Details</title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/tools.css"
+    >
+
+</head>
+
+
+<body>
+
+    <div class="page-container">
+
+
+        <!-- HEADER -->
+
+        <div class="crud-header">
+
+            <h2 id="queueTitle">
+                Queue
+            </h2>
+
+
+            <div>
+
+                <button
+                    id="backButton"
+                    type="button"
+                >
+                    Back
+                </button>
+
+
+                <button
+                    id="editButton"
+                    type="button"
+                >
+                    Edit
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- BASIC INFORMATION -->
+
+        <div class="crud-table-container">
+
+            <h3>
+                Basic Information
+            </h3>
+
+
+            <table class="crud-table">
+
+                <tbody>
+
+                    <tr>
+
+                        <th>
+                            Name
+                        </th>
+
+                        <td id="queueName">
+                        </td>
+
+                    </tr>
+
+
+                    <tr>
+
+                        <th>
+                            Description
+                        </th>
+
+                        <td id="queueDescription">
+                        </td>
+
+                    </tr>
+
+
+                    <tr>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <td id="queueStatus">
+                        </td>
+
+                    </tr>
+
+
+                    <tr>
+
+                        <th>
+                            Queue ID
+                        </th>
+
+                        <td id="queueId">
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- RELATED TICKETS -->
+
+        <div class="crud-table-container">
+
+            <h3>
+                Related Tickets
+            </h3>
+
+
+            <p>
+                Tickets assigned to this queue will be displayed here.
+            </p>
+
+        </div>
+
+
+    </div>
+
+
+    <script src="js/api.js"></script>
+    <script src="js/queue-detail.js"></script>
+
+</body>
+
+</html>

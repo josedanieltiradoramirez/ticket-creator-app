@@ -3,17 +3,42 @@ let queues = [];
 let editingQueueId = null;
 
 
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
+// ============================================================
+// INITIALIZATION
+// ============================================================
 
-        loadQueues();
+document.addEventListener("DOMContentLoaded", async () => {
 
-        setupQueueEventListeners();
+    setupQueueEventListeners();
+
+    await loadQueues();
+
+
+    // If we arrived from Queue Detail -> Edit
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const editId =
+        Number(
+            params.get("edit")
+        );
+
+
+    if (editId) {
+
+        editQueue(editId);
 
     }
-);
 
+});
+
+
+// ============================================================
+// EVENT LISTENERS
+// ============================================================
 
 function setupQueueEventListeners() {
 
@@ -22,7 +47,10 @@ function setupQueueEventListeners() {
         .addEventListener(
             "click",
             () => {
-                window.location.href = "index.html";
+
+                window.location.href =
+                    "index.html";
+
             }
         );
 
@@ -69,11 +97,17 @@ function setupQueueEventListeners() {
 }
 
 
+// ============================================================
+// LOAD QUEUES
+// ============================================================
+
 async function loadQueues() {
 
     try {
 
-        queues = await getQueues();
+        queues =
+            await getQueues();
+
 
         renderQueues();
 
@@ -84,7 +118,9 @@ async function loadQueues() {
             error
         );
 
+
         alert(
+            error.message ||
             "Error loading queues."
         );
 
@@ -92,6 +128,10 @@ async function loadQueues() {
 
 }
 
+
+// ============================================================
+// RENDER QUEUES
+// ============================================================
 
 function renderQueues() {
 
@@ -101,10 +141,17 @@ function renderQueues() {
         );
 
 
+    const emptyMessage =
+        document.getElementById(
+            "emptyQueuesMessage"
+        );
+
+
     const search =
         document.getElementById(
             "searchQueues"
-        ).value
+        )
+        .value
         .trim()
         .toLowerCase();
 
@@ -115,20 +162,51 @@ function renderQueues() {
     const filteredQueues =
         queues.filter(queue => {
 
+            const name =
+                String(
+                    queue.name ?? ""
+                )
+                .toLowerCase();
+
+
+            const description =
+                String(
+                    queue.description ?? ""
+                )
+                .toLowerCase();
+
+
             return (
-                queue.name
-                    .toLowerCase()
-                    .includes(search)
-
-                ||
-
-                queue.description
-                    .toLowerCase()
-                    .includes(search)
+                name.includes(search) ||
+                description.includes(search)
             );
 
         });
 
+
+    // ========================================================
+    // EMPTY STATE
+    // ========================================================
+
+    if (filteredQueues.length === 0) {
+
+        emptyMessage.classList.remove(
+            "hidden"
+        );
+
+        return;
+
+    }
+
+
+    emptyMessage.classList.add(
+        "hidden"
+    );
+
+
+    // ========================================================
+    // TABLE ROWS
+    // ========================================================
 
     filteredQueues.forEach(queue => {
 
@@ -167,12 +245,21 @@ function renderQueues() {
             <td>
 
                 <button
+                    type="button"
+                    class="action-button view-button"
+                >
+                    View
+                </button>
+
+                <button
+                    type="button"
                     class="action-button edit-button"
                 >
                     Edit
                 </button>
 
                 <button
+                    type="button"
                     class="action-button delete-button"
                 >
                     Delete
@@ -183,6 +270,18 @@ function renderQueues() {
         `;
 
 
+        // VIEW
+
+        row
+            .querySelector(".view-button")
+            .addEventListener(
+                "click",
+                () => openQueueDetail(queue.id)
+            );
+
+
+        // EDIT
+
         row
             .querySelector(".edit-button")
             .addEventListener(
@@ -190,6 +289,8 @@ function renderQueues() {
                 () => editQueue(queue.id)
             );
 
+
+        // DELETE
 
         row
             .querySelector(".delete-button")
@@ -206,6 +307,22 @@ function renderQueues() {
 }
 
 
+// ============================================================
+// OPEN QUEUE DETAIL
+// ============================================================
+
+function openQueueDetail(queueId) {
+
+    window.location.href =
+        `queue-detail.html?id=${queueId}`;
+
+}
+
+
+// ============================================================
+// CREATE QUEUE
+// ============================================================
+
 function openCreateQueueModal() {
 
     editingQueueId = null;
@@ -213,7 +330,8 @@ function openCreateQueueModal() {
 
     document.getElementById(
         "modalTitle"
-    ).textContent = "Create Queue";
+    ).textContent =
+        "Create Queue";
 
 
     document.getElementById(
@@ -231,12 +349,16 @@ function openCreateQueueModal() {
     ).checked = true;
 
 
-    document.getElementById(
-        "queueModal"
-    ).classList.remove("hidden");
+    document
+        .getElementById("queueModal")
+        .classList.remove("hidden");
 
 }
 
+
+// ============================================================
+// EDIT QUEUE
+// ============================================================
 
 function editQueue(queueId) {
 
@@ -247,7 +369,13 @@ function editQueue(queueId) {
 
 
     if (!queue) {
+
+        alert(
+            "Queue not found."
+        );
+
         return;
+
     }
 
 
@@ -256,39 +384,54 @@ function editQueue(queueId) {
 
     document.getElementById(
         "modalTitle"
-    ).textContent = "Edit Queue";
+    ).textContent =
+        "Edit Queue";
 
 
     document.getElementById(
         "queueName"
-    ).value = queue.name;
+    ).value =
+        queue.name ?? "";
 
 
     document.getElementById(
         "queueDescription"
-    ).value = queue.description;
+    ).value =
+        queue.description ?? "";
 
 
     document.getElementById(
         "queueActive"
-    ).checked = queue.is_active;
+    ).checked =
+        queue.is_active ?? true;
 
 
-    document.getElementById(
-        "queueModal"
-    ).classList.remove("hidden");
+    document
+        .getElementById("queueModal")
+        .classList.remove("hidden");
 
 }
 
+
+// ============================================================
+// CLOSE MODAL
+// ============================================================
 
 function closeQueueModal() {
 
-    document.getElementById(
-        "queueModal"
-    ).classList.add("hidden");
+    document
+        .getElementById("queueModal")
+        .classList.add("hidden");
+
+
+    editingQueueId = null;
 
 }
 
+
+// ============================================================
+// SAVE QUEUE
+// ============================================================
 
 async function saveQueue(event) {
 
@@ -298,24 +441,42 @@ async function saveQueue(event) {
     const queueData = {
 
         name:
-            document.getElementById(
-                "queueName"
-            ).value.trim(),
+            document
+                .getElementById("queueName")
+                .value
+                .trim(),
 
         description:
-            document.getElementById(
-                "queueDescription"
-            ).value.trim(),
+            document
+                .getElementById("queueDescription")
+                .value
+                .trim(),
 
         is_active:
-            document.getElementById(
-                "queueActive"
-            ).checked
+            document
+                .getElementById("queueActive")
+                .checked
 
     };
 
 
+    if (
+        !queueData.name ||
+        !queueData.description
+    ) {
+
+        alert(
+            "Please complete all required fields."
+        );
+
+        return;
+
+    }
+
+
     try {
+
+        // CREATE
 
         if (editingQueueId === null) {
 
@@ -323,16 +484,22 @@ async function saveQueue(event) {
                 queueData
             );
 
+
             alert(
                 "Queue created successfully."
             );
 
-        } else {
+        }
+
+        // UPDATE
+
+        else {
 
             await updateQueue(
                 editingQueueId,
                 queueData
             );
+
 
             alert(
                 "Queue updated successfully."
@@ -352,7 +519,9 @@ async function saveQueue(event) {
             error
         );
 
+
         alert(
+            error.message ||
             "Error saving queue."
         );
 
@@ -360,6 +529,10 @@ async function saveQueue(event) {
 
 }
 
+
+// ============================================================
+// DELETE QUEUE
+// ============================================================
 
 async function deleteQueue(queueId) {
 
@@ -370,7 +543,9 @@ async function deleteQueue(queueId) {
 
 
     if (!queue) {
+
         return;
+
     }
 
 
@@ -381,7 +556,9 @@ async function deleteQueue(queueId) {
 
 
     if (!confirmed) {
+
         return;
+
     }
 
 
@@ -391,9 +568,11 @@ async function deleteQueue(queueId) {
             queueId
         );
 
+
         alert(
             "Queue deleted successfully."
         );
+
 
         await loadQueues();
 
@@ -404,7 +583,9 @@ async function deleteQueue(queueId) {
             error
         );
 
+
         alert(
+            error.message ||
             "Error deleting queue."
         );
 
@@ -413,12 +594,19 @@ async function deleteQueue(queueId) {
 }
 
 
+// ============================================================
+// ESCAPE HTML
+// ============================================================
+
 function escapeHtml(value) {
 
     const div =
         document.createElement("div");
 
-    div.textContent = value;
+
+    div.textContent =
+        String(value ?? "");
+
 
     return div.innerHTML;
 
