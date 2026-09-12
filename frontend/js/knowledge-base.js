@@ -96,6 +96,7 @@ function renderKnowledgeBase() {
         document
             .getElementById("searchInput")
             .value
+            .trim()
             .toLowerCase();
 
 
@@ -107,31 +108,57 @@ function renderKnowledgeBase() {
 
             return (
 
-                item.article_number
+                (
+                    item.article_number || ""
+                )
                     .toLowerCase()
                     .includes(search)
 
                 ||
 
-                item.title
+                (
+                    item.title || ""
+                )
                     .toLowerCase()
                     .includes(search)
 
                 ||
 
-                item.description
+                (
+                    item.description || ""
+                )
                     .toLowerCase()
                     .includes(search)
 
                 ||
 
-                item.url
+                (
+                    item.url || ""
+                )
                     .toLowerCase()
                     .includes(search)
 
             );
 
         });
+
+
+    if (filteredItems.length === 0) {
+
+        const row =
+            document.createElement("tr");
+
+        row.innerHTML = `
+            <td colspan="5">
+                No Knowledge Base articles found.
+            </td>
+        `;
+
+        tableBody.appendChild(row);
+
+        return;
+
+    }
 
 
     filteredItems.forEach(item => {
@@ -143,38 +170,51 @@ function renderKnowledgeBase() {
         row.innerHTML = `
 
             <td>
-                ${item.article_number}
+                ${escapeHtml(
+                    item.article_number || ""
+                )}
             </td>
 
             <td>
-                ${item.title}
+                ${escapeHtml(
+                    item.title || ""
+                )}
             </td>
 
             <td>
+
                 <a
-                    href="${item.url}"
+                    href="${escapeAttribute(item.url || "")}"
                     target="_blank"
+                    rel="noopener noreferrer"
                 >
                     Open
                 </a>
+
             </td>
 
             <td>
-                ${item.description}
+                ${escapeHtml(
+                    item.description || ""
+                )}
             </td>
 
             <td>
 
                 <button
-                    class="action-button"
-                    onclick="openEditModal(${item.id})"
+                    class="action-button view-button"
+                >
+                    View
+                </button>
+
+                <button
+                    class="action-button edit-button"
                 >
                     Edit
                 </button>
 
                 <button
-                    class="action-button"
-                    onclick="deleteKnowledgeBaseConfirm(${item.id})"
+                    class="action-button delete-button"
                 >
                     Delete
                 </button>
@@ -184,9 +224,43 @@ function renderKnowledgeBase() {
         `;
 
 
+        row
+            .querySelector(".view-button")
+            .addEventListener(
+                "click",
+                () => openKnowledgeBaseDetail(item.id)
+            );
+
+
+        row
+            .querySelector(".edit-button")
+            .addEventListener(
+                "click",
+                () => openEditModal(item.id)
+            );
+
+
+        row
+            .querySelector(".delete-button")
+            .addEventListener(
+                "click",
+                () => deleteKnowledgeBaseConfirm(item.id)
+            );
+
+
         tableBody.appendChild(row);
 
     });
+
+}
+
+
+function openKnowledgeBaseDetail(
+    knowledgeBaseId
+) {
+
+    window.location.href =
+        `knowledge-base-detail.html?id=${knowledgeBaseId}`;
 
 }
 
@@ -214,7 +288,9 @@ function openCreateModal() {
 }
 
 
-async function openEditModal(knowledgeBaseId) {
+async function openEditModal(
+    knowledgeBaseId
+) {
 
     try {
 
@@ -237,25 +313,25 @@ async function openEditModal(knowledgeBaseId) {
         document.getElementById(
             "articleNumber"
         ).value =
-            item.article_number;
+            item.article_number || "";
 
 
         document.getElementById(
             "title"
         ).value =
-            item.title;
+            item.title || "";
 
 
         document.getElementById(
             "url"
         ).value =
-            item.url;
+            item.url || "";
 
 
         document.getElementById(
             "description"
         ).value =
-            item.description;
+            item.description || "";
 
 
         document.getElementById(
@@ -296,24 +372,28 @@ async function saveKnowledgeBaseItem(event) {
     const itemData = {
 
         article_number:
-            document.getElementById(
-                "articleNumber"
-            ).value,
+            document
+                .getElementById("articleNumber")
+                .value
+                .trim(),
 
         title:
-            document.getElementById(
-                "title"
-            ).value,
+            document
+                .getElementById("title")
+                .value
+                .trim(),
 
         url:
-            document.getElementById(
-                "url"
-            ).value,
+            document
+                .getElementById("url")
+                .value
+                .trim(),
 
         description:
-            document.getElementById(
-                "description"
-            ).value
+            document
+                .getElementById("description")
+                .value
+                .trim()
 
     };
 
@@ -409,5 +489,33 @@ async function deleteKnowledgeBaseConfirm(
         );
 
     }
+
+}
+
+
+function escapeHtml(value) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent =
+        value ?? "";
+
+    return div.innerHTML;
+
+}
+
+
+function escapeAttribute(value) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent =
+        value ?? "";
+
+    return div.innerHTML
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
 
 }
