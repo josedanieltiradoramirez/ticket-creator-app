@@ -81,6 +81,7 @@ function renderTemplates() {
         document
             .getElementById("searchInput")
             .value
+            .trim()
             .toLowerCase();
 
 
@@ -119,6 +120,24 @@ function renderTemplates() {
         });
 
 
+    if (filteredTemplates.length === 0) {
+
+        const row =
+            document.createElement("tr");
+
+        row.innerHTML = `
+            <td colspan="4">
+                No troubleshooting templates found.
+            </td>
+        `;
+
+        tableBody.appendChild(row);
+
+        return;
+
+    }
+
+
     filteredTemplates.forEach(template => {
 
         const row =
@@ -128,11 +147,13 @@ function renderTemplates() {
         row.innerHTML = `
 
             <td>
-                ${template.name || ""}
+                ${escapeHtml(template.name || "")}
             </td>
 
             <td>
-                ${template.generated_description}
+                ${escapeHtml(
+                    template.generated_description || ""
+                )}
             </td>
 
             <td>
@@ -144,13 +165,11 @@ function renderTemplates() {
                             : "inactive"
                     }"
                 >
-
                     ${
                         template.is_active
                             ? "Active"
                             : "Inactive"
                     }
-
                 </span>
 
             </td>
@@ -158,15 +177,19 @@ function renderTemplates() {
             <td>
 
                 <button
-                    class="action-button"
-                    onclick="openEditModal(${template.id})"
+                    class="action-button view-button"
+                >
+                    View
+                </button>
+
+                <button
+                    class="action-button edit-button"
                 >
                     Edit
                 </button>
 
                 <button
-                    class="action-button"
-                    onclick="deleteTemplateConfirm(${template.id})"
+                    class="action-button delete-button"
                 >
                     Delete
                 </button>
@@ -176,9 +199,41 @@ function renderTemplates() {
         `;
 
 
+        row
+            .querySelector(".view-button")
+            .addEventListener(
+                "click",
+                () => openTemplateDetail(template.id)
+            );
+
+
+        row
+            .querySelector(".edit-button")
+            .addEventListener(
+                "click",
+                () => openEditModal(template.id)
+            );
+
+
+        row
+            .querySelector(".delete-button")
+            .addEventListener(
+                "click",
+                () => deleteTemplateConfirm(template.id)
+            );
+
+
         tableBody.appendChild(row);
 
     });
+
+}
+
+
+function openTemplateDetail(templateId) {
+
+    window.location.href =
+        `troubleshooting-template-detail.html?id=${templateId}`;
 
 }
 
@@ -240,13 +295,13 @@ async function openEditModal(templateId) {
         document.getElementById(
             "generatedDescription"
         ).value =
-            template.generated_description;
+            template.generated_description || "";
 
 
         document.getElementById(
             "steps"
         ).value =
-            template.steps;
+            template.steps || "";
 
 
         document.getElementById(
@@ -295,7 +350,7 @@ async function saveTemplate(event) {
         name:
             document.getElementById(
                 "name"
-            ).value || null,
+            ).value.trim() || null,
 
         steps:
             document.getElementById(
@@ -402,5 +457,18 @@ async function deleteTemplateConfirm(templateId) {
         );
 
     }
+
+}
+
+
+function escapeHtml(value) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent =
+        value ?? "";
+
+    return div.innerHTML;
 
 }

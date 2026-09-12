@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Troubleshooting Template Detail</title>
+
+    <link
+        rel="stylesheet"
+        href="css/tools.css"
+    >
+
+</head>
+
+<body>
+
+    <header>
+
+        <h1 id="pageTitle">
+            Troubleshooting Template
+        </h1>
+
+        <button id="backButton">
+            Back
+        </button>
+
+    </header>
+
+
+    <main>
+
+
+        <!-- ================================================= -->
+        <!-- BASIC INFORMATION -->
+        <!-- ================================================= -->
+
+        <section class="crud-section">
+
+            <div class="crud-header">
+
+                <h2>
+                    Basic Information
+                </h2>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="templateName">
+                    Name
+                </label>
+
+                <input
+                    type="text"
+                    id="templateName"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="generatedDescription">
+                    Generated Description
+                </label>
+
+                <textarea
+                    id="generatedDescription"
+                    rows="5"
+                ></textarea>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="templateSteps">
+                    Troubleshooting Steps
+                </label>
+
+                <textarea
+                    id="templateSteps"
+                    rows="12"
+                ></textarea>
+
+            </div>
+
+
+            <div class="form-group checkbox-group">
+
+                <input
+                    type="checkbox"
+                    id="templateActive"
+                >
+
+                <label for="templateActive">
+                    Active
+                </label>
+
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button id="saveTemplateButton">
+                    Save Changes
+                </button>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================================================= -->
+        <!-- ISSUE TYPES -->
+        <!-- ================================================= -->
+
+        <section class="crud-section">
+
+            <div class="crud-header">
+
+                <h2>
+                    Related Issue Types
+                </h2>
+
+                <button id="addIssueTypeButton">
+                    Add Issue Type
+                </button>
+
+            </div>
+
+
+            <div class="crud-table-container">
+
+                <table class="crud-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="issueTypesTableBody">
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================================================= -->
+        <!-- TOOLS -->
+        <!-- ================================================= -->
+
+        <section class="crud-section">
+
+            <div class="crud-header">
+
+                <h2>
+                    Related Tools
+                </h2>
+
+                <button id="addToolButton">
+                    Add Tool
+                </button>
+
+            </div>
+
+
+            <div class="crud-table-container">
+
+                <table class="crud-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="toolsTableBody">
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================================================= -->
+        <!-- KNOWLEDGE BASE -->
+        <!-- ================================================= -->
+
+        <section class="crud-section">
+
+            <div class="crud-header">
+
+                <h2>
+                    Related Knowledge Base
+                </h2>
+
+                <button id="addKnowledgeBaseButton">
+                    Add Knowledge Base
+                </button>
+
+            </div>
+
+
+            <div class="crud-table-container">
+
+                <table class="crud-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="knowledgeBaseTableBody">
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- ================================================= -->
+    <!-- ADD ISSUE TYPE MODAL -->
+    <!-- ================================================= -->
+
+    <div
+        id="issueTypeModal"
+        class="modal hidden"
+    >
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h2>
+                    Add Issue Type
+                </h2>
+
+                <button
+                    id="closeIssueTypeModal"
+                    class="modal-close"
+                    type="button"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="issueTypeSelect">
+                    Issue Type
+                </label>
+
+                <select id="issueTypeSelect">
+                </select>
+
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    id="cancelIssueTypeButton"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="button"
+                    id="saveIssueTypeButton"
+                >
+                    Add
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ================================================= -->
+    <!-- ADD TOOL MODAL -->
+    <!-- ================================================= -->
+
+    <div
+        id="toolModal"
+        class="modal hidden"
+    >
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h2>
+                    Add Tool
+                </h2>
+
+                <button
+                    id="closeToolModal"
+                    class="modal-close"
+                    type="button"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="toolSelect">
+                    Tool
+                </label>
+
+                <select id="toolSelect">
+                </select>
+
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    id="cancelToolButton"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="button"
+                    id="saveToolButton"
+                >
+                    Add
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ================================================= -->
+    <!-- ADD KNOWLEDGE BASE MODAL -->
+    <!-- ================================================= -->
+
+    <div
+        id="knowledgeBaseModal"
+        class="modal hidden"
+    >
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h2>
+                    Add Knowledge Base
+                </h2>
+
+                <button
+                    id="closeKnowledgeBaseModal"
+                    class="modal-close"
+                    type="button"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="knowledgeBaseSelect">
+                    Knowledge Base
+                </label>
+
+                <select id="knowledgeBaseSelect">
+                </select>
+
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    id="cancelKnowledgeBaseButton"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="button"
+                    id="saveKnowledgeBaseButton"
+                >
+                    Add
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <script src="js/api.js"></script>
+    <script src="js/troubleshooting-template-detail.js"></script>
+
+</body>
+
+</html>
