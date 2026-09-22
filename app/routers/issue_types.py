@@ -9,6 +9,7 @@ from app.models.users import Users
 from app.models.tools import Tools
 from app.models.knowledge_base import KnowledgeBase
 from app.models.troubleshooting_templates import TroubleshootingTemplates
+from app.models.queues import Queues
 from app.routers.auth import get_current_user
 
 from app.schemas.issue_types import (
@@ -526,6 +527,114 @@ async def get_issue_type_form(
     return [issue_type.form]
 
 
+# -------------------------
+# QUEUES
+# -------------------------
+@router.get("/{id}/queues")
+async def get_issue_type_queues(
+    user: user_dependency,
+    id: int,
+    db: db_dependency
+):
+    issue_type = db.query(IssueTypes).filter(
+        IssueTypes.id == id,
+        IssueTypes.created_by == user.id
+    ).first()
+
+    if not issue_type:
+        raise HTTPException(
+            status_code=404,
+            detail="Issue Type not found"
+        )
+
+    return issue_type.queues
+
+
+@router.post("/{id}/queues/{queue_id}")
+async def add_issue_type_queue(
+    user: user_dependency,
+    id: int,
+    queue_id: int,
+    db: db_dependency
+):
+    issue_type = db.query(IssueTypes).filter(
+        IssueTypes.id == id,
+        IssueTypes.created_by == user.id
+    ).first()
+
+    if not issue_type:
+        raise HTTPException(
+            status_code=404,
+            detail="Issue Type not found"
+        )
+
+    queue = db.query(Queues).filter(
+        Queues.id == queue_id,
+        Queues.created_by == user.id
+    ).first()
+
+    if not queue:
+        raise HTTPException(
+            status_code=404,
+            detail="Queue not found"
+        )
+
+    if queue in issue_type.queues:
+        raise HTTPException(
+            status_code=400,
+            detail="Queue is already associated with this Issue Type"
+        )
+
+    issue_type.queues.append(queue)
+
+    db.commit()
+
+    return {
+        "message": "Queue added to Issue Type successfully"
+    }
+
+@router.delete("/{id}/queues/{queue_id}")
+async def remove_issue_type_queue(
+    user: user_dependency,
+    id: int,
+    queue_id: int,
+    db: db_dependency
+):
+    issue_type = db.query(IssueTypes).filter(
+        IssueTypes.id == id,
+        IssueTypes.created_by == user.id
+    ).first()
+
+    if not issue_type:
+        raise HTTPException(
+            status_code=404,
+            detail="Issue Type not found"
+        )
+
+    queue = db.query(Queues).filter(
+        Queues.id == queue_id,
+        Queues.created_by == user.id
+    ).first()
+
+    if not queue:
+        raise HTTPException(
+            status_code=404,
+            detail="Queue not found"
+        )
+
+    if queue not in issue_type.queues:
+        raise HTTPException(
+            status_code=404,
+            detail="Queue is not associated with this Issue Type"
+        )
+
+    issue_type.queues.remove(queue)
+
+    db.commit()
+
+    return {
+        "message": "Queue removed from Issue Type successfully"
+    }
 # ============================================================
 # GET ISSUE TYPE BY ID
 # ============================================================

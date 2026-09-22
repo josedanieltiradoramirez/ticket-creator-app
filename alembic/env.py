@@ -28,6 +28,7 @@ from app.models.queues import Queues
 from app.models.warehouse_management_systems import WarehouseManagementSystems
 from app.models.relation_issue_types_knowledge_base import RelationIssueTypesKnowledgeBase
 from app.models.relation_tickets_knowledge_base import RelationTicketsKnowledgeBase
+from app.models.relation_queues_issue_types import RelationQueuesIssueTypes
 
 
 load_dotenv()

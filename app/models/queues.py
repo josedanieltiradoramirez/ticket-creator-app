@@ -16,3 +16,8 @@ class Queues(Base):
         "Tickets",
         back_populates="queue"
     )
+    issue_types = relationship(
+        "IssueTypes",
+        secondary="relation_queues_issue_types",
+        back_populates="queues"
+    )

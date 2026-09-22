@@ -19,6 +19,7 @@ class IssueTypes(Base):
     troubleshooting_templates = relationship("TroubleshootingTemplates", secondary="relation_issue_types_troubleshooting_templates", back_populates ="issue_types")
     tools = relationship("Tools", secondary="relation_issue_types_tools", back_populates="issue_types")
     knowledge_base = relationship("KnowledgeBase", secondary="relation_issue_types_knowledge_base", back_populates="issue_types")
+    queues = relationship("Queues", secondary="relation_queues_issue_types", back_populates="issue_types")
     form = relationship("Forms", back_populates="issue_types")
     tickets = relationship("Tickets", back_populates="issue_type")
     
