@@ -10,6 +10,7 @@ from app.models.issue_types import IssueTypes
 from app.models.knowledge_base import KnowledgeBase
 from app.models.troubleshooting_templates import TroubleshootingTemplates
 from app.models.queues import Queues
+from app.models.knowledge_base_notes import KnowledgeBaseNotes
 from app.routers.auth import get_current_user
 
 from app.schemas.tools import (
@@ -81,6 +82,136 @@ async def get_tool_by_id(
 
     return tool
 
+# =========================================================
+# TOOL ↔ KNOWLEDGE BASE NOTES
+# =========================================================
+
+@router.get("/{id}/knowledge-base-notes")
+async def get_tool_knowledge_base_notes(
+    user: user_dependency,
+    id: int,
+    db: db_dependency
+):
+    tool = (
+        db.query(Tools)
+        .filter(
+            Tools.id == id,
+            Tools.created_by == user.id
+        )
+        .first()
+    )
+
+    if not tool:
+        raise HTTPException(
+            status_code=404,
+            detail="Tool not found"
+        )
+
+    return tool.knowledge_base_notes
+
+
+@router.post("/{id}/knowledge-base-notes/{note_id}")
+async def add_tool_knowledge_base_note(
+    user: user_dependency,
+    id: int,
+    note_id: int,
+    db: db_dependency
+):
+    tool = (
+        db.query(Tools)
+        .filter(
+            Tools.id == id,
+            Tools.created_by == user.id
+        )
+        .first()
+    )
+
+    if not tool:
+        raise HTTPException(
+            status_code=404,
+            detail="Tool not found"
+        )
+
+    note = (
+        db.query(KnowledgeBaseNotes)
+        .filter(
+            KnowledgeBaseNotes.id == note_id,
+            KnowledgeBaseNotes.created_by == user.id
+        )
+        .first()
+    )
+
+    if not note:
+        raise HTTPException(
+            status_code=404,
+            detail="Knowledge Base Note not found"
+        )
+
+    if note in tool.knowledge_base_notes:
+        raise HTTPException(
+            status_code=400,
+            detail="Knowledge Base Note is already associated with this Tool"
+        )
+
+    tool.knowledge_base_notes.append(note)
+
+    db.commit()
+
+    return {
+        "message": "Knowledge Base Note added to Tool successfully"
+    }
+
+
+@router.delete("/{id}/knowledge-base-notes/{note_id}")
+async def remove_tool_knowledge_base_note(
+    user: user_dependency,
+    id: int,
+    note_id: int,
+    db: db_dependency
+):
+    tool = (
+        db.query(Tools)
+        .filter(
+            Tools.id == id,
+            Tools.created_by == user.id
+        )
+        .first()
+    )
+
+    if not tool:
+        raise HTTPException(
+            status_code=404,
+            detail="Tool not found"
+        )
+
+    note = (
+        db.query(KnowledgeBaseNotes)
+        .filter(
+            KnowledgeBaseNotes.id == note_id,
+            KnowledgeBaseNotes.created_by == user.id
+        )
+        .first()
+    )
+
+    if not note:
+        raise HTTPException(
+            status_code=404,
+            detail="Knowledge Base Note not found"
+        )
+
+    if note not in tool.knowledge_base_notes:
+        raise HTTPException(
+            status_code=404,
+            detail="Knowledge Base Note is not associated with this Tool"
+        )
+
+    tool.knowledge_base_notes.remove(note)
+
+    db.commit()
+
+    return {
+        "message": "Knowledge Base Note removed from Tool successfully"
+    }
 
 # ============================================================
 # TOOL ↔ ISSUE TYPES
