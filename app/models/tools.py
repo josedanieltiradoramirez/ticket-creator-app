@@ -39,3 +39,9 @@ class Tools(Base):
         "Tickets",
         back_populates="tool"
     )
+
+    queues = relationship(
+        "Queues",
+        secondary="relation_queues_tools",
+        back_populates="tools"
+    )

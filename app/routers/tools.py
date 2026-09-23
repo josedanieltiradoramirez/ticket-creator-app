@@ -9,6 +9,7 @@ from app.models.users import Users
 from app.models.issue_types import IssueTypes
 from app.models.knowledge_base import KnowledgeBase
 from app.models.troubleshooting_templates import TroubleshootingTemplates
+from app.models.queues import Queues
 from app.routers.auth import get_current_user
 
 from app.schemas.tools import (
@@ -63,6 +64,7 @@ async def get_tool_by_id(
             selectinload(Tools.issue_types),
             selectinload(Tools.knowledge_base),
             selectinload(Tools.troubleshooting_templates),
+            selectinload(Tools.queues),
         )
         .filter(
             Tools.id == id,
@@ -470,6 +472,137 @@ async def remove_tool_troubleshooting_template(
 
     return {
         "message": "Troubleshooting template removed from tool"
+    }
+
+
+# ============================================================
+# TOOL ↔ QUEUES
+# ============================================================
+
+@router.get("/{id}/queues")
+async def get_tool_queues(
+    user: user_dependency,
+    id: int,
+    db: db_dependency
+):
+    tool = (
+        db.query(Tools)
+        .filter(
+            Tools.id == id,
+            Tools.created_by == user.id
+        )
+        .first()
+    )
+
+    if not tool:
+        raise HTTPException(
+            status_code=404,
+            detail="Tool not found"
+        )
+
+    return tool.queues
+
+
+@router.post("/{id}/queues/{queue_id}")
+async def add_tool_queue(
+    user: user_dependency,
+    id: int,
+    queue_id: int,
+    db: db_dependency
+):
+    tool = (
+        db.query(Tools)
+        .filter(
+            Tools.id == id,
+            Tools.created_by == user.id
+        )
+        .first()
+    )
+
+    if not tool:
+        raise HTTPException(
+            status_code=404,
+            detail="Tool not found"
+        )
+
+    queue = (
+        db.query(Queues)
+        .filter(
+            Queues.id == queue_id,
+            Queues.created_by == user.id
+        )
+        .first()
+    )
+
+    if not queue:
+        raise HTTPException(
+            status_code=404,
+            detail="Queue not found"
+        )
+
+    if queue in tool.queues:
+        return {
+            "message": "Queue already associated with tool"
+        }
+
+    tool.queues.append(queue)
+
+    db.commit()
+
+    return {
+        "message": "Queue added to tool"
+    }
+
+
+@router.delete("/{id}/queues/{queue_id}")
+async def remove_tool_queue(
+    user: user_dependency,
+    id: int,
+    queue_id: int,
+    db: db_dependency
+):
+    tool = (
+        db.query(Tools)
+        .filter(
+            Tools.id == id,
+            Tools.created_by == user.id
+        )
+        .first()
+    )
+
+    if not tool:
+        raise HTTPException(
+            status_code=404,
+            detail="Tool not found"
+        )
+
+    queue = (
+        db.query(Queues)
+        .filter(
+            Queues.id == queue_id,
+            Queues.created_by == user.id
+        )
+        .first()
+    )
+
+    if not queue:
+        raise HTTPException(
+            status_code=404,
+            detail="Queue not found"
+        )
+
+    if queue not in tool.queues:
+        raise HTTPException(
+            status_code=404,
+            detail="Queue is not associated with this tool"
+        )
+
+    tool.queues.remove(queue)
+
+    db.commit()
+
+    return {
+        "message": "Queue removed from tool"
     }
 
 

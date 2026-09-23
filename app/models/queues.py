@@ -21,3 +21,9 @@ class Queues(Base):
         secondary="relation_queues_issue_types",
         back_populates="queues"
     )
+
+    tools = relationship(
+        "Tools",
+        secondary="relation_queues_tools",
+        back_populates="queues"
+    )

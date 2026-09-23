@@ -20,3 +20,4 @@ from .relation_knowledge_base_tools import RelationKnowledgeBaseTools
 from .relation_issue_types_knowledge_base import RelationIssueTypesKnowledgeBase
 from .relation_tickets_knowledge_base import RelationTicketsKnowledgeBase
 from .relation_queues_issue_types import RelationQueuesIssueTypes
+from .relation_queues_tools import RelationQueuesTools
