@@ -30,7 +30,8 @@ from app.models.relation_issue_types_knowledge_base import RelationIssueTypesKno
 from app.models.relation_tickets_knowledge_base import RelationTicketsKnowledgeBase
 from app.models.relation_queues_issue_types import RelationQueuesIssueTypes
 from app.models.relation_queues_tools import RelationQueuesTools
-
+from app.models.knowledge_base_notes import KnowledgeBaseNotes
+from app.models.relation_tools_knowledge_base_notes import RelationToolsKnowledgeBaseNotes
 
 load_dotenv()
 

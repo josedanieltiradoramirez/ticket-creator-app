@@ -45,3 +45,9 @@ class Tools(Base):
         secondary="relation_queues_tools",
         back_populates="tools"
     )
+
+    knowledge_base_notes = relationship(
+        "KnowledgeBaseNotes",
+        secondary="relation_tools_knowledge_base_notes",
+        back_populates="tools"
+    )
