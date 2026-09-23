@@ -17,11 +17,11 @@ class ToolCreate(BaseModel):
 
 
 class ToolUpdate(BaseModel):
-    name: str
-    description: str
+    name: Optional[str] = None
+    description: Optional[str] = None
     access_request: Optional[str] = None
     password_reset: Optional[str] = None
-    is_active: bool
+    is_active: Optional[bool] = None
 
 
 class ToolResponse(BaseModel):
