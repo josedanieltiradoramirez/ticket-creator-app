@@ -3,6 +3,11 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
 
+from app.schemas.summaries import (
+    IssueTypeSummary,
+    ToolSummary
+)
+
 
 class KnowledgeBaseNoteCreate(BaseModel):
     title: str
@@ -21,7 +26,7 @@ class KnowledgeBaseNoteUpdate(BaseModel):
 
 
 class KnowledgeBaseNoteResponse(BaseModel):
-    id: int
+    id: int  
     title: str
     content: str
     category: Optional[str] = None
@@ -35,4 +40,5 @@ class KnowledgeBaseNoteResponse(BaseModel):
 
 
 class KnowledgeBaseNoteDetailResponse(KnowledgeBaseNoteResponse):
-    tools: list = []
+    tools: list[ToolSummary] = []
+    issue_types: list[IssueTypeSummary] = []

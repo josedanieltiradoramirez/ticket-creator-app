@@ -6,7 +6,8 @@ from app.schemas.forms import FormResponse
 from app.schemas.summaries import (
     ToolSummary,
     KnowledgeBaseSummary,
-    TroubleshootingTemplateSummary
+    TroubleshootingTemplateSummary,
+    KnowledgeBaseNoteSummary
 )
 
 class IssueTypeCreate(BaseModel):
@@ -44,3 +45,4 @@ class IssueTypeDetailResponse(IssueTypeResponse):
     tools: list[ToolSummary] = []
     troubleshooting_templates: list[TroubleshootingTemplateSummary] = []
     knowledge_base: list[KnowledgeBaseSummary] = []
+    knowledge_base_notes: list[KnowledgeBaseNoteSummary] = []

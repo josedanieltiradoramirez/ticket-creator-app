@@ -64,7 +64,8 @@ async def get_knowledge_base_note_by_id(
     note = (
         db.query(KnowledgeBaseNotes)
         .options(
-            selectinload(KnowledgeBaseNotes.tools)
+            selectinload(KnowledgeBaseNotes.tools),
+            selectinload(KnowledgeBaseNotes.issue_types)
         )
         .filter(
             KnowledgeBaseNotes.id == id,

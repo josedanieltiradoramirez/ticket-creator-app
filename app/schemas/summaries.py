@@ -25,6 +25,15 @@ class KnowledgeBaseSummary(BaseModel):
         orm_mode = True
 
 
+class KnowledgeBaseNoteSummary(BaseModel):
+    id: int
+    title: str
+    category: str | None = None
+
+    class Config:
+        orm_mode = True
+
+
 class TroubleshootingTemplateSummary(BaseModel):
     id: int
     generated_description: str

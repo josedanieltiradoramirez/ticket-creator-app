@@ -788,9 +788,8 @@ async def get_issue_type_by_id(
             selectinload(IssueTypes.form),
             selectinload(IssueTypes.knowledge_base),
             selectinload(IssueTypes.tools),
-            selectinload(
-                IssueTypes.troubleshooting_templates
-            ),
+            selectinload(IssueTypes.troubleshooting_templates),
+            selectinload(IssueTypes.knowledge_base_notes)
         )
         .filter(
             IssueTypes.id == id,
