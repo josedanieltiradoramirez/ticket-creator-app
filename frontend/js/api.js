@@ -511,6 +511,80 @@ async function removeIssueTypeKnowledgeBase(
 
 
 // ============================================================
+// ISSUE TYPE - KNOWLEDGE BASE NOTES
+// ============================================================
+
+async function getIssueTypeKnowledgeBaseNotes(
+    issueTypeId
+) {
+
+    const response = await fetch(
+        `${API_URL}/api/issue_types/${issueTypeId}/knowledge-base-notes`,
+        {
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error loading issue type knowledge base notes"
+        );
+    }
+
+    return await response.json();
+}
+
+
+
+async function addIssueTypeKnowledgeBaseNote(
+    issueTypeId,
+    noteId
+) {
+
+    const response = await fetch(
+        `${API_URL}/api/issue_types/${issueTypeId}/knowledge-base-notes/${noteId}`,
+        {
+            method: "POST",
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error adding knowledge base note to issue type"
+        );
+    }
+
+    return await response.json();
+}
+
+
+
+async function removeIssueTypeKnowledgeBaseNote(
+    issueTypeId,
+    noteId
+) {
+
+    const response = await fetch(
+        `${API_URL}/api/issue_types/${issueTypeId}/knowledge-base-notes/${noteId}`,
+        {
+            method: "DELETE",
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error removing knowledge base note from issue type"
+        );
+    }
+
+    return await response.json();
+}
+
+
+
+// ============================================================
 // ISSUE TYPE - TROUBLESHOOTING TEMPLATES
 // ============================================================
 
@@ -2188,6 +2262,80 @@ async function removeKnowledgeBaseNoteTool(
     if (!response.ok) {
         throw new Error(
             "Error removing tool from knowledge base note"
+        );
+    }
+
+    return await response.json();
+}
+
+
+
+// ============================================================
+// KNOWLEDGE BASE NOTE - ISSUE TYPES
+// ============================================================
+
+async function getKnowledgeBaseNoteIssueTypes(
+    noteId
+) {
+
+    const response = await fetch(
+        `${API_URL}/api/knowledge_base_notes/${noteId}/issue-types`,
+        {
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error loading issue types for knowledge base note"
+        );
+    }
+
+    return await response.json();
+}
+
+
+
+async function addKnowledgeBaseNoteIssueType(
+    noteId,
+    issueTypeId
+) {
+
+    const response = await fetch(
+        `${API_URL}/api/knowledge_base_notes/${noteId}/issue-types/${issueTypeId}`,
+        {
+            method: "POST",
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error adding issue type to knowledge base note"
+        );
+    }
+
+    return await response.json();
+}
+
+
+
+async function removeKnowledgeBaseNoteIssueType(
+    noteId,
+    issueTypeId
+) {
+
+    const response = await fetch(
+        `${API_URL}/api/knowledge_base_notes/${noteId}/issue-types/${issueTypeId}`,
+        {
+            method: "DELETE",
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error removing issue type from knowledge base note"
         );
     }
 

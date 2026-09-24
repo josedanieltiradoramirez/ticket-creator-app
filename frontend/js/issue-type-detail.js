@@ -153,6 +153,10 @@ function setupNavigation() {
 
 function setupEventListeners() {
 
+    // ========================================================
+    // BACK
+    // ========================================================
+
     document
         .getElementById("backButton")
         .addEventListener(
@@ -165,6 +169,10 @@ function setupEventListeners() {
             }
         );
 
+
+    // ========================================================
+    // TOOLS
+    // ========================================================
 
     document
         .getElementById("addToolButton")
@@ -197,6 +205,10 @@ function setupEventListeners() {
             addSelectedTool
         );
 
+
+    // ========================================================
+    // TROUBLESHOOTING TEMPLATES
+    // ========================================================
 
     document
         .getElementById(
@@ -238,6 +250,10 @@ function setupEventListeners() {
         );
 
 
+    // ========================================================
+    // KNOWLEDGE BASE
+    // ========================================================
+
     document
         .getElementById(
             "addKnowledgeBaseButton"
@@ -277,6 +293,54 @@ function setupEventListeners() {
             addSelectedKnowledgeBase
         );
 
+
+    // ========================================================
+    // KNOWLEDGE BASE NOTES
+    // ========================================================
+
+    document
+        .getElementById(
+            "addKnowledgeBaseNoteButton"
+        )
+        .addEventListener(
+            "click",
+            openKnowledgeBaseNoteModal
+        );
+
+
+    document
+        .getElementById(
+            "closeKnowledgeBaseNoteModalButton"
+        )
+        .addEventListener(
+            "click",
+            closeKnowledgeBaseNoteModal
+        );
+
+
+    document
+        .getElementById(
+            "cancelKnowledgeBaseNoteButton"
+        )
+        .addEventListener(
+            "click",
+            closeKnowledgeBaseNoteModal
+        );
+
+
+    document
+        .getElementById(
+            "saveKnowledgeBaseNoteButton"
+        )
+        .addEventListener(
+            "click",
+            addSelectedKnowledgeBaseNote
+        );
+
+
+    // ========================================================
+    // FORM
+    // ========================================================
 
     document
         .getElementById(
@@ -343,7 +407,8 @@ async function loadIssueTypeDetail() {
             loadForm(),
             loadTools(),
             loadTroubleshootingTemplates(),
-            loadKnowledgeBase()
+            loadKnowledgeBase(),
+            loadKnowledgeBaseNotes()
         ]);
 
     } catch (error) {
@@ -433,39 +498,100 @@ function renderBasicInformation(
 // ============================================================
 
 async function loadForm() {
+
     try {
-        const forms = await getIssueTypeForm(issueTypeId);
 
-        console.log("FORMS:", forms);
+        const forms =
+            await getIssueTypeForm(
+                issueTypeId
+            );
 
-        const formEmptyMessage = document.getElementById("formEmptyMessage");
-        const formInfo = document.getElementById("formInfo");
 
-        // No form assigned
-        if (!forms || forms.length === 0) {
-            formEmptyMessage.classList.remove("hidden");
-            formInfo.classList.add("hidden");
+        console.log(
+            "FORMS:",
+            forms
+        );
+
+
+        const formEmptyMessage =
+            document.getElementById(
+                "formEmptyMessage"
+            );
+
+
+        const formInfo =
+            document.getElementById(
+                "formInfo"
+            );
+
+
+        if (
+            !forms ||
+            forms.length === 0
+        ) {
+
+            formEmptyMessage
+                .classList
+                .remove("hidden");
+
+            formInfo
+                .classList
+                .add("hidden");
+
             return;
+
         }
 
-        // The endpoint returns an array, but an Issue Type has one form
-        const form = forms[0];
 
-        formEmptyMessage.classList.add("hidden");
-        formInfo.classList.remove("hidden");
+        const form =
+            forms[0];
 
-        document.getElementById("formName").textContent =
+
+        formEmptyMessage
+            .classList
+            .add("hidden");
+
+        formInfo
+            .classList
+            .remove("hidden");
+
+
+        document.getElementById(
+            "formName"
+        ).textContent =
             form.name || "N/A";
 
-        document.getElementById("formDescription").textContent =
+
+        document.getElementById(
+            "formDescription"
+        ).textContent =
             form.description || "N/A";
 
     } catch (error) {
-        console.error("Error loading form:", error);
 
-        document.getElementById("formEmptyMessage").classList.remove("hidden");
-        document.getElementById("formInfo").classList.add("hidden");
+        console.error(
+            "Error loading form:",
+            error
+        );
+
+
+        document
+            .getElementById(
+                "formEmptyMessage"
+            )
+            .classList
+            .remove("hidden");
+
+
+        document
+            .getElementById(
+                "formInfo"
+            )
+            .classList
+            .add("hidden");
+
     }
+
 }
 
 
@@ -532,9 +658,8 @@ async function openChangeFormModal() {
             .getElementById(
                 "changeFormModal"
             )
-            .classList.remove(
-                "hidden"
-            );
+            .classList
+            .remove("hidden");
 
     } catch (error) {
 
@@ -651,9 +776,8 @@ function closeChangeFormModal() {
         .getElementById(
             "changeFormModal"
         )
-        .classList.add(
-            "hidden"
-        );
+        .classList
+        .add("hidden");
 
 }
 
@@ -668,6 +792,7 @@ async function loadTools() {
         document.getElementById(
             "toolsTableBody"
         );
+
 
     const emptyMessage =
         document.getElementById(
@@ -715,7 +840,9 @@ async function loadTools() {
             row.innerHTML = `
 
                 <td>
-                    ${escapeHtml(tool.name)}
+                    ${escapeHtml(
+                        tool.name
+                    )}
                 </td>
 
                 <td>
@@ -744,7 +871,9 @@ async function loadTools() {
             `;
 
 
-            tableBody.appendChild(row);
+            tableBody.appendChild(
+                row
+            );
 
         });
 
@@ -838,9 +967,8 @@ async function openToolModal() {
             .getElementById(
                 "toolModal"
             )
-            .classList.remove(
-                "hidden"
-            );
+            .classList
+            .remove("hidden");
 
     } catch (error) {
 
@@ -970,6 +1098,7 @@ async function loadTroubleshootingTemplates() {
             "troubleshootingTemplatesTableBody"
         );
 
+
     const emptyMessage =
         document.getElementById(
             "troubleshootingTemplatesEmptyMessage"
@@ -1047,7 +1176,9 @@ async function loadTroubleshootingTemplates() {
             `;
 
 
-            tableBody.appendChild(row);
+            tableBody.appendChild(
+                row
+            );
 
         });
 
@@ -1142,9 +1273,8 @@ async function openTroubleshootingTemplateModal() {
             .getElementById(
                 "troubleshootingTemplateModal"
             )
-            .classList.remove(
-                "hidden"
-            );
+            .classList
+            .remove("hidden");
 
     } catch (error) {
 
@@ -1273,9 +1403,8 @@ function closeTroubleshootingTemplateModal() {
         .getElementById(
             "troubleshootingTemplateModal"
         )
-        .classList.add(
-            "hidden"
-        );
+        .classList
+        .add("hidden");
 
 }
 
@@ -1290,6 +1419,7 @@ async function loadKnowledgeBase() {
         document.getElementById(
             "knowledgeBaseTableBody"
         );
+
 
     const emptyMessage =
         document.getElementById(
@@ -1368,7 +1498,9 @@ async function loadKnowledgeBase() {
             `;
 
 
-            tableBody.appendChild(row);
+            tableBody.appendChild(
+                row
+            );
 
         });
 
@@ -1462,9 +1594,8 @@ async function openKnowledgeBaseModal() {
             .getElementById(
                 "knowledgeBaseModal"
             )
-            .classList.remove(
-                "hidden"
-            );
+            .classList
+            .remove("hidden");
 
     } catch (error) {
 
@@ -1593,9 +1724,331 @@ function closeKnowledgeBaseModal() {
         .getElementById(
             "knowledgeBaseModal"
         )
-        .classList.add(
-            "hidden"
+        .classList
+        .add("hidden");
+
+}
+
+
+// ============================================================
+// KNOWLEDGE BASE NOTES
+// ============================================================
+
+async function loadKnowledgeBaseNotes() {
+
+    const tableBody =
+        document.getElementById(
+            "knowledgeBaseNotesTableBody"
         );
+
+
+    const emptyMessage =
+        document.getElementById(
+            "knowledgeBaseNotesEmptyMessage"
+        );
+
+
+    try {
+
+        const notes =
+            await getIssueTypeKnowledgeBaseNotes(
+                issueTypeId
+            );
+
+
+        tableBody.innerHTML =
+            "";
+
+
+        if (
+            !notes ||
+            notes.length === 0
+        ) {
+
+            emptyMessage.style.display =
+                "block";
+
+            return;
+
+        }
+
+
+        emptyMessage.style.display =
+            "none";
+
+
+        notes.forEach(note => {
+
+            const row =
+                document.createElement(
+                    "tr"
+                );
+
+
+            row.innerHTML = `
+
+                <td>
+                    ${escapeHtml(
+                        note.title || "-"
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHtml(
+                        note.category || "-"
+                    )}
+                </td>
+
+                <td>
+                    ${createStatusBadge(
+                        note.is_active
+                    )}
+                </td>
+
+                <td>
+
+                    <button
+                        class="action-button"
+                        onclick="removeKnowledgeBaseNote(${note.id})"
+                    >
+                        Remove
+                    </button>
+
+                </td>
+
+            `;
+
+
+            tableBody.appendChild(
+                row
+            );
+
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Error loading knowledge base notes:",
+            error
+        );
+
+        emptyMessage.style.display =
+            "block";
+
+    }
+
+}
+
+
+// ============================================================
+// OPEN KNOWLEDGE BASE NOTE MODAL
+// ============================================================
+
+async function openKnowledgeBaseNoteModal() {
+
+    const select =
+        document.getElementById(
+            "knowledgeBaseNoteSelect"
+        );
+
+
+    select.innerHTML = `
+        <option value="">
+            Select a Knowledge Base Note
+        </option>
+    `;
+
+
+    try {
+
+        const [
+            notes,
+            assignedNotes
+        ] =
+            await Promise.all([
+                getKnowledgeBaseNotes(),
+                getIssueTypeKnowledgeBaseNotes(
+                    issueTypeId
+                )
+            ]);
+
+
+        const assignedIds =
+            assignedNotes.map(
+                note => note.id
+            );
+
+
+        notes.forEach(note => {
+
+            if (
+                assignedIds.includes(
+                    note.id
+                )
+            ) {
+                return;
+            }
+
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                note.id;
+
+
+            option.textContent =
+                note.category
+                    ? `${note.title} - ${note.category}`
+                    : note.title;
+
+
+            select.appendChild(
+                option
+            );
+
+        });
+
+
+        document
+            .getElementById(
+                "knowledgeBaseNoteModal"
+            )
+            .classList
+            .remove("hidden");
+
+    } catch (error) {
+
+        console.error(
+            "Error loading knowledge base notes:",
+            error
+        );
+
+        alert(
+            "Error loading Knowledge Base Notes."
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// ADD KNOWLEDGE BASE NOTE
+// ============================================================
+
+async function addSelectedKnowledgeBaseNote() {
+
+    const select =
+        document.getElementById(
+            "knowledgeBaseNoteSelect"
+        );
+
+
+    const noteId =
+        select.value
+            ? Number(select.value)
+            : null;
+
+
+    if (!noteId) {
+
+        alert(
+            "Please select a Knowledge Base Note."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        await addIssueTypeKnowledgeBaseNote(
+            issueTypeId,
+            noteId
+        );
+
+
+        closeKnowledgeBaseNoteModal();
+
+
+        await loadKnowledgeBaseNotes();
+
+    } catch (error) {
+
+        console.error(
+            "Error adding knowledge base note:",
+            error
+        );
+
+        alert(
+            "Error adding Knowledge Base Note."
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// REMOVE KNOWLEDGE BASE NOTE
+// ============================================================
+
+async function removeKnowledgeBaseNote(
+    noteId
+) {
+
+    if (
+        !confirm(
+            "Remove this Knowledge Base Note from the issue type?"
+        )
+    ) {
+        return;
+    }
+
+
+    try {
+
+        await removeIssueTypeKnowledgeBaseNote(
+            issueTypeId,
+            noteId
+        );
+
+
+        await loadKnowledgeBaseNotes();
+
+    } catch (error) {
+
+        console.error(
+            "Error removing knowledge base note:",
+            error
+        );
+
+        alert(
+            "Error removing Knowledge Base Note."
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// CLOSE KNOWLEDGE BASE NOTE MODAL
+// ============================================================
+
+function closeKnowledgeBaseNoteModal() {
+
+    document
+        .getElementById(
+            "knowledgeBaseNoteModal"
+        )
+        .classList
+        .add("hidden");
 
 }
 
@@ -1610,9 +2063,8 @@ function closeToolModal() {
         .getElementById(
             "toolModal"
         )
-        .classList.add(
-            "hidden"
-        );
+        .classList
+        .add("hidden");
 
 }
 
