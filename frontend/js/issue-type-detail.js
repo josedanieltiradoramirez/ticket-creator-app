@@ -171,6 +171,42 @@ function setupEventListeners() {
 
 
     // ========================================================
+    // QUEUES
+    // ========================================================
+
+    document
+        .getElementById("addQueueButton")
+        .addEventListener(
+            "click",
+            openQueueModal
+        );
+
+
+    document
+        .getElementById("closeQueueModalButton")
+        .addEventListener(
+            "click",
+            closeQueueModal
+        );
+
+
+    document
+        .getElementById("cancelQueueButton")
+        .addEventListener(
+            "click",
+            closeQueueModal
+        );
+
+
+    document
+        .getElementById("saveQueueButton")
+        .addEventListener(
+            "click",
+            addSelectedQueue
+        );
+
+
+    // ========================================================
     // TOOLS
     // ========================================================
 
@@ -405,6 +441,7 @@ async function loadIssueTypeDetail() {
 
         await Promise.all([
             loadForm(),
+            loadQueues(),
             loadTools(),
             loadTroubleshootingTemplates(),
             loadKnowledgeBase(),
@@ -775,6 +812,315 @@ function closeChangeFormModal() {
     document
         .getElementById(
             "changeFormModal"
+        )
+        .classList
+        .add("hidden");
+
+}
+
+
+// ============================================================
+// QUEUES
+// ============================================================
+
+async function loadQueues() {
+
+    const tableBody =
+        document.getElementById(
+            "queuesTableBody"
+        );
+
+
+    const emptyMessage =
+        document.getElementById(
+            "queuesEmptyMessage"
+        );
+
+
+    try {
+
+        const queues =
+            await getIssueTypeQueues(
+                issueTypeId
+            );
+
+
+        tableBody.innerHTML =
+            "";
+
+
+        if (
+            !queues ||
+            queues.length === 0
+        ) {
+
+            emptyMessage.style.display =
+                "block";
+
+            return;
+
+        }
+
+
+        emptyMessage.style.display =
+            "none";
+
+
+        queues.forEach(queue => {
+
+            const row =
+                document.createElement(
+                    "tr"
+                );
+
+
+            row.innerHTML = `
+
+                <td>
+                    ${escapeHtml(
+                        queue.name || "-"
+                    )}
+                </td>
+
+                <td>
+
+                    <button
+                        class="action-button"
+                        onclick="removeQueue(${queue.id})"
+                    >
+                        Remove
+                    </button>
+
+                </td>
+
+            `;
+
+
+            tableBody.appendChild(
+                row
+            );
+
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Error loading queues:",
+            error
+        );
+
+        emptyMessage.style.display =
+            "block";
+
+    }
+
+}
+
+
+// ============================================================
+// OPEN QUEUE MODAL
+// ============================================================
+
+async function openQueueModal() {
+
+    const select =
+        document.getElementById(
+            "queueSelect"
+        );
+
+
+    select.innerHTML = `
+        <option value="">
+            Select a queue
+        </option>
+    `;
+
+
+    try {
+
+        const [
+            queues,
+            assignedQueues
+        ] =
+            await Promise.all([
+                getQueues(),
+                getIssueTypeQueues(
+                    issueTypeId
+                )
+            ]);
+
+
+        const assignedIds =
+            assignedQueues.map(
+                queue => queue.id
+            );
+
+
+        queues.forEach(queue => {
+
+            if (
+                assignedIds.includes(
+                    queue.id
+                )
+            ) {
+                return;
+            }
+
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                queue.id;
+
+
+            option.textContent =
+                queue.name;
+
+
+            select.appendChild(
+                option
+            );
+
+        });
+
+
+        document
+            .getElementById(
+                "queueModal"
+            )
+            .classList
+            .remove("hidden");
+
+    } catch (error) {
+
+        console.error(
+            "Error loading queues:",
+            error
+        );
+
+        alert(
+            "Error loading queues."
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// ADD QUEUE
+// ============================================================
+
+async function addSelectedQueue() {
+
+    const select =
+        document.getElementById(
+            "queueSelect"
+        );
+
+
+    const queueId =
+        select.value
+            ? Number(select.value)
+            : null;
+
+
+    if (!queueId) {
+
+        alert(
+            "Please select a queue."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        await addIssueTypeQueue(
+            issueTypeId,
+            queueId
+        );
+
+
+        closeQueueModal();
+
+
+        await loadQueues();
+
+    } catch (error) {
+
+        console.error(
+            "Error adding queue:",
+            error
+        );
+
+        alert(
+            "Error adding queue."
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// REMOVE QUEUE
+// ============================================================
+
+async function removeQueue(
+    queueId
+) {
+
+    if (
+        !confirm(
+            "Remove this queue from the issue type?"
+        )
+    ) {
+        return;
+    }
+
+
+    try {
+
+        await removeIssueTypeQueue(
+            issueTypeId,
+            queueId
+        );
+
+
+        await loadQueues();
+
+    } catch (error) {
+
+        console.error(
+            "Error removing queue:",
+            error
+        );
+
+        alert(
+            "Error removing queue."
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// CLOSE QUEUE MODAL
+// ============================================================
+
+function closeQueueModal() {
+
+    document
+        .getElementById(
+            "queueModal"
         )
         .classList
         .add("hidden");

@@ -249,6 +249,56 @@
 
 
     <!-- =========================================================
+         QUEUES
+         ========================================================= -->
+
+    <section>
+
+        <div class="crud-header">
+
+            <h3>
+                Queues
+            </h3>
+
+            <button id="addQueueButton">
+                Add Queue
+            </button>
+
+        </div>
+
+
+        <p id="queuesEmptyMessage">
+            No queues assigned.
+        </p>
+
+
+        <div class="crud-table-container">
+
+            <table class="crud-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Name</th>
+
+                        <th>Action</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="queuesTableBody">
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================================
          TOOLS
          ========================================================= -->
 
@@ -466,6 +516,70 @@
     </section>
 
 </main>
+
+
+<!-- =========================================================
+     QUEUE MODAL
+     ========================================================= -->
+
+<div
+    id="queueModal"
+    class="modal hidden"
+>
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h3>
+                Add Queue
+            </h3>
+
+            <button
+                id="closeQueueModalButton"
+                class="modal-close"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="queueSelect">
+                Queue
+            </label>
+
+            <select
+                id="queueSelect"
+                style="width: 100%; padding: 10px;"
+            >
+
+                <option value="">
+                    Select a queue
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="modal-actions">
+
+            <button id="cancelQueueButton">
+                Cancel
+            </button>
+
+            <button id="saveQueueButton">
+                Save
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
 
 
 <!-- =========================================================
