@@ -754,7 +754,157 @@ async function removeIssueTypeQueue(
     return await response.json();
 }
 
+// ============================================================
+// QUEUE - ISSUE TYPES
+// ============================================================
 
+async function getQueueIssueTypes(queueId) {
+
+    const response = await fetch(
+        `${API_URL}/api/queues/${queueId}/issue-types`,
+        {
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error loading issue types for queue"
+        );
+    }
+
+    return await response.json();
+}
+
+
+
+
+
+async function addQueueIssueType(
+    queueId,
+    issueTypeId
+) {
+
+    const response = await fetch(
+        `${API_URL}/api/queues/${queueId}/issue-types/${issueTypeId}`,
+        {
+            method: "POST",
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error adding issue type to queue"
+        );
+    }
+
+    return await response.json();
+}
+
+
+
+
+
+async function removeQueueIssueType(
+    queueId,
+    issueTypeId
+) {
+
+    const response = await fetch(
+        `${API_URL}/api/queues/${queueId}/issue-types/${issueTypeId}`,
+        {
+            method: "DELETE",
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error removing issue type from queue"
+        );
+    }
+
+    return await response.json();
+}
+
+
+
+
+
+// ============================================================
+// QUEUE - TOOLS
+// ============================================================
+
+async function getQueueTools(queueId) {
+
+    const response = await fetch(
+        `${API_URL}/api/queues/${queueId}/tools`,
+        {
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error loading tools for queue"
+        );
+    }
+
+    return await response.json();
+}
+
+
+
+
+
+async function addQueueTool(
+    queueId,
+    toolId
+) {
+
+    const response = await fetch(
+        `${API_URL}/api/queues/${queueId}/tools/${toolId}`,
+        {
+            method: "POST",
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error adding tool to queue"
+        );
+    }
+
+    return await response.json();
+}
+
+
+
+
+
+async function removeQueueTool(
+    queueId,
+    toolId
+) {
+
+    const response = await fetch(
+        `${API_URL}/api/queues/${queueId}/tools/${toolId}`,
+        {
+            method: "DELETE",
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error removing tool from queue"
+        );
+    }
+
+    return await response.json();
+}
 
 // ============================================================
 // TOOLS

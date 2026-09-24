@@ -27,48 +27,103 @@
 
 <body>
 
-    <div class="page-container">
+<header>
+
+    <h1>Ticket Creator</h1>
+
+    <nav>
+
+        <button id="ticketsButton">
+            Tickets
+        </button>
+
+        <button id="toolsButton">
+            Tools
+        </button>
+
+        <button id="locationsButton">
+            Locations
+        </button>
+
+        <button id="queuesButton">
+            Queues
+        </button>
+
+        <button id="wmsButton">
+            WMS
+        </button>
+
+        <button id="formsButton">
+            Forms
+        </button>
+
+        <button id="troubleshootingTemplatesButton">
+            Troubleshooting Templates
+        </button>
+
+        <button id="knowledgeBaseButton">
+            Knowledge Base
+        </button>
+
+    </nav>
+
+</header>
 
 
-        <!-- HEADER -->
+<main>
 
-        <div class="crud-header">
+    <!-- =========================================================
+         HEADER
+         ========================================================= -->
+
+    <div class="crud-header">
+
+        <div>
 
             <h2 id="queueTitle">
                 Queue
             </h2>
 
-
-            <div>
-
-                <button
-                    id="backButton"
-                    type="button"
-                >
-                    Back
-                </button>
-
-
-                <button
-                    id="editButton"
-                    type="button"
-                >
-                    Edit
-                </button>
-
-            </div>
+            <p id="queueDescriptionHeader">
+            </p>
 
         </div>
 
 
-        <!-- BASIC INFORMATION -->
+        <div>
+
+            <button
+                id="backButton"
+                type="button"
+            >
+                Back
+            </button>
+
+
+            <button
+                id="editButton"
+                type="button"
+            >
+                Edit
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         BASIC INFORMATION
+         ========================================================= -->
+
+    <section>
+
+        <h3>
+            Basic Information
+        </h3>
+
 
         <div class="crud-table-container">
-
-            <h3>
-                Basic Information
-            </h3>
-
 
             <table class="crud-table">
 
@@ -77,10 +132,24 @@
                     <tr>
 
                         <th>
+                            Queue ID
+                        </th>
+
+                        <td id="queueId">
+                            -
+                        </td>
+
+                    </tr>
+
+
+                    <tr>
+
+                        <th>
                             Name
                         </th>
 
                         <td id="queueName">
+                            -
                         </td>
 
                     </tr>
@@ -93,6 +162,7 @@
                         </th>
 
                         <td id="queueDescription">
+                            -
                         </td>
 
                     </tr>
@@ -105,18 +175,7 @@
                         </th>
 
                         <td id="queueStatus">
-                        </td>
-
-                    </tr>
-
-
-                    <tr>
-
-                        <th>
-                            Queue ID
-                        </th>
-
-                        <td id="queueId">
+                            -
                         </td>
 
                     </tr>
@@ -127,28 +186,335 @@
 
         </div>
 
+    </section>
 
-        <!-- RELATED TICKETS -->
+
+    <!-- =========================================================
+         ISSUE TYPES
+         ========================================================= -->
+
+    <section>
+
+        <div class="crud-header">
+
+            <h3>
+                Issue Types
+            </h3>
+
+
+            <button id="addIssueTypeButton">
+                Add Issue Type
+            </button>
+
+        </div>
+
+
+        <p id="issueTypesEmptyMessage">
+            No Issue Types assigned.
+        </p>
+
 
         <div class="crud-table-container">
+
+            <table class="crud-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Name
+                        </th>
+
+                        <th>
+                            Description
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="issueTypesTableBody">
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         TOOLS
+         ========================================================= -->
+
+    <section>
+
+        <div class="crud-header">
+
+            <h3>
+                Tools
+            </h3>
+
+
+            <button id="addToolButton">
+                Add Tool
+            </button>
+
+        </div>
+
+
+        <p id="toolsEmptyMessage">
+            No Tools assigned.
+        </p>
+
+
+        <div class="crud-table-container">
+
+            <table class="crud-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Name
+                        </th>
+
+                        <th>
+                            Description
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="toolsTableBody">
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         RELATED TICKETS
+         ========================================================= -->
+
+    <section>
+
+        <div class="crud-header">
 
             <h3>
                 Related Tickets
             </h3>
 
+        </div>
 
-            <p>
-                Tickets assigned to this queue will be displayed here.
-            </p>
+
+        <p id="ticketsEmptyMessage">
+            No tickets assigned to this queue.
+        </p>
+
+
+        <div class="crud-table-container">
+
+            <table class="crud-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Ticket
+                        </th>
+
+                        <th>
+                            Title
+                        </th>
+
+                        <th>
+                            User
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="ticketsTableBody">
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- =========================================================
+     ISSUE TYPE MODAL
+     ========================================================= -->
+
+<div
+    id="issueTypeModal"
+    class="modal hidden"
+>
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h3>
+                Add Issue Type
+            </h3>
+
+
+            <button
+                id="closeIssueTypeModalButton"
+                class="modal-close"
+            >
+                ×
+            </button>
 
         </div>
 
 
+        <div class="form-group">
+
+            <label for="issueTypeSelect">
+                Issue Type
+            </label>
+
+
+            <select
+                id="issueTypeSelect"
+                style="width: 100%; padding: 10px;"
+            >
+
+                <option value="">
+                    Select an Issue Type
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="modal-actions">
+
+            <button id="cancelIssueTypeButton">
+                Cancel
+            </button>
+
+
+            <button id="saveIssueTypeButton">
+                Save
+            </button>
+
+        </div>
+
     </div>
 
+</div>
 
-    <script src="js/api.js"></script>
-    <script src="js/queue-detail.js"></script>
+
+<!-- =========================================================
+     TOOL MODAL
+     ========================================================= -->
+
+<div
+    id="toolModal"
+    class="modal hidden"
+>
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h3>
+                Add Tool
+            </h3>
+
+
+            <button
+                id="closeToolModalButton"
+                class="modal-close"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="toolSelect">
+                Tool
+            </label>
+
+
+            <select
+                id="toolSelect"
+                style="width: 100%; padding: 10px;"
+            >
+
+                <option value="">
+                    Select a Tool
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="modal-actions">
+
+            <button id="cancelToolButton">
+                Cancel
+            </button>
+
+
+            <button id="saveToolButton">
+                Save
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script src="js/api.js"></script>
+
+<script src="js/queue-detail.js"></script>
 
 </body>
 
