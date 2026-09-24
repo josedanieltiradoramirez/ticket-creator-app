@@ -45,3 +45,9 @@ class KnowledgeBaseNotes(Base):
         secondary="relation_tools_knowledge_base_notes",
         back_populates="knowledge_base_notes"
     )
+
+    issue_types = relationship(
+        "IssueTypes",
+        secondary="relation_issue_types_knowledge_base_notes",
+        back_populates="knowledge_base_notes"
+    )

@@ -22,6 +22,7 @@ class IssueTypes(Base):
     queues = relationship("Queues", secondary="relation_queues_issue_types", back_populates="issue_types")
     form = relationship("Forms", back_populates="issue_types")
     tickets = relationship("Tickets", back_populates="issue_type")
+    knowledge_base_notes = relationship("KnowledgeBaseNotes", secondary="relation_issue_types_knowledge_base_notes", back_populates="issue_types")
     
 
     
