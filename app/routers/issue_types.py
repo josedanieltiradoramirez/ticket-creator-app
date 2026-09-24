@@ -10,6 +10,7 @@ from app.models.tools import Tools
 from app.models.knowledge_base import KnowledgeBase
 from app.models.troubleshooting_templates import TroubleshootingTemplates
 from app.models.queues import Queues
+from app.models.knowledge_base_notes import KnowledgeBaseNotes
 from app.routers.auth import get_current_user
 
 from app.schemas.issue_types import (
@@ -635,6 +636,138 @@ async def remove_issue_type_queue(
     return {
         "message": "Queue removed from Issue Type successfully"
     }
+
+# =========================================================
+# KNOWLEDGE BASE NOTES
+# =========================================================
+
+@router.get("/{id}/knowledge-base-notes")
+async def get_issue_type_knowledge_base_notes(
+    user: user_dependency,
+    id: int,
+    db: db_dependency
+):
+    issue_type = (
+        db.query(IssueTypes)
+        .filter(
+            IssueTypes.id == id,
+            IssueTypes.created_by == user.id
+        )
+        .first()
+    )
+
+    if not issue_type:
+        raise HTTPException(
+            status_code=404,
+            detail="Issue Type not found"
+        )
+
+    return issue_type.knowledge_base_notes
+
+
+@router.post("/{id}/knowledge-base-notes/{note_id}")
+async def add_issue_type_knowledge_base_note(
+    user: user_dependency,
+    id: int,
+    note_id: int,
+    db: db_dependency
+):
+    issue_type = (
+        db.query(IssueTypes)
+        .filter(
+            IssueTypes.id == id,
+            IssueTypes.created_by == user.id
+        )
+        .first()
+    )
+
+    if not issue_type:
+        raise HTTPException(
+            status_code=404,
+            detail="Issue Type not found"
+        )
+
+    note = (
+        db.query(KnowledgeBaseNotes)
+        .filter(
+            KnowledgeBaseNotes.id == note_id,
+            KnowledgeBaseNotes.created_by == user.id
+        )
+        .first()
+    )
+
+    if not note:
+        raise HTTPException(
+            status_code=404,
+            detail="Knowledge Base Note not found"
+        )
+
+    if note in issue_type.knowledge_base_notes:
+        raise HTTPException(
+            status_code=400,
+            detail="Knowledge Base Note is already associated with this Issue Type"
+        )
+
+    issue_type.knowledge_base_notes.append(note)
+
+    db.commit()
+
+    return {
+        "message": "Knowledge Base Note added to Issue Type successfully"
+    }
+
+
+@router.delete("/{id}/knowledge-base-notes/{note_id}")
+async def remove_issue_type_knowledge_base_note(
+    user: user_dependency,
+    id: int,
+    note_id: int,
+    db: db_dependency
+):
+    issue_type = (
+        db.query(IssueTypes)
+        .filter(
+            IssueTypes.id == id,
+            IssueTypes.created_by == user.id
+        )
+        .first()
+    )
+
+    if not issue_type:
+        raise HTTPException(
+            status_code=404,
+            detail="Issue Type not found"
+        )
+
+    note = (
+        db.query(KnowledgeBaseNotes)
+        .filter(
+            KnowledgeBaseNotes.id == note_id,
+            KnowledgeBaseNotes.created_by == user.id
+        )
+        .first()
+    )
+
+    if not note:
+        raise HTTPException(
+            status_code=404,
+            detail="Knowledge Base Note not found"
+        )
+
+    if note not in issue_type.knowledge_base_notes:
+        raise HTTPException(
+            status_code=404,
+            detail="Knowledge Base Note is not associated with this Issue Type"
+        )
+
+    issue_type.knowledge_base_notes.remove(note)
+
+    db.commit()
+
+    return {
+        "message": "Knowledge Base Note removed from Issue Type successfully"
+    }
+
 # ============================================================
 # GET ISSUE TYPE BY ID
 # ============================================================
