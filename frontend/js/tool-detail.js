@@ -38,88 +38,102 @@ async function initializeToolDetail() {
 
 function setupNavigation() {
 
-    document
-        .getElementById("backButton")
-        .addEventListener("click", () => {
+    const backButton =
+        document.getElementById("backButton");
 
+    if (backButton) {
+        backButton.addEventListener("click", () => {
             window.location.href = "tools.html";
-
         });
+    }
 
 
-    document
-        .getElementById("ticketsButton")
-        .addEventListener("click", () => {
+    const ticketsButton =
+        document.getElementById("ticketsButton");
 
+    if (ticketsButton) {
+        ticketsButton.addEventListener("click", () => {
             window.location.href = "index.html";
-
         });
+    }
 
 
-    document
-        .getElementById("toolsButton")
-        .addEventListener("click", () => {
+    const toolsButton =
+        document.getElementById("toolsButton");
 
+    if (toolsButton) {
+        toolsButton.addEventListener("click", () => {
             window.location.href = "tools.html";
-
         });
+    }
 
 
-    document
-        .getElementById("locationsButton")
-        .addEventListener("click", () => {
+    const locationsButton =
+        document.getElementById("locationsButton");
 
+    if (locationsButton) {
+        locationsButton.addEventListener("click", () => {
             window.location.href = "locations.html";
-
         });
+    }
 
 
-    document
-        .getElementById("queuesButton")
-        .addEventListener("click", () => {
+    const queuesButton =
+        document.getElementById("queuesButton");
 
+    if (queuesButton) {
+        queuesButton.addEventListener("click", () => {
             window.location.href = "queues.html";
-
         });
+    }
 
 
-    document
-        .getElementById("wmsButton")
-        .addEventListener("click", () => {
+    const wmsButton =
+        document.getElementById("wmsButton");
 
+    if (wmsButton) {
+        wmsButton.addEventListener("click", () => {
             window.location.href =
                 "warehouse-management-systems.html";
-
         });
+    }
 
 
-    document
-        .getElementById("formsButton")
-        .addEventListener("click", () => {
+    const formsButton =
+        document.getElementById("formsButton");
 
+    if (formsButton) {
+        formsButton.addEventListener("click", () => {
             window.location.href = "forms.html";
-
         });
+    }
 
 
-    document
-        .getElementById("troubleshootingTemplatesButton")
-        .addEventListener("click", () => {
+    const troubleshootingTemplatesButton =
+        document.getElementById(
+            "troubleshootingTemplatesButton"
+        );
 
-            window.location.href =
-                "troubleshooting-templates.html";
+    if (troubleshootingTemplatesButton) {
+        troubleshootingTemplatesButton.addEventListener(
+            "click",
+            () => {
+                window.location.href =
+                    "troubleshooting-templates.html";
+            }
+        );
+    }
 
-        });
 
+    const knowledgeBaseButton =
+        document.getElementById("knowledgeBaseButton");
 
-    document
-        .getElementById("knowledgeBaseButton")
-        .addEventListener("click", () => {
-
+    if (knowledgeBaseButton) {
+        knowledgeBaseButton.addEventListener("click", () => {
             window.location.href =
                 "knowledge-base.html";
-
         });
+    }
 
 }
 
@@ -130,7 +144,24 @@ function setupNavigation() {
 
 function setupEventListeners() {
 
-    // Issue Types
+    // --------------------------------------------------------
+    // TOOL EDIT
+    // --------------------------------------------------------
+
+    const toolEditForm =
+        document.getElementById("toolEditForm");
+
+    if (toolEditForm) {
+        toolEditForm.addEventListener(
+            "submit",
+            saveTool
+        );
+    }
+
+
+    // --------------------------------------------------------
+    // ISSUE TYPES
+    // --------------------------------------------------------
 
     document
         .getElementById("addIssueTypeButton")
@@ -164,7 +195,9 @@ function setupEventListeners() {
         );
 
 
-    // Knowledge Base
+    // --------------------------------------------------------
+    // KNOWLEDGE BASE
+    // --------------------------------------------------------
 
     document
         .getElementById("addKnowledgeBaseButton")
@@ -198,7 +231,9 @@ function setupEventListeners() {
         );
 
 
-    // Troubleshooting Templates
+    // --------------------------------------------------------
+    // TROUBLESHOOTING TEMPLATES
+    // --------------------------------------------------------
 
     document
         .getElementById(
@@ -238,6 +273,78 @@ function setupEventListeners() {
             "submit",
             addTroubleshootingTemplate
         );
+
+
+    // --------------------------------------------------------
+    // QUEUES
+    // --------------------------------------------------------
+
+    document
+        .getElementById("addQueueButton")
+        .addEventListener(
+            "click",
+            openQueueModal
+        );
+
+
+    document
+        .getElementById("closeQueueModal")
+        .addEventListener(
+            "click",
+            closeQueueModal
+        );
+
+
+    document
+        .getElementById("cancelQueueButton")
+        .addEventListener(
+            "click",
+            closeQueueModal
+        );
+
+
+    document
+        .getElementById("queueForm")
+        .addEventListener(
+            "submit",
+            addQueue
+        );
+
+
+    // --------------------------------------------------------
+    // KNOWLEDGE BASE NOTES
+    // --------------------------------------------------------
+
+    document
+        .getElementById("addKnowledgeBaseNoteButton")
+        .addEventListener(
+            "click",
+            openKnowledgeBaseNoteModal
+        );
+
+
+    document
+        .getElementById("closeKnowledgeBaseNoteModal")
+        .addEventListener(
+            "click",
+            closeKnowledgeBaseNoteModal
+        );
+
+
+    document
+        .getElementById("cancelKnowledgeBaseNoteButton")
+        .addEventListener(
+            "click",
+            closeKnowledgeBaseNoteModal
+        );
+
+
+    document
+        .getElementById("knowledgeBaseNoteForm")
+        .addEventListener(
+            "submit",
+            addKnowledgeBaseNote
+        );
 }
 
 
@@ -256,7 +363,9 @@ async function loadToolDetail() {
         await Promise.all([
             loadIssueTypes(),
             loadKnowledgeBase(),
-            loadTroubleshootingTemplates()
+            loadTroubleshootingTemplates(),
+            loadQueues(),
+            loadKnowledgeBaseNotes()
         ]);
 
     } catch (error) {
@@ -291,12 +400,24 @@ function renderToolInformation(tool) {
         tool.id;
 
 
-    document.getElementById("toolNameValue").textContent =
-        tool.name || "N/A";
+    document.getElementById("toolNameInput").value =
+        tool.name || "";
 
 
-    document.getElementById("toolDescriptionValue").textContent =
-        tool.description || "N/A";
+    document.getElementById("toolDescriptionInput").value =
+        tool.description || "";
+
+
+    document.getElementById("accessRequestInput").value =
+        tool.access_request || "";
+
+
+    document.getElementById("passwordResetInput").value =
+        tool.password_reset || "";
+
+
+    document.getElementById("toolActiveInput").checked =
+        Boolean(tool.is_active);
 
 
     const status =
@@ -320,6 +441,92 @@ function renderToolInformation(tool) {
             ? "active"
             : "inactive"
     );
+}
+
+
+// ============================================================
+// SAVE TOOL
+// ============================================================
+
+async function saveTool(event) {
+
+    event.preventDefault();
+
+    const toolData = {
+
+        name:
+            document.getElementById(
+                "toolNameInput"
+            ).value.trim(),
+
+        description:
+            document.getElementById(
+                "toolDescriptionInput"
+            ).value.trim(),
+
+        access_request:
+            document.getElementById(
+                "accessRequestInput"
+            ).value.trim(),
+
+        password_reset:
+            document.getElementById(
+                "passwordResetInput"
+            ).value.trim(),
+
+        is_active:
+            document.getElementById(
+                "toolActiveInput"
+            ).checked
+
+    };
+
+
+    if (!toolData.name) {
+
+        alert("Tool name is required.");
+
+        return;
+    }
+
+
+    if (!toolData.description) {
+
+        alert("Tool description is required.");
+
+        return;
+    }
+
+
+    try {
+
+        const updatedTool =
+            await updateTool(
+                toolId,
+                toolData
+            );
+
+
+        renderToolInformation(
+            updatedTool
+        );
+
+
+        alert(
+            "Tool updated successfully."
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Error updating tool:",
+            error
+        );
+
+        alert(
+            "Error updating Tool."
+        );
+    }
 }
 
 
@@ -414,12 +621,28 @@ async function loadIssueTypes() {
                 <td>
 
                     <button
+                        class="action-button view-button">
+                        View
+                    </button>
+
+                    <button
                         class="action-button delete-button">
                         Remove
                     </button>
 
                 </td>
             `;
+
+
+            row
+                .querySelector(".view-button")
+                .addEventListener(
+                    "click",
+                    () => {
+                        window.location.href =
+                            `issue-type-detail.html?id=${issueType.id}`;
+                    }
+                );
 
 
             row
@@ -1268,6 +1491,687 @@ async function removeTroubleshootingTemplate(
 
         alert(
             "Error removing Troubleshooting Template."
+        );
+    }
+}
+
+
+// ============================================================
+// QUEUES
+// ============================================================
+
+async function loadQueues() {
+
+    const tableBody =
+        document.getElementById(
+            "queuesTableBody"
+        );
+
+    const emptyMessage =
+        document.getElementById(
+            "queuesEmptyMessage"
+        );
+
+    const table =
+        document.getElementById(
+            "queuesTable"
+        );
+
+
+    try {
+
+        const queues =
+            await getToolQueues(toolId);
+
+
+        tableBody.innerHTML = "";
+
+
+        if (
+            !queues ||
+            queues.length === 0
+        ) {
+
+            emptyMessage.classList.remove("hidden");
+            table.classList.add("hidden");
+
+            return;
+        }
+
+
+        emptyMessage.classList.add("hidden");
+        table.classList.remove("hidden");
+
+
+        queues.forEach(queue => {
+
+            const row =
+                document.createElement("tr");
+
+
+            row.innerHTML = `
+
+                <td>
+                    ${escapeHtml(
+                        queue.name || "N/A"
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHtml(
+                        queue.description || ""
+                    )}
+                </td>
+
+                <td>
+
+                    <span
+                        class="status-badge ${
+                            queue.is_active
+                                ? "active"
+                                : "inactive"
+                        }">
+
+                        ${
+                            queue.is_active
+                                ? "Active"
+                                : "Inactive"
+                        }
+
+                    </span>
+
+                </td>
+
+                <td>
+
+                    <button
+                        class="action-button view-button">
+                        View
+                    </button>
+
+                    <button
+                        class="action-button delete-button">
+                        Remove
+                    </button>
+
+                </td>
+            `;
+
+
+            row
+                .querySelector(".view-button")
+                .addEventListener(
+                    "click",
+                    () => {
+                        window.location.href =
+                            `queue-detail.html?id=${queue.id}`;
+                    }
+                );
+
+
+            row
+                .querySelector(".delete-button")
+                .addEventListener(
+                    "click",
+                    () =>
+                        removeQueue(
+                            queue.id
+                        )
+                );
+
+
+            tableBody.appendChild(row);
+
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Error loading Tool Queues:",
+            error
+        );
+
+        tableBody.innerHTML = "";
+
+        emptyMessage.textContent =
+            "Error loading Support Queues.";
+
+        emptyMessage.classList.remove("hidden");
+
+        table.classList.add("hidden");
+    }
+}
+
+
+// ============================================================
+// OPEN QUEUE MODAL
+// ============================================================
+
+async function openQueueModal() {
+
+    const select =
+        document.getElementById(
+            "queueSelect"
+        );
+
+
+    select.innerHTML = `
+        <option value="">
+            Select a Queue
+        </option>
+    `;
+
+
+    try {
+
+        const [
+            allQueues,
+            relatedQueues
+        ] = await Promise.all([
+            getQueues(),
+            getToolQueues(toolId)
+        ]);
+
+
+        const relatedIds =
+            new Set(
+                relatedQueues.map(
+                    item => Number(item.id)
+                )
+            );
+
+
+        allQueues.forEach(queue => {
+
+            if (
+                !relatedIds.has(
+                    Number(queue.id)
+                )
+            ) {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+                option.value =
+                    queue.id;
+
+                option.textContent =
+                    queue.name;
+
+                select.appendChild(option);
+            }
+
+        });
+
+
+        document
+            .getElementById("queueModal")
+            .classList.remove("hidden");
+
+    } catch (error) {
+
+        console.error(
+            "Error loading Queues:",
+            error
+        );
+
+        alert(
+            "Error loading Support Queues."
+        );
+    }
+}
+
+
+// ============================================================
+// CLOSE QUEUE MODAL
+// ============================================================
+
+function closeQueueModal() {
+
+    document
+        .getElementById("queueModal")
+        .classList.add("hidden");
+
+}
+
+
+// ============================================================
+// ADD QUEUE
+// ============================================================
+
+async function addQueue(event) {
+
+    event.preventDefault();
+
+
+    const queueId =
+        Number(
+            document.getElementById(
+                "queueSelect"
+            ).value
+        );
+
+
+    if (!queueId) {
+
+        return;
+    }
+
+
+    try {
+
+        await addToolQueue(
+            toolId,
+            queueId
+        );
+
+
+        closeQueueModal();
+
+        await loadQueues();
+
+    } catch (error) {
+
+        console.error(
+            "Error adding Queue:",
+            error
+        );
+
+        alert(
+            "Error adding Support Queue."
+        );
+    }
+}
+
+
+// ============================================================
+// REMOVE QUEUE
+// ============================================================
+
+async function removeQueue(queueId) {
+
+    const confirmed =
+        confirm(
+            "Remove this Support Queue from the Tool?"
+        );
+
+
+    if (!confirmed) {
+
+        return;
+    }
+
+
+    try {
+
+        await removeToolQueue(
+            toolId,
+            queueId
+        );
+
+
+        await loadQueues();
+
+    } catch (error) {
+
+        console.error(
+            "Error removing Queue:",
+            error
+        );
+
+        alert(
+            "Error removing Support Queue."
+        );
+    }
+}
+
+
+// ============================================================
+// KNOWLEDGE BASE NOTES
+// ============================================================
+
+async function loadKnowledgeBaseNotes() {
+
+    const tableBody =
+        document.getElementById(
+            "knowledgeBaseNotesTableBody"
+        );
+
+    const emptyMessage =
+        document.getElementById(
+            "knowledgeBaseNotesEmptyMessage"
+        );
+
+    const table =
+        document.getElementById(
+            "knowledgeBaseNotesTable"
+        );
+
+
+    try {
+
+        const notes =
+            await getToolKnowledgeBaseNotes(
+                toolId
+            );
+
+
+        tableBody.innerHTML = "";
+
+
+        if (
+            !notes ||
+            notes.length === 0
+        ) {
+
+            emptyMessage.classList.remove("hidden");
+            table.classList.add("hidden");
+
+            return;
+        }
+
+
+        emptyMessage.classList.add("hidden");
+        table.classList.remove("hidden");
+
+
+        notes.forEach(note => {
+
+            const row =
+                document.createElement("tr");
+
+
+            row.innerHTML = `
+
+                <td>
+                    ${escapeHtml(
+                        note.title || "N/A"
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHtml(
+                        note.category || ""
+                    )}
+                </td>
+
+                <td>
+                    ${
+                        note.is_pinned
+                            ? "Pinned"
+                            : ""
+                    }
+                </td>
+
+                <td>
+
+                    <span
+                        class="status-badge ${
+                            note.is_active
+                                ? "active"
+                                : "inactive"
+                        }">
+
+                        ${
+                            note.is_active
+                                ? "Active"
+                                : "Inactive"
+                        }
+
+                    </span>
+
+                </td>
+
+                <td>
+
+                    <button
+                        class="action-button view-button">
+                        View
+                    </button>
+
+                    <button
+                        class="action-button delete-button">
+                        Remove
+                    </button>
+
+                </td>
+            `;
+
+
+            row
+                .querySelector(".view-button")
+                .addEventListener(
+                    "click",
+                    () => {
+                        window.location.href =
+                            `knowledge-base-note-detail.html?id=${note.id}`;
+                    }
+                );
+
+
+            row
+                .querySelector(".delete-button")
+                .addEventListener(
+                    "click",
+                    () =>
+                        removeKnowledgeBaseNote(
+                            note.id
+                        )
+                );
+
+
+            tableBody.appendChild(row);
+
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Error loading Knowledge Base Notes:",
+            error
+        );
+
+        tableBody.innerHTML = "";
+
+        emptyMessage.textContent =
+            "Error loading Knowledge Base Notes.";
+
+        emptyMessage.classList.remove("hidden");
+
+        table.classList.add("hidden");
+    }
+}
+
+
+// ============================================================
+// OPEN KNOWLEDGE BASE NOTE MODAL
+// ============================================================
+
+async function openKnowledgeBaseNoteModal() {
+
+    const select =
+        document.getElementById(
+            "knowledgeBaseNoteSelect"
+        );
+
+
+    select.innerHTML = `
+        <option value="">
+            Select a Knowledge Note
+        </option>
+    `;
+
+
+    try {
+
+        const [
+            allNotes,
+            relatedNotes
+        ] = await Promise.all([
+            getKnowledgeBaseNotes(),
+            getToolKnowledgeBaseNotes(toolId)
+        ]);
+
+
+        const relatedIds =
+            new Set(
+                relatedNotes.map(
+                    item => Number(item.id)
+                )
+            );
+
+
+        allNotes.forEach(note => {
+
+            if (
+                !relatedIds.has(
+                    Number(note.id)
+                )
+            ) {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+                option.value =
+                    note.id;
+
+                option.textContent =
+                    note.title ||
+                    `Note ${note.id}`;
+
+                select.appendChild(option);
+            }
+
+        });
+
+
+        document
+            .getElementById(
+                "knowledgeBaseNoteModal"
+            )
+            .classList.remove("hidden");
+
+    } catch (error) {
+
+        console.error(
+            "Error loading Knowledge Base Notes:",
+            error
+        );
+
+        alert(
+            "Error loading Knowledge Base Notes."
+        );
+    }
+}
+
+
+// ============================================================
+// CLOSE KNOWLEDGE BASE NOTE MODAL
+// ============================================================
+
+function closeKnowledgeBaseNoteModal() {
+
+    document
+        .getElementById(
+            "knowledgeBaseNoteModal"
+        )
+        .classList.add("hidden");
+
+}
+
+
+// ============================================================
+// ADD KNOWLEDGE BASE NOTE
+// ============================================================
+
+async function addKnowledgeBaseNote(event) {
+
+    event.preventDefault();
+
+
+    const noteId =
+        Number(
+            document.getElementById(
+                "knowledgeBaseNoteSelect"
+            ).value
+        );
+
+
+    if (!noteId) {
+
+        return;
+    }
+
+
+    try {
+
+        await addToolKnowledgeBaseNote(
+            toolId,
+            noteId
+        );
+
+
+        closeKnowledgeBaseNoteModal();
+
+        await loadKnowledgeBaseNotes();
+
+    } catch (error) {
+
+        console.error(
+            "Error adding Knowledge Base Note:",
+            error
+        );
+
+        alert(
+            "Error adding Knowledge Base Note."
+        );
+    }
+}
+
+
+// ============================================================
+// REMOVE KNOWLEDGE BASE NOTE
+// ============================================================
+
+async function removeKnowledgeBaseNote(
+    noteId
+) {
+
+    const confirmed =
+        confirm(
+            "Remove this Knowledge Note from the Tool?"
+        );
+
+
+    if (!confirmed) {
+
+        return;
+    }
+
+
+    try {
+
+        await removeToolKnowledgeBaseNote(
+            toolId,
+            noteId
+        );
+
+
+        await loadKnowledgeBaseNotes();
+
+    } catch (error) {
+
+        console.error(
+            "Error removing Knowledge Base Note:",
+            error
+        );
+
+        alert(
+            "Error removing Knowledge Base Note."
         );
     }
 }

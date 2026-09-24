@@ -12,6 +12,7 @@ function getAuthHeaders() {
 }
 
 
+
 // ============================================================
 // TICKETS
 // ============================================================
@@ -52,6 +53,7 @@ async function getTickets(page = 1, limit = 20, filters = {}) {
 }
 
 
+
 async function getTicket(ticketId) {
 
     const response = await fetch(
@@ -69,6 +71,7 @@ async function getTicket(ticketId) {
 
     return await response.json();
 }
+
 
 
 async function updateTicket(ticketId, ticketData) {
@@ -97,6 +100,7 @@ async function updateTicket(ticketId, ticketData) {
 }
 
 
+
 async function createTicket(ticketData) {
 
     const response = await fetch(
@@ -121,6 +125,7 @@ async function createTicket(ticketData) {
 
     return await response.json();
 }
+
 
 
 // ============================================================
@@ -184,6 +189,7 @@ async function login(username, password) {
 }
 
 
+
 // ============================================================
 // STATUSES
 // ============================================================
@@ -205,6 +211,7 @@ async function getTicketStatuses() {
 
     return await response.json();
 }
+
 
 
 // ============================================================
@@ -230,6 +237,7 @@ async function getPriorities() {
 }
 
 
+
 // ============================================================
 // ISSUE TYPES
 // ============================================================
@@ -253,6 +261,7 @@ async function getIssueTypes() {
 }
 
 
+
 async function getIssueType(issueTypeId) {
 
     const response = await fetch(
@@ -270,6 +279,7 @@ async function getIssueType(issueTypeId) {
 
     return await response.json();
 }
+
 
 
 async function createIssueType(issueTypeData) {
@@ -298,6 +308,7 @@ async function createIssueType(issueTypeData) {
 
     return await response.json();
 }
+
 
 
 async function updateIssueType(
@@ -331,6 +342,7 @@ async function updateIssueType(
 }
 
 
+
 async function deleteIssueType(issueTypeId) {
 
     const response = await fetch(
@@ -349,6 +361,7 @@ async function deleteIssueType(issueTypeId) {
 
     return await response.json();
 }
+
 
 
 // ============================================================
@@ -374,6 +387,7 @@ async function getIssueTypeTools(issueTypeId) {
 }
 
 
+
 async function addIssueTypeTool(
     issueTypeId,
     toolId
@@ -397,6 +411,7 @@ async function addIssueTypeTool(
 }
 
 
+
 async function removeIssueTypeTool(
     issueTypeId,
     toolId
@@ -418,6 +433,7 @@ async function removeIssueTypeTool(
 
     return await response.json();
 }
+
 
 
 // ============================================================
@@ -445,6 +461,7 @@ async function getIssueTypeKnowledgeBase(
 }
 
 
+
 async function addIssueTypeKnowledgeBase(
     issueTypeId,
     knowledgeBaseId
@@ -468,6 +485,7 @@ async function addIssueTypeKnowledgeBase(
 }
 
 
+
 async function removeIssueTypeKnowledgeBase(
     issueTypeId,
     knowledgeBaseId
@@ -489,6 +507,7 @@ async function removeIssueTypeKnowledgeBase(
 
     return await response.json();
 }
+
 
 
 // ============================================================
@@ -516,6 +535,7 @@ async function getIssueTypeTroubleshootingTemplates(
 }
 
 
+
 async function addIssueTypeTroubleshootingTemplate(
     issueTypeId,
     templateId
@@ -539,6 +559,7 @@ async function addIssueTypeTroubleshootingTemplate(
 }
 
 
+
 async function removeIssueTypeTroubleshootingTemplate(
     issueTypeId,
     templateId
@@ -560,6 +581,7 @@ async function removeIssueTypeTroubleshootingTemplate(
 
     return await response.json();
 }
+
 
 
 // ============================================================
@@ -587,6 +609,79 @@ async function getIssueTypeForm(
 }
 
 
+
+// ============================================================
+// ISSUE TYPE - QUEUES
+// ============================================================
+
+async function getIssueTypeQueues(issueTypeId) {
+
+    const response = await fetch(
+        `${API_URL}/api/issue_types/${issueTypeId}/queues`,
+        {
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error loading queues for issue type"
+        );
+    }
+
+    return await response.json();
+}
+
+
+
+async function addIssueTypeQueue(
+    issueTypeId,
+    queueId
+) {
+
+    const response = await fetch(
+        `${API_URL}/api/issue_types/${issueTypeId}/queues/${queueId}`,
+        {
+            method: "POST",
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error adding queue to issue type"
+        );
+    }
+
+    return await response.json();
+}
+
+
+
+async function removeIssueTypeQueue(
+    issueTypeId,
+    queueId
+) {
+
+    const response = await fetch(
+        `${API_URL}/api/issue_types/${issueTypeId}/queues/${queueId}`,
+        {
+            method: "DELETE",
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error removing queue from issue type"
+        );
+    }
+
+    return await response.json();
+}
+
+
+
 // ============================================================
 // TOOLS
 // ============================================================
@@ -610,6 +705,7 @@ async function getTools() {
 }
 
 
+
 async function getTool(toolId) {
 
     const response = await fetch(
@@ -627,6 +723,7 @@ async function getTool(toolId) {
 
     return await response.json();
 }
+
 
 
 async function createTool(toolData) {
@@ -655,6 +752,7 @@ async function createTool(toolData) {
 
     return await response.json();
 }
+
 
 
 async function updateTool(
@@ -688,6 +786,7 @@ async function updateTool(
 }
 
 
+
 async function deleteToolApi(toolId) {
 
     const response = await fetch(
@@ -706,6 +805,7 @@ async function deleteToolApi(toolId) {
 
     return await response.json();
 }
+
 
 
 // ============================================================
@@ -731,6 +831,7 @@ async function getToolIssueTypes(toolId) {
 }
 
 
+
 async function addToolIssueType(
     toolId,
     issueTypeId
@@ -754,6 +855,7 @@ async function addToolIssueType(
 }
 
 
+
 async function removeToolIssueType(
     toolId,
     issueTypeId
@@ -775,6 +877,7 @@ async function removeToolIssueType(
 
     return await response.json();
 }
+
 
 
 // ============================================================
@@ -802,6 +905,7 @@ async function getToolKnowledgeBase(
 }
 
 
+
 async function addToolKnowledgeBase(
     toolId,
     knowledgeBaseId
@@ -825,6 +929,7 @@ async function addToolKnowledgeBase(
 }
 
 
+
 async function removeToolKnowledgeBase(
     toolId,
     knowledgeBaseId
@@ -846,6 +951,7 @@ async function removeToolKnowledgeBase(
 
     return await response.json();
 }
+
 
 
 // ============================================================
@@ -873,6 +979,7 @@ async function getToolTroubleshootingTemplates(
 }
 
 
+
 async function addToolTroubleshootingTemplate(
     toolId,
     templateId
@@ -894,6 +1001,7 @@ async function addToolTroubleshootingTemplate(
 
     return await response.json();
 }
+
 
 
 async function removeToolTroubleshootingTemplate(
@@ -919,6 +1027,151 @@ async function removeToolTroubleshootingTemplate(
 }
 
 
+
+// ============================================================
+// TOOL - QUEUES
+// ============================================================
+
+async function getToolQueues(toolId) {
+
+    const response = await fetch(
+        `${API_URL}/api/tools/${toolId}/queues`,
+        {
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error loading queues for tool"
+        );
+    }
+
+    return await response.json();
+}
+
+
+
+async function addToolQueue(
+    toolId,
+    queueId
+) {
+
+    const response = await fetch(
+        `${API_URL}/api/tools/${toolId}/queues/${queueId}`,
+        {
+            method: "POST",
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error adding queue to tool"
+        );
+    }
+
+    return await response.json();
+}
+
+
+
+async function removeToolQueue(
+    toolId,
+    queueId
+) {
+
+    const response = await fetch(
+        `${API_URL}/api/tools/${toolId}/queues/${queueId}`,
+        {
+            method: "DELETE",
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error removing queue from tool"
+        );
+    }
+
+    return await response.json();
+}
+
+
+
+// ============================================================
+// TOOL - KNOWLEDGE BASE NOTES
+// ============================================================
+
+async function getToolKnowledgeBaseNotes(toolId) {
+
+    const response = await fetch(
+        `${API_URL}/api/tools/${toolId}/knowledge-base-notes`,
+        {
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error loading knowledge base notes for tool"
+        );
+    }
+
+    return await response.json();
+}
+
+
+
+async function addToolKnowledgeBaseNote(
+    toolId,
+    noteId
+) {
+
+    const response = await fetch(
+        `${API_URL}/api/tools/${toolId}/knowledge-base-notes/${noteId}`,
+        {
+            method: "POST",
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error adding knowledge base note to tool"
+        );
+    }
+
+    return await response.json();
+}
+
+
+
+async function removeToolKnowledgeBaseNote(
+    toolId,
+    noteId
+) {
+
+    const response = await fetch(
+        `${API_URL}/api/tools/${toolId}/knowledge-base-notes/${noteId}`,
+        {
+            method: "DELETE",
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error removing knowledge base note from tool"
+        );
+    }
+
+    return await response.json();
+}
+
+
+
 // ============================================================
 // LOCATIONS
 // ============================================================
@@ -942,6 +1195,7 @@ async function getLocations() {
 }
 
 
+
 async function getLocation(locationId) {
 
     const response = await fetch(
@@ -959,6 +1213,7 @@ async function getLocation(locationId) {
 
     return await response.json();
 }
+
 
 
 async function createLocation(locationData) {
@@ -987,6 +1242,7 @@ async function createLocation(locationData) {
 
     return await response.json();
 }
+
 
 
 async function updateLocation(
@@ -1020,6 +1276,7 @@ async function updateLocation(
 }
 
 
+
 async function deleteLocationApi(
     locationId
 ) {
@@ -1040,6 +1297,7 @@ async function deleteLocationApi(
 
     return await response.json();
 }
+
 
 
 // ============================================================
@@ -1065,6 +1323,7 @@ async function getQueues() {
 }
 
 
+
 async function getQueue(queueId) {
 
     const response = await fetch(
@@ -1082,6 +1341,7 @@ async function getQueue(queueId) {
 
     return await response.json();
 }
+
 
 
 async function createQueue(queueData) {
@@ -1110,6 +1370,7 @@ async function createQueue(queueData) {
 
     return await response.json();
 }
+
 
 
 async function updateQueue(
@@ -1143,6 +1404,7 @@ async function updateQueue(
 }
 
 
+
 async function deleteQueueApi(queueId) {
 
     const response = await fetch(
@@ -1161,6 +1423,7 @@ async function deleteQueueApi(queueId) {
 
     return await response.json();
 }
+
 
 
 // ============================================================
@@ -1186,6 +1449,7 @@ async function getWarehouseManagementSystems() {
 }
 
 
+
 async function getWarehouseManagementSystem(
     wmsId
 ) {
@@ -1205,6 +1469,7 @@ async function getWarehouseManagementSystem(
 
     return await response.json();
 }
+
 
 
 async function createWarehouseManagementSystem(
@@ -1235,6 +1500,7 @@ async function createWarehouseManagementSystem(
 
     return await response.json();
 }
+
 
 
 async function updateWarehouseManagementSystem(
@@ -1268,6 +1534,7 @@ async function updateWarehouseManagementSystem(
 }
 
 
+
 async function deleteWarehouseManagementSystem(
     wmsId
 ) {
@@ -1288,6 +1555,7 @@ async function deleteWarehouseManagementSystem(
 
     return await response.json();
 }
+
 
 
 // ============================================================
@@ -1313,6 +1581,7 @@ async function getForms() {
 }
 
 
+
 async function getForm(formId) {
 
     const response = await fetch(
@@ -1332,6 +1601,7 @@ async function getForm(formId) {
 }
 
 
+
 async function getFormFields(formId) {
 
     const response = await fetch(
@@ -1349,6 +1619,7 @@ async function getFormFields(formId) {
 
     return await response.json();
 }
+
 
 
 async function createForm(formData) {
@@ -1377,6 +1648,7 @@ async function createForm(formData) {
 
     return await response.json();
 }
+
 
 
 async function updateForm(
@@ -1410,6 +1682,7 @@ async function updateForm(
 }
 
 
+
 async function deleteForm(formId) {
 
     const response = await fetch(
@@ -1428,6 +1701,7 @@ async function deleteForm(formId) {
 
     return await response.json();
 }
+
 
 
 // ============================================================
@@ -1453,6 +1727,7 @@ async function getTroubleshootingTemplates() {
 }
 
 
+
 async function getTroubleshootingTemplate(
     templateId
 ) {
@@ -1474,6 +1749,7 @@ async function getTroubleshootingTemplate(
 }
 
 
+
 async function getTroubleshootingTemplateKnowledgeBase(
     troubleshootingTemplateId
 ) {
@@ -1493,6 +1769,7 @@ async function getTroubleshootingTemplateKnowledgeBase(
 
     return await response.json();
 }
+
 
 
 async function createTroubleshootingTemplate(
@@ -1523,6 +1800,7 @@ async function createTroubleshootingTemplate(
 
     return await response.json();
 }
+
 
 
 async function updateTroubleshootingTemplate(
@@ -1556,6 +1834,7 @@ async function updateTroubleshootingTemplate(
 }
 
 
+
 async function deleteTroubleshootingTemplate(
     templateId
 ) {
@@ -1576,6 +1855,7 @@ async function deleteTroubleshootingTemplate(
 
     return await response.json();
 }
+
 
 
 // ============================================================
@@ -1601,6 +1881,7 @@ async function getKnowledgeBaseItems() {
 }
 
 
+
 async function getKnowledgeBaseItem(
     knowledgeBaseId
 ) {
@@ -1620,6 +1901,7 @@ async function getKnowledgeBaseItem(
 
     return await response.json();
 }
+
 
 
 async function createKnowledgeBaseItem(
@@ -1650,6 +1932,7 @@ async function createKnowledgeBaseItem(
 
     return await response.json();
 }
+
 
 
 async function updateKnowledgeBaseItem(
@@ -1683,6 +1966,7 @@ async function updateKnowledgeBaseItem(
 }
 
 
+
 async function deleteKnowledgeBaseItem(
     knowledgeBaseId
 ) {
@@ -1703,6 +1987,213 @@ async function deleteKnowledgeBaseItem(
 
     return await response.json();
 }
+
+
+
+// ============================================================
+// KNOWLEDGE BASE NOTES
+// ============================================================
+
+async function getKnowledgeBaseNotes() {
+
+    const response = await fetch(
+        `${API_URL}/api/knowledge_base_notes/`,
+        {
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error loading knowledge base notes"
+        );
+    }
+
+    return await response.json();
+}
+
+
+
+async function getKnowledgeBaseNote(
+    noteId
+) {
+
+    const response = await fetch(
+        `${API_URL}/api/knowledge_base_notes/${noteId}`,
+        {
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error loading knowledge base note"
+        );
+    }
+
+    return await response.json();
+}
+
+
+
+async function createKnowledgeBaseNote(
+    noteData
+) {
+
+    const response = await fetch(
+        `${API_URL}/api/knowledge_base_notes/`,
+        {
+            method: "POST",
+
+            headers: {
+                ...getAuthHeaders(),
+                "Content-Type":
+                    "application/json"
+            },
+
+            body:
+                JSON.stringify(noteData)
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error creating knowledge base note"
+        );
+    }
+
+    return await response.json();
+}
+
+
+
+async function updateKnowledgeBaseNote(
+    noteId,
+    noteData
+) {
+
+    const response = await fetch(
+        `${API_URL}/api/knowledge_base_notes/${noteId}`,
+        {
+            method: "PUT",
+
+            headers: {
+                ...getAuthHeaders(),
+                "Content-Type":
+                    "application/json"
+            },
+
+            body:
+                JSON.stringify(noteData)
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error updating knowledge base note"
+        );
+    }
+
+    return await response.json();
+}
+
+
+
+async function deleteKnowledgeBaseNote(
+    noteId
+) {
+
+    const response = await fetch(
+        `${API_URL}/api/knowledge_base_notes/${noteId}`,
+        {
+            method: "DELETE",
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error deleting knowledge base note"
+        );
+    }
+
+    return await response.json();
+}
+
+
+
+// ============================================================
+// KNOWLEDGE BASE NOTE - TOOLS
+// ============================================================
+
+async function getKnowledgeBaseNoteTools(
+    noteId
+) {
+
+    const response = await fetch(
+        `${API_URL}/api/knowledge_base_notes/${noteId}/tools`,
+        {
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error loading tools for knowledge base note"
+        );
+    }
+
+    return await response.json();
+}
+
+
+
+async function addKnowledgeBaseNoteTool(
+    noteId,
+    toolId
+) {
+
+    const response = await fetch(
+        `${API_URL}/api/knowledge_base_notes/${noteId}/tools/${toolId}`,
+        {
+            method: "POST",
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error adding tool to knowledge base note"
+        );
+    }
+
+    return await response.json();
+}
+
+
+
+async function removeKnowledgeBaseNoteTool(
+    noteId,
+    toolId
+) {
+
+    const response = await fetch(
+        `${API_URL}/api/knowledge_base_notes/${noteId}/tools/${toolId}`,
+        {
+            method: "DELETE",
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error removing tool from knowledge base note"
+        );
+    }
+
+    return await response.json();
+}
+
 
 
 // ============================================================
@@ -1730,6 +2221,7 @@ async function getTicketKnowledgeBase(
 }
 
 
+
 async function addTicketKnowledgeBase(
     ticketId,
     knowledgeBaseId
@@ -1751,6 +2243,7 @@ async function addTicketKnowledgeBase(
 
     return await response.json();
 }
+
 
 
 async function removeTicketKnowledgeBase(
