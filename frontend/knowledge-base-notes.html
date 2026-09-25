@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Knowledge Base Notes</title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/tools.css"
+    >
+
+</head>
+
+<body>
+
+<header>
+
+    <h1>Ticket Creator</h1>
+
+    <nav>
+
+        <button id="ticketsButton">
+            Tickets
+        </button>
+
+        <button id="toolsButton">
+            Tools
+        </button>
+
+        <button id="locationsButton">
+            Locations
+        </button>
+
+        <button id="queuesButton">
+            Queues
+        </button>
+
+        <button id="wmsButton">
+            WMS
+        </button>
+
+        <button id="formsButton">
+            Forms
+        </button>
+
+        <button id="troubleshootingTemplatesButton">
+            Troubleshooting Templates
+        </button>
+
+        <button id="knowledgeBaseButton">
+            Knowledge Base
+        </button>
+
+        <button id="knowledgeBaseNotesButton">
+            Knowledge Base Notes
+        </button>
+
+    </nav>
+
+</header>
+
+
+<main>
+
+    <!-- =========================================================
+         HEADER
+         ========================================================= -->
+
+    <div class="crud-header">
+
+        <div>
+
+            <h2>
+                Knowledge Base Notes
+            </h2>
+
+            <p>
+                Manage Knowledge Base Notes.
+            </p>
+
+        </div>
+
+        <button id="addNoteButton">
+            Add Knowledge Base Note
+        </button>
+
+    </div>
+
+
+    <!-- =========================================================
+         NOTES
+         ========================================================= -->
+
+    <section>
+
+        <p
+            id="emptyMessage"
+            class="hidden"
+        >
+            No Knowledge Base Notes found.
+        </p>
+
+
+        <div class="crud-table-container">
+
+            <table class="crud-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Title
+                        </th>
+
+                        <th>
+                            Category
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Pinned
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="notesTableBody">
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- =========================================================
+     ADD / EDIT NOTE MODAL
+     ========================================================= -->
+
+<div
+    id="noteModal"
+    class="modal hidden"
+>
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h3 id="noteModalTitle">
+                Add Knowledge Base Note
+            </h3>
+
+            <button
+                id="closeNoteModalButton"
+                class="modal-close"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <!-- =================================================
+             TITLE
+             ================================================= -->
+
+        <div class="form-group">
+
+            <label for="noteTitleInput">
+                Title
+            </label>
+
+            <input
+                type="text"
+                id="noteTitleInput"
+                placeholder="Enter note title"
+            >
+
+        </div>
+
+
+        <!-- =================================================
+             CATEGORY
+             ================================================= -->
+
+        <div class="form-group">
+
+            <label for="noteCategoryInput">
+                Category
+            </label>
+
+            <input
+                type="text"
+                id="noteCategoryInput"
+                placeholder="Enter category"
+            >
+
+        </div>
+
+
+        <!-- =================================================
+             CONTENT
+             ================================================= -->
+
+        <div class="form-group">
+
+            <label for="noteContentInput">
+                Content
+            </label>
+
+            <textarea
+                id="noteContentInput"
+                rows="10"
+                placeholder="Enter note content"
+            ></textarea>
+
+        </div>
+
+
+        <!-- =================================================
+             PINNED
+             ================================================= -->
+
+        <div class="form-group">
+
+            <label>
+
+                <input
+                    type="checkbox"
+                    id="notePinnedInput"
+                >
+
+                Pinned
+
+            </label>
+
+        </div>
+
+
+        <!-- =================================================
+             ACTIVE
+             ================================================= -->
+
+        <div class="form-group">
+
+            <label>
+
+                <input
+                    type="checkbox"
+                    id="noteActiveInput"
+                    checked
+                >
+
+                Active
+
+            </label>
+
+        </div>
+
+
+        <!-- =================================================
+             ACTIONS
+             ================================================= -->
+
+        <div class="modal-actions">
+
+            <button
+                id="cancelNoteButton"
+            >
+                Cancel
+            </button>
+
+            <button
+                id="saveNoteButton"
+            >
+                Save
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script src="js/api.js"></script>
+
+<script src="js/knowledge-base-notes.js"></script>
+
+</body>
+
+</html>
