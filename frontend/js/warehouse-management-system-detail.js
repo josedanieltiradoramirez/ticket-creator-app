@@ -308,6 +308,13 @@ function renderLocations() {
 
                 <button
                     type="button"
+                    class="action-button view-button"
+                >
+                    View
+                </button>
+
+                <button
+                    type="button"
                     class="action-button remove-button"
                 >
                     Remove
@@ -317,6 +324,16 @@ function renderLocations() {
 
         `;
 
+
+        row
+            .querySelector(".view-button")
+            .addEventListener(
+                "click",
+                () => {
+                    window.location.href =
+                        `location-detail.html?id=${location.id}`;
+                }
+            );
 
         row
             .querySelector(".remove-button")

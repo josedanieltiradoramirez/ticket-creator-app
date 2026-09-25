@@ -517,6 +517,13 @@ async function loadIssueTypes() {
 
                         <button
                             class="action-button"
+                            onclick="window.location.href='issue-type-detail.html?id=${issueType.id}'"
+                        >
+                            View
+                        </button>
+
+                        <button
+                            class="action-button"
                             onclick="removeIssueType(${issueType.id})"
                         >
                             Remove
@@ -853,6 +860,13 @@ async function loadTools() {
 
 
                     <td>
+
+                        <button
+                            class="action-button"
+                            onclick="window.location.href='tool-detail.html?id=${tool.id}'"
+                        >
+                            View
+                        </button>
 
                         <button
                             class="action-button"

@@ -615,8 +615,19 @@ async function loadToolKnowledgeBase(
                     );
 
 
-                item.textContent =
-                    `${kb.article_number} - ${kb.title}`;
+                item.innerHTML = `
+                    <span>${kb.article_number} - ${kb.title}</span>
+                    <button type="button" class="action-button view-button">
+                        View
+                    </button>
+                `;
+
+                item
+                    .querySelector(".view-button")
+                    .addEventListener("click", () => {
+                        window.location.href =
+                            `knowledge-base-detail.html?id=${kb.id}`;
+                    });
 
 
                 container.appendChild(
@@ -943,8 +954,19 @@ async function loadIssueTypeKnowledgeBase(
                     );
 
 
-                item.textContent =
-                    `${kb.article_number} - ${kb.title}`;
+                item.innerHTML = `
+                    <span>${kb.article_number} - ${kb.title}</span>
+                    <button type="button" class="action-button view-button">
+                        View
+                    </button>
+                `;
+
+                item
+                    .querySelector(".view-button")
+                    .addEventListener("click", () => {
+                        window.location.href =
+                            `knowledge-base-detail.html?id=${kb.id}`;
+                    });
 
 
                 container.appendChild(
@@ -1283,8 +1305,19 @@ async function loadTemplateKnowledgeBase(
                     );
 
 
-                item.textContent =
-                    `${kb.article_number} - ${kb.title}`;
+                item.innerHTML = `
+                    <span>${kb.article_number} - ${kb.title}</span>
+                    <button type="button" class="action-button view-button">
+                        View
+                    </button>
+                `;
+
+                item
+                    .querySelector(".view-button")
+                    .addEventListener("click", () => {
+                        window.location.href =
+                            `knowledge-base-detail.html?id=${kb.id}`;
+                    });
 
 
                 container.appendChild(
@@ -1912,6 +1945,14 @@ function renderUsedKnowledgeBase() {
                 <span>
                     ${kb.article_number} - ${kb.title}
                 </span>
+
+                <button
+                    type="button"
+                    class="action-button"
+                    onclick="window.location.href='knowledge-base-detail.html?id=${kb.id}'"
+                >
+                    View
+                </button>
 
                 <button
                     type="button"

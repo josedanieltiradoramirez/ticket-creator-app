@@ -936,6 +936,13 @@ async function loadKnowledgeBase() {
                 <td>
 
                     <button
+                        class="action-button view-button">
+
+                        View
+
+                    </button>
+
+                    <button
                         class="action-button delete-button">
 
                         Remove
@@ -945,6 +952,16 @@ async function loadKnowledgeBase() {
                 </td>
             `;
 
+
+            row
+                .querySelector(".view-button")
+                .addEventListener(
+                    "click",
+                    () => {
+                        window.location.href =
+                            `knowledge-base-detail.html?id=${kb.id}`;
+                    }
+                );
 
             row
                 .querySelector(".delete-button")
@@ -1260,6 +1277,13 @@ async function loadTroubleshootingTemplates() {
                 <td>
 
                     <button
+                        class="action-button view-button">
+
+                        View
+
+                    </button>
+
+                    <button
                         class="action-button delete-button">
 
                         Remove
@@ -1269,6 +1293,16 @@ async function loadTroubleshootingTemplates() {
                 </td>
             `;
 
+
+            row
+                .querySelector(".view-button")
+                .addEventListener(
+                    "click",
+                    () => {
+                        window.location.href =
+                            `troubleshooting-template-detail.html?id=${template.id}`;
+                    }
+                );
 
             row
                 .querySelector(".delete-button")

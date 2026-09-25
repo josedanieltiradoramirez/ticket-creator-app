@@ -561,6 +561,11 @@ async function loadForm() {
                 "formInfo"
             );
 
+        const viewFormButton =
+            document.getElementById(
+                "viewFormButton"
+            );
+
 
         if (
             !forms ||
@@ -574,6 +579,8 @@ async function loadForm() {
             formInfo
                 .classList
                 .add("hidden");
+
+            viewFormButton.disabled = true;
 
             return;
 
@@ -604,6 +611,12 @@ async function loadForm() {
         ).textContent =
             form.description || "N/A";
 
+        viewFormButton.disabled = false;
+        viewFormButton.onclick = () => {
+            window.location.href =
+                `form-detail.html?id=${form.id}`;
+        };
+
     } catch (error) {
 
         console.error(
@@ -626,6 +639,10 @@ async function loadForm() {
             )
             .classList
             .add("hidden");
+
+        document.getElementById(
+            "viewFormButton"
+        ).disabled = true;
 
     }
 
@@ -883,6 +900,13 @@ async function loadQueues() {
                 </td>
 
                 <td>
+
+                    <button
+                        class="action-button"
+                        onclick="window.location.href='queue-detail.html?id=${queue.id}'"
+                    >
+                        View
+                    </button>
 
                     <button
                         class="action-button"
@@ -1207,6 +1231,13 @@ async function loadTools() {
 
                     <button
                         class="action-button"
+                        onclick="window.location.href='tool-detail.html?id=${tool.id}'"
+                    >
+                        View
+                    </button>
+
+                    <button
+                        class="action-button"
                         onclick="removeTool(${tool.id})"
                     >
                         Remove
@@ -1509,6 +1540,13 @@ async function loadTroubleshootingTemplates() {
                 </td>
 
                 <td>
+
+                    <button
+                        class="action-button"
+                        onclick="window.location.href='troubleshooting-template-detail.html?id=${template.id}'"
+                    >
+                        View
+                    </button>
 
                     <button
                         class="action-button"
@@ -1834,6 +1872,13 @@ async function loadKnowledgeBase() {
 
                     <button
                         class="action-button"
+                        onclick="window.location.href='knowledge-base-detail.html?id=${kb.id}'"
+                    >
+                        View
+                    </button>
+
+                    <button
+                        class="action-button"
                         onclick="removeKnowledgeBase(${kb.id})"
                     >
                         Remove
@@ -2152,6 +2197,13 @@ async function loadKnowledgeBaseNotes() {
                 </td>
 
                 <td>
+
+                    <button
+                        class="action-button"
+                        onclick="window.location.href='knowledge-base-note-detail.html?id=${note.id}'"
+                    >
+                        View
+                    </button>
 
                     <button
                         class="action-button"

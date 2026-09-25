@@ -479,6 +479,13 @@ async function loadTools() {
 
                     <button
                         class="action-button"
+                        onclick="window.location.href='tool-detail.html?id=${tool.id}'"
+                    >
+                        View
+                    </button>
+
+                    <button
+                        class="action-button"
                         onclick="removeTool(${tool.id})"
                     >
                         Remove
@@ -800,6 +807,13 @@ async function loadIssueTypes() {
                 </td>
 
                 <td>
+
+                    <button
+                        class="action-button"
+                        onclick="window.location.href='issue-type-detail.html?id=${issueType.id}'"
+                    >
+                        View
+                    </button>
 
                     <button
                         class="action-button"

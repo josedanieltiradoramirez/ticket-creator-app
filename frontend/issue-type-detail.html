@@ -26,47 +26,7 @@
 
 <body>
 
-<header>
-
-    <h1>Ticket Creator</h1>
-
-    <nav>
-
-        <button id="ticketsButton">
-            Tickets
-        </button>
-
-        <button id="toolsButton">
-            Tools
-        </button>
-
-        <button id="locationsButton">
-            Locations
-        </button>
-
-        <button id="queuesButton">
-            Queues
-        </button>
-
-        <button id="wmsButton">
-            WMS
-        </button>
-
-        <button id="formsButton">
-            Forms
-        </button>
-
-        <button id="troubleshootingTemplatesButton">
-            Troubleshooting Templates
-        </button>
-
-        <button id="knowledgeBaseButton">
-            Knowledge Base
-        </button>
-
-    </nav>
-
-</header>
+<div id="siteNavigation"></div>
 
 
 <main>
@@ -198,9 +158,15 @@
 
             <h3>Form</h3>
 
+        <div>
+            <button id="viewFormButton" type="button" disabled>
+                View
+            </button>
+
             <button id="changeFormButton">
                 Change Form
             </button>
+        </div>
 
         </div>
 
@@ -907,6 +873,7 @@
 
 
 <script src="js/api.js"></script>
+<script src="js/navigation.js"></script>
 
 <script src="js/issue-type-detail.js"></script>
 
