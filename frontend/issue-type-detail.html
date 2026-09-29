@@ -26,48 +26,9 @@
 
 <body>
 
-<header>
+<div id="appNavigation"></div>
 
-    <h1>Ticket Creator</h1>
-
-    <nav>
-
-        <button id="ticketsButton">
-            Tickets
-        </button>
-
-        <button id="toolsButton">
-            Tools
-        </button>
-
-        <button id="locationsButton">
-            Locations
-        </button>
-
-        <button id="queuesButton">
-            Queues
-        </button>
-
-        <button id="wmsButton">
-            WMS
-        </button>
-
-        <button id="formsButton">
-            Forms
-        </button>
-
-        <button id="troubleshootingTemplatesButton">
-            Troubleshooting Templates
-        </button>
-
-        <button id="knowledgeBaseButton">
-            Knowledge Base
-        </button>
-
-    </nav>
-
-</header>
-
+<div class="app-content">
 
 <main>
 
@@ -79,7 +40,10 @@
 
         <div>
 
-            <h2 id="issueTypeName">
+            <h2
+                id="issueTypePageTitle"
+                class="detail-page-title"
+            >
                 Issue Type
             </h2>
 
@@ -205,7 +169,10 @@
         </div>
 
 
-        <div id="formEmptyMessage" class="hidden">
+        <div
+            id="formEmptyMessage"
+            class="hidden"
+        >
             No form assigned
         </div>
 
@@ -516,6 +483,8 @@
     </section>
 
 </main>
+
+</div>
 
 
 <!-- =========================================================
@@ -908,7 +877,9 @@
 
 <script src="js/api.js"></script>
 
-<script src="js/issue-type-detail.js"></script>
+<script src="js/navigation.js"></script>
+
+<script src="js/issue-type-detail.js?v=2"></script>
 
 </body>
 

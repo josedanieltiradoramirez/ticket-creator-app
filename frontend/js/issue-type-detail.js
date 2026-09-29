@@ -36,115 +36,24 @@ document.addEventListener(
         }
 
 
-        setupNavigation();
-
-        setupEventListeners();
-
-
         await loadIssueTypeDetail();
+
+
+        try {
+
+            setupEventListeners();
+
+        } catch (error) {
+
+            console.error(
+                "Error setting up Issue Type event listeners:",
+                error
+            );
+
+        }
 
     }
 );
-
-
-// ============================================================
-// NAVIGATION
-// ============================================================
-
-function setupNavigation() {
-
-    document
-        .getElementById("ticketsButton")
-        .addEventListener(
-            "click",
-            () => {
-                window.location.href =
-                    "index.html";
-            }
-        );
-
-
-    document
-        .getElementById("toolsButton")
-        .addEventListener(
-            "click",
-            () => {
-                window.location.href =
-                    "tools.html";
-            }
-        );
-
-
-    document
-        .getElementById("locationsButton")
-        .addEventListener(
-            "click",
-            () => {
-                window.location.href =
-                    "locations.html";
-            }
-        );
-
-
-    document
-        .getElementById("queuesButton")
-        .addEventListener(
-            "click",
-            () => {
-                window.location.href =
-                    "queues.html";
-            }
-        );
-
-
-    document
-        .getElementById("wmsButton")
-        .addEventListener(
-            "click",
-            () => {
-                window.location.href =
-                    "warehouse-management-systems.html";
-            }
-        );
-
-
-    document
-        .getElementById("formsButton")
-        .addEventListener(
-            "click",
-            () => {
-                window.location.href =
-                    "forms.html";
-            }
-        );
-
-
-    document
-        .getElementById(
-            "troubleshootingTemplatesButton"
-        )
-        .addEventListener(
-            "click",
-            () => {
-                window.location.href =
-                    "troubleshooting-templates.html";
-            }
-        );
-
-
-    document
-        .getElementById(
-            "knowledgeBaseButton"
-        )
-        .addEventListener(
-            "click",
-            () => {
-                window.location.href =
-                    "knowledge-base.html";
-            }
-        );
-
-}
 
 
 // ============================================================
@@ -178,7 +87,9 @@ function setupEventListeners() {
         .getElementById("addQueueButton")
         .addEventListener(
             "click",
-            openQueueModal
+            () => {
+                openQueueModal();
+            }
         );
 
 
@@ -186,7 +97,9 @@ function setupEventListeners() {
         .getElementById("closeQueueModalButton")
         .addEventListener(
             "click",
-            closeQueueModal
+            () => {
+                closeQueueModal();
+            }
         );
 
 
@@ -194,7 +107,9 @@ function setupEventListeners() {
         .getElementById("cancelQueueButton")
         .addEventListener(
             "click",
-            closeQueueModal
+            () => {
+                closeQueueModal();
+            }
         );
 
 
@@ -202,7 +117,9 @@ function setupEventListeners() {
         .getElementById("saveQueueButton")
         .addEventListener(
             "click",
-            addSelectedQueue
+            () => {
+                addSelectedQueue();
+            }
         );
 
 
@@ -214,7 +131,9 @@ function setupEventListeners() {
         .getElementById("addToolButton")
         .addEventListener(
             "click",
-            openToolModal
+            () => {
+                openToolModal();
+            }
         );
 
 
@@ -222,7 +141,9 @@ function setupEventListeners() {
         .getElementById("closeToolModalButton")
         .addEventListener(
             "click",
-            closeToolModal
+            () => {
+                closeToolModal();
+            }
         );
 
 
@@ -230,7 +151,9 @@ function setupEventListeners() {
         .getElementById("cancelToolButton")
         .addEventListener(
             "click",
-            closeToolModal
+            () => {
+                closeToolModal();
+            }
         );
 
 
@@ -238,7 +161,9 @@ function setupEventListeners() {
         .getElementById("saveToolButton")
         .addEventListener(
             "click",
-            addSelectedTool
+            () => {
+                addSelectedTool();
+            }
         );
 
 
@@ -252,7 +177,9 @@ function setupEventListeners() {
         )
         .addEventListener(
             "click",
-            openTroubleshootingTemplateModal
+            () => {
+                openTroubleshootingTemplateModal();
+            }
         );
 
 
@@ -262,7 +189,9 @@ function setupEventListeners() {
         )
         .addEventListener(
             "click",
-            closeTroubleshootingTemplateModal
+            () => {
+                closeTroubleshootingTemplateModal();
+            }
         );
 
 
@@ -272,7 +201,9 @@ function setupEventListeners() {
         )
         .addEventListener(
             "click",
-            closeTroubleshootingTemplateModal
+            () => {
+                closeTroubleshootingTemplateModal();
+            }
         );
 
 
@@ -282,7 +213,9 @@ function setupEventListeners() {
         )
         .addEventListener(
             "click",
-            addSelectedTroubleshootingTemplate
+            () => {
+                addSelectedTroubleshootingTemplate();
+            }
         );
 
 
@@ -296,7 +229,9 @@ function setupEventListeners() {
         )
         .addEventListener(
             "click",
-            openKnowledgeBaseModal
+            () => {
+                openKnowledgeBaseModal();
+            }
         );
 
 
@@ -306,7 +241,9 @@ function setupEventListeners() {
         )
         .addEventListener(
             "click",
-            closeKnowledgeBaseModal
+            () => {
+                closeKnowledgeBaseModal();
+            }
         );
 
 
@@ -316,7 +253,9 @@ function setupEventListeners() {
         )
         .addEventListener(
             "click",
-            closeKnowledgeBaseModal
+            () => {
+                closeKnowledgeBaseModal();
+            }
         );
 
 
@@ -326,7 +265,9 @@ function setupEventListeners() {
         )
         .addEventListener(
             "click",
-            addSelectedKnowledgeBase
+            () => {
+                addSelectedKnowledgeBase();
+            }
         );
 
 
@@ -340,7 +281,9 @@ function setupEventListeners() {
         )
         .addEventListener(
             "click",
-            openKnowledgeBaseNoteModal
+            () => {
+                openKnowledgeBaseNoteModal();
+            }
         );
 
 
@@ -350,7 +293,9 @@ function setupEventListeners() {
         )
         .addEventListener(
             "click",
-            closeKnowledgeBaseNoteModal
+            () => {
+                closeKnowledgeBaseNoteModal();
+            }
         );
 
 
@@ -360,7 +305,9 @@ function setupEventListeners() {
         )
         .addEventListener(
             "click",
-            closeKnowledgeBaseNoteModal
+            () => {
+                closeKnowledgeBaseNoteModal();
+            }
         );
 
 
@@ -370,7 +317,9 @@ function setupEventListeners() {
         )
         .addEventListener(
             "click",
-            addSelectedKnowledgeBaseNote
+            () => {
+                addSelectedKnowledgeBaseNote();
+            }
         );
 
 
@@ -384,7 +333,9 @@ function setupEventListeners() {
         )
         .addEventListener(
             "click",
-            openChangeFormModal
+            () => {
+                openChangeFormModal();
+            }
         );
 
 
@@ -394,7 +345,9 @@ function setupEventListeners() {
         )
         .addEventListener(
             "click",
-            closeChangeFormModal
+            () => {
+                closeChangeFormModal();
+            }
         );
 
 
@@ -404,7 +357,9 @@ function setupEventListeners() {
         )
         .addEventListener(
             "click",
-            closeChangeFormModal
+            () => {
+                closeChangeFormModal();
+            }
         );
 
 
@@ -414,7 +369,9 @@ function setupEventListeners() {
         )
         .addEventListener(
             "click",
-            saveChangedForm
+            () => {
+                saveChangedForm();
+            }
         );
 
 }
@@ -434,6 +391,12 @@ async function loadIssueTypeDetail() {
             );
 
 
+        console.log(
+            "ISSUE TYPE:",
+            currentIssueType
+        );
+
+
         renderBasicInformation(
             currentIssueType
         );
@@ -447,6 +410,7 @@ async function loadIssueTypeDetail() {
             loadKnowledgeBase(),
             loadKnowledgeBaseNotes()
         ]);
+
 
     } catch (error) {
 
@@ -473,39 +437,39 @@ function renderBasicInformation(
 ) {
 
     document.getElementById(
-        "issueTypeName"
+        "issueTypePageTitle"
     ).textContent =
-        issueType.name;
+        `Issue Type: ${issueType.name}`;
 
 
     document.getElementById(
         "issueTypeDescription"
     ).textContent =
-        issueType.description;
+        issueType.description || "";
 
 
     document.getElementById(
         "issueTypeId"
     ).textContent =
-        issueType.id;
+        issueType.id ?? "-";
 
 
     document.getElementById(
         "issueTypeNameValue"
     ).textContent =
-        issueType.name;
+        issueType.name || "-";
 
 
     document.getElementById(
         "issueTypeDescriptionValue"
     ).textContent =
-        issueType.description;
+        issueType.description || "-";
 
 
     document.getElementById(
         "issueTypeCategory"
     ).textContent =
-        issueType.category;
+        issueType.category || "-";
 
 
     document.getElementById(
@@ -1187,7 +1151,7 @@ async function loadTools() {
 
                 <td>
                     ${escapeHtml(
-                        tool.name
+                        tool.name || "-"
                     )}
                 </td>
 
@@ -2458,27 +2422,34 @@ function escapeHtml(
         value === null ||
         value === undefined
     ) {
+
         return "";
+
     }
 
 
     return String(value)
+
         .replace(
             /&/g,
             "&amp;"
         )
+
         .replace(
             /</g,
             "&lt;"
         )
+
         .replace(
             />/g,
             "&gt;"
         )
+
         .replace(
             /"/g,
             "&quot;"
         )
+
         .replace(
             /'/g,
             "&#039;"
