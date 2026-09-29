@@ -62,22 +62,6 @@ document.addEventListener(
 
 function setupEventListeners() {
 
-    // ========================================================
-    // BACK
-    // ========================================================
-
-    document
-        .getElementById("backButton")
-        .addEventListener(
-            "click",
-            () => {
-
-                window.location.href =
-                    "issue-types.html";
-
-            }
-        );
-
 
     // ========================================================
     // QUEUES
@@ -397,6 +381,13 @@ async function loadIssueTypeDetail() {
         );
 
 
+        renderDetailHeader({
+            type: "Issue Type",
+            title: currentIssueType.name,
+            description: currentIssueType.description
+        });
+
+
         renderBasicInformation(
             currentIssueType
         );
@@ -435,18 +426,6 @@ async function loadIssueTypeDetail() {
 function renderBasicInformation(
     issueType
 ) {
-
-    document.getElementById(
-        "issueTypePageTitle"
-    ).textContent =
-        `Issue Type: ${issueType.name}`;
-
-
-    document.getElementById(
-        "issueTypeDescription"
-    ).textContent =
-        issueType.description || "";
-
 
     document.getElementById(
         "issueTypeId"

@@ -22,6 +22,11 @@
         href="css/tools.css"
     >
 
+    <link
+        rel="stylesheet"
+        href="css/details/detail-header.css?v=1"
+    >
+
 </head>
 
 <body>
@@ -33,30 +38,10 @@
 <main>
 
     <!-- =========================================================
-         HEADER
+         DETAIL PAGE HEADER
          ========================================================= -->
 
-    <div class="crud-header">
-
-        <div>
-
-            <h2
-                id="issueTypePageTitle"
-                class="detail-page-title"
-            >
-                Issue Type
-            </h2>
-
-            <p id="issueTypeDescription">
-            </p>
-
-        </div>
-
-        <button id="backButton">
-            Back
-        </button>
-
-    </div>
+    <div id="detailHeader"></div>
 
 
     <!-- =========================================================
@@ -878,6 +863,8 @@
 <script src="js/api.js"></script>
 
 <script src="js/navigation.js"></script>
+
+<script src="js/components/detail-header.js"></script>
 
 <script src="js/issue-type-detail.js?v=2"></script>
 
