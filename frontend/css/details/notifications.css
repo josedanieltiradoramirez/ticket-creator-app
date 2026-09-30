@@ -1,0 +1,229 @@
+/* ============================================================
+   NOTIFICATIONS
+   ============================================================ */
+
+#notificationContainer {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 9999;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+
+    width: min(
+        360px,
+        calc(100vw - 48px)
+    );
+
+    pointer-events: none;
+}
+
+
+/* ============================================================
+   NOTIFICATION
+   ============================================================ */
+
+.notification {
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 12px 13px;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e5e5;
+
+    border-radius: 8px;
+
+    box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.08);
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Helvetica,
+        Arial,
+        sans-serif;
+
+    transform:
+        translateY(10px);
+
+    opacity: 0;
+
+    transition:
+        opacity 0.18s ease,
+        transform 0.18s ease;
+
+    pointer-events: auto;
+}
+
+
+/* ============================================================
+   VISIBLE
+   ============================================================ */
+
+.notification-visible {
+    opacity: 1;
+
+    transform:
+        translateY(0);
+}
+
+
+/* ============================================================
+   ICON
+   ============================================================ */
+
+.notification-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    width: 24px;
+    height: 24px;
+
+    margin-right: 10px;
+
+    border-radius: 50%;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+
+/* ============================================================
+   MESSAGE
+   ============================================================ */
+
+.notification-message {
+    flex: 1;
+
+    min-width: 0;
+
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.4;
+
+    color: #37352f;
+}
+
+
+/* ============================================================
+   CLOSE
+   ============================================================ */
+
+.notification-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    width: 26px;
+    height: 26px;
+
+    margin-left: 8px;
+
+    padding: 0;
+
+    font-family: inherit;
+    font-size: 19px;
+    line-height: 1;
+
+    color: #787774;
+
+    background: transparent;
+
+    border: 0;
+    border-radius: 5px;
+
+    cursor: pointer;
+
+    transition:
+        color 0.15s ease,
+        background-color 0.15s ease;
+}
+
+
+.notification-close:hover {
+    color: #202020;
+
+    background: #f1f1ef;
+}
+
+
+/* ============================================================
+   SUCCESS
+   ============================================================ */
+
+.notification-success {
+    border-color: #d9e8dc;
+}
+
+
+.notification-success
+.notification-icon {
+    color: #3f7047;
+
+    background: #edf5ee;
+}
+
+
+/* ============================================================
+   ERROR
+   ============================================================ */
+
+.notification-error {
+    border-color: #ead8d8;
+}
+
+
+.notification-error
+.notification-icon {
+    color: #9a4545;
+
+    background: #f8eeee;
+}
+
+
+/* ============================================================
+   WARNING
+   ============================================================ */
+
+.notification-warning {
+    border-color: #e9dfca;
+}
+
+
+.notification-warning
+.notification-icon {
+    color: #876d32;
+
+    background: #f7f2e6;
+}
+
+
+/* ============================================================
+   INFO
+   ============================================================ */
+
+.notification-info {
+    border-color: #dcdfe5;
+}
+
+
+.notification-info
+.notification-icon {
+    color: #596273;
+
+    background: #f0f2f5;
+}

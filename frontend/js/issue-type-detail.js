@@ -24,7 +24,7 @@ document.addEventListener(
 
         if (!issueTypeId) {
 
-            alert(
+            showErrorMessage(
                 "Invalid Issue Type ID."
             );
 
@@ -135,7 +135,7 @@ async function loadIssueTypeDetail() {
             error
         );
 
-        alert(
+        showErrorMessage(
             "Error loading issue type details."
         );
 
@@ -668,7 +668,7 @@ async function openChangeFormModal() {
             error
         );
 
-        alert(
+        showErrorMessage(
             "Error loading forms."
         );
 
@@ -697,7 +697,7 @@ async function saveChangedForm() {
 
     if (!formId) {
 
-        alert(
+        showWarningMessage(
             "Please select a form."
         );
 
@@ -740,9 +740,10 @@ async function saveChangedForm() {
         );
 
 
-        alert(
+        showSuccessMessage(
             "Form updated successfully."
         );
+
 
 
         closeChangeFormModal();
@@ -757,7 +758,7 @@ async function saveChangedForm() {
             error
         );
 
-        alert(
+        showErrorMessage(
             "Error changing form."
         );
 
@@ -1028,7 +1029,7 @@ async function openQueueModal() {
             error
         );
 
-        alert(
+        showErrorMessage(
             "Error loading queues."
         );
 
@@ -1057,7 +1058,7 @@ async function addSelectedQueue() {
 
     if (!queueId) {
 
-        alert(
+        showWarningMessage(
             "Please select a queue."
         );
 
@@ -1086,7 +1087,7 @@ async function addSelectedQueue() {
             error
         );
 
-        alert(
+        showErrorMessage(
             "Error adding queue."
         );
 
@@ -1129,7 +1130,7 @@ async function removeQueue(
             error
         );
 
-        alert(
+        showErrorMessage(
             "Error removing queue."
         );
 
@@ -1400,7 +1401,7 @@ async function openToolModal() {
             error
         );
 
-        alert(
+        showErrorMessage(
             "Error loading tools."
         );
 
@@ -1429,7 +1430,7 @@ async function addSelectedTool() {
 
     if (!toolId) {
 
-        alert(
+        showWarningMessage(
             "Please select a tool."
         );
 
@@ -1458,7 +1459,7 @@ async function addSelectedTool() {
             error
         );
 
-        alert(
+        showErrorMessage(
             "Error adding tool."
         );
 
@@ -1501,7 +1502,7 @@ async function removeTool(
             error
         );
 
-        alert(
+        showErrorMessage(
             "Error removing tool."
         );
 
@@ -1769,7 +1770,7 @@ async function openTroubleshootingTemplateModal() {
             error
         );
 
-        alert(
+        showErrorMessage(
             "Error loading troubleshooting templates."
         );
 
@@ -1798,7 +1799,7 @@ async function addSelectedTroubleshootingTemplate() {
 
     if (!templateId) {
 
-        alert(
+        showWarningMessage(
             "Please select a troubleshooting template."
         );
 
@@ -1827,7 +1828,7 @@ async function addSelectedTroubleshootingTemplate() {
             error
         );
 
-        alert(
+        showErrorMessage(
             "Error adding troubleshooting template."
         );
 
@@ -1870,7 +1871,7 @@ async function removeTroubleshootingTemplate(
             error
         );
 
-        alert(
+        showErrorMessage(
             "Error removing troubleshooting template."
         );
 
@@ -2151,7 +2152,7 @@ async function openKnowledgeBaseModal() {
             error
         );
 
-        alert(
+        showErrorMessage(
             "Error loading knowledge base."
         );
 
@@ -2180,7 +2181,7 @@ async function addSelectedKnowledgeBase() {
 
     if (!knowledgeBaseId) {
 
-        alert(
+        showWarningMessage(
             "Please select a Knowledge Base article."
         );
 
@@ -2209,7 +2210,7 @@ async function addSelectedKnowledgeBase() {
             error
         );
 
-        alert(
+        showErrorMessage(
             "Error adding Knowledge Base."
         );
 
@@ -2252,7 +2253,7 @@ async function removeKnowledgeBase(
             error
         );
 
-        alert(
+        showErrorMessage(
             "Error removing Knowledge Base."
         );
 
@@ -2540,7 +2541,7 @@ async function openKnowledgeBaseNoteModal() {
             error
         );
 
-        alert(
+        showErrorMessage(
             "Error loading Knowledge Base Notes."
         );
 
@@ -2568,7 +2569,7 @@ async function addSelectedKnowledgeBaseNote() {
 
     if (!noteId) {
 
-        alert(
+        showWarningMessage(
             "Please select a Knowledge Base Note."
         );
 
@@ -2597,7 +2598,7 @@ async function addSelectedKnowledgeBaseNote() {
             error
         );
 
-        alert(
+        showErrorMessage(
             "Error adding Knowledge Base Note."
         );
 
@@ -2640,7 +2641,7 @@ async function removeKnowledgeBaseNote(
             error
         );
 
-        alert(
+        showErrorMessage(
             "Error removing Knowledge Base Note."
         );
 
