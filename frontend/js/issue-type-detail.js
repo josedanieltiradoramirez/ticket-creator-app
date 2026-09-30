@@ -423,53 +423,69 @@ async function loadIssueTypeDetail() {
 // BASIC INFORMATION
 // ============================================================
 
-function renderBasicInformation(
-    issueType
-) {
+function renderBasicInformation(issueType) {
+    renderBasicInformationComponent({
+        containerId: "basicInformation",
 
-    document.getElementById(
-        "issueTypeId"
-    ).textContent =
-        issueType.id ?? "-";
+        data: issueType,
 
+        fields: [
+            {
+                key: "id",
+                label: "ID",
+                type: "text",
+                readonly: true
+            },
+            {
+                key: "name",
+                label: "Name",
+                type: "text"
+            },
+            {
+                key: "description",
+                label: "Description",
+                type: "text"
+            },
+            {
+                key: "category",
+                label: "Category",
+                type: "text"
+            },
+            {
+                key: "display_name",
+                label: "Display Name",
+                type: "text"
+            },
+            {
+                key: "search_keywords",
+                label: "Search Keywords",
+                type: "text"
+            },
+            {
+                key: "is_active",
+                label: "Status",
+                type: "boolean"
+            }
+        ],
 
-    document.getElementById(
-        "issueTypeNameValue"
-    ).textContent =
-        issueType.name || "-";
+        onSave: async (updatedData) => {
+            const data = {
+                name: updatedData.name,
+                description: updatedData.description,
+                category: updatedData.category,
+                display_name: updatedData.display_name,
+                search_keywords: updatedData.search_keywords,
+                is_active: updatedData.is_active
+            };
 
+            const updatedIssueType = await updateIssueType(
+                issueTypeId,
+                data
+            );
 
-    document.getElementById(
-        "issueTypeDescriptionValue"
-    ).textContent =
-        issueType.description || "-";
-
-
-    document.getElementById(
-        "issueTypeCategory"
-    ).textContent =
-        issueType.category || "-";
-
-
-    document.getElementById(
-        "issueTypeDisplayName"
-    ).textContent =
-        issueType.display_name || "-";
-
-
-    document.getElementById(
-        "issueTypeSearchKeywords"
-    ).textContent =
-        issueType.search_keywords || "-";
-
-
-    document.getElementById(
-        "issueTypeStatus"
-    ).innerHTML =
-        createStatusBadge(
-            issueType.is_active
-        );
-
+            currentIssueType = updatedIssueType;
+        }
+    });
 }
 
 

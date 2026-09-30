@@ -1,0 +1,239 @@
+/* ============================================================
+   BASIC INFORMATION
+   ============================================================ */
+
+.basic-information {
+    width: 100%;
+    max-width: 760px;
+}
+
+.basic-information-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 18px;
+}
+
+.basic-information-header h2 {
+    margin: 0;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Helvetica,
+        Arial,
+        sans-serif;
+
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.4;
+
+    color: #202020;
+}
+
+.basic-information-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.basic-information-button {
+    min-height: 34px;
+
+    padding: 6px 12px;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Helvetica,
+        Arial,
+        sans-serif;
+
+    font-size: 14px;
+    font-weight: 500;
+
+    border-radius: 6px;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.basic-information-button.secondary {
+    color: #5f5f5f;
+    background: #ffffff;
+    border: 1px solid #d9d9d9;
+}
+
+.basic-information-button.secondary:hover {
+    background: #f7f7f5;
+    border-color: #cfcfcd;
+    color: #202020;
+}
+
+.basic-information-button.primary {
+    color: #ffffff;
+    background: #202020;
+    border: 1px solid #202020;
+}
+
+.basic-information-button.primary:hover {
+    background: #333333;
+    border-color: #333333;
+}
+
+.basic-information-button:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.basic-information-content {
+    width: 100%;
+}
+
+.basic-information-row {
+    display: grid;
+    grid-template-columns: 180px minmax(0, 1fr);
+
+    min-height: 46px;
+
+    border-bottom: 1px solid #eeeeec;
+}
+
+.basic-information-row:first-child {
+    border-top: 1px solid #eeeeec;
+}
+
+.basic-information-label {
+    display: flex;
+    align-items: center;
+
+    padding: 11px 16px 11px 0;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Helvetica,
+        Arial,
+        sans-serif;
+
+    font-size: 14px;
+    font-weight: 500;
+
+    color: #787774;
+}
+
+.basic-information-value {
+    display: flex;
+    align-items: center;
+
+    min-width: 0;
+
+    padding: 8px 0;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Helvetica,
+        Arial,
+        sans-serif;
+
+    font-size: 14px;
+    line-height: 1.5;
+
+    color: #37352f;
+}
+
+.basic-information-input {
+    width: 100%;
+    min-height: 36px;
+
+    box-sizing: border-box;
+
+    padding: 7px 9px;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Helvetica,
+        Arial,
+        sans-serif;
+
+    font-size: 14px;
+    line-height: 1.5;
+
+    color: #37352f;
+
+    background: #ffffff;
+
+    border: 1px solid #d9d9d9;
+    border-radius: 5px;
+
+    outline: none;
+
+    resize: none;
+    overflow: hidden;
+
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.basic-information-input:focus {
+    border-color: #999999;
+
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+}
+
+
+.basic-information-status {
+    display: inline-flex;
+    align-items: center;
+
+    padding: 3px 8px;
+
+    border-radius: 5px;
+
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.basic-information-status.active {
+    color: #2f6f44;
+    background: #eaf4ec;
+}
+
+.basic-information-status.inactive {
+    color: #777777;
+    background: #eeeeec;
+}
+
+
+@media (max-width: 700px) {
+    .basic-information-row {
+        grid-template-columns: 1fr;
+        gap: 4px;
+        padding: 8px 0;
+    }
+
+    .basic-information-label {
+        padding: 0;
+    }
+
+    .basic-information-value {
+        padding: 0;
+    }
+}
+
+.basic-information-readonly {
+    color: #787774;
+}
