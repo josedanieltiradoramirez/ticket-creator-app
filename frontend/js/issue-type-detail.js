@@ -66,218 +66,34 @@ function setupEventListeners() {
     // QUEUE MODAL
     // ========================================================
 
-    document
-        .getElementById("closeQueueModalButton")
-        .addEventListener(
-            "click",
-            () => {
-                closeQueueModal();
-            }
-        );
-
-    document
-        .getElementById("cancelQueueButton")
-        .addEventListener(
-            "click",
-            () => {
-                closeQueueModal();
-            }
-        );
-
-    document
-        .getElementById("saveQueueButton")
-        .addEventListener(
-            "click",
-            () => {
-                addSelectedQueue();
-            }
-        );
-
 
     // ========================================================
     // TOOL MODAL
     // ========================================================
 
-    document
-        .getElementById("closeToolModalButton")
-        .addEventListener(
-            "click",
-            () => {
-                closeToolModal();
-            }
-        );
-
-    document
-        .getElementById("cancelToolButton")
-        .addEventListener(
-            "click",
-            () => {
-                closeToolModal();
-            }
-        );
-
-    document
-        .getElementById("saveToolButton")
-        .addEventListener(
-            "click",
-            () => {
-                addSelectedTool();
-            }
-        );
 
 
     // ========================================================
     // TROUBLESHOOTING TEMPLATE MODAL
     // ========================================================
 
-    document
-        .getElementById(
-            "closeTroubleshootingTemplateModalButton"
-        )
-        .addEventListener(
-            "click",
-            () => {
-                closeTroubleshootingTemplateModal();
-            }
-        );
-
-    document
-        .getElementById(
-            "cancelTroubleshootingTemplateButton"
-        )
-        .addEventListener(
-            "click",
-            () => {
-                closeTroubleshootingTemplateModal();
-            }
-        );
-
-    document
-        .getElementById(
-            "saveTroubleshootingTemplateButton"
-        )
-        .addEventListener(
-            "click",
-            () => {
-                addSelectedTroubleshootingTemplate();
-            }
-        );
 
 
     // ========================================================
     // KNOWLEDGE BASE MODAL
     // ========================================================
 
-    document
-        .getElementById(
-            "closeKnowledgeBaseModalButton"
-        )
-        .addEventListener(
-            "click",
-            () => {
-                closeKnowledgeBaseModal();
-            }
-        );
-
-    document
-        .getElementById(
-            "cancelKnowledgeBaseButton"
-        )
-        .addEventListener(
-            "click",
-            () => {
-                closeKnowledgeBaseModal();
-            }
-        );
-
-    document
-        .getElementById(
-            "saveKnowledgeBaseButton"
-        )
-        .addEventListener(
-            "click",
-            () => {
-                addSelectedKnowledgeBase();
-            }
-        );
-
 
     // ========================================================
     // KNOWLEDGE BASE NOTE MODAL
     // ========================================================
-
-    document
-        .getElementById(
-            "closeKnowledgeBaseNoteModalButton"
-        )
-        .addEventListener(
-            "click",
-            () => {
-                closeKnowledgeBaseNoteModal();
-            }
-        );
-
-    document
-        .getElementById(
-            "cancelKnowledgeBaseNoteButton"
-        )
-        .addEventListener(
-            "click",
-            () => {
-                closeKnowledgeBaseNoteModal();
-            }
-        );
-
-    document
-        .getElementById(
-            "saveKnowledgeBaseNoteButton"
-        )
-        .addEventListener(
-            "click",
-            () => {
-                addSelectedKnowledgeBaseNote();
-            }
-        );
 
 
     // ========================================================
     // FORM MODAL
     // ========================================================
 
-    document
-        .getElementById(
-            "closeChangeFormModalButton"
-        )
-        .addEventListener(
-            "click",
-            () => {
-                closeChangeFormModal();
-            }
-        );
-
-    document
-        .getElementById(
-            "cancelChangeFormButton"
-        )
-        .addEventListener(
-            "click",
-            () => {
-                closeChangeFormModal();
-            }
-        );
-
-    document
-        .getElementById(
-            "saveChangeFormButton"
-        )
-        .addEventListener(
-            "click",
-            () => {
-                saveChangedForm();
-            }
-        );
 }
-
 
 // ============================================================
 // LOAD ISSUE TYPE
@@ -717,57 +533,124 @@ async function loadForm() {
 
 async function openChangeFormModal() {
 
-    const select =
-        document.getElementById(
-            "changeFormSelect"
-        );
-
-
-    select.innerHTML = `
-        <option value="">
-            Select a form
-        </option>
-    `;
-
-
     try {
 
         const forms =
             await getForms();
 
 
-        forms.forEach(form => {
-
-            const option =
-                document.createElement(
-                    "option"
-                );
-
-
-            option.value =
-                form.id;
+        const options = forms
+            .map(form => `
+                <option value="${form.id}">
+                    ${escapeHtml(form.name)}
+                </option>
+            `)
+            .join("");
 
 
-            option.textContent =
-                form.name;
+        const currentFormId =
+            currentIssueType &&
+            currentIssueType.form_template_id
+                ? String(
+                    currentIssueType.form_template_id
+                )
+                : "";
 
 
-            select.appendChild(
-                option
-            );
+        const content = `
+
+            <div class="form-group">
+
+                <label for="changeFormSelect">
+                    Form
+                </label>
+
+                <select
+                    id="changeFormSelect"
+                >
+
+                    <option value="">
+                        Select a form
+                    </option>
+
+                    ${options}
+
+                </select>
+
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    id="cancelChangeFormButton"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="button"
+                    id="saveChangeFormButton"
+                >
+                    Save
+                </button>
+
+            </div>
+
+        `;
+
+
+        renderModal({
+
+            containerId:
+                "changeFormModal",
+
+            title:
+                "Change Form",
+
+            content:
+                content,
+
+            onClose: () => {
+                closeChangeFormModal();
+            }
 
         });
 
 
-        if (
-            currentIssueType &&
-            currentIssueType.form_template_id
-        ) {
+        const select =
+            document.getElementById(
+                "changeFormSelect"
+            );
+
+
+        if (currentFormId) {
 
             select.value =
-                currentIssueType.form_template_id;
+                currentFormId;
 
         }
+
+
+        document
+            .getElementById(
+                "cancelChangeFormButton"
+            )
+            .addEventListener(
+                "click",
+                closeChangeFormModal
+            );
+
+
+        document
+            .getElementById(
+                "saveChangeFormButton"
+            )
+            .addEventListener(
+                "click",
+                saveChangedForm
+            );
 
 
         document
@@ -776,6 +659,7 @@ async function openChangeFormModal() {
             )
             .classList
             .remove("hidden");
+
 
     } catch (error) {
 
@@ -1002,31 +886,20 @@ async function loadQueues() {
 
 async function openQueueModal() {
 
-    const select =
-        document.getElementById(
-            "queueSelect"
-        );
-
-
-    select.innerHTML = `
-        <option value="">
-            Select a queue
-        </option>
-    `;
-
-
     try {
 
         const [
             queues,
             assignedQueues
-        ] =
-            await Promise.all([
-                getQueues(),
-                getIssueTypeQueues(
-                    issueTypeId
-                )
-            ]);
+        ] = await Promise.all([
+
+            getQueues(),
+
+            getIssueTypeQueues(
+                issueTypeId
+            )
+
+        ]);
 
 
         const assignedIds =
@@ -1035,36 +908,109 @@ async function openQueueModal() {
             );
 
 
-        queues.forEach(queue => {
-
-            if (
-                assignedIds.includes(
-                    queue.id
-                )
-            ) {
-                return;
-            }
-
-
-            const option =
-                document.createElement(
-                    "option"
-                );
-
-
-            option.value =
-                queue.id;
-
-
-            option.textContent =
-                queue.name;
-
-
-            select.appendChild(
-                option
+        const availableQueues =
+            queues.filter(
+                queue =>
+                    !assignedIds.includes(
+                        queue.id
+                    )
             );
 
+
+        const options = availableQueues
+            .map(queue => {
+
+                return `
+                    <option value="${queue.id}">
+                        ${escapeHtml(queue.name)}
+                    </option>
+                `;
+
+            })
+            .join("");
+
+
+        const content = `
+
+            <div class="form-group">
+
+                <label for="queueSelect">
+                    Queue
+                </label>
+
+                <select
+                    id="queueSelect"
+                >
+
+                    <option value="">
+                        Select a queue
+                    </option>
+
+                    ${options}
+
+                </select>
+
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    id="cancelQueueButton"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="button"
+                    id="saveQueueButton"
+                >
+                    Save
+                </button>
+
+            </div>
+
+        `;
+
+
+        renderModal({
+
+            containerId: "queueModal",
+
+            title: "Add Queue",
+
+            content: content,
+
+            onClose: () => {
+                closeQueueModal();
+            }
+
         });
+
+
+        document
+            .getElementById(
+                "cancelQueueButton"
+            )
+            .addEventListener(
+                "click",
+                () => {
+                    closeQueueModal();
+                }
+            );
+
+
+        document
+            .getElementById(
+                "saveQueueButton"
+            )
+            .addEventListener(
+                "click",
+                () => {
+                    addSelectedQueue();
+                }
+            );
 
 
         document
@@ -1073,6 +1019,7 @@ async function openQueueModal() {
             )
             .classList
             .remove("hidden");
+
 
     } catch (error) {
 
@@ -1323,31 +1270,17 @@ async function loadTools() {
 
 async function openToolModal() {
 
-    const select =
-        document.getElementById(
-            "toolSelect"
-        );
-
-
-    select.innerHTML = `
-        <option value="">
-            Select a tool
-        </option>
-    `;
-
-
     try {
 
         const [
             tools,
             assignedTools
-        ] =
-            await Promise.all([
-                getTools(),
-                getIssueTypeTools(
-                    issueTypeId
-                )
-            ]);
+        ] = await Promise.all([
+            getTools(),
+            getIssueTypeTools(
+                issueTypeId
+            )
+        ]);
 
 
         const assignedIds =
@@ -1356,36 +1289,100 @@ async function openToolModal() {
             );
 
 
-        tools.forEach(tool => {
-
-            if (
-                assignedIds.includes(
-                    tool.id
-                )
-            ) {
-                return;
-            }
-
-
-            const option =
-                document.createElement(
-                    "option"
-                );
-
-
-            option.value =
-                tool.id;
-
-
-            option.textContent =
-                tool.name;
-
-
-            select.appendChild(
-                option
+        const availableTools =
+            tools.filter(
+                tool =>
+                    !assignedIds.includes(
+                        tool.id
+                    )
             );
 
+
+        const options = availableTools
+            .map(tool => {
+                return `
+                    <option value="${tool.id}">
+                        ${escapeHtml(tool.name)}
+                    </option>
+                `;
+            })
+            .join("");
+
+
+        const content = `
+
+            <div class="form-group">
+
+                <label for="toolSelect">
+                    Tool
+                </label>
+
+                <select id="toolSelect">
+
+                    <option value="">
+                        Select a tool
+                    </option>
+
+                    ${options}
+
+                </select>
+
+            </div>
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    id="cancelToolButton"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="button"
+                    id="saveToolButton"
+                >
+                    Save
+                </button>
+
+            </div>
+
+        `;
+
+
+        renderModal({
+
+            containerId: "toolModal",
+
+            title: "Add Tool",
+
+            content: content,
+
+            onClose: () => {
+                closeToolModal();
+            }
+
         });
+
+
+        document
+            .getElementById(
+                "cancelToolButton"
+            )
+            .addEventListener(
+                "click",
+                closeToolModal
+            );
+
+
+        document
+            .getElementById(
+                "saveToolButton"
+            )
+            .addEventListener(
+                "click",
+                addSelectedTool
+            );
 
 
         document
@@ -1394,6 +1391,7 @@ async function openToolModal() {
             )
             .classList
             .remove("hidden");
+
 
     } catch (error) {
 
@@ -1628,31 +1626,20 @@ async function loadTroubleshootingTemplates() {
 
 async function openTroubleshootingTemplateModal() {
 
-    const select =
-        document.getElementById(
-            "troubleshootingTemplateSelect"
-        );
-
-
-    select.innerHTML = `
-        <option value="">
-            Select a template
-        </option>
-    `;
-
-
     try {
 
         const [
             templates,
             assignedTemplates
-        ] =
-            await Promise.all([
-                getTroubleshootingTemplates(),
-                getIssueTypeTroubleshootingTemplates(
-                    issueTypeId
-                )
-            ]);
+        ] = await Promise.all([
+
+            getTroubleshootingTemplates(),
+
+            getIssueTypeTroubleshootingTemplates(
+                issueTypeId
+            )
+
+        ]);
 
 
         const assignedIds =
@@ -1661,37 +1648,110 @@ async function openTroubleshootingTemplateModal() {
             );
 
 
-        templates.forEach(template => {
-
-            if (
-                assignedIds.includes(
-                    template.id
-                )
-            ) {
-                return;
-            }
-
-
-            const option =
-                document.createElement(
-                    "option"
-                );
-
-
-            option.value =
-                template.id;
-
-
-            option.textContent =
-                template.name ||
-                `Template ${template.id}`;
-
-
-            select.appendChild(
-                option
+        const availableTemplates =
+            templates.filter(
+                template =>
+                    !assignedIds.includes(
+                        template.id
+                    )
             );
 
+
+        const options =
+            availableTemplates
+                .map(template => `
+                    <option value="${template.id}">
+                        ${escapeHtml(
+                            template.name ||
+                            `Template ${template.id}`
+                        )}
+                    </option>
+                `)
+                .join("");
+
+
+        const content = `
+
+            <div class="form-group">
+
+                <label
+                    for="troubleshootingTemplateSelect"
+                >
+                    Troubleshooting Template
+                </label>
+
+                <select
+                    id="troubleshootingTemplateSelect"
+                >
+
+                    <option value="">
+                        Select a template
+                    </option>
+
+                    ${options}
+
+                </select>
+
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    id="cancelTroubleshootingTemplateButton"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="button"
+                    id="saveTroubleshootingTemplateButton"
+                >
+                    Save
+                </button>
+
+            </div>
+
+        `;
+
+
+        renderModal({
+
+            containerId:
+                "troubleshootingTemplateModal",
+
+            title:
+                "Add Troubleshooting Template",
+
+            content:
+                content,
+
+            onClose: () => {
+                closeTroubleshootingTemplateModal();
+            }
+
         });
+
+
+        document
+            .getElementById(
+                "cancelTroubleshootingTemplateButton"
+            )
+            .addEventListener(
+                "click",
+                closeTroubleshootingTemplateModal
+            );
+
+
+        document
+            .getElementById(
+                "saveTroubleshootingTemplateButton"
+            )
+            .addEventListener(
+                "click",
+                addSelectedTroubleshootingTemplate
+            );
 
 
         document
@@ -1700,6 +1760,7 @@ async function openTroubleshootingTemplateModal() {
             )
             .classList
             .remove("hidden");
+
 
     } catch (error) {
 
@@ -1950,31 +2011,20 @@ async function loadKnowledgeBase() {
 
 async function openKnowledgeBaseModal() {
 
-    const select =
-        document.getElementById(
-            "knowledgeBaseSelect"
-        );
-
-
-    select.innerHTML = `
-        <option value="">
-            Select an article
-        </option>
-    `;
-
-
     try {
 
         const [
             knowledgeBase,
             assignedKnowledgeBase
-        ] =
-            await Promise.all([
-                getKnowledgeBaseItems(),
-                getIssueTypeKnowledgeBase(
-                    issueTypeId
-                )
-            ]);
+        ] = await Promise.all([
+
+            getKnowledgeBaseItems(),
+
+            getIssueTypeKnowledgeBase(
+                issueTypeId
+            )
+
+        ]);
 
 
         const assignedIds =
@@ -1983,36 +2033,107 @@ async function openKnowledgeBaseModal() {
             );
 
 
-        knowledgeBase.forEach(kb => {
-
-            if (
-                assignedIds.includes(
-                    kb.id
-                )
-            ) {
-                return;
-            }
-
-
-            const option =
-                document.createElement(
-                    "option"
-                );
-
-
-            option.value =
-                kb.id;
-
-
-            option.textContent =
-                `${kb.article_number} - ${kb.title}`;
-
-
-            select.appendChild(
-                option
+        const availableKnowledgeBase =
+            knowledgeBase.filter(
+                kb =>
+                    !assignedIds.includes(
+                        kb.id
+                    )
             );
 
+
+        const options =
+            availableKnowledgeBase
+                .map(kb => `
+                    <option value="${kb.id}">
+                        ${escapeHtml(
+                            `${kb.article_number} - ${kb.title}`
+                        )}
+                    </option>
+                `)
+                .join("");
+
+
+        const content = `
+
+            <div class="form-group">
+
+                <label for="knowledgeBaseSelect">
+                    Knowledge Base
+                </label>
+
+                <select
+                    id="knowledgeBaseSelect"
+                >
+
+                    <option value="">
+                        Select an article
+                    </option>
+
+                    ${options}
+
+                </select>
+
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    id="cancelKnowledgeBaseButton"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="button"
+                    id="saveKnowledgeBaseButton"
+                >
+                    Save
+                </button>
+
+            </div>
+
+        `;
+
+
+        renderModal({
+
+            containerId:
+                "knowledgeBaseModal",
+
+            title:
+                "Add Knowledge Base",
+
+            content:
+                content,
+
+            onClose: () => {
+                closeKnowledgeBaseModal();
+            }
+
         });
+
+
+        document
+            .getElementById(
+                "cancelKnowledgeBaseButton"
+            )
+            .addEventListener(
+                "click",
+                closeKnowledgeBaseModal
+            );
+
+
+        document
+            .getElementById(
+                "saveKnowledgeBaseButton"
+            )
+            .addEventListener(
+                "click",
+                addSelectedKnowledgeBase
+            );
 
 
         document
@@ -2021,6 +2142,7 @@ async function openKnowledgeBaseModal() {
             )
             .classList
             .remove("hidden");
+
 
     } catch (error) {
 
@@ -2271,31 +2393,20 @@ async function loadKnowledgeBaseNotes() {
 
 async function openKnowledgeBaseNoteModal() {
 
-    const select =
-        document.getElementById(
-            "knowledgeBaseNoteSelect"
-        );
-
-
-    select.innerHTML = `
-        <option value="">
-            Select a Knowledge Base Note
-        </option>
-    `;
-
-
     try {
 
         const [
             notes,
             assignedNotes
-        ] =
-            await Promise.all([
-                getKnowledgeBaseNotes(),
-                getIssueTypeKnowledgeBaseNotes(
-                    issueTypeId
-                )
-            ]);
+        ] = await Promise.all([
+
+            getKnowledgeBaseNotes(),
+
+            getIssueTypeKnowledgeBaseNotes(
+                issueTypeId
+            )
+
+        ]);
 
 
         const assignedIds =
@@ -2304,38 +2415,114 @@ async function openKnowledgeBaseNoteModal() {
             );
 
 
-        notes.forEach(note => {
-
-            if (
-                assignedIds.includes(
-                    note.id
-                )
-            ) {
-                return;
-            }
-
-
-            const option =
-                document.createElement(
-                    "option"
-                );
-
-
-            option.value =
-                note.id;
-
-
-            option.textContent =
-                note.category
-                    ? `${note.title} - ${note.category}`
-                    : note.title;
-
-
-            select.appendChild(
-                option
+        const availableNotes =
+            notes.filter(
+                note =>
+                    !assignedIds.includes(
+                        note.id
+                    )
             );
 
+
+        const options =
+            availableNotes
+                .map(note => {
+
+                    const label =
+                        note.category
+                            ? `${note.title} - ${note.category}`
+                            : note.title;
+
+                    return `
+                        <option value="${note.id}">
+                            ${escapeHtml(label)}
+                        </option>
+                    `;
+
+                })
+                .join("");
+
+
+        const content = `
+
+            <div class="form-group">
+
+                <label for="knowledgeBaseNoteSelect">
+                    Knowledge Base Note
+                </label>
+
+                <select
+                    id="knowledgeBaseNoteSelect"
+                >
+
+                    <option value="">
+                        Select a Knowledge Base Note
+                    </option>
+
+                    ${options}
+
+                </select>
+
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    id="cancelKnowledgeBaseNoteButton"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="button"
+                    id="saveKnowledgeBaseNoteButton"
+                >
+                    Save
+                </button>
+
+            </div>
+
+        `;
+
+
+        renderModal({
+
+            containerId:
+                "knowledgeBaseNoteModal",
+
+            title:
+                "Add Knowledge Base Note",
+
+            content:
+                content,
+
+            onClose: () => {
+                closeKnowledgeBaseNoteModal();
+            }
+
         });
+
+
+        document
+            .getElementById(
+                "cancelKnowledgeBaseNoteButton"
+            )
+            .addEventListener(
+                "click",
+                closeKnowledgeBaseNoteModal
+            );
+
+
+        document
+            .getElementById(
+                "saveKnowledgeBaseNoteButton"
+            )
+            .addEventListener(
+                "click",
+                addSelectedKnowledgeBaseNote
+            );
 
 
         document
@@ -2344,6 +2531,7 @@ async function openKnowledgeBaseNoteModal() {
             )
             .classList
             .remove("hidden");
+
 
     } catch (error) {
 
@@ -2359,7 +2547,6 @@ async function openKnowledgeBaseNoteModal() {
     }
 
 }
-
 
 // ============================================================
 // ADD KNOWLEDGE BASE NOTE

@@ -42,6 +42,11 @@
         href="css/details/form-section.css"
     >
 
+    <link
+        rel="stylesheet"
+        href="css/details/modal.css"
+    >
+
 </head>
 
 <body>
@@ -77,392 +82,46 @@
 
     <div id="relationships"></div>  
   
+
 <!-- =========================================================
      QUEUE MODAL
      ========================================================= -->
 
-<div
-    id="queueModal"
-    class="modal hidden"
->
-
-    <div class="modal-content">
-
-        <div class="modal-header">
-
-            <h3>
-                Add Queue
-            </h3>
-
-            <button
-                id="closeQueueModalButton"
-                class="modal-close"
-            >
-                ×
-            </button>
-
-        </div>
-
-
-        <div class="form-group">
-
-            <label for="queueSelect">
-                Queue
-            </label>
-
-            <select
-                id="queueSelect"
-                style="width: 100%; padding: 10px;"
-            >
-
-                <option value="">
-                    Select a queue
-                </option>
-
-            </select>
-
-        </div>
-
-
-        <div class="modal-actions">
-
-            <button id="cancelQueueButton">
-                Cancel
-            </button>
-
-            <button id="saveQueueButton">
-                Save
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
+    <div id="queueModal" class="modal hidden"></div>
 
 
 <!-- =========================================================
      TOOL MODAL
      ========================================================= -->
 
-<div
-    id="toolModal"
-    class="modal hidden"
->
-
-    <div class="modal-content">
-
-        <div class="modal-header">
-
-            <h3>
-                Add Tool
-            </h3>
-
-            <button
-                id="closeToolModalButton"
-                class="modal-close"
-            >
-                ×
-            </button>
-
-        </div>
-
-
-        <div class="form-group">
-
-            <label for="toolSelect">
-                Tool
-            </label>
-
-            <select
-                id="toolSelect"
-                style="width: 100%; padding: 10px;"
-            >
-
-                <option value="">
-                    Select a tool
-                </option>
-
-            </select>
-
-        </div>
-
-
-        <div class="modal-actions">
-
-            <button id="cancelToolButton">
-                Cancel
-            </button>
-
-            <button id="saveToolButton">
-                Save
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
+    <div id="toolModal" class="modal hidden"></div>
 
 
 <!-- =========================================================
      TROUBLESHOOTING TEMPLATE MODAL
      ========================================================= -->
 
-<div
-    id="troubleshootingTemplateModal"
-    class="modal hidden"
->
-
-    <div class="modal-content">
-
-        <div class="modal-header">
-
-            <h3>
-                Add Troubleshooting Template
-            </h3>
-
-            <button
-                id="closeTroubleshootingTemplateModalButton"
-                class="modal-close"
-            >
-                ×
-            </button>
-
-        </div>
-
-
-        <div class="form-group">
-
-            <label for="troubleshootingTemplateSelect">
-                Troubleshooting Template
-            </label>
-
-            <select
-                id="troubleshootingTemplateSelect"
-                style="width: 100%; padding: 10px;"
-            >
-
-                <option value="">
-                    Select a template
-                </option>
-
-            </select>
-
-        </div>
-
-
-        <div class="modal-actions">
-
-            <button
-                id="cancelTroubleshootingTemplateButton"
-            >
-                Cancel
-            </button>
-
-            <button
-                id="saveTroubleshootingTemplateButton"
-            >
-                Save
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
+<div id="troubleshootingTemplateModal" class="modal hidden"></div>
 
 <!-- =========================================================
      KNOWLEDGE BASE MODAL
      ========================================================= -->
 
-<div
-    id="knowledgeBaseModal"
-    class="modal hidden"
->
-
-    <div class="modal-content">
-
-        <div class="modal-header">
-
-            <h3>
-                Add Knowledge Base
-            </h3>
-
-            <button
-                id="closeKnowledgeBaseModalButton"
-                class="modal-close"
-            >
-                ×
-            </button>
-
-        </div>
-
-
-        <div class="form-group">
-
-            <label for="knowledgeBaseSelect">
-                Knowledge Base
-            </label>
-
-            <select
-                id="knowledgeBaseSelect"
-                style="width: 100%; padding: 10px;"
-            >
-
-                <option value="">
-                    Select an article
-                </option>
-
-            </select>
-
-        </div>
-
-
-        <div class="modal-actions">
-
-            <button id="cancelKnowledgeBaseButton">
-                Cancel
-            </button>
-
-            <button id="saveKnowledgeBaseButton">
-                Save
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
+<div id="knowledgeBaseModal" class="modal hidden"></div>
 
 
 <!-- =========================================================
      KNOWLEDGE BASE NOTE MODAL
      ========================================================= -->
 
-<div
-    id="knowledgeBaseNoteModal"
-    class="modal hidden"
->
-
-    <div class="modal-content">
-
-        <div class="modal-header">
-
-            <h3>
-                Add Knowledge Base Note
-            </h3>
-
-            <button
-                id="closeKnowledgeBaseNoteModalButton"
-                class="modal-close"
-            >
-                ×
-            </button>
-
-        </div>
-
-
-        <div class="form-group">
-
-            <label for="knowledgeBaseNoteSelect">
-                Knowledge Base Note
-            </label>
-
-            <select
-                id="knowledgeBaseNoteSelect"
-                style="width: 100%; padding: 10px;"
-            >
-
-                <option value="">
-                    Select a Knowledge Base Note
-                </option>
-
-            </select>
-
-        </div>
-
-
-        <div class="modal-actions">
-
-            <button id="cancelKnowledgeBaseNoteButton">
-                Cancel
-            </button>
-
-            <button id="saveKnowledgeBaseNoteButton">
-                Save
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
+<div id="knowledgeBaseNoteModal" class="modal hidden"></div>
 
 
 <!-- =========================================================
      CHANGE FORM MODAL
      ========================================================= -->
 
-<div
-    id="changeFormModal"
-    class="modal hidden"
->
-
-    <div class="modal-content">
-
-        <div class="modal-header">
-
-            <h3>
-                Change Form
-            </h3>
-
-            <button
-                id="closeChangeFormModalButton"
-                class="modal-close"
-            >
-                ×
-            </button>
-
-        </div>
-
-
-        <div class="form-group">
-
-            <label for="changeFormSelect">
-                Form
-            </label>
-
-            <select
-                id="changeFormSelect"
-                style="width: 100%; padding: 10px;"
-            >
-
-                <option value="">
-                    Select a form
-                </option>
-
-            </select>
-
-        </div>
-
-
-        <div class="modal-actions">
-
-            <button id="cancelChangeFormButton">
-                Cancel
-            </button>
-
-            <button id="saveChangeFormButton">
-                Save
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
+<div id="changeFormModal" class="modal hidden"></div>
 
 
 <script src="js/api.js"></script>
@@ -476,6 +135,8 @@
 <script src="js/components/relationships.js"></script>
 
 <script src="js/components/form-section.js"></script>
+
+<script src="js/components/modal.js"></script>
 
 <script src="js/issue-type-detail.js?v=2"></script>
 
