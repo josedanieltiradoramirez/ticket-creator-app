@@ -1,0 +1,201 @@
+/* ============================================================
+   RELATIONSHIPS
+   ============================================================ */
+
+.relationships-section {
+    width: 100%;
+    max-width: 760px;
+    margin-bottom: 42px;
+}
+
+.relationships-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 18px;
+}
+
+.relationships-header h2 {
+    margin: 0;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Helvetica,
+        Arial,
+        sans-serif;
+
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.4;
+
+    color: #202020;
+}
+
+.relationships-add-button {
+    min-height: 34px;
+
+    padding: 6px 12px;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Helvetica,
+        Arial,
+        sans-serif;
+
+    font-size: 14px;
+    font-weight: 500;
+
+    color: #5f5f5f;
+
+    background: #ffffff;
+
+    border: 1px solid #d9d9d9;
+    border-radius: 6px;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.relationships-add-button:hover {
+    background: #f7f7f5;
+    border-color: #cfcfcd;
+    color: #202020;
+}
+
+.relationships-list {
+    width: 100%;
+
+    border-top: 1px solid #eeeeec;
+}
+
+.relationship-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    min-height: 46px;
+
+    border-bottom: 1px solid #eeeeec;
+
+    gap: 20px;
+}
+
+.relationship-item-name {
+    min-width: 0;
+
+    padding: 10px 0;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Helvetica,
+        Arial,
+        sans-serif;
+
+    font-size: 14px;
+    line-height: 1.5;
+
+    color: #37352f;
+
+    overflow-wrap: anywhere;
+}
+
+.relationship-item-actions {
+    display: flex;
+    align-items: center;
+
+    flex-shrink: 0;
+
+    gap: 4px;
+}
+
+.relationship-action-button {
+    padding: 5px 7px;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Helvetica,
+        Arial,
+        sans-serif;
+
+    font-size: 13px;
+    font-weight: 500;
+
+    color: #787774;
+
+    background: transparent;
+
+    border: 0;
+    border-radius: 5px;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.relationship-action-button:hover {
+    color: #202020;
+    background: #f1f1ef;
+}
+
+.relationship-action-button.remove {
+    color: #a05a5a;
+}
+
+.relationship-action-button.remove:hover {
+    color: #8b3030;
+    background: #f9eeee;
+}
+
+.relationships-empty {
+    padding: 18px 0;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Helvetica,
+        Arial,
+        sans-serif;
+
+    font-size: 14px;
+
+    color: #787774;
+}
+
+@media (max-width: 700px) {
+    .relationships-section {
+        max-width: 100%;
+    }
+
+    .relationship-item {
+        align-items: flex-start;
+        flex-direction: column;
+
+        gap: 6px;
+
+        padding: 10px 0;
+    }
+
+    .relationship-item-name {
+        padding: 0;
+    }
+
+    .relationship-item-actions {
+        padding-bottom: 2px;
+    }
+}

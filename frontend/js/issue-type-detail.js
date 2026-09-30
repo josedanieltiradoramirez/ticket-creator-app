@@ -62,20 +62,9 @@ document.addEventListener(
 
 function setupEventListeners() {
 
-
     // ========================================================
-    // QUEUES
+    // QUEUE MODAL
     // ========================================================
-
-    document
-        .getElementById("addQueueButton")
-        .addEventListener(
-            "click",
-            () => {
-                openQueueModal();
-            }
-        );
-
 
     document
         .getElementById("closeQueueModalButton")
@@ -86,7 +75,6 @@ function setupEventListeners() {
             }
         );
 
-
     document
         .getElementById("cancelQueueButton")
         .addEventListener(
@@ -95,7 +83,6 @@ function setupEventListeners() {
                 closeQueueModal();
             }
         );
-
 
     document
         .getElementById("saveQueueButton")
@@ -108,18 +95,8 @@ function setupEventListeners() {
 
 
     // ========================================================
-    // TOOLS
+    // TOOL MODAL
     // ========================================================
-
-    document
-        .getElementById("addToolButton")
-        .addEventListener(
-            "click",
-            () => {
-                openToolModal();
-            }
-        );
-
 
     document
         .getElementById("closeToolModalButton")
@@ -130,7 +107,6 @@ function setupEventListeners() {
             }
         );
 
-
     document
         .getElementById("cancelToolButton")
         .addEventListener(
@@ -139,7 +115,6 @@ function setupEventListeners() {
                 closeToolModal();
             }
         );
-
 
     document
         .getElementById("saveToolButton")
@@ -152,20 +127,8 @@ function setupEventListeners() {
 
 
     // ========================================================
-    // TROUBLESHOOTING TEMPLATES
+    // TROUBLESHOOTING TEMPLATE MODAL
     // ========================================================
-
-    document
-        .getElementById(
-            "addTroubleshootingTemplateButton"
-        )
-        .addEventListener(
-            "click",
-            () => {
-                openTroubleshootingTemplateModal();
-            }
-        );
-
 
     document
         .getElementById(
@@ -178,7 +141,6 @@ function setupEventListeners() {
             }
         );
 
-
     document
         .getElementById(
             "cancelTroubleshootingTemplateButton"
@@ -189,7 +151,6 @@ function setupEventListeners() {
                 closeTroubleshootingTemplateModal();
             }
         );
-
 
     document
         .getElementById(
@@ -204,20 +165,8 @@ function setupEventListeners() {
 
 
     // ========================================================
-    // KNOWLEDGE BASE
+    // KNOWLEDGE BASE MODAL
     // ========================================================
-
-    document
-        .getElementById(
-            "addKnowledgeBaseButton"
-        )
-        .addEventListener(
-            "click",
-            () => {
-                openKnowledgeBaseModal();
-            }
-        );
-
 
     document
         .getElementById(
@@ -230,7 +179,6 @@ function setupEventListeners() {
             }
         );
 
-
     document
         .getElementById(
             "cancelKnowledgeBaseButton"
@@ -241,7 +189,6 @@ function setupEventListeners() {
                 closeKnowledgeBaseModal();
             }
         );
-
 
     document
         .getElementById(
@@ -256,20 +203,8 @@ function setupEventListeners() {
 
 
     // ========================================================
-    // KNOWLEDGE BASE NOTES
+    // KNOWLEDGE BASE NOTE MODAL
     // ========================================================
-
-    document
-        .getElementById(
-            "addKnowledgeBaseNoteButton"
-        )
-        .addEventListener(
-            "click",
-            () => {
-                openKnowledgeBaseNoteModal();
-            }
-        );
-
 
     document
         .getElementById(
@@ -282,7 +217,6 @@ function setupEventListeners() {
             }
         );
 
-
     document
         .getElementById(
             "cancelKnowledgeBaseNoteButton"
@@ -293,7 +227,6 @@ function setupEventListeners() {
                 closeKnowledgeBaseNoteModal();
             }
         );
-
 
     document
         .getElementById(
@@ -308,20 +241,8 @@ function setupEventListeners() {
 
 
     // ========================================================
-    // FORM
+    // FORM MODAL
     // ========================================================
-
-    document
-        .getElementById(
-            "changeFormButton"
-        )
-        .addEventListener(
-            "click",
-            () => {
-                openChangeFormModal();
-            }
-        );
-
 
     document
         .getElementById(
@@ -334,7 +255,6 @@ function setupEventListeners() {
             }
         );
 
-
     document
         .getElementById(
             "cancelChangeFormButton"
@@ -346,7 +266,6 @@ function setupEventListeners() {
             }
         );
 
-
     document
         .getElementById(
             "saveChangeFormButton"
@@ -357,7 +276,6 @@ function setupEventListeners() {
                 saveChangedForm();
             }
         );
-
 }
 
 
@@ -374,34 +292,18 @@ async function loadIssueTypeDetail() {
                 issueTypeId
             );
 
-
-        console.log(
-            "ISSUE TYPE:",
-            currentIssueType
-        );
-
-
         renderDetailHeader({
+            containerId: "detailHeader",
             type: "Issue Type",
             title: currentIssueType.name,
             description: currentIssueType.description
         });
 
-
         renderBasicInformation(
             currentIssueType
         );
 
-
-        await Promise.all([
-            loadForm(),
-            loadQueues(),
-            loadTools(),
-            loadTroubleshootingTemplates(),
-            loadKnowledgeBase(),
-            loadKnowledgeBaseNotes()
-        ]);
-
+        await loadRelationships();
 
     } catch (error) {
 
@@ -412,6 +314,261 @@ async function loadIssueTypeDetail() {
 
         alert(
             "Error loading issue type details."
+        );
+
+    }
+
+}
+
+// ============================================================
+// RELATIONSHIPS
+// ============================================================
+
+async function loadRelationships() {
+
+    try {
+
+        const [
+            queues,
+            tools,
+            troubleshootingTemplates,
+            knowledgeBase,
+            knowledgeBaseNotes
+        ] = await Promise.all([
+
+            getIssueTypeQueues(
+                issueTypeId
+            ),
+
+            getIssueTypeTools(
+                issueTypeId
+            ),
+
+            getIssueTypeTroubleshootingTemplates(
+                issueTypeId
+            ),
+
+            getIssueTypeKnowledgeBase(
+                issueTypeId
+            ),
+
+            getIssueTypeKnowledgeBaseNotes(
+                issueTypeId
+            )
+
+        ]);
+
+
+        renderRelationships({
+            containerId: "relationships",
+
+            relationships: [
+
+                // ==================================================
+                // QUEUES
+                // ==================================================
+
+                {
+                    title: "Queues",
+
+                    addLabel: "Add Queue",
+
+                    items: queues || [],
+
+                    getItemName: (item) =>
+                        item.name || "-",
+
+                    onAdd: () => {
+                        openQueueModal();
+                    },
+
+                    onView: (item) => {
+                        window.location.href =
+                            `queue-detail.html?id=${item.id}`;
+                    },
+
+                    onEdit: (item) => {
+                        window.location.href =
+                            `queue-detail.html?id=${item.id}`;
+                    },
+
+                    onRemove: async (item) => {
+
+                        await removeQueue(
+                            item.id
+                        );
+
+                    }
+                },
+
+
+                // ==================================================
+                // TOOLS
+                // ==================================================
+
+                {
+                    title: "Tools",
+
+                    addLabel: "Add Tool",
+
+                    items: tools || [],
+
+                    getItemName: (item) =>
+                        item.name || "-",
+
+                    onAdd: () => {
+                        openToolModal();
+                    },
+
+                    onView: (item) => {
+                        window.location.href =
+                            `tool-detail.html?id=${item.id}`;
+                    },
+
+                    onEdit: (item) => {
+                        window.location.href =
+                            `tool-detail.html?id=${item.id}`;
+                    },
+
+                    onRemove: async (item) => {
+
+                        await removeTool(
+                            item.id
+                        );
+
+                    }
+                },
+
+
+                // ==================================================
+                // TROUBLESHOOTING TEMPLATES
+                // ==================================================
+
+                {
+                    title: "Troubleshooting Templates",
+
+                    addLabel: "Add Template",
+
+                    items:
+                        troubleshootingTemplates || [],
+
+                    getItemName: (item) =>
+                        item.name || "-",
+
+                    onAdd: () => {
+                        openTroubleshootingTemplateModal();
+                    },
+
+                    onView: (item) => {
+                        window.location.href =
+                            `troubleshooting-template-detail.html?id=${item.id}`;
+                    },
+
+                    onEdit: (item) => {
+                        window.location.href =
+                            `troubleshooting-template-detail.html?id=${item.id}`;
+                    },
+
+                    onRemove: async (item) => {
+
+                        await removeTroubleshootingTemplate(
+                            item.id
+                        );
+
+                    }
+                },
+
+
+                // ==================================================
+                // KNOWLEDGE BASE
+                // ==================================================
+
+                {
+                    title: "Knowledge Base",
+
+                    addLabel: "Add Knowledge Base",
+
+                    items:
+                        knowledgeBase || [],
+
+                    getItemName: (item) =>
+                        item.article_number
+                            ? `${item.article_number} - ${item.title}`
+                            : item.title || "-",
+
+                    onAdd: () => {
+                        openKnowledgeBaseModal();
+                    },
+
+                    onView: (item) => {
+                        window.location.href =
+                            `knowledge-base-detail.html?id=${item.id}`;
+                    },
+
+                    onEdit: (item) => {
+                        window.location.href =
+                            `knowledge-base-detail.html?id=${item.id}`;
+                    },
+
+                    onRemove: async (item) => {
+
+                        await removeKnowledgeBase(
+                            item.id
+                        );
+
+                    }
+                },
+
+
+                // ==================================================
+                // KNOWLEDGE BASE NOTES
+                // ==================================================
+
+                {
+                    title: "Knowledge Base Notes",
+
+                    addLabel: "Add Note",
+
+                    items:
+                        knowledgeBaseNotes || [],
+
+                    getItemName: (item) =>
+                        item.category
+                            ? `${item.title} - ${item.category}`
+                            : item.title || "-",
+
+                    onAdd: () => {
+                        openKnowledgeBaseNoteModal();
+                    },
+
+                    onView: (item) => {
+                        window.location.href =
+                            `knowledge-base-note-detail.html?id=${item.id}`;
+                    },
+
+                    onEdit: (item) => {
+                        window.location.href =
+                            `knowledge-base-note-detail.html?id=${item.id}`;
+                    },
+
+                    onRemove: async (item) => {
+
+                        await removeKnowledgeBaseNote(
+                            item.id
+                        );
+
+                    }
+                }
+
+            ]
+
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Error loading relationships:",
+            error
         );
 
     }
@@ -1010,7 +1167,7 @@ async function addSelectedQueue() {
         closeQueueModal();
 
 
-        await loadQueues();
+        await loadRelationships();
 
     } catch (error) {
 
@@ -1053,7 +1210,7 @@ async function removeQueue(
         );
 
 
-        await loadQueues();
+        await loadRelationships();
 
     } catch (error) {
 
@@ -1331,7 +1488,7 @@ async function addSelectedTool() {
         closeToolModal();
 
 
-        await loadTools();
+        await loadRelationships();
 
     } catch (error) {
 
@@ -1374,7 +1531,7 @@ async function removeTool(
         );
 
 
-        await loadTools();
+        await loadRelationships();
 
     } catch (error) {
 
@@ -1637,7 +1794,7 @@ async function addSelectedTroubleshootingTemplate() {
         closeTroubleshootingTemplateModal();
 
 
-        await loadTroubleshootingTemplates();
+        await loadRelationships();
 
     } catch (error) {
 
@@ -1680,7 +1837,7 @@ async function removeTroubleshootingTemplate(
         );
 
 
-        await loadTroubleshootingTemplates();
+        await loadRelationships();
 
     } catch (error) {
 
@@ -1958,7 +2115,7 @@ async function addSelectedKnowledgeBase() {
         closeKnowledgeBaseModal();
 
 
-        await loadKnowledgeBase();
+        await loadRelationships();
 
     } catch (error) {
 
@@ -2001,7 +2158,7 @@ async function removeKnowledgeBase(
         );
 
 
-        await loadKnowledgeBase();
+        await loadRelationships();
 
     } catch (error) {
 
@@ -2281,7 +2438,7 @@ async function addSelectedKnowledgeBaseNote() {
         closeKnowledgeBaseNoteModal();
 
 
-        await loadKnowledgeBaseNotes();
+        await loadRelationships();
 
     } catch (error) {
 
@@ -2324,7 +2481,7 @@ async function removeKnowledgeBaseNote(
         );
 
 
-        await loadKnowledgeBaseNotes();
+        await loadRelationships();
 
     } catch (error) {
 
