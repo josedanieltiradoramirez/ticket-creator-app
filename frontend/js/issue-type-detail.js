@@ -198,6 +198,12 @@ async function loadRelationships() {
 
                     items: queues || [],
 
+                    actions: {
+                        view: true,
+                        edit: false,
+                        remove: true
+                    },
+
                     getItemName: (item) =>
                         item.name || "-",
 
