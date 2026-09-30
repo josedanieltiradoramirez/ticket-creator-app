@@ -291,6 +291,11 @@ async function loadIssueTypeDetail() {
             await getIssueType(
                 issueTypeId
             );
+            
+        console.log(
+            "CURRENT ISSUE TYPE:",
+            currentIssueType
+        );
 
         renderDetailHeader({
             containerId: "detailHeader",
@@ -302,6 +307,8 @@ async function loadIssueTypeDetail() {
         renderBasicInformation(
             currentIssueType
         );
+
+        await loadForm();
 
         await loadRelationships();
 
@@ -659,66 +666,25 @@ async function loadForm() {
                 issueTypeId
             );
 
-
-        console.log(
-            "FORMS:",
-            forms
-        );
-
-
-        const formEmptyMessage =
-            document.getElementById(
-                "formEmptyMessage"
-            );
-
-
-        const formInfo =
-            document.getElementById(
-                "formInfo"
-            );
-
-
-        if (
-            !forms ||
-            forms.length === 0
-        ) {
-
-            formEmptyMessage
-                .classList
-                .remove("hidden");
-
-            formInfo
-                .classList
-                .add("hidden");
-
-            return;
-
-        }
-
+        console.log("FORM RESPONSE:", forms);
 
         const form =
-            forms[0];
+            forms && forms.length > 0
+                ? forms[0]
+                : null;
 
 
-        formEmptyMessage
-            .classList
-            .add("hidden");
+        renderFormSection({
 
-        formInfo
-            .classList
-            .remove("hidden");
+            containerId: "formSection",
 
+            form: form,
 
-        document.getElementById(
-            "formName"
-        ).textContent =
-            form.name || "N/A";
+            onChange: () => {
+                openChangeFormModal();
+            }
 
-
-        document.getElementById(
-            "formDescription"
-        ).textContent =
-            form.description || "N/A";
+        });
 
     } catch (error) {
 
@@ -728,20 +694,17 @@ async function loadForm() {
         );
 
 
-        document
-            .getElementById(
-                "formEmptyMessage"
-            )
-            .classList
-            .remove("hidden");
+        renderFormSection({
 
+            containerId: "formSection",
 
-        document
-            .getElementById(
-                "formInfo"
-            )
-            .classList
-            .add("hidden");
+            form: null,
+
+            onChange: () => {
+                openChangeFormModal();
+            }
+
+        });
 
     }
 
