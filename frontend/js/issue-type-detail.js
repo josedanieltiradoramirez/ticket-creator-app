@@ -490,7 +490,10 @@ async function loadForm() {
                 issueTypeId
             );
 
-        console.log("FORM RESPONSE:", forms);
+        console.log(
+            "FORM RESPONSE:",
+            forms
+        );
 
         const form =
             forms && forms.length > 0
@@ -504,10 +507,52 @@ async function loadForm() {
 
             form: form,
 
+            actions: {
+                add: true,
+                create: true,
+                change: true,
+                edit: true,
+                remove: true
+            },
+
             expanded: true,
 
-            onChange: () => {
+            onAdd: () => {
+
                 openChangeFormModal();
+
+            },
+
+            onCreate: () => {
+
+                openCreateFormModal();
+
+            },
+
+            onChange: () => {
+
+                openChangeFormModal();
+
+            },
+
+            onEdit: () => {
+
+                if (!form) {
+                    return;
+                }
+
+                openEditFormModal(form);
+
+            },
+
+            onRemove: () => {
+
+                if (!form) {
+                    return;
+                }
+
+                openRemoveFormModal();
+
             }
 
         });
@@ -526,8 +571,26 @@ async function loadForm() {
 
             form: null,
 
-            onChange: () => {
+            actions: {
+                add: true,
+                create: true,
+                change: false,
+                edit: false,
+                remove: false
+            },
+
+            expanded: true,
+
+            onAdd: () => {
+
                 openChangeFormModal();
+
+            },
+
+            onCreate: () => {
+
+                openCreateFormModal();
+
             }
 
         });
@@ -535,7 +598,6 @@ async function loadForm() {
     }
 
 }
-
 
 // ============================================================
 // CHANGE FORM MODAL
@@ -686,7 +748,6 @@ async function openChangeFormModal() {
 
 }
 
-
 // ============================================================
 // SAVE CHANGED FORM
 // ============================================================
@@ -775,7 +836,187 @@ async function saveChangedForm() {
     }
 
 }
+// ============================================================
+// REMOVE FORM FROM ISSUE TYPE
+// ============================================================
 
+function openRemoveFormModal() {
+
+    const content = `
+
+        <p>
+            Are you sure you want to remove this Form
+            from the Issue Type?
+        </p>
+
+
+        <div class="modal-actions">
+
+            <button
+                type="button"
+                id="cancelRemoveFormButton"
+            >
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                id="confirmRemoveFormButton"
+            >
+                Remove
+            </button>
+
+        </div>
+
+    `;
+
+
+    renderModal({
+
+        containerId:
+            "removeFormModal",
+
+        title:
+            "Remove Form",
+
+        content:
+            content,
+
+        onClose: () => {
+            closeRemoveFormModal();
+        }
+
+    });
+
+
+    document
+        .getElementById(
+            "cancelRemoveFormButton"
+        )
+        .addEventListener(
+            "click",
+            closeRemoveFormModal
+        );
+
+
+    document
+        .getElementById(
+            "confirmRemoveFormButton"
+        )
+        .addEventListener(
+            "click",
+            removeFormFromIssueType
+        );
+
+
+    document
+        .getElementById(
+            "removeFormModal"
+        )
+        .classList
+        .remove("hidden");
+
+}
+
+
+// ============================================================
+// CONFIRM REMOVE FORM
+// ============================================================
+
+async function removeFormFromIssueType() {
+
+    if (!currentIssueType) {
+        return;
+    }
+
+
+    try {
+
+        const data = {
+
+            name:
+                currentIssueType.name,
+
+            description:
+                currentIssueType.description,
+
+            category:
+                currentIssueType.category,
+
+            display_name:
+                currentIssueType.display_name,
+
+            search_keywords:
+                currentIssueType.search_keywords,
+
+            form_template_id:
+                null,
+
+            is_active:
+                currentIssueType.is_active
+
+        };
+
+
+        const updatedIssueType =
+            await updateIssueType(
+                issueTypeId,
+                data
+            );
+
+
+        currentIssueType =
+            updatedIssueType;
+
+
+        closeRemoveFormModal();
+
+
+        showSuccessMessage(
+            "Form removed successfully."
+        );
+
+
+        await loadIssueTypeDetail();
+
+
+    } catch (error) {
+
+        console.error(
+            "Error removing form:",
+            error
+        );
+
+        showErrorMessage(
+            "Error removing form."
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// CLOSE REMOVE FORM MODAL
+// ============================================================
+
+function closeRemoveFormModal() {
+
+    const modal =
+        document.getElementById(
+            "removeFormModal"
+        );
+
+    if (!modal) {
+        return;
+    }
+
+
+    modal
+        .classList
+        .add("hidden");
+
+}
 
 // ============================================================
 // CLOSE CHANGE FORM
@@ -792,6 +1033,553 @@ function closeChangeFormModal() {
 
 }
 
+// ============================================================
+// CREATE FORM MODAL
+// ============================================================
+
+function openCreateFormModal() {
+
+    const content = `
+
+        <div class="form-group">
+
+            <label for="createFormName">
+                Form Name
+            </label>
+
+            <input
+                type="text"
+                id="createFormName"
+                required
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="createFormDescription">
+                Information Needed
+            </label>
+
+            <textarea
+                id="createFormDescription"
+                rows="5"
+            ></textarea>
+
+        </div>
+
+
+        <div class="form-group checkbox-group">
+
+            <input
+                type="checkbox"
+                id="createFormIsActive"
+                checked
+            >
+
+            <label for="createFormIsActive">
+                Active
+            </label>
+
+        </div>
+
+
+        <div class="modal-actions">
+
+            <button
+                type="button"
+                id="cancelCreateFormButton"
+            >
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                id="saveCreateFormButton"
+            >
+                Create
+            </button>
+
+        </div>
+
+    `;
+
+
+    renderModal({
+
+        containerId:
+            "createFormModal",
+
+        title:
+            "Create Form",
+
+        content:
+            content,
+
+        onClose: () => {
+            closeCreateFormModal();
+        }
+
+    });
+
+
+    document
+        .getElementById(
+            "cancelCreateFormButton"
+        )
+        .addEventListener(
+            "click",
+            closeCreateFormModal
+        );
+
+
+    document
+        .getElementById(
+            "saveCreateFormButton"
+        )
+        .addEventListener(
+            "click",
+            saveCreatedForm
+        );
+
+
+    document
+        .getElementById(
+            "createFormModal"
+        )
+        .classList
+        .remove("hidden");
+
+}
+
+
+// ============================================================
+// SAVE CREATED FORM
+// ============================================================
+
+async function saveCreatedForm() {
+
+    const nameInput =
+        document.getElementById(
+            "createFormName"
+        );
+
+    const descriptionInput =
+        document.getElementById(
+            "createFormDescription"
+        );
+
+    const isActiveInput =
+        document.getElementById(
+            "createFormIsActive"
+        );
+
+
+    const name =
+        nameInput.value.trim();
+
+    const description =
+        descriptionInput.value.trim();
+
+    const isActive =
+        isActiveInput.checked;
+
+
+    if (!name) {
+
+        showWarningMessage(
+            "Please enter a Form Name."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        const formData = {
+
+            name:
+                name,
+
+            description:
+                description,
+
+            is_active:
+                isActive
+
+        };
+
+
+        const createdForm =
+            await createForm(
+                formData
+            );
+
+
+        const issueTypeData = {
+
+            name:
+                currentIssueType.name,
+
+            description:
+                currentIssueType.description,
+
+            category:
+                currentIssueType.category,
+
+            display_name:
+                currentIssueType.display_name,
+
+            search_keywords:
+                currentIssueType.search_keywords,
+
+            form_template_id:
+                createdForm.id,
+
+            is_active:
+                currentIssueType.is_active
+
+        };
+
+
+        const updatedIssueType =
+            await updateIssueType(
+                issueTypeId,
+                issueTypeData
+            );
+
+
+        currentIssueType =
+            updatedIssueType;
+
+
+        closeCreateFormModal();
+
+
+        showSuccessMessage(
+            "Form created successfully."
+        );
+
+
+        await loadIssueTypeDetail();
+
+
+    } catch (error) {
+
+        console.error(
+            "Error creating form:",
+            error
+        );
+
+
+        showErrorMessage(
+            "Error creating form."
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// CLOSE CREATE FORM MODAL
+// ============================================================
+
+function closeCreateFormModal() {
+
+    const modal =
+        document.getElementById(
+            "createFormModal"
+        );
+
+    if (!modal) {
+        return;
+    }
+
+
+    modal
+        .classList
+        .add("hidden");
+
+}
+
+
+// ============================================================
+// EDIT FORM MODAL
+// ============================================================
+
+async function openEditFormModal(
+    form
+) {
+
+    try {
+
+        const currentForm =
+            await getForm(
+                form.id
+            );
+
+
+        const content = `
+
+            <div class="form-group">
+
+                <label for="editFormName">
+                    Form Name
+                </label>
+
+                <input
+                    type="text"
+                    id="editFormName"
+                    value="${escapeHtml(
+                        currentForm.name || ""
+                    )}"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="editFormDescription">
+                    Information Needed
+                </label>
+
+                <textarea
+                    id="editFormDescription"
+                    rows="5"
+                >${escapeHtml(
+                    currentForm.description || ""
+                )}</textarea>
+
+            </div>
+
+
+            <div class="form-group checkbox-group">
+
+                <input
+                    type="checkbox"
+                    id="editFormIsActive"
+                    ${
+                        currentForm.is_active
+                            ? "checked"
+                            : ""
+                    }
+                >
+
+                <label for="editFormIsActive">
+                    Active
+                </label>
+
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    id="cancelEditFormButton"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="button"
+                    id="saveEditFormButton"
+                >
+                    Save
+                </button>
+
+            </div>
+
+        `;
+
+
+        renderModal({
+
+            containerId:
+                "editFormModal",
+
+            title:
+                "Edit Form",
+
+            content:
+                content,
+
+            onClose: () => {
+                closeEditFormModal();
+            }
+
+        });
+
+
+        document
+            .getElementById(
+                "cancelEditFormButton"
+            )
+            .addEventListener(
+                "click",
+                closeEditFormModal
+            );
+
+
+        document
+            .getElementById(
+                "saveEditFormButton"
+            )
+            .addEventListener(
+                "click",
+                () => {
+                    saveEditedForm(
+                        currentForm.id
+                    );
+                }
+            );
+
+
+        document
+            .getElementById(
+                "editFormModal"
+            )
+            .classList
+            .remove("hidden");
+
+
+    } catch (error) {
+
+        console.error(
+            "Error loading form for editing:",
+            error
+        );
+
+        showErrorMessage(
+            "Error loading form."
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// SAVE EDITED FORM
+// ============================================================
+
+async function saveEditedForm(
+    formId
+) {
+
+    const nameInput =
+        document.getElementById(
+            "editFormName"
+        );
+
+    const descriptionInput =
+        document.getElementById(
+            "editFormDescription"
+        );
+
+    const isActiveInput =
+        document.getElementById(
+            "editFormIsActive"
+        );
+
+
+    const name =
+        nameInput.value.trim();
+
+    const description =
+        descriptionInput.value.trim();
+
+    const isActive =
+        isActiveInput.checked;
+
+
+    if (!name) {
+
+        showWarningMessage(
+            "Please enter a Form Name."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        const formData = {
+
+            name:
+                name,
+
+            description:
+                description,
+
+            is_active:
+                isActive
+
+        };
+
+
+        await updateForm(
+            formId,
+            formData
+        );
+
+
+        closeEditFormModal();
+
+
+        showSuccessMessage(
+            "Form updated successfully."
+        );
+
+
+        await loadIssueTypeDetail();
+
+
+    } catch (error) {
+
+        console.error(
+            "Error updating form:",
+            error
+        );
+
+        showErrorMessage(
+            "Error updating form."
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// CLOSE EDIT FORM MODAL
+// ============================================================
+
+function closeEditFormModal() {
+
+    const modal =
+        document.getElementById(
+            "editFormModal"
+        );
+
+    if (!modal) {
+        return;
+    }
+
+
+    modal
+        .classList
+        .add("hidden");
+
+}
 
 // ============================================================
 // QUEUES

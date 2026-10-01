@@ -1,12 +1,13 @@
-// ============================================================
-// FORM SECTION COMPONENT
-// ============================================================
-
 function renderFormSection({
     containerId,
     form,
-    onChange,
-    expanded = true
+    actions = {},
+    expanded = true,
+    onAdd = null,
+    onCreate = null,
+    onChange = null,
+    onEdit = null,
+    onRemove = null
 }) {
     const container = document.getElementById(containerId);
 
@@ -14,48 +15,127 @@ function renderFormSection({
         console.error(
             `Form section container "${containerId}" not found.`
         );
-
         return;
     }
 
+    const {
+        add = true,
+        create = true,
+        change = true,
+        edit = true,
+        remove = true
+    } = actions;
 
-    // ============================================================
-    // CONTENT
-    // ============================================================
+    const headerActions = [];
 
+    /*
+     * NO FORM
+     * ----------------------------------------
+     * Mostrar:
+     * - Add Form
+     * - Create Form
+     */
+    if (!form) {
+        if (add) {
+            headerActions.push(`
+                <button
+                    type="button"
+                    id="formSectionAddButton"
+                >
+                    + Add Form
+                </button>
+            `);
+        }
+
+        if (create) {
+            headerActions.push(`
+                <button
+                    type="button"
+                    id="formSectionCreateButton"
+                >
+                    Create Form
+                </button>
+            `);
+        }
+    }
+
+    /*
+     * FORM EXISTS
+     * ----------------------------------------
+     * Mostrar según permissions:
+     * - Change
+     * - Edit
+     * - Remove
+     * - Create Form
+     */
+    else {
+        if (change) {
+            headerActions.push(`
+                <button
+                    type="button"
+                    id="formSectionChangeButton"
+                >
+                    Change
+                </button>
+            `);
+        }
+
+        if (edit) {
+            headerActions.push(`
+                <button
+                    type="button"
+                    id="formSectionEditButton"
+                >
+                    Edit
+                </button>
+            `);
+        }
+
+        if (remove) {
+            headerActions.push(`
+                <button
+                    type="button"
+                    id="formSectionRemoveButton"
+                >
+                    Remove
+                </button>
+            `);
+        }
+
+        if (create) {
+            headerActions.push(`
+                <button
+                    type="button"
+                    id="formSectionCreateButton"
+                >
+                    Create Form
+                </button>
+            `);
+        }
+    }
+
+    /*
+     * FORM CONTENT
+     */
     const content = `
         <div class="form-section-content">
-
             ${
                 form
                     ? `
                         <div class="form-section-row">
-
                             <div class="form-section-label">
                                 Form
                             </div>
-
                             <div class="form-section-value">
-                                ${escapeFormHtml(
-                                    form.name || "-"
-                                )}
+                                ${escapeFormHtml(form.name || "-")}
                             </div>
-
                         </div>
 
-
                         <div class="form-section-row">
-
                             <div class="form-section-label">
-                                Description
+                                Information Needed
                             </div>
-
-                            <div class="form-section-value">
-                                ${escapeFormHtml(
-                                    form.description || "-"
-                                )}
-                            </div>
-
+                            <div class="form-section-value form-section-description">${escapeFormHtml(form.description || "-")}</div>
                         </div>
                     `
                     : `
@@ -64,85 +144,117 @@ function renderFormSection({
                         </div>
                     `
             }
-
         </div>
     `;
 
-
-    // ============================================================
-    // HEADER BUTTON
-    // ============================================================
-
-    const headerButton = `
-        <button
-            type="button"
-            id="formSectionChangeButton"
-        >
-            ${form ? "Change Form" : "Add Form"}
-        </button>
-    `;
-
-
-    // ============================================================
-    // COLLAPSIBLE SECTION
-    // ============================================================
-
+    /*
+     * RENDER COLLAPSIBLE SECTION
+     */
     renderCollapsibleSection({
         containerId: containerId,
-
         title: "Form",
-
         content: content,
-
         expanded: expanded,
-
-        headerActions: headerButton
+        headerActions: headerActions.join("")
     });
 
+    /*
+     * ADD
+     */
+    const addButton =
+        document.getElementById(
+            "formSectionAddButton"
+        );
 
-    // ============================================================
-    // CHANGE / ADD FORM BUTTON
-    // ============================================================
+    if (addButton && onAdd) {
+        addButton.addEventListener(
+            "click",
+            (event) => {
+                event.stopPropagation();
+                onAdd();
+            }
+        );
+    }
 
+    /*
+     * CREATE
+     */
+    const createButton =
+        document.getElementById(
+            "formSectionCreateButton"
+        );
+
+    if (createButton && onCreate) {
+        createButton.addEventListener(
+            "click",
+            (event) => {
+                event.stopPropagation();
+                onCreate();
+            }
+        );
+    }
+
+    /*
+     * CHANGE
+     */
     const changeButton =
         document.getElementById(
             "formSectionChangeButton"
         );
 
-
     if (changeButton && onChange) {
-
         changeButton.addEventListener(
             "click",
             (event) => {
-
-                /*
-                 * Prevent the header click from
-                 * collapsing/expanding the section.
-                 */
-
                 event.stopPropagation();
-
                 onChange();
-
             }
         );
+    }
 
+    /*
+     * EDIT
+     */
+    const editButton =
+        document.getElementById(
+            "formSectionEditButton"
+        );
+
+    if (editButton && onEdit) {
+        editButton.addEventListener(
+            "click",
+            (event) => {
+                event.stopPropagation();
+                onEdit();
+            }
+        );
+    }
+
+    /*
+     * REMOVE
+     */
+    const removeButton =
+        document.getElementById(
+            "formSectionRemoveButton"
+        );
+
+    if (removeButton && onRemove) {
+        removeButton.addEventListener(
+            "click",
+            (event) => {
+                event.stopPropagation();
+                onRemove();
+            }
+        );
     }
 }
 
 
-// ============================================================
-// ESCAPE HTML
-// ============================================================
-
 function escapeFormHtml(value) {
-
-    return String(value)
+    return String(value ?? "")
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
-
 }

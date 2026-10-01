@@ -132,60 +132,18 @@ function renderForms() {
 
 
         row.innerHTML = `
-
+            <td>${escapeHtml(form.name)}</td>
+            <td>${escapeHtml(form.description)}</td>
             <td>
-                ${escapeHtml(form.name)}
-            </td>
-
-            <td>
-                ${escapeHtml(form.description)}
-            </td>
-
-            <td>
-
-                <span
-                    class="status-badge ${
-                        form.is_active
-                            ? "active"
-                            : "inactive"
-                    }"
-                >
-
-                    ${
-                        form.is_active
-                            ? "Active"
-                            : "Inactive"
-                    }
-
+                <span class="status-badge ${form.is_active ? "active" : "inactive"}">
+                    ${form.is_active ? "Active" : "Inactive"}
                 </span>
-
             </td>
-
             <td>
-
-                <button
-                    class="action-button view-button"
-                    data-id="${form.id}"
-                >
-                    View
-                </button>
-
-                <button
-                    class="action-button edit-button"
-                    data-id="${form.id}"
-                >
-                    Edit
-                </button>
-
-                <button
-                    class="action-button delete-button"
-                    data-id="${form.id}"
-                >
-                    Delete
-                </button>
-
+                <button class="action-button view-button" data-id="${form.id}">View</button>
+                <button class="action-button edit-button" data-id="${form.id}">Edit</button>
+                <button class="action-button delete-button" data-id="${form.id}">Delete</button>
             </td>
-
         `;
 
 
