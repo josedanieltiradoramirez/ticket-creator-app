@@ -454,6 +454,8 @@ function renderBasicInformation(issueType) {
             }
         ],
 
+        expanded: true,
+
         onSave: async (updatedData) => {
             const data = {
                 name: updatedData.name,
@@ -501,6 +503,8 @@ async function loadForm() {
             containerId: "formSection",
 
             form: form,
+
+            expanded: true,
 
             onChange: () => {
                 openChangeFormModal();

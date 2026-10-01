@@ -4,7 +4,8 @@
 
 function renderRelationships({
     containerId,
-    relationships
+    relationships,
+    expanded = true
 }) {
     const container = document.getElementById(containerId);
 
@@ -12,17 +13,184 @@ function renderRelationships({
         console.error(
             `Relationships container "${containerId}" not found.`
         );
+
         return;
     }
 
+
+    // ============================================================
+    // RENDER
+    // ============================================================
+
     function render() {
 
-        container.innerHTML = relationships
-            .map((relationship, relationshipIndex) => {
+        const content = `
+            <div class="relationships-content">
 
-                // ====================================================
-                // ACTIONS
-                // ====================================================
+                ${relationships
+                    .map((relationship, relationshipIndex) => {
+
+                        // ====================================================
+                        // ACTIONS
+                        // ====================================================
+
+                        const actions = {
+                            view: true,
+                            edit: true,
+                            remove: true,
+                            ...(relationship.actions || {})
+                        };
+
+
+                        // ====================================================
+                        // RELATIONSHIP CONTENT
+                        // ====================================================
+
+                        const relationshipContent = `
+                            <div class="relationships-section">
+
+                                <div class="relationships-list">
+
+                                    ${
+                                        relationship.items.length === 0
+
+                                            ? `
+                                                <div class="relationships-empty">
+                                                    No ${relationship.title.toLowerCase()} found.
+                                                </div>
+                                            `
+
+                                            : relationship.items
+                                                .map((item, itemIndex) => {
+
+                                                    const itemName =
+                                                        relationship.getItemName
+                                                            ? relationship.getItemName(item)
+                                                            : item.name ?? "-";
+
+
+                                                    return `
+                                                        <div class="relationship-item">
+
+                                                            <div class="relationship-item-name">
+                                                                ${escapeRelationshipHtml(itemName)}
+                                                            </div>
+
+
+                                                            <div class="relationship-item-actions">
+
+                                                                ${
+                                                                    actions.view
+                                                                        ? `
+                                                                            <button
+                                                                                type="button"
+                                                                                class="relationship-action-button"
+                                                                                data-action="view"
+                                                                                data-relationship-index="${relationshipIndex}"
+                                                                                data-item-index="${itemIndex}"
+                                                                            >
+                                                                                View
+                                                                            </button>
+                                                                        `
+                                                                        : ""
+                                                                }
+
+
+                                                                ${
+                                                                    actions.edit
+                                                                        ? `
+                                                                            <button
+                                                                                type="button"
+                                                                                class="relationship-action-button"
+                                                                                data-action="edit"
+                                                                                data-relationship-index="${relationshipIndex}"
+                                                                                data-item-index="${itemIndex}"
+                                                                            >
+                                                                                Edit
+                                                                            </button>
+                                                                        `
+                                                                        : ""
+                                                                }
+
+
+                                                                ${
+                                                                    actions.remove
+                                                                        ? `
+                                                                            <button
+                                                                                type="button"
+                                                                                class="relationship-action-button remove"
+                                                                                data-action="remove"
+                                                                                data-relationship-index="${relationshipIndex}"
+                                                                                data-item-index="${itemIndex}"
+                                                                            >
+                                                                                Remove
+                                                                            </button>
+                                                                        `
+                                                                        : ""
+                                                                }
+
+                                                            </div>
+
+                                                        </div>
+                                                    `;
+
+                                                })
+                                                .join("")
+                                    }
+
+                                </div>
+
+                            </div>
+                        `;
+
+
+                        // ====================================================
+                        // RELATIONSHIP SECTION
+                        // ====================================================
+
+                        return `
+                            <div
+                                class="relationship-collapsible-container"
+                                id="relationshipSection_${relationshipIndex}"
+                            ></div>
+                        `;
+
+                    })
+                    .join("")}
+
+            </div>
+        `;
+
+
+        // ============================================================
+        // MAIN RELATIONSHIPS SECTION
+        // ============================================================
+
+        renderCollapsibleSection({
+            containerId: containerId,
+            title: "Relationships",
+            content: content,
+            expanded: expanded
+        });
+
+
+        // ============================================================
+        // RENDER EACH RELATIONSHIP
+        // ============================================================
+
+        relationships.forEach(
+            (relationship, relationshipIndex) => {
+
+                const relationshipContainer =
+                    document.getElementById(
+                        `relationshipSection_${relationshipIndex}`
+                    );
+
+
+                if (!relationshipContainer) {
+                    return;
+                }
+
 
                 const actions = {
                     view: true,
@@ -31,24 +199,9 @@ function renderRelationships({
                     ...(relationship.actions || {})
                 };
 
-                return `
-                    <section class="relationships-section">
 
-                        <div class="relationships-header">
-
-                            <h2>
-                                ${relationship.title}
-                            </h2>
-
-                            <button
-                                type="button"
-                                class="relationships-add-button"
-                                data-relationship-index="${relationshipIndex}"
-                            >
-                                + ${relationship.addLabel}
-                            </button>
-
-                        </div>
+                const relationshipContent = `
+                    <div class="relationships-section">
 
                         <div class="relationships-list">
 
@@ -69,12 +222,14 @@ function renderRelationships({
                                                     ? relationship.getItemName(item)
                                                     : item.name ?? "-";
 
+
                                             return `
                                                 <div class="relationship-item">
 
                                                     <div class="relationship-item-name">
                                                         ${escapeRelationshipHtml(itemName)}
                                                     </div>
+
 
                                                     <div class="relationship-item-actions">
 
@@ -94,6 +249,7 @@ function renderRelationships({
                                                                 : ""
                                                         }
 
+
                                                         ${
                                                             actions.edit
                                                                 ? `
@@ -109,6 +265,7 @@ function renderRelationships({
                                                                 `
                                                                 : ""
                                                         }
+
 
                                                         ${
                                                             actions.remove
@@ -130,19 +287,63 @@ function renderRelationships({
 
                                                 </div>
                                             `;
+
                                         })
                                         .join("")
                             }
 
                         </div>
 
-                    </section>
+                    </div>
                 `;
-            })
-            .join("");
+
+
+                const relationshipHeaderActions = `
+                    <button
+                        type="button"
+                        class="relationships-add-button"
+                        data-relationship-index="${relationshipIndex}"
+                    >
+                        + ${escapeRelationshipHtml(
+                            relationship.addLabel
+                        )}
+                    </button>
+                `;
+
+
+                renderCollapsibleSection({
+                    containerId:
+                        `relationshipSection_${relationshipIndex}`,
+
+                    title: relationship.title,
+
+                    content: relationshipContent,
+
+                    expanded:
+                        relationship.expanded ?? false,
+
+                    headerActions:
+                        relationshipHeaderActions
+                });
+
+            }
+        );
+
 
         setupEvents();
     }
+
+
+    // ============================================================
+    // RELATIONSHIP COLLAPSIBLE SECTION
+    // ============================================================
+
+   
+
+
+    // ============================================================
+    // EVENTS
+    // ============================================================
 
     function setupEvents() {
 
@@ -155,21 +356,27 @@ function renderRelationships({
                 ".relationships-add-button"
             );
 
+
         addButtons.forEach(button => {
 
             button.addEventListener(
                 "click",
-                () => {
+                (event) => {
+
+                    event.stopPropagation();
+
 
                     const relationshipIndex =
                         Number(
                             button.dataset.relationshipIndex
                         );
 
+
                     const relationship =
                         relationships[
                             relationshipIndex
                         ];
+
 
                     if (relationship.onAdd) {
                         relationship.onAdd();
@@ -190,6 +397,7 @@ function renderRelationships({
                 ".relationship-action-button"
             );
 
+
         actionButtons.forEach(button => {
 
             button.addEventListener(
@@ -201,23 +409,28 @@ function renderRelationships({
                             button.dataset.relationshipIndex
                         );
 
+
                     const itemIndex =
                         Number(
                             button.dataset.itemIndex
                         );
 
+
                     const action =
                         button.dataset.action;
+
 
                     const relationship =
                         relationships[
                             relationshipIndex
                         ];
 
+
                     const item =
                         relationship.items[
                             itemIndex
                         ];
+
 
                     if (!item) {
                         return;
@@ -280,26 +493,11 @@ function renderRelationships({
     function escapeRelationshipHtml(value) {
 
         return String(value)
-            .replace(
-                /&/g,
-                "&amp;"
-            )
-            .replace(
-                /</g,
-                "&lt;"
-            )
-            .replace(
-                />/g,
-                "&gt;"
-            )
-            .replace(
-                /"/g,
-                "&quot;"
-            )
-            .replace(
-                /'/g,
-                "&#039;"
-            );
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
 
     }
 
@@ -309,4 +507,5 @@ function renderRelationships({
     // ============================================================
 
     render();
+
 }

@@ -1,0 +1,252 @@
+/* ============================================================
+   COLLAPSIBLE SECTION
+   ============================================================ */
+
+.collapsible-section {
+    width: 100%;
+    margin-bottom: 28px;
+}
+
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+
+.collapsible-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 10px 4px;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Helvetica,
+        Arial,
+        sans-serif;
+
+    background: transparent;
+
+    border: 0;
+    border-radius: 6px;
+
+    cursor: pointer;
+
+    text-align: left;
+
+    transition:
+        background-color 0.15s ease;
+}
+
+.collapsible-section-header:hover {
+    background: #f7f7f5;
+}
+
+
+/* ============================================================
+   TITLE
+   ============================================================ */
+
+.collapsible-section-title-wrapper {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    min-width: 0;
+}
+
+
+/* ============================================================
+   HEADER ACTIONS
+   ============================================================ */
+
+.collapsible-section-header-actions {
+    display: flex;
+    align-items: center;
+
+    flex-shrink: 0;
+
+    margin-left: auto;
+}
+
+
+/* ============================================================
+   HEADER BUTTONS
+   ============================================================ */
+
+.collapsible-section-header-actions button {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-width: 118px;
+    min-height: 36px;
+
+    box-sizing: border-box;
+
+    padding: 7px 12px;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Helvetica,
+        Arial,
+        sans-serif;
+
+    font-size: 14px;
+    font-weight: 500;
+
+    line-height: 1;
+
+    color: #37352f;
+
+    background: #ffffff;
+
+    border: 1px solid #d9d9d9;
+    border-radius: 6px;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.collapsible-section-header-actions button:hover {
+    color: #202020;
+
+    background: #f7f7f5;
+
+    border-color: #cfcfcd;
+}
+
+
+/* ============================================================
+   COLLAPSE ICON
+   ============================================================ */
+
+.collapsible-section-icon {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 16px;
+
+    flex-shrink: 0;
+
+    font-size: 11px;
+
+    color: #787774;
+
+    transition:
+        transform 0.15s ease;
+}
+
+
+/* ============================================================
+   TITLE
+   ============================================================ */
+
+.collapsible-section-title {
+    margin: 0;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Helvetica,
+        Arial,
+        sans-serif;
+
+    font-size: 18px;
+    font-weight: 600;
+
+    line-height: 1.4;
+
+    color: #202020;
+}
+
+
+/* ============================================================
+   CONTENT
+   ============================================================ */
+
+.collapsible-section-content {
+    overflow: hidden;
+
+    transition:
+        max-height 0.2s ease,
+        opacity 0.15s ease;
+}
+
+.collapsible-section-expanded {
+    max-height: 5000px;
+
+    opacity: 1;
+}
+
+.collapsible-section-collapsed {
+    max-height: 0;
+
+    opacity: 0;
+
+    pointer-events: none;
+}
+
+
+/* ============================================================
+   RELATIONSHIPS HIERARCHY
+   ============================================================ */
+
+.relationships-content {
+    width: 100%;
+}
+
+
+/* ============================================================
+   RELATIONSHIP LEVEL
+   ============================================================ */
+
+.relationships-content
+.relationship-collapsible-container {
+    margin-left: 28px;
+}
+
+
+/* ============================================================
+   RELATIONSHIP ITEMS LEVEL
+   ============================================================ */
+
+.relationship-collapsible-container
+.relationships-list {
+    margin-left: 28px;
+}
+
+/* ============================================================
+   SECTION CONTENT INDENTATION
+   ============================================================ */
+
+/* Basic Information content */
+#basicInformation
+.collapsible-section-content {
+    padding-left: 28px;
+    box-sizing: border-box;
+}
+
+
+/* Form content */
+#formSection
+.collapsible-section-content {
+    padding-left: 28px;
+    box-sizing: border-box;
+}

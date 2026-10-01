@@ -5,7 +5,8 @@
 function renderFormSection({
     containerId,
     form,
-    onChange
+    onChange,
+    expanded = true
 }) {
     const container = document.getElementById(containerId);
 
@@ -18,56 +19,41 @@ function renderFormSection({
     }
 
 
-    container.innerHTML = `
-        <section class="form-section">
+    // ============================================================
+    // CONTENT
+    // ============================================================
 
-            <div class="form-section-header">
-
-                <h2>
-                    Form
-                </h2>
-
-                <button
-                    type="button"
-                    class="form-section-change-button"
-                    id="formSectionChangeButton"
-                >
-                    ${form ? "Change Form" : "Add Form"}
-                </button>
-
-            </div>
-
+    const content = `
+        <div class="form-section-content">
 
             ${
                 form
                     ? `
-                        <div class="form-section-content">
+                        <div class="form-section-row">
 
-                            <div class="form-section-row">
-
-                                <div class="form-section-label">
-                                    Form
-                                </div>
-
-                                <div class="form-section-value">
-                                    ${escapeFormHtml(form.name || "-")}
-                                </div>
-
+                            <div class="form-section-label">
+                                Form
                             </div>
 
+                            <div class="form-section-value">
+                                ${escapeFormHtml(
+                                    form.name || "-"
+                                )}
+                            </div>
 
-                            <div class="form-section-row">
+                        </div>
 
-                                <div class="form-section-label">
-                                    Description
-                                </div>
 
-                                <div class="form-section-value">
-                                    ${escapeFormHtml(
-                                        form.description || "-"
-                                    )}
-                                </div>
+                        <div class="form-section-row">
 
+                            <div class="form-section-label">
+                                Description
+                            </div>
+
+                            <div class="form-section-value">
+                                ${escapeFormHtml(
+                                    form.description || "-"
+                                )}
                             </div>
 
                         </div>
@@ -79,9 +65,44 @@ function renderFormSection({
                     `
             }
 
-        </section>
+        </div>
     `;
 
+
+    // ============================================================
+    // HEADER BUTTON
+    // ============================================================
+
+    const headerButton = `
+        <button
+            type="button"
+            id="formSectionChangeButton"
+        >
+            ${form ? "Change Form" : "Add Form"}
+        </button>
+    `;
+
+
+    // ============================================================
+    // COLLAPSIBLE SECTION
+    // ============================================================
+
+    renderCollapsibleSection({
+        containerId: containerId,
+
+        title: "Form",
+
+        content: content,
+
+        expanded: expanded,
+
+        headerActions: headerButton
+    });
+
+
+    // ============================================================
+    // CHANGE / ADD FORM BUTTON
+    // ============================================================
 
     const changeButton =
         document.getElementById(
@@ -93,8 +114,17 @@ function renderFormSection({
 
         changeButton.addEventListener(
             "click",
-            () => {
+            (event) => {
+
+                /*
+                 * Prevent the header click from
+                 * collapsing/expanding the section.
+                 */
+
+                event.stopPropagation();
+
                 onChange();
+
             }
         );
 
@@ -114,4 +144,5 @@ function escapeFormHtml(value) {
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
+
 }
