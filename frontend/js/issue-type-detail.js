@@ -194,31 +194,53 @@ async function loadRelationships() {
                 {
                     title: "Queues",
 
+                    entityLabel: "Queue",
+
                     addLabel: "Add Queue",
 
                     items: queues || [],
 
                     actions: {
                         view: true,
-                        edit: false,
-                        remove: true
+                        edit: true,
+                        remove: true,
+                        add: true,
+                        create: true
                     },
 
                     getItemName: (item) =>
                         item.name || "-",
 
                     onAdd: () => {
+
                         openQueueModal();
+
+                    },
+
+                    onCreate: () => {
+
+                        openRelationshipItemModal({
+                            mode: "create",
+                            relationship: "queue"
+                        });
+
                     },
 
                     onView: (item) => {
+
                         window.location.href =
                             `queue-detail.html?id=${item.id}`;
+
                     },
 
                     onEdit: (item) => {
-                        window.location.href =
-                            `queue-detail.html?id=${item.id}`;
+
+                        openRelationshipItemModal({
+                            mode: "edit",
+                            relationship: "queue",
+                            item: item
+                        });
+
                     },
 
                     onRemove: async (item) => {
@@ -404,6 +426,457 @@ async function loadRelationships() {
 
 }
 
+// ============================================================
+// RELATIONSHIP ITEM MODAL
+// ============================================================
+
+function openRelationshipItemModal({
+    mode,
+    relationship,
+    item = null
+}) {
+
+    // ========================================================
+    // VALIDATION
+    // ========================================================
+
+    if (relationship !== "queue") {
+        console.error(
+            `Unsupported relationship: ${relationship}`
+        );
+
+        return;
+    }
+
+
+    const isEdit =
+        mode === "edit";
+
+
+    const modalTitle =
+        isEdit
+            ? "Edit Queue"
+            : "Create Queue";
+
+
+    // ========================================================
+    // CURRENT VALUES
+    // ========================================================
+
+    const name =
+        item?.name || "";
+
+
+    const description =
+        item?.description || "";
+
+
+    const isActive =
+        item?.is_active ?? true;
+
+
+    // ========================================================
+    // MODAL CONTENT
+    // ========================================================
+
+    const content = `
+
+        <div class="form-group">
+
+            <label for="relationshipItemName">
+                Queue Name
+            </label>
+
+            <input
+                type="text"
+                id="relationshipItemName"
+                value="${escapeRelationshipModalHtml(name)}"
+                required
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="relationshipItemDescription">
+                Description
+            </label>
+
+            <textarea
+                id="relationshipItemDescription"
+                rows="6"
+                required
+            >${escapeRelationshipModalHtml(description)}</textarea>
+
+        </div>
+
+
+        <div class="checkbox-group">
+
+            <input
+                type="checkbox"
+                id="relationshipItemIsActive"
+                ${isActive ? "checked" : ""}
+            >
+
+            <label for="relationshipItemIsActive">
+                Active
+            </label>
+
+        </div>
+
+
+        <div class="modal-actions">
+
+            <button
+                type="button"
+                id="relationshipItemCancelButton"
+            >
+                Cancel
+            </button>
+
+
+            <button
+                type="button"
+                id="relationshipItemSaveButton"
+            >
+                Save
+            </button>
+
+        </div>
+
+    `;
+
+
+    // ========================================================
+    // RENDER MODAL
+    // ========================================================
+
+    renderModal({
+
+        containerId:
+            "relationshipItemModal",
+
+        title:
+            modalTitle,
+
+        content:
+            content,
+
+        onClose: () => {
+            closeRelationshipItemModal();
+        }
+
+    });
+
+
+    // ========================================================
+    // CANCEL
+    // ========================================================
+
+    document
+        .getElementById(
+            "relationshipItemCancelButton"
+        )
+        .addEventListener(
+            "click",
+            () => {
+                closeRelationshipItemModal();
+            }
+        );
+
+
+    // ========================================================
+    // SAVE
+    // ========================================================
+
+    document
+        .getElementById(
+            "relationshipItemSaveButton"
+        )
+        .addEventListener(
+            "click",
+            async () => {
+
+                await saveRelationshipItem({
+                    mode,
+                    relationship,
+                    item
+                });
+
+            }
+        );
+
+
+    // ========================================================
+    // SHOW MODAL
+    // ========================================================
+
+    document
+        .getElementById(
+            "relationshipItemModal"
+        )
+        .classList
+        .remove("hidden");
+
+}
+
+
+// ============================================================
+// SAVE RELATIONSHIP ITEM
+// ============================================================
+
+async function saveRelationshipItem({
+    mode,
+    relationship,
+    item
+}) {
+
+    if (relationship !== "queue") {
+        return;
+    }
+
+
+    const nameInput =
+        document.getElementById(
+            "relationshipItemName"
+        );
+
+
+    const descriptionInput =
+        document.getElementById(
+            "relationshipItemDescription"
+        );
+
+
+    const isActiveInput =
+        document.getElementById(
+            "relationshipItemIsActive"
+        );
+
+
+    const name =
+        nameInput.value.trim();
+
+
+    const description =
+        descriptionInput.value.trim();
+
+
+    const isActive =
+        isActiveInput.checked;
+
+
+    // ========================================================
+    // VALIDATION
+    // ========================================================
+
+    if (!name) {
+
+        showWarningMessage(
+            "Queue name is required."
+        );
+
+        nameInput.focus();
+
+        return;
+
+    }
+
+
+    if (!description) {
+
+        showWarningMessage(
+            "Queue description is required."
+        );
+
+        descriptionInput.focus();
+
+        return;
+
+    }
+
+
+    const data = {
+
+        name:
+            name,
+
+        description:
+            description,
+
+        is_active:
+            isActive
+
+    };
+
+
+    // ========================================================
+    // CREATE
+    // ========================================================
+
+    if (mode === "create") {
+
+        try {
+
+            const createdQueue =
+                await createQueue(
+                    data
+                );
+
+
+            // Automatically assign the
+            // newly created Queue to the
+            // current Issue Type.
+
+            await addIssueTypeQueue(
+                issueTypeId,
+                createdQueue.id
+            );
+
+
+            closeRelationshipItemModal();
+
+
+            showSuccessMessage(
+                "Queue created successfully."
+            );
+
+
+            await loadRelationships();
+
+
+        } catch (error) {
+
+            console.error(
+                "Error creating queue:",
+                error
+            );
+
+
+            showErrorMessage(
+                "Error creating queue."
+            );
+
+        }
+
+
+        return;
+
+    }
+
+
+    // ========================================================
+    // EDIT
+    // ========================================================
+
+    if (mode === "edit") {
+
+        if (!item?.id) {
+
+            showErrorMessage(
+                "Queue ID is missing."
+            );
+
+            return;
+
+        }
+
+
+        try {
+
+            await updateQueue(
+                item.id,
+                data
+            );
+
+
+            closeRelationshipItemModal();
+
+
+            showSuccessMessage(
+                "Queue updated successfully."
+            );
+
+
+            await loadRelationships();
+
+
+        } catch (error) {
+
+            console.error(
+                "Error updating queue:",
+                error
+            );
+
+
+            showErrorMessage(
+                "Error updating queue."
+            );
+
+        }
+
+    }
+
+}
+
+
+// ============================================================
+// CLOSE RELATIONSHIP ITEM MODAL
+// ============================================================
+
+function closeRelationshipItemModal() {
+
+    const modal =
+        document.getElementById(
+            "relationshipItemModal"
+        );
+
+
+    if (!modal) {
+        return;
+    }
+
+
+    modal.classList.add(
+        "hidden"
+    );
+
+}
+
+
+// ============================================================
+// ESCAPE HTML
+// ============================================================
+
+function escapeRelationshipModalHtml(
+    value
+) {
+
+    return String(value ?? "")
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
 
 // ============================================================
 // BASIC INFORMATION
