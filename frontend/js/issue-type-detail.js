@@ -629,6 +629,12 @@ function openRelationshipItemModal({
             label: "Troubleshooting Template",
             fields: [
                 {
+                    key: "name",
+                    label: "Name",
+                    type: "text",
+                    required: true
+                },
+                {
                     key: "generated_description",
                     label: "Description",
                     type: "textarea",
@@ -1045,6 +1051,7 @@ async function saveRelationshipItem({
         ],
 
         troubleshootingTemplate: [
+            "name",
             "generated_description",
             "steps",
             "is_active"
@@ -1124,7 +1131,7 @@ async function saveRelationshipItem({
         ],
 
         troubleshootingTemplate: [
-            "generated_description",
+            "name",
             "steps"
         ],
 
@@ -1588,6 +1595,7 @@ async function removeRelationshipItem({
     }
 
 }
+
 // ============================================================
 // ESCAPE HTML
 // ============================================================
