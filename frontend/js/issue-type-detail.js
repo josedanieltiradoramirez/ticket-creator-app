@@ -191,6 +191,8 @@ async function loadRelationships() {
                 {
                     title: "Queues",
 
+                    expanded: false,
+
                     entityLabel: "Queue",
 
                     addLabel: "Add Queue",
@@ -257,6 +259,8 @@ async function loadRelationships() {
 
                 {
                     title: "Tools",
+                    
+                    expanded: false,
 
                     entityLabel: "Tool",
 
@@ -324,6 +328,8 @@ async function loadRelationships() {
 
                 {
                     title: "Troubleshooting Templates",
+
+                    expanded: false,
 
                     entityLabel: "Troubleshooting Template",
 
@@ -398,6 +404,8 @@ async function loadRelationships() {
                 {
                     title: "Knowledge Base",
 
+                    expanded: false,
+
                     entityLabel: "Knowledge Base",
 
                     addLabel: "Add Knowledge Base",
@@ -470,6 +478,8 @@ async function loadRelationships() {
 
                 {
                     title: "Knowledge Base Notes",
+
+                    expanded: false,
 
                     entityLabel: "Knowledge Base Note",
 
@@ -1677,7 +1687,7 @@ function renderBasicInformation(issueType) {
             }
         ],
 
-        expanded: true,
+        expanded: false,
 
         onSave: async (updatedData) => {
             const data = {
@@ -1738,7 +1748,7 @@ async function loadForm() {
                 remove: true
             },
 
-            expanded: true,
+            expanded: false,
 
             onAdd: () => {
 

@@ -27,17 +27,6 @@ function renderRelationships({
     // STATE
     // ============================================================
 
-    // Guarda el estado abierto/cerrado de cada relación.
-    //
-    // Ejemplo:
-    // {
-    //     "Queues": true,
-    //     "Tools": false
-    // }
-    //
-    // Esto permite conservar el estado cuando la sección
-    // vuelve a renderizarse después de Add / Remove / etc.
-
     const stateKey = containerId;
 
     if (!relationshipsExpandedState[stateKey]) {
@@ -57,27 +46,23 @@ function renderRelationships({
     function render() {
 
         const content = `
-            <div class="relationships-content">
+            ${relationships
+                .map(
+                    (
+                        relationship,
+                        relationshipIndex
+                    ) => {
 
-                ${relationships
-                    .map(
-                        (
-                            relationship,
-                            relationshipIndex
-                        ) => {
+                        return `
+                            <div
+                                class="relationship-collapsible-container"
+                                id="relationshipSection_${relationshipIndex}"
+                            ></div>
+                        `;
 
-                            return `
-                                <div
-                                    class="relationship-collapsible-container"
-                                    id="relationshipSection_${relationshipIndex}"
-                                ></div>
-                            `;
-
-                        }
-                    )
-                    .join("")}
-
-            </div>
+                    }
+                )
+                .join("")}
         `;
 
 
@@ -85,12 +70,7 @@ function renderRelationships({
         // MAIN RELATIONSHIPS SECTION
         // ========================================================
 
-        renderCollapsibleSection({
-            containerId: containerId,
-            title: "Relationships",
-            content: content,
-            expanded: relationshipState.main
-        });
+        container.innerHTML = content;
 
 
         // ========================================================
