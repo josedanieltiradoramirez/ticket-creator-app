@@ -243,9 +243,9 @@ async function loadRelationships() {
 
                     },
 
-                    onRemove: async (item) => {
+                    onRemove: (item) => {
 
-                        await removeQueue(
+                        openRemoveQueueModal(
                             item.id
                         );
 
@@ -260,9 +260,19 @@ async function loadRelationships() {
                 {
                     title: "Tools",
 
+                    entityLabel: "Tool",
+
                     addLabel: "Add Tool",
 
                     items: tools || [],
+
+                    actions: {
+                        view: true,
+                        edit: true,
+                        remove: true,
+                        add: true,
+                        create: true
+                    },
 
                     getItemName: (item) =>
                         item.name || "-",
@@ -271,19 +281,29 @@ async function loadRelationships() {
                         openToolModal();
                     },
 
+                    onCreate: () => {
+                        openRelationshipItemModal({
+                            mode: "create",
+                            relationship: "tool"
+                        });
+                    },
+
                     onView: (item) => {
                         window.location.href =
                             `tool-detail.html?id=${item.id}`;
                     },
 
                     onEdit: (item) => {
-                        window.location.href =
-                            `tool-detail.html?id=${item.id}`;
+                        openRelationshipItemModal({
+                            mode: "edit",
+                            relationship: "tool",
+                            item: item
+                        });
                     },
 
-                    onRemove: async (item) => {
+                    onRemove: (item) => {
 
-                        await removeTool(
+                        openRemoveToolModal(
                             item.id
                         );
 
@@ -440,7 +460,10 @@ function openRelationshipItemModal({
     // VALIDATION
     // ========================================================
 
-    if (relationship !== "queue") {
+    if (
+        relationship !== "queue" &&
+        relationship !== "tool"
+    ) {
         console.error(
             `Unsupported relationship: ${relationship}`
         );
@@ -452,28 +475,30 @@ function openRelationshipItemModal({
     const isEdit =
         mode === "edit";
 
+    const entityLabel =
+        relationship === "queue"
+            ? "Queue"
+            : "Tool";
 
     const modalTitle =
         isEdit
-            ? "Edit Queue"
-            : "Create Queue";
-
-
-    // ========================================================
-    // CURRENT VALUES
-    // ========================================================
+            ? `Edit ${entityLabel}`
+            : `Create ${entityLabel}`;
 
     const name =
         item?.name || "";
 
-
     const description =
         item?.description || "";
 
+    const accessRequest =
+        item?.access_request || "";
+
+    const passwordReset =
+        item?.password_reset || "";
 
     const isActive =
         item?.is_active ?? true;
-
 
     // ========================================================
     // MODAL CONTENT
@@ -484,7 +509,7 @@ function openRelationshipItemModal({
         <div class="form-group">
 
             <label for="relationshipItemName">
-                Queue Name
+                ${entityLabel} Name
             </label>
 
             <input
@@ -495,7 +520,6 @@ function openRelationshipItemModal({
             >
 
         </div>
-
 
         <div class="form-group">
 
@@ -511,6 +535,39 @@ function openRelationshipItemModal({
 
         </div>
 
+        ${
+            relationship === "tool"
+                ? `
+                    <div class="form-group">
+
+                        <label for="relationshipItemAccessRequest">
+                            Access Request
+                        </label>
+
+                        <input
+                            type="text"
+                            id="relationshipItemAccessRequest"
+                            value="${escapeRelationshipModalHtml(accessRequest)}"
+                        >
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="relationshipItemPasswordReset">
+                            Password Reset
+                        </label>
+
+                        <input
+                            type="text"
+                            id="relationshipItemPasswordReset"
+                            value="${escapeRelationshipModalHtml(passwordReset)}"
+                        >
+
+                    </div>
+                `
+                : ""
+        }
 
         <div class="checkbox-group">
 
@@ -526,7 +583,6 @@ function openRelationshipItemModal({
 
         </div>
 
-
         <div class="modal-actions">
 
             <button
@@ -535,7 +591,6 @@ function openRelationshipItemModal({
             >
                 Cancel
             </button>
-
 
             <button
                 type="button"
@@ -547,7 +602,6 @@ function openRelationshipItemModal({
         </div>
 
     `;
-
 
     // ========================================================
     // RENDER MODAL
@@ -633,11 +687,18 @@ async function saveRelationshipItem({
     item
 }) {
 
-    if (relationship !== "queue") {
+    if (
+        relationship !== "queue" &&
+        relationship !== "tool"
+    ) {
         return;
     }
 
-
+    const entityLabel =
+        relationship === "queue"
+            ? "Queue"
+            : "Tool";
+            
     const nameInput =
         document.getElementById(
             "relationshipItemName"
@@ -655,6 +716,16 @@ async function saveRelationshipItem({
             "relationshipItemIsActive"
         );
 
+    const accessRequestInput =
+        document.getElementById(
+            "relationshipItemAccessRequest"
+        );
+
+    const passwordResetInput =
+        document.getElementById(
+            "relationshipItemPasswordReset"
+        );
+
 
     const name =
         nameInput.value.trim();
@@ -666,6 +737,16 @@ async function saveRelationshipItem({
 
     const isActive =
         isActiveInput.checked;
+
+    const accessRequest =
+        accessRequestInput
+            ? accessRequestInput.value.trim()
+            : "";
+
+    const passwordReset =
+        passwordResetInput
+            ? passwordResetInput.value.trim()
+            : "";
 
 
     // ========================================================
@@ -699,17 +780,21 @@ async function saveRelationshipItem({
 
 
     const data = {
-
         name:
             name,
-
         description:
             description,
-
         is_active:
             isActive
-
     };
+
+    if (relationship === "tool") {
+        data.access_request =
+            accessRequest;
+
+        data.password_reset =
+            passwordReset;
+    }
 
 
     // ========================================================
@@ -720,50 +805,58 @@ async function saveRelationshipItem({
 
         try {
 
-            const createdQueue =
-                await createQueue(
-                    data
+            let createdItem;
+
+            if (relationship === "queue") {
+
+                createdItem =
+                    await createQueue(
+                        data
+                    );
+
+                await addIssueTypeQueue(
+                    issueTypeId,
+                    createdItem.id
                 );
 
+            }
 
-            // Automatically assign the
-            // newly created Queue to the
-            // current Issue Type.
+            if (relationship === "tool") {
 
-            await addIssueTypeQueue(
-                issueTypeId,
-                createdQueue.id
-            );
+                createdItem =
+                    await createTool(
+                        data
+                    );
 
+                await addIssueTypeTool(
+                    issueTypeId,
+                    createdItem.id
+                );
+
+            }
 
             closeRelationshipItemModal();
 
-
             showSuccessMessage(
-                "Queue created successfully."
+                `${entityLabel} created successfully.`
             );
 
-
             await loadRelationships();
-
 
         } catch (error) {
 
             console.error(
-                "Error creating queue:",
+                `Error creating ${relationship}:`,
                 error
             );
 
-
             showErrorMessage(
-                "Error creating queue."
+                `Error creating ${entityLabel.toLowerCase()}.`
             );
 
         }
 
-
         return;
-
     }
 
 
@@ -776,43 +869,49 @@ async function saveRelationshipItem({
         if (!item?.id) {
 
             showErrorMessage(
-                "Queue ID is missing."
+                `${entityLabel} ID is missing.`
             );
 
             return;
-
         }
-
 
         try {
 
-            await updateQueue(
-                item.id,
-                data
-            );
+            if (relationship === "queue") {
 
+                await updateQueue(
+                    item.id,
+                    data
+                );
+
+            }
+
+            if (relationship === "tool") {
+
+                await updateTool(
+                    item.id,
+                    data
+                );
+
+            }
 
             closeRelationshipItemModal();
 
-
             showSuccessMessage(
-                "Queue updated successfully."
+                `${entityLabel} updated successfully.`
             );
 
-
             await loadRelationships();
-
 
         } catch (error) {
 
             console.error(
-                "Error updating queue:",
+                `Error updating ${relationship}:`,
                 error
             );
 
-
             showErrorMessage(
-                "Error updating queue."
+                `Error updating ${entityLabel.toLowerCase()}.`
             );
 
         }
@@ -2371,18 +2470,92 @@ async function addSelectedQueue() {
 // REMOVE QUEUE
 // ============================================================
 
-async function removeQueue(
-    queueId
-) {
+function openRemoveQueueModal(queueId) {
 
-    if (
-        !confirm(
-            "Remove this queue from the issue type?"
+    const content = `
+
+        <p>
+            Are you sure you want to remove this Queue
+            from the Issue Type?
+        </p>
+
+        <div class="modal-actions">
+
+            <button
+                type="button"
+                id="cancelRemoveQueueButton"
+            >
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                id="confirmRemoveQueueButton"
+            >
+                Remove
+            </button>
+
+        </div>
+
+    `;
+
+    renderModal({
+
+        containerId:
+            "queueModal",
+
+        title:
+            "Remove Queue",
+
+        content:
+            content,
+
+        onClose: () => {
+            closeRemoveQueueModal();
+        }
+
+    });
+
+
+    document
+        .getElementById(
+            "cancelRemoveQueueButton"
         )
-    ) {
-        return;
-    }
+        .addEventListener(
+            "click",
+            closeRemoveQueueModal
+        );
 
+
+    document
+        .getElementById(
+            "confirmRemoveQueueButton"
+        )
+        .addEventListener(
+            "click",
+            () => {
+                removeQueue(
+                    queueId
+                );
+            }
+        );
+
+
+    document
+        .getElementById(
+            "queueModal"
+        )
+        .classList
+        .remove("hidden");
+
+}
+
+
+// ============================================================
+// CONFIRM REMOVE QUEUE
+// ============================================================
+
+async function removeQueue(queueId) {
 
     try {
 
@@ -2391,6 +2564,11 @@ async function removeQueue(
             queueId
         );
 
+        closeRemoveQueueModal();
+
+        showSuccessMessage(
+            "Queue removed successfully."
+        );
 
         await loadRelationships();
 
@@ -2406,6 +2584,28 @@ async function removeQueue(
         );
 
     }
+
+}
+
+
+// ============================================================
+// CLOSE REMOVE QUEUE MODAL
+// ============================================================
+
+function closeRemoveQueueModal() {
+
+    const modal =
+        document.getElementById(
+            "queueModal"
+        );
+
+    if (!modal) {
+        return;
+    }
+
+    modal
+        .classList
+        .add("hidden");
 
 }
 
@@ -2743,18 +2943,92 @@ async function addSelectedTool() {
 // REMOVE TOOL
 // ============================================================
 
-async function removeTool(
-    toolId
-) {
+function openRemoveToolModal(toolId) {
 
-    if (
-        !confirm(
-            "Remove this tool from the issue type?"
+    const content = `
+
+        <p>
+            Are you sure you want to remove this Tool
+            from the Issue Type?
+        </p>
+
+        <div class="modal-actions">
+
+            <button
+                type="button"
+                id="cancelRemoveToolButton"
+            >
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                id="confirmRemoveToolButton"
+            >
+                Remove
+            </button>
+
+        </div>
+
+    `;
+
+    renderModal({
+
+        containerId:
+            "toolModal",
+
+        title:
+            "Remove Tool",
+
+        content:
+            content,
+
+        onClose: () => {
+            closeRemoveToolModal();
+        }
+
+    });
+
+
+    document
+        .getElementById(
+            "cancelRemoveToolButton"
         )
-    ) {
-        return;
-    }
+        .addEventListener(
+            "click",
+            closeRemoveToolModal
+        );
 
+
+    document
+        .getElementById(
+            "confirmRemoveToolButton"
+        )
+        .addEventListener(
+            "click",
+            () => {
+                removeTool(
+                    toolId
+                );
+            }
+        );
+
+
+    document
+        .getElementById(
+            "toolModal"
+        )
+        .classList
+        .remove("hidden");
+
+}
+
+
+// ============================================================
+// CONFIRM REMOVE TOOL
+// ============================================================
+
+async function removeTool(toolId) {
 
     try {
 
@@ -2763,6 +3037,11 @@ async function removeTool(
             toolId
         );
 
+        closeRemoveToolModal();
+
+        showSuccessMessage(
+            "Tool removed successfully."
+        );
 
         await loadRelationships();
 
@@ -2781,6 +3060,27 @@ async function removeTool(
 
 }
 
+
+// ============================================================
+// CLOSE REMOVE TOOL MODAL
+// ============================================================
+
+function closeRemoveToolModal() {
+
+    const modal =
+        document.getElementById(
+            "toolModal"
+        );
+
+    if (!modal) {
+        return;
+    }
+
+    modal
+        .classList
+        .add("hidden");
+
+}
 
 // ============================================================
 // TROUBLESHOOTING TEMPLATES
