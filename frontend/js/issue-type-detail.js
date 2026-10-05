@@ -159,13 +159,9 @@ async function loadRelationships() {
             knowledgeBaseNotes
         ] = await Promise.all([
 
-            getIssueTypeQueues(
-                issueTypeId
-            ),
+            getIssueTypeQueues(issueTypeId),
 
-            getIssueTypeTools(
-                issueTypeId
-            ),
+            getIssueTypeTools(issueTypeId),
 
             getIssueTypeTroubleshootingTemplates(
                 issueTypeId
@@ -183,6 +179,7 @@ async function loadRelationships() {
 
 
         renderRelationships({
+
             containerId: "relationships",
 
             relationships: [
@@ -245,9 +242,10 @@ async function loadRelationships() {
 
                     onRemove: (item) => {
 
-                        openRemoveQueueModal(
-                            item.id
-                        );
+                        openRemoveRelationshipModal({
+                            relationship: "queue",
+                            item: item
+                        });
 
                     }
                 },
@@ -278,34 +276,43 @@ async function loadRelationships() {
                         item.name || "-",
 
                     onAdd: () => {
+
                         openToolModal();
+
                     },
 
                     onCreate: () => {
+
                         openRelationshipItemModal({
                             mode: "create",
                             relationship: "tool"
                         });
+
                     },
 
                     onView: (item) => {
+
                         window.location.href =
                             `tool-detail.html?id=${item.id}`;
+
                     },
 
                     onEdit: (item) => {
+
                         openRelationshipItemModal({
                             mode: "edit",
                             relationship: "tool",
                             item: item
                         });
+
                     },
 
                     onRemove: (item) => {
 
-                        openRemoveToolModal(
-                            item.id
-                        );
+                        openRemoveRelationshipModal({
+                            relationship: "tool",
+                            item: item
+                        });
 
                     }
                 },
@@ -318,33 +325,67 @@ async function loadRelationships() {
                 {
                     title: "Troubleshooting Templates",
 
+                    entityLabel: "Troubleshooting Template",
+
                     addLabel: "Add Template",
 
                     items:
                         troubleshootingTemplates || [],
 
+                    actions: {
+                        view: true,
+                        edit: true,
+                        remove: true,
+                        add: true,
+                        create: true
+                    },
+
                     getItemName: (item) =>
-                        item.name || "-",
+                        item.name ||
+                        item.generated_description ||
+                        `Template ${item.id}`,
 
                     onAdd: () => {
+
                         openTroubleshootingTemplateModal();
+
+                    },
+
+                    onCreate: () => {
+
+                        openRelationshipItemModal({
+                            mode: "create",
+                            relationship:
+                                "troubleshootingTemplate"
+                        });
+
                     },
 
                     onView: (item) => {
+
                         window.location.href =
                             `troubleshooting-template-detail.html?id=${item.id}`;
+
                     },
 
                     onEdit: (item) => {
-                        window.location.href =
-                            `troubleshooting-template-detail.html?id=${item.id}`;
+
+                        openRelationshipItemModal({
+                            mode: "edit",
+                            relationship:
+                                "troubleshootingTemplate",
+                            item: item
+                        });
+
                     },
 
-                    onRemove: async (item) => {
+                    onRemove: (item) => {
 
-                        await removeTroubleshootingTemplate(
-                            item.id
-                        );
+                        openRemoveRelationshipModal({
+                            relationship:
+                                "troubleshootingTemplate",
+                            item: item
+                        });
 
                     }
                 },
@@ -357,10 +398,20 @@ async function loadRelationships() {
                 {
                     title: "Knowledge Base",
 
+                    entityLabel: "Knowledge Base",
+
                     addLabel: "Add Knowledge Base",
 
                     items:
                         knowledgeBase || [],
+
+                    actions: {
+                        view: true,
+                        edit: true,
+                        remove: true,
+                        add: true,
+                        create: true
+                    },
 
                     getItemName: (item) =>
                         item.article_number
@@ -368,24 +419,46 @@ async function loadRelationships() {
                             : item.title || "-",
 
                     onAdd: () => {
+
                         openKnowledgeBaseModal();
+
+                    },
+
+                    onCreate: () => {
+
+                        openRelationshipItemModal({
+                            mode: "create",
+                            relationship:
+                                "knowledgeBase"
+                        });
+
                     },
 
                     onView: (item) => {
+
                         window.location.href =
                             `knowledge-base-detail.html?id=${item.id}`;
+
                     },
 
                     onEdit: (item) => {
-                        window.location.href =
-                            `knowledge-base-detail.html?id=${item.id}`;
+
+                        openRelationshipItemModal({
+                            mode: "edit",
+                            relationship:
+                                "knowledgeBase",
+                            item: item
+                        });
+
                     },
 
-                    onRemove: async (item) => {
+                    onRemove: (item) => {
 
-                        await removeKnowledgeBase(
-                            item.id
-                        );
+                        openRemoveRelationshipModal({
+                            relationship:
+                                "knowledgeBase",
+                            item: item
+                        });
 
                     }
                 },
@@ -398,10 +471,20 @@ async function loadRelationships() {
                 {
                     title: "Knowledge Base Notes",
 
+                    entityLabel: "Knowledge Base Note",
+
                     addLabel: "Add Note",
 
                     items:
                         knowledgeBaseNotes || [],
+
+                    actions: {
+                        view: true,
+                        edit: true,
+                        remove: true,
+                        add: true,
+                        create: true
+                    },
 
                     getItemName: (item) =>
                         item.category
@@ -409,24 +492,46 @@ async function loadRelationships() {
                             : item.title || "-",
 
                     onAdd: () => {
+
                         openKnowledgeBaseNoteModal();
+
+                    },
+
+                    onCreate: () => {
+
+                        openRelationshipItemModal({
+                            mode: "create",
+                            relationship:
+                                "knowledgeBaseNote"
+                        });
+
                     },
 
                     onView: (item) => {
+
                         window.location.href =
                             `knowledge-base-note-detail.html?id=${item.id}`;
+
                     },
 
                     onEdit: (item) => {
-                        window.location.href =
-                            `knowledge-base-note-detail.html?id=${item.id}`;
+
+                        openRelationshipItemModal({
+                            mode: "edit",
+                            relationship:
+                                "knowledgeBaseNote",
+                            item: item
+                        });
+
                     },
 
-                    onRemove: async (item) => {
+                    onRemove: (item) => {
 
-                        await removeKnowledgeBaseNote(
-                            item.id
-                        );
+                        openRemoveRelationshipModal({
+                            relationship:
+                                "knowledgeBaseNote",
+                            item: item
+                        });
 
                     }
                 }
@@ -440,6 +545,10 @@ async function loadRelationships() {
         console.error(
             "Error loading relationships:",
             error
+        );
+
+        showErrorMessage(
+            "Error loading relationships."
         );
 
     }
@@ -456,132 +565,288 @@ function openRelationshipItemModal({
     item = null
 }) {
 
-    // ========================================================
-    // VALIDATION
-    // ========================================================
+    const configs = {
 
-    if (
-        relationship !== "queue" &&
-        relationship !== "tool"
-    ) {
+        queue: {
+            label: "Queue",
+            fields: [
+                {
+                    key: "name",
+                    label: "Queue Name",
+                    type: "text",
+                    required: true
+                },
+                {
+                    key: "description",
+                    label: "Description",
+                    type: "textarea",
+                    required: true
+                },
+                {
+                    key: "is_active",
+                    label: "Active",
+                    type: "boolean"
+                }
+            ]
+        },
+
+
+        tool: {
+            label: "Tool",
+            fields: [
+                {
+                    key: "name",
+                    label: "Tool Name",
+                    type: "text",
+                    required: true
+                },
+                {
+                    key: "description",
+                    label: "Description",
+                    type: "textarea",
+                    required: true
+                },
+                {
+                    key: "access_request",
+                    label: "Access Request",
+                    type: "text"
+                },
+                {
+                    key: "password_reset",
+                    label: "Password Reset",
+                    type: "text"
+                },
+                {
+                    key: "is_active",
+                    label: "Active",
+                    type: "boolean"
+                }
+            ]
+        },
+
+
+        troubleshootingTemplate: {
+            label: "Troubleshooting Template",
+            fields: [
+                {
+                    key: "generated_description",
+                    label: "Description",
+                    type: "textarea",
+                    required: true
+                },
+                {
+                    key: "steps",
+                    label: "Troubleshooting Steps",
+                    type: "textarea",
+                    required: true
+                },
+                {
+                    key: "is_active",
+                    label: "Active",
+                    type: "boolean"
+                }
+            ]
+        },
+
+
+        knowledgeBase: {
+            label: "Knowledge Base",
+            fields: [
+                {
+                    key: "article_number",
+                    label: "Article Number",
+                    type: "text",
+                    required: true
+                },
+                {
+                    key: "title",
+                    label: "Title",
+                    type: "text",
+                    required: true
+                },
+                {
+                    key: "url",
+                    label: "URL",
+                    type: "text",
+                    required: true
+                },
+                {
+                    key: "description",
+                    label: "Description",
+                    type: "textarea",
+                    required: true
+                }
+            ]
+        },
+
+
+        knowledgeBaseNote: {
+            label: "Knowledge Base Note",
+            fields: [
+                {
+                    key: "title",
+                    label: "Title",
+                    type: "text",
+                    required: true
+                },
+                {
+                    key: "content",
+                    label: "Content",
+                    type: "textarea",
+                    required: true
+                },
+                {
+                    key: "category",
+                    label: "Category",
+                    type: "text"
+                },
+                {
+                    key: "is_pinned",
+                    label: "Pinned",
+                    type: "boolean"
+                },
+                {
+                    key: "is_active",
+                    label: "Active",
+                    type: "boolean"
+                }
+            ]
+        }
+
+    };
+
+
+    const config =
+        configs[relationship];
+
+
+    if (!config) {
+
         console.error(
             `Unsupported relationship: ${relationship}`
         );
 
         return;
+
     }
 
 
     const isEdit =
         mode === "edit";
 
-    const entityLabel =
-        relationship === "queue"
-            ? "Queue"
-            : "Tool";
 
     const modalTitle =
         isEdit
-            ? `Edit ${entityLabel}`
-            : `Create ${entityLabel}`;
+            ? `Edit ${config.label}`
+            : `Create ${config.label}`;
 
-    const name =
-        item?.name || "";
 
-    const description =
-        item?.description || "";
+    let fieldsHtml = "";
 
-    const accessRequest =
-        item?.access_request || "";
 
-    const passwordReset =
-        item?.password_reset || "";
+    config.fields.forEach(
+        (field) => {
 
-    const isActive =
-        item?.is_active ?? true;
+            const value =
+                item?.[field.key];
 
-    // ========================================================
-    // MODAL CONTENT
-    // ========================================================
+
+            if (
+                field.type === "boolean"
+            ) {
+
+                const checked =
+                    value ??
+                    true;
+
+                fieldsHtml += `
+
+                    <div class="checkbox-group">
+
+                        <input
+                            type="checkbox"
+                            id="relationshipItem_${field.key}"
+                            ${checked ? "checked" : ""}
+                        >
+
+                        <label
+                            for="relationshipItem_${field.key}"
+                        >
+                            ${field.label}
+                        </label>
+
+                    </div>
+
+                `;
+
+                return;
+
+            }
+
+
+            const safeValue =
+                escapeRelationshipModalHtml(
+                    value ?? ""
+                );
+
+
+            if (
+                field.type === "textarea"
+            ) {
+
+                fieldsHtml += `
+
+                    <div class="form-group">
+
+                        <label
+                            for="relationshipItem_${field.key}"
+                        >
+                            ${field.label}
+                        </label>
+
+                        <textarea
+                            id="relationshipItem_${field.key}"
+                            rows="6"
+                            ${field.required ? "required" : ""}
+                        >${safeValue}</textarea>
+
+                    </div>
+
+                `;
+
+                return;
+
+            }
+
+
+            fieldsHtml += `
+
+                <div class="form-group">
+
+                    <label
+                        for="relationshipItem_${field.key}"
+                    >
+                        ${field.label}
+                    </label>
+
+                    <input
+                        type="text"
+                        id="relationshipItem_${field.key}"
+                        value="${safeValue}"
+                        ${field.required ? "required" : ""}
+                    >
+
+                </div>
+
+            `;
+
+        }
+    );
+
 
     const content = `
 
-        <div class="form-group">
-
-            <label for="relationshipItemName">
-                ${entityLabel} Name
-            </label>
-
-            <input
-                type="text"
-                id="relationshipItemName"
-                value="${escapeRelationshipModalHtml(name)}"
-                required
-            >
-
-        </div>
-
-        <div class="form-group">
-
-            <label for="relationshipItemDescription">
-                Description
-            </label>
-
-            <textarea
-                id="relationshipItemDescription"
-                rows="6"
-                required
-            >${escapeRelationshipModalHtml(description)}</textarea>
-
-        </div>
-
-        ${
-            relationship === "tool"
-                ? `
-                    <div class="form-group">
-
-                        <label for="relationshipItemAccessRequest">
-                            Access Request
-                        </label>
-
-                        <input
-                            type="text"
-                            id="relationshipItemAccessRequest"
-                            value="${escapeRelationshipModalHtml(accessRequest)}"
-                        >
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label for="relationshipItemPasswordReset">
-                            Password Reset
-                        </label>
-
-                        <input
-                            type="text"
-                            id="relationshipItemPasswordReset"
-                            value="${escapeRelationshipModalHtml(passwordReset)}"
-                        >
-
-                    </div>
-                `
-                : ""
-        }
-
-        <div class="checkbox-group">
-
-            <input
-                type="checkbox"
-                id="relationshipItemIsActive"
-                ${isActive ? "checked" : ""}
-            >
-
-            <label for="relationshipItemIsActive">
-                Active
-            </label>
-
-        </div>
+        ${fieldsHtml}
 
         <div class="modal-actions">
 
@@ -603,9 +868,6 @@ function openRelationshipItemModal({
 
     `;
 
-    // ========================================================
-    // RENDER MODAL
-    // ========================================================
 
     renderModal({
 
@@ -619,15 +881,13 @@ function openRelationshipItemModal({
             content,
 
         onClose: () => {
+
             closeRelationshipItemModal();
+
         }
 
     });
 
-
-    // ========================================================
-    // CANCEL
-    // ========================================================
 
     document
         .getElementById(
@@ -636,14 +896,12 @@ function openRelationshipItemModal({
         .addEventListener(
             "click",
             () => {
+
                 closeRelationshipItemModal();
+
             }
         );
 
-
-    // ========================================================
-    // SAVE
-    // ========================================================
 
     document
         .getElementById(
@@ -654,18 +912,18 @@ function openRelationshipItemModal({
             async () => {
 
                 await saveRelationshipItem({
+
                     mode,
+
                     relationship,
+
                     item
+
                 });
 
             }
         );
 
-
-    // ========================================================
-    // SHOW MODAL
-    // ========================================================
 
     document
         .getElementById(
@@ -687,113 +945,232 @@ async function saveRelationshipItem({
     item
 }) {
 
-    if (
-        relationship !== "queue" &&
-        relationship !== "tool"
-    ) {
+    const configs = {
+
+        queue: {
+            label: "Queue",
+
+            create: createQueue,
+
+            update: updateQueue,
+
+            add: addIssueTypeQueue
+        },
+
+
+        tool: {
+            label: "Tool",
+
+            create: createTool,
+
+            update: updateTool,
+
+            add: addIssueTypeTool
+        },
+
+
+        troubleshootingTemplate: {
+            label: "Troubleshooting Template",
+
+            create:
+                createTroubleshootingTemplate,
+
+            update:
+                updateTroubleshootingTemplate,
+
+            add:
+                addIssueTypeTroubleshootingTemplate
+        },
+
+
+        knowledgeBase: {
+            label: "Knowledge Base",
+
+            create:
+                createKnowledgeBaseItem,
+
+            update:
+                updateKnowledgeBaseItem,
+
+            add:
+                addIssueTypeKnowledgeBase
+        },
+
+
+        knowledgeBaseNote: {
+            label: "Knowledge Base Note",
+
+            create:
+                createKnowledgeBaseNote,
+
+            update:
+                updateKnowledgeBaseNote,
+
+            add:
+                addIssueTypeKnowledgeBaseNote
+        }
+
+    };
+
+
+    const config =
+        configs[relationship];
+
+
+    if (!config) {
+
+        showErrorMessage(
+            `Unsupported relationship: ${relationship}.`
+        );
+
         return;
+
     }
 
-    const entityLabel =
-        relationship === "queue"
-            ? "Queue"
-            : "Tool";
-            
-    const nameInput =
-        document.getElementById(
-            "relationshipItemName"
-        );
+
+    const fields = {
+
+        queue: [
+            "name",
+            "description",
+            "is_active"
+        ],
+
+        tool: [
+            "name",
+            "description",
+            "access_request",
+            "password_reset",
+            "is_active"
+        ],
+
+        troubleshootingTemplate: [
+            "generated_description",
+            "steps",
+            "is_active"
+        ],
+
+        knowledgeBase: [
+            "article_number",
+            "title",
+            "url",
+            "description"
+        ],
+
+        knowledgeBaseNote: [
+            "title",
+            "content",
+            "category",
+            "is_pinned",
+            "is_active"
+        ]
+
+    };
 
 
-    const descriptionInput =
-        document.getElementById(
-            "relationshipItemDescription"
-        );
+    const relationshipFields =
+        fields[relationship];
 
 
-    const isActiveInput =
-        document.getElementById(
-            "relationshipItemIsActive"
-        );
-
-    const accessRequestInput =
-        document.getElementById(
-            "relationshipItemAccessRequest"
-        );
-
-    const passwordResetInput =
-        document.getElementById(
-            "relationshipItemPasswordReset"
-        );
+    const data = {};
 
 
-    const name =
-        nameInput.value.trim();
+    for (
+        const field of relationshipFields
+    ) {
+
+        const input =
+            document.getElementById(
+                `relationshipItem_${field}`
+            );
 
 
-    const description =
-        descriptionInput.value.trim();
+        if (!input) {
+            continue;
+        }
 
 
-    const isActive =
-        isActiveInput.checked;
+        if (
+            input.type === "checkbox"
+        ) {
 
-    const accessRequest =
-        accessRequestInput
-            ? accessRequestInput.value.trim()
-            : "";
+            data[field] =
+                input.checked;
 
-    const passwordReset =
-        passwordResetInput
-            ? passwordResetInput.value.trim()
-            : "";
+        } else {
+
+            data[field] =
+                input.value.trim();
+
+        }
+
+    }
 
 
     // ========================================================
     // VALIDATION
     // ========================================================
 
-    if (!name) {
+    const requiredFields = {
 
-        showWarningMessage(
-            "Queue name is required."
-        );
+        queue: [
+            "name",
+            "description"
+        ],
 
-        nameInput.focus();
+        tool: [
+            "name",
+            "description"
+        ],
 
-        return;
+        troubleshootingTemplate: [
+            "generated_description",
+            "steps"
+        ],
 
-    }
+        knowledgeBase: [
+            "article_number",
+            "title",
+            "url",
+            "description"
+        ],
 
+        knowledgeBaseNote: [
+            "title",
+            "content"
+        ]
 
-    if (!description) {
-
-        showWarningMessage(
-            "Queue description is required."
-        );
-
-        descriptionInput.focus();
-
-        return;
-
-    }
-
-
-    const data = {
-        name:
-            name,
-        description:
-            description,
-        is_active:
-            isActive
     };
 
-    if (relationship === "tool") {
-        data.access_request =
-            accessRequest;
 
-        data.password_reset =
-            passwordReset;
+    for (
+        const field of requiredFields[relationship]
+    ) {
+
+        if (
+            !data[field]
+        ) {
+
+            const input =
+                document.getElementById(
+                    `relationshipItem_${field}`
+                );
+
+
+            showWarningMessage(
+                `${getRelationshipFieldLabel(field)} is required.`
+            );
+
+
+            if (input) {
+                input.focus();
+            }
+
+
+            return;
+
+        }
+
     }
 
 
@@ -801,45 +1178,31 @@ async function saveRelationshipItem({
     // CREATE
     // ========================================================
 
-    if (mode === "create") {
+    if (
+        mode === "create"
+    ) {
 
         try {
 
-            let createdItem;
-
-            if (relationship === "queue") {
-
-                createdItem =
-                    await createQueue(
-                        data
-                    );
-
-                await addIssueTypeQueue(
-                    issueTypeId,
-                    createdItem.id
+            const createdItem =
+                await config.create(
+                    data
                 );
 
-            }
 
-            if (relationship === "tool") {
+            await config.add(
+                issueTypeId,
+                createdItem.id
+            );
 
-                createdItem =
-                    await createTool(
-                        data
-                    );
-
-                await addIssueTypeTool(
-                    issueTypeId,
-                    createdItem.id
-                );
-
-            }
 
             closeRelationshipItemModal();
 
+
             showSuccessMessage(
-                `${entityLabel} created successfully.`
+                `${config.label} created successfully.`
             );
+
 
             await loadRelationships();
 
@@ -850,13 +1213,15 @@ async function saveRelationshipItem({
                 error
             );
 
+
             showErrorMessage(
-                `Error creating ${entityLabel.toLowerCase()}.`
+                `Error creating ${config.label.toLowerCase()}.`
             );
 
         }
 
         return;
+
     }
 
 
@@ -864,42 +1229,38 @@ async function saveRelationshipItem({
     // EDIT
     // ========================================================
 
-    if (mode === "edit") {
+    if (
+        mode === "edit"
+    ) {
 
-        if (!item?.id) {
+        if (
+            !item?.id
+        ) {
 
             showErrorMessage(
-                `${entityLabel} ID is missing.`
+                `${config.label} ID is missing.`
             );
 
             return;
+
         }
+
 
         try {
 
-            if (relationship === "queue") {
+            await config.update(
+                item.id,
+                data
+            );
 
-                await updateQueue(
-                    item.id,
-                    data
-                );
-
-            }
-
-            if (relationship === "tool") {
-
-                await updateTool(
-                    item.id,
-                    data
-                );
-
-            }
 
             closeRelationshipItemModal();
 
+
             showSuccessMessage(
-                `${entityLabel} updated successfully.`
+                `${config.label} updated successfully.`
             );
+
 
             await loadRelationships();
 
@@ -910,13 +1271,59 @@ async function saveRelationshipItem({
                 error
             );
 
+
             showErrorMessage(
-                `Error updating ${entityLabel.toLowerCase()}.`
+                `Error updating ${config.label.toLowerCase()}.`
             );
 
         }
 
     }
+
+}
+
+function getRelationshipFieldLabel(
+    field
+) {
+
+    const labels = {
+
+        name: "Name",
+
+        description: "Description",
+
+        access_request: "Access Request",
+
+        password_reset: "Password Reset",
+
+        generated_description:
+            "Description",
+
+        steps:
+            "Troubleshooting Steps",
+
+        article_number:
+            "Article Number",
+
+        title:
+            "Title",
+
+        url:
+            "URL",
+
+        content:
+            "Content",
+
+        category:
+            "Category"
+
+    };
+
+
+    return (
+        labels[field] ||
+        field
+    );
 
 }
 
@@ -944,7 +1351,243 @@ function closeRelationshipItemModal() {
 
 }
 
+function openRemoveRelationshipModal({
+    relationship,
+    item
+}) {
 
+    const labels = {
+
+        queue:
+            "Queue",
+
+        tool:
+            "Tool",
+
+        troubleshootingTemplate:
+            "Troubleshooting Template",
+
+        knowledgeBase:
+            "Knowledge Base",
+
+        knowledgeBaseNote:
+            "Knowledge Base Note"
+
+    };
+
+
+    const label =
+        labels[relationship];
+
+
+    if (!label) {
+
+        console.error(
+            `Unsupported relationship: ${relationship}`
+        );
+
+        return;
+
+    }
+
+
+    const content = `
+
+        <p>
+            Are you sure you want to remove
+            this ${label} from the Issue Type?
+        </p>
+
+        <div class="modal-actions">
+
+            <button
+                type="button"
+                id="relationshipRemoveCancelButton"
+            >
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                id="relationshipRemoveConfirmButton"
+            >
+                Remove
+            </button>
+
+        </div>
+
+    `;
+
+
+    renderModal({
+
+        containerId:
+            "relationshipItemModal",
+
+        title:
+            `Remove ${label}`,
+
+        content:
+            content,
+
+        onClose: () => {
+
+            closeRelationshipItemModal();
+
+        }
+
+    });
+
+
+    document
+        .getElementById(
+            "relationshipRemoveCancelButton"
+        )
+        .addEventListener(
+            "click",
+            () => {
+
+                closeRelationshipItemModal();
+
+            }
+        );
+
+
+    document
+        .getElementById(
+            "relationshipRemoveConfirmButton"
+        )
+        .addEventListener(
+            "click",
+            async () => {
+
+                await removeRelationshipItem({
+                    relationship,
+                    item
+                });
+
+            }
+        );
+
+
+    document
+        .getElementById(
+            "relationshipItemModal"
+        )
+        .classList
+        .remove("hidden");
+
+}
+
+async function removeRelationshipItem({
+    relationship,
+    item
+}) {
+
+    const configs = {
+
+        queue: {
+            label: "Queue",
+
+            remove:
+                removeIssueTypeQueue
+        },
+
+        tool: {
+            label: "Tool",
+
+            remove:
+                removeIssueTypeTool
+        },
+
+        troubleshootingTemplate: {
+            label:
+                "Troubleshooting Template",
+
+            remove:
+                removeIssueTypeTroubleshootingTemplate
+        },
+
+        knowledgeBase: {
+            label:
+                "Knowledge Base",
+
+            remove:
+                removeIssueTypeKnowledgeBase
+        },
+
+        knowledgeBaseNote: {
+            label:
+                "Knowledge Base Note",
+
+            remove:
+                removeIssueTypeKnowledgeBaseNote
+        }
+
+    };
+
+
+    const config =
+        configs[relationship];
+
+
+    if (!config) {
+
+        showErrorMessage(
+            `Unsupported relationship: ${relationship}.`
+        );
+
+        return;
+
+    }
+
+
+    if (
+        !item?.id
+    ) {
+
+        showErrorMessage(
+            `${config.label} ID is missing.`
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        await config.remove(
+            issueTypeId,
+            item.id
+        );
+
+
+        closeRelationshipItemModal();
+
+
+        showSuccessMessage(
+            `${config.label} removed successfully.`
+        );
+
+
+        await loadRelationships();
+
+    } catch (error) {
+
+        console.error(
+            `Error removing ${relationship}:`,
+            error
+        );
+
+
+        showErrorMessage(
+            `Error removing ${config.label.toLowerCase()}.`
+        );
+
+    }
+
+}
 // ============================================================
 // ESCAPE HTML
 // ============================================================
