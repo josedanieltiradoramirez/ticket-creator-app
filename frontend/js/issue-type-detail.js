@@ -63,6 +63,27 @@ document.addEventListener(
 function setupEventListeners() {
 
     // ========================================================
+    // BACK BUTTON
+    // ========================================================
+
+    const backButton =
+        document.getElementById("backButton");
+
+    if (backButton) {
+
+        backButton.addEventListener(
+            "click",
+            () => {
+
+                window.location.href =
+                    "issue-types.html";
+
+            }
+        );
+
+    }
+
+    // ========================================================
     // QUEUE MODAL
     // ========================================================
 
@@ -117,7 +138,11 @@ async function loadIssueTypeDetail() {
             containerId: "detailHeader",
             type: "Issue Type",
             title: currentIssueType.name,
-            description: currentIssueType.description
+            description: currentIssueType.description,
+
+            onBack: () => {
+                window.location.href = "issue-types.html";
+            }
         });
 
         renderBasicInformation(
