@@ -1,7 +1,3 @@
-// ============================================================
-// COLLAPSIBLE SECTION COMPONENT
-// ============================================================
-
 function renderCollapsibleSection({
     containerId,
     title,
@@ -9,7 +5,8 @@ function renderCollapsibleSection({
     expanded = true,
     headerActions = ""
 }) {
-    const container = document.getElementById(containerId);
+    const container =
+        document.getElementById(containerId);
 
     if (!container) {
         console.error(
@@ -19,6 +16,43 @@ function renderCollapsibleSection({
         return;
     }
 
+    /*
+     * ============================================================
+     * PRESERVE CURRENT STATE
+     * ============================================================
+     *
+     * If this section has already been rendered, preserve its
+     * current expanded/collapsed state.
+     *
+     * This allows any component that uses this function to be
+     * re-rendered without losing the user's current state.
+     *
+     * First render:
+     *     uses the "expanded" argument.
+     *
+     * Subsequent renders:
+     *     uses the existing aria-expanded state.
+     */
+
+    let currentExpanded = expanded;
+
+    const existingHeader =
+        container.querySelector(
+            ".collapsible-section-header"
+        );
+
+    if (existingHeader) {
+        currentExpanded =
+            existingHeader.getAttribute(
+                "aria-expanded"
+            ) === "true";
+    }
+
+    /*
+     * ============================================================
+     * RENDER
+     * ============================================================
+     */
 
     container.innerHTML = `
         <section class="collapsible-section">
@@ -27,13 +61,13 @@ function renderCollapsibleSection({
                 class="collapsible-section-header"
                 role="button"
                 tabindex="0"
-                aria-expanded="${expanded}"
+                aria-expanded="${currentExpanded}"
             >
 
                 <div class="collapsible-section-title-wrapper">
 
                     <span class="collapsible-section-icon">
-                        ${expanded ? "▼" : "▶"}
+                        ${currentExpanded ? "▼" : "▶"}
                     </span>
 
                     <h2 class="collapsible-section-title">
@@ -41,7 +75,6 @@ function renderCollapsibleSection({
                     </h2>
 
                 </div>
-
 
                 ${
                     headerActions
@@ -55,13 +88,15 @@ function renderCollapsibleSection({
 
             </div>
 
-
             <div
-                class="collapsible-section-content ${
-                    expanded
-                        ? "collapsible-section-expanded"
-                        : "collapsible-section-collapsed"
-                }"
+                class="
+                    collapsible-section-content
+                    ${
+                        currentExpanded
+                            ? "collapsible-section-expanded"
+                            : "collapsible-section-collapsed"
+                    }
+                "
             >
                 ${content}
             </div>
@@ -69,54 +104,64 @@ function renderCollapsibleSection({
         </section>
     `;
 
+    /*
+     * ============================================================
+     * ELEMENTS
+     * ============================================================
+     */
 
     const header =
         container.querySelector(
             ".collapsible-section-header"
         );
 
-
     const icon =
         container.querySelector(
             ".collapsible-section-icon"
         );
-
 
     const sectionContent =
         container.querySelector(
             ".collapsible-section-content"
         );
 
+    if (
+        !header ||
+        !icon ||
+        !sectionContent
+    ) {
+        return;
+    }
+
+    /*
+     * ============================================================
+     * TOGGLE
+     * ============================================================
+     */
 
     function toggleSection() {
-
         const isExpanded =
             header.getAttribute(
                 "aria-expanded"
             ) === "true";
 
-
         const newExpandedState =
             !isExpanded;
-
 
         header.setAttribute(
             "aria-expanded",
             String(newExpandedState)
         );
 
-
         icon.textContent =
             newExpandedState
                 ? "▼"
                 : "▶";
 
-
         sectionContent.classList.toggle(
             "collapsible-section-expanded",
             newExpandedState
         );
-
 
         sectionContent.classList.toggle(
             "collapsible-section-collapsed",
@@ -124,14 +169,19 @@ function renderCollapsibleSection({
         );
     }
 
+    /*
+     * ============================================================
+     * MOUSE / KEYBOARD EVENTS
+     * ============================================================
+     */
 
     header.addEventListener(
         "click",
         (event) => {
 
             /*
-             * If the user clicked a button inside the header,
-             * do not collapse/expand the section.
+             * Buttons inside the header must not
+             * toggle the collapsible section.
              */
 
             if (
@@ -142,11 +192,9 @@ function renderCollapsibleSection({
                 return;
             }
 
-
             toggleSection();
         }
     );
-
 
     header.addEventListener(
         "keydown",
@@ -156,7 +204,6 @@ function renderCollapsibleSection({
                 event.key === "Enter" ||
                 event.key === " "
             ) {
-
                 event.preventDefault();
 
                 toggleSection();
@@ -166,16 +213,32 @@ function renderCollapsibleSection({
 }
 
 
-// ============================================================
-// ESCAPE HTML
-// ============================================================
+/*
+ * ============================================================
+ * HTML ESCAPE
+ * ============================================================
+ */
 
 function escapeCollapsibleHtml(value) {
-
-    return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+    return String(value ?? "")
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 }
