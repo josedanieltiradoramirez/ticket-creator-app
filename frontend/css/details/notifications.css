@@ -4,13 +4,16 @@
 
 #notificationContainer {
     position: fixed;
+
     right: 24px;
     bottom: 24px;
+
     z-index: 9999;
 
     display: flex;
     flex-direction: column;
     align-items: flex-end;
+
     gap: 10px;
 
     width: min(
@@ -31,18 +34,10 @@
     align-items: center;
 
     width: 100%;
+
     box-sizing: border-box;
 
     padding: 12px 13px;
-
-    background: #ffffff;
-
-    border: 1px solid #e5e5e5;
-
-    border-radius: 8px;
-
-    box-shadow:
-        0 8px 24px rgba(0, 0, 0, 0.08);
 
     font-family:
         -apple-system,
@@ -52,10 +47,17 @@
         Arial,
         sans-serif;
 
-    transform:
-        translateY(10px);
+    background: #ffffff;
+
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+
+    box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.08);
 
     opacity: 0;
+
+    transform: translateY(10px);
 
     transition:
         opacity 0.18s ease,
@@ -72,8 +74,7 @@
 .notification-visible {
     opacity: 1;
 
-    transform:
-        translateY(0);
+    transform: translateY(0);
 }
 
 
@@ -111,6 +112,7 @@
 
     font-size: 14px;
     font-weight: 400;
+
     line-height: 1.4;
 
     color: #37352f;
@@ -118,7 +120,7 @@
 
 
 /* ============================================================
-   CLOSE
+   CLOSE BUTTON
    ============================================================ */
 
 .notification-close {
@@ -136,7 +138,9 @@
     padding: 0;
 
     font-family: inherit;
+
     font-size: 19px;
+
     line-height: 1;
 
     color: #787774;
@@ -153,7 +157,6 @@
         background-color 0.15s ease;
 }
 
-
 .notification-close:hover {
     color: #202020;
 
@@ -169,9 +172,7 @@
     border-color: #d9e8dc;
 }
 
-
-.notification-success
-.notification-icon {
+.notification-success .notification-icon {
     color: #3f7047;
 
     background: #edf5ee;
@@ -186,9 +187,7 @@
     border-color: #ead8d8;
 }
 
-
-.notification-error
-.notification-icon {
+.notification-error .notification-icon {
     color: #9a4545;
 
     background: #f8eeee;
@@ -203,9 +202,7 @@
     border-color: #e9dfca;
 }
 
-
-.notification-warning
-.notification-icon {
+.notification-warning .notification-icon {
     color: #876d32;
 
     background: #f7f2e6;
@@ -220,10 +217,23 @@
     border-color: #dcdfe5;
 }
 
-
-.notification-info
-.notification-icon {
+.notification-info .notification-icon {
     color: #596273;
 
     background: #f0f2f5;
+}
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 600px) {
+
+    #notificationContainer {
+        right: 16px;
+        bottom: 16px;
+
+        width: calc(100vw - 32px);
+    }
 }

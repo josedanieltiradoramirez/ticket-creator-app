@@ -208,6 +208,8 @@
 
     box-sizing: border-box;
 
+    padding: 18px 20px;
+
     border-top: 1px solid #eeeeee;
 
     transition:
@@ -247,59 +249,6 @@
 
 
 /* ============================================================
-   BASIC INFORMATION
-   ============================================================ */
-
-#basicInformation
-.collapsible-section-expanded {
-    padding: 18px 20px;
-
-    box-sizing: border-box;
-}
-
-
-/* ============================================================
-   FORM
-   ============================================================ */
-
-#formSection
-.collapsible-section-expanded {
-    padding: 18px 20px;
-
-    box-sizing: border-box;
-}
-
-
-/* ============================================================
-   RELATIONSHIPS
-   ============================================================ */
-
-.relationship-collapsible-container {
-    width: 100%;
-
-    margin: 0;
-
-    padding: 0;
-
-    box-sizing: border-box;
-}
-
-
-/* ============================================================
-   RELATIONSHIP LIST
-   ============================================================ */
-
-.relationship-collapsible-container
-.relationships-list {
-    width: 100%;
-
-    margin-left: 0;
-
-    box-sizing: border-box;
-}
-
-
-/* ============================================================
    RESPONSIVE
    ============================================================ */
 
@@ -333,5 +282,9 @@
         padding: 5px 9px;
 
         font-size: 12px;
+    }
+
+    .collapsible-section-content {
+        padding: 16px 14px;
     }
 }

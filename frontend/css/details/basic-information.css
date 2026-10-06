@@ -2,36 +2,27 @@
    BASIC INFORMATION
    ============================================================ */
 
-.basic-information {
+.basic-information-content {
     width: 100%;
-    max-width: none;
 }
+
+/* ============================================================
+   ACTION TOOLBAR
+   ============================================================ */
 
 .basic-information-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
+
+    width: 100%;
 
     margin-bottom: 18px;
 }
 
-.basic-information-header h2 {
-    margin: 0;
-
-    font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Helvetica,
-        Arial,
-        sans-serif;
-
-    font-size: 20px;
-    font-weight: 600;
-    line-height: 1.4;
-
-    color: #202020;
-}
+/* ============================================================
+   ACTIONS
+   ============================================================ */
 
 .basic-information-actions {
     display: flex;
@@ -72,9 +63,9 @@
 }
 
 .basic-information-button.secondary:hover {
+    color: #202020;
     background: #f7f7f5;
     border-color: #cfcfcd;
-    color: #202020;
 }
 
 .basic-information-button.primary {
@@ -93,9 +84,10 @@
     cursor: default;
 }
 
-.basic-information-content {
-    width: 100%;
-}
+
+/* ============================================================
+   ROWS
+   ============================================================ */
 
 .basic-information-row {
     display: grid;
@@ -109,6 +101,11 @@
 .basic-information-row:first-child {
     border-top: 1px solid #eeeeec;
 }
+
+
+/* ============================================================
+   LABEL
+   ============================================================ */
 
 .basic-information-label {
     display: flex;
@@ -129,6 +126,11 @@
 
     color: #787774;
 }
+
+
+/* ============================================================
+   VALUE
+   ============================================================ */
 
 .basic-information-value {
     display: flex;
@@ -151,6 +153,11 @@
 
     color: #37352f;
 }
+
+
+/* ============================================================
+   INPUT
+   ============================================================ */
 
 .basic-information-input {
     width: 100%;
@@ -191,9 +198,14 @@
 .basic-information-input:focus {
     border-color: #999999;
 
-    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+    box-shadow:
+        0 0 0 2px rgba(0, 0, 0, 0.05);
 }
 
+
+/* ============================================================
+   STATUS
+   ============================================================ */
 
 .basic-information-status {
     display: inline-flex;
@@ -218,7 +230,21 @@
 }
 
 
+/* ============================================================
+   READONLY
+   ============================================================ */
+
+.basic-information-readonly {
+    color: #787774;
+}
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
 @media (max-width: 700px) {
+
     .basic-information-row {
         grid-template-columns: 1fr;
         gap: 4px;
@@ -232,8 +258,4 @@
     .basic-information-value {
         padding: 0;
     }
-}
-
-.basic-information-readonly {
-    color: #787774;
 }

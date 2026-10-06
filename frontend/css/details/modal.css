@@ -13,9 +13,9 @@
     align-items: center;
     justify-content: center;
 
-    padding: 24px;
-
     box-sizing: border-box;
+
+    padding: 24px;
 
     background: rgba(0, 0, 0, 0.35);
 }
@@ -74,7 +74,6 @@
 
 .modal-header {
     display: flex;
-
     align-items: center;
     justify-content: space-between;
 
@@ -85,9 +84,9 @@
 
 .modal-header h2,
 .modal-header h3 {
-    margin: 0;
-
     min-width: 0;
+
+    margin: 0;
 
     font-family:
         -apple-system,
@@ -112,7 +111,6 @@
 
 .modal-close {
     display: inline-flex;
-
     align-items: center;
     justify-content: center;
 
@@ -147,8 +145,8 @@
 
     transition:
         background-color 0.15s ease,
-        color 0.15s ease,
-        border-color 0.15s ease;
+        border-color 0.15s ease,
+        color 0.15s ease;
 }
 
 .modal-close:hover {
@@ -193,7 +191,7 @@
 
 
 /* ============================================================
-   INPUT / TEXTAREA / SELECT
+   FORM CONTROLS
    ============================================================ */
 
 .modal-body .form-group input[type="text"],
@@ -261,8 +259,13 @@
     appearance: auto;
 }
 
+
+/* ============================================================
+   FORM CONTROL FOCUS
+   ============================================================ */
+
 .modal-body .form-group select:focus,
-.modal-body .form-group input:focus,
+.modal.body .form-group input:focus,
 .modal-body .form-group textarea:focus {
     border-color: #999999;
 
@@ -277,7 +280,6 @@
 
 .modal-body .checkbox-group {
     display: flex;
-
     align-items: center;
 
     gap: 8px;
@@ -294,7 +296,6 @@
     height: 16px;
 
     margin: 0;
-
     padding: 0;
 
     accent-color: #37352f;
@@ -332,14 +333,12 @@
 
 .modal-actions {
     display: flex;
-
     align-items: center;
     justify-content: flex-end;
 
     gap: 8px;
 
     margin-top: 24px;
-
     padding-top: 16px;
 
     border-top: 1px solid #eeeeec;
@@ -380,7 +379,7 @@
 
 
 /* ============================================================
-   CANCEL
+   SECONDARY ACTION
    ============================================================ */
 
 .modal-actions button:first-child {
@@ -401,7 +400,7 @@
 
 
 /* ============================================================
-   SAVE / PRIMARY ACTION
+   PRIMARY ACTION
    ============================================================ */
 
 .modal-actions button:last-child {
@@ -420,7 +419,7 @@
 
 
 /* ============================================================
-   MOBILE
+   RESPONSIVE
    ============================================================ */
 
 @media (max-width: 600px) {

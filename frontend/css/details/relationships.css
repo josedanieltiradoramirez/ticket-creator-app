@@ -2,48 +2,6 @@
    RELATIONSHIPS
    ============================================================ */
 
-.relationships-section {
-    width: 100%;
-    max-width: none;
-
-    margin: 0;
-
-    padding: 0 20px 18px 20px;
-
-    box-sizing: border-box;
-}
-
-
-/* ============================================================
-   RELATIONSHIPS HEADER
-   ============================================================ */
-
-.relationships-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    margin-bottom: 18px;
-}
-
-.relationships-header h2 {
-    margin: 0;
-
-    font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Helvetica,
-        Arial,
-        sans-serif;
-
-    font-size: 20px;
-    font-weight: 600;
-    line-height: 1.4;
-
-    color: #202020;
-}
-
 
 /* ============================================================
    ADD BUTTON
@@ -82,9 +40,7 @@
 
 .relationships-add-button:hover {
     background: #f7f7f5;
-
     border-color: #cfcfcd;
-
     color: #202020;
 }
 
@@ -95,8 +51,6 @@
 
 .relationships-list {
     width: 100%;
-
-    border-top: 1px solid #eeeeec;
 
     box-sizing: border-box;
 }
@@ -196,7 +150,6 @@
 
 .relationship-action-button:hover {
     color: #202020;
-
     background: #f1f1ef;
 }
 
@@ -211,7 +164,6 @@
 
 .relationship-action-button.remove:hover {
     color: #8b3030;
-
     background: #f9eeee;
 }
 
@@ -242,13 +194,6 @@
    ============================================================ */
 
 @media (max-width: 700px) {
-
-    .relationships-section {
-        max-width: 100%;
-
-        padding-left: 16px;
-        padding-right: 16px;
-    }
 
     .relationship-item {
         align-items: flex-start;
