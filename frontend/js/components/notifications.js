@@ -7,15 +7,12 @@ function showNotification({
     type = "info",
     duration = 3000
 }) {
-
     let container =
         document.getElementById(
             "notificationContainer"
         );
 
-
     if (!container) {
-
         container =
             document.createElement("div");
 
@@ -25,24 +22,22 @@ function showNotification({
         document.body.appendChild(
             container
         );
-
     }
 
+    // ========================================================
+    // CREATE NOTIFICATION
+    // ========================================================
 
     const notification =
         document.createElement("div");
 
-
     notification.className =
         `notification notification-${type}`;
-
 
     const icon =
         getNotificationIcon(type);
 
-
     notification.innerHTML = `
-
         <span class="notification-icon">
             ${icon}
         </span>
@@ -58,29 +53,30 @@ function showNotification({
         >
             ×
         </button>
-
     `;
-
 
     container.appendChild(
         notification
     );
 
+    // ========================================================
+    // SHOW NOTIFICATION
+    // ========================================================
 
     requestAnimationFrame(() => {
-
         notification.classList.add(
             "notification-visible"
         );
-
     });
 
+    // ========================================================
+    // CLOSE BUTTON
+    // ========================================================
 
     const closeButton =
         notification.querySelector(
             ".notification-close"
         );
-
 
     closeButton.addEventListener(
         "click",
@@ -91,19 +87,17 @@ function showNotification({
         }
     );
 
+    // ========================================================
+    // AUTO REMOVE
+    // ========================================================
 
     if (duration > 0) {
-
         setTimeout(() => {
-
             removeNotification(
                 notification
             );
-
         }, duration);
-
     }
-
 }
 
 
@@ -111,20 +105,12 @@ function showNotification({
 // SUCCESS
 // ============================================================
 
-function showSuccessMessage(
-    message
-) {
-
+function showSuccessMessage(message) {
     showNotification({
-
         message: message,
-
         type: "success",
-
         duration: 3000
-
     });
-
 }
 
 
@@ -132,20 +118,12 @@ function showSuccessMessage(
 // ERROR
 // ============================================================
 
-function showErrorMessage(
-    message
-) {
-
+function showErrorMessage(message) {
     showNotification({
-
         message: message,
-
         type: "error",
-
         duration: 4000
-
     });
-
 }
 
 
@@ -153,20 +131,12 @@ function showErrorMessage(
 // WARNING
 // ============================================================
 
-function showWarningMessage(
-    message
-) {
-
+function showWarningMessage(message) {
     showNotification({
-
         message: message,
-
         type: "warning",
-
         duration: 3500
-
     });
-
 }
 
 
@@ -174,20 +144,12 @@ function showWarningMessage(
 // INFO
 // ============================================================
 
-function showInfoMessage(
-    message
-) {
-
+function showInfoMessage(message) {
     showNotification({
-
         message: message,
-
         type: "info",
-
         duration: 3000
-
     });
-
 }
 
 
@@ -195,39 +157,27 @@ function showInfoMessage(
 // REMOVE NOTIFICATION
 // ============================================================
 
-function removeNotification(
-    notification
-) {
-
+function removeNotification(notification) {
     if (!notification) {
         return;
     }
-
 
     notification.classList.remove(
         "notification-visible"
     );
 
-
     setTimeout(() => {
-
         notification.remove();
-
     }, 180);
-
 }
 
 
 // ============================================================
-// ICON
+// NOTIFICATION ICON
 // ============================================================
 
-function getNotificationIcon(
-    type
-) {
-
+function getNotificationIcon(type) {
     switch (type) {
-
         case "success":
             return "✓";
 
@@ -240,9 +190,7 @@ function getNotificationIcon(
         case "info":
         default:
             return "i";
-
     }
-
 }
 
 
@@ -250,30 +198,11 @@ function getNotificationIcon(
 // ESCAPE HTML
 // ============================================================
 
-function escapeNotificationHtml(
-    value
-) {
-
-    return String(value)
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-
+function escapeNotificationHtml(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }

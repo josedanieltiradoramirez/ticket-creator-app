@@ -19,7 +19,6 @@ function renderBasicInformationComponent({
     }
 
     let editMode = false;
-    let currentExpanded = expanded;
 
 
     // ============================================================
@@ -87,7 +86,7 @@ function renderBasicInformationComponent({
             containerId: containerId,
             title: "Basic Information",
             content: content,
-            expanded: currentExpanded
+            expanded: expanded
         });
 
 
@@ -287,21 +286,6 @@ function renderBasicInformationComponent({
         `;
     }
 
-    function getCurrentExpandedState() {
-
-        const header =
-            container.querySelector(
-                ".collapsible-section-header"
-            );
-
-        if (!header) {
-            return currentExpanded;
-        }
-
-        return (
-            header.getAttribute("aria-expanded") === "true"
-        );
-    }
 
 
     // ============================================================
@@ -370,9 +354,6 @@ function renderBasicInformationComponent({
 
                     event.stopPropagation();
 
-                    currentExpanded =
-                        getCurrentExpandedState();
-
                     editMode = true;
 
                     render();
@@ -393,8 +374,6 @@ function renderBasicInformationComponent({
 
                     event.stopPropagation();
 
-                    currentExpanded =
-                        getCurrentExpandedState();
 
                     editMode = false;
 
@@ -466,8 +445,7 @@ function renderBasicInformationComponent({
                         );
 
 
-                        currentExpanded =
-                            getCurrentExpandedState();
+
 
                         editMode = false;
 

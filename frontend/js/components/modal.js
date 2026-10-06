@@ -8,7 +8,8 @@ function renderModal({
     content,
     onClose
 }) {
-    const container = document.getElementById(containerId);
+    const container =
+        document.getElementById(containerId);
 
     if (!container) {
         console.error(
@@ -18,6 +19,9 @@ function renderModal({
         return;
     }
 
+    // ========================================================
+    // RENDER
+    // ========================================================
 
     container.innerHTML = `
         <div class="modal-content">
@@ -38,7 +42,6 @@ function renderModal({
 
             </div>
 
-
             <div class="modal-body">
 
                 ${content}
@@ -48,22 +51,22 @@ function renderModal({
         </div>
     `;
 
+    // ========================================================
+    // CLOSE BUTTON
+    // ========================================================
 
     const closeButton =
         container.querySelector(
             "[data-modal-close]"
         );
 
-
     if (closeButton && onClose) {
-
         closeButton.addEventListener(
             "click",
             () => {
                 onClose();
             }
         );
-
     }
 }
 
@@ -73,8 +76,7 @@ function renderModal({
 // ============================================================
 
 function escapeModalHtml(value) {
-
-    return String(value)
+    return String(value ?? "")
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")

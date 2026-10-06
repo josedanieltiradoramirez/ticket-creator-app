@@ -24,19 +24,7 @@ function renderFormSection({
      * If the Form section already exists, keep
      * its current open/closed state.
      */
-    let currentExpanded = expanded;
-
-    const existingHeader =
-        container.querySelector(
-            ".collapsible-section-header"
-        );
-
-    if (existingHeader) {
-        currentExpanded =
-            existingHeader.getAttribute(
-                "aria-expanded"
-            ) === "true";
-    }
+    
 
     const {
         add = true,
@@ -180,7 +168,7 @@ function renderFormSection({
         containerId: containerId,
         title: "Form",
         content: content,
-        expanded: currentExpanded,
+        expanded,
         headerActions: headerActions.join("")
     });
 

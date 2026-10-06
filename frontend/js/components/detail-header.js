@@ -1,3 +1,7 @@
+// ============================================================
+// DETAIL HEADER COMPONENT
+// ============================================================
+
 function renderDetailHeader({
     containerId,
     type,
@@ -7,12 +11,14 @@ function renderDetailHeader({
     onBack = null,
     onEdit = null
 }) {
-    const container = document.getElementById(containerId);
+    const container =
+        document.getElementById(containerId);
 
     if (!container) {
         console.error(
             `Detail header container "${containerId}" not found.`
         );
+
         return;
     }
 
@@ -22,6 +28,10 @@ function renderDetailHeader({
     } = actions;
 
     const headerActions = [];
+
+    // ========================================================
+    // BUILD HEADER ACTIONS
+    // ========================================================
 
     if (back) {
         headerActions.push(`
@@ -47,6 +57,10 @@ function renderDetailHeader({
             </button>
         `);
     }
+
+    // ========================================================
+    // RENDER
+    // ========================================================
 
     container.innerHTML = `
         <header class="detail-page-header">
@@ -86,35 +100,51 @@ function renderDetailHeader({
         </header>
     `;
 
-    const backButton = document.getElementById(
-        "detailHeaderBackButton"
-    );
+    // ========================================================
+    // BACK BUTTON
+    // ========================================================
+
+    const backButton =
+        document.getElementById(
+            "detailHeaderBackButton"
+        );
 
     if (backButton && onBack) {
         backButton.addEventListener(
             "click",
             (event) => {
                 event.stopPropagation();
+
                 onBack();
             }
         );
     }
 
-    const editButton = document.getElementById(
-        "detailHeaderEditButton"
-    );
+    // ========================================================
+    // EDIT BUTTON
+    // ========================================================
+
+    const editButton =
+        document.getElementById(
+            "detailHeaderEditButton"
+        );
 
     if (editButton && onEdit) {
         editButton.addEventListener(
             "click",
             (event) => {
                 event.stopPropagation();
+
                 onEdit();
             }
         );
     }
 }
 
+
+// ============================================================
+// ESCAPE HTML
+// ============================================================
 
 function escapeDetailHeaderHtml(value) {
     return String(value ?? "")
