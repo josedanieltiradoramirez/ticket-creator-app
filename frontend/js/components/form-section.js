@@ -18,6 +18,26 @@ function renderFormSection({
         return;
     }
 
+    /*
+     * PRESERVE EXPANDED STATE
+     * ----------------------------------------
+     * If the Form section already exists, keep
+     * its current open/closed state.
+     */
+    let currentExpanded = expanded;
+
+    const existingHeader =
+        container.querySelector(
+            ".collapsible-section-header"
+        );
+
+    if (existingHeader) {
+        currentExpanded =
+            existingHeader.getAttribute(
+                "aria-expanded"
+            ) === "true";
+    }
+
     const {
         add = true,
         create = true,
@@ -124,10 +144,13 @@ function renderFormSection({
                     ? `
                         <div class="form-section-row">
                             <div class="form-section-label">
-                                Form
+                                Name
                             </div>
+
                             <div class="form-section-value">
-                                ${escapeFormHtml(form.name || "-")}
+                                ${escapeFormHtml(
+                                    form.name || "-"
+                                )}
                             </div>
                         </div>
 
@@ -135,7 +158,10 @@ function renderFormSection({
                             <div class="form-section-label">
                                 Information Needed
                             </div>
-                            <div class="form-section-value form-section-description">${escapeFormHtml(form.description || "-")}</div>
+
+                            <div class="form-section-value form-section-description">${escapeFormHtml(
+                                (form.description || "-").trim()
+                            )}</div>
                         </div>
                     `
                     : `
@@ -154,7 +180,7 @@ function renderFormSection({
         containerId: containerId,
         title: "Form",
         content: content,
-        expanded: expanded,
+        expanded: currentExpanded,
         headerActions: headerActions.join("")
     });
 
