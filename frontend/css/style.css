@@ -950,8 +950,7 @@ body {
 }
 
 
-.app-sidebar.collapsed
-~ .app-content {
+body:has(.app-sidebar.collapsed) .app-content {
     margin-left: 68px;
 }
 
@@ -1049,4 +1048,14 @@ body {
         margin-left: 68px;
     }
 
+}
+
+/* ============================================================
+   DETAIL PAGE CONTENT WIDTH
+   ============================================================ */
+
+.app-content > main {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0 24px 40px;
 }

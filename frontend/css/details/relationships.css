@@ -4,9 +4,19 @@
 
 .relationships-section {
     width: 100%;
-    max-width: 760px;
-    margin-bottom: 42px;
+    max-width: none;
+
+    margin: 0;
+
+    padding: 0 20px 18px 20px;
+
+    box-sizing: border-box;
 }
+
+
+/* ============================================================
+   RELATIONSHIPS HEADER
+   ============================================================ */
 
 .relationships-header {
     display: flex;
@@ -33,6 +43,11 @@
 
     color: #202020;
 }
+
+
+/* ============================================================
+   ADD BUTTON
+   ============================================================ */
 
 .relationships-add-button {
     min-height: 34px;
@@ -67,27 +82,49 @@
 
 .relationships-add-button:hover {
     background: #f7f7f5;
+
     border-color: #cfcfcd;
+
     color: #202020;
 }
+
+
+/* ============================================================
+   RELATIONSHIPS LIST
+   ============================================================ */
 
 .relationships-list {
     width: 100%;
 
     border-top: 1px solid #eeeeec;
+
+    box-sizing: border-box;
 }
+
+
+/* ============================================================
+   RELATIONSHIP ITEM
+   ============================================================ */
 
 .relationship-item {
     display: flex;
     align-items: center;
     justify-content: space-between;
 
+    width: 100%;
     min-height: 46px;
 
-    border-bottom: 1px solid #eeeeec;
+    box-sizing: border-box;
 
     gap: 20px;
+
+    border-bottom: 1px solid #eeeeec;
 }
+
+
+/* ============================================================
+   RELATIONSHIP NAME
+   ============================================================ */
 
 .relationship-item-name {
     min-width: 0;
@@ -110,6 +147,11 @@
     overflow-wrap: anywhere;
 }
 
+
+/* ============================================================
+   RELATIONSHIP ACTIONS
+   ============================================================ */
+
 .relationship-item-actions {
     display: flex;
     align-items: center;
@@ -118,6 +160,11 @@
 
     gap: 4px;
 }
+
+
+/* ============================================================
+   ACTION BUTTONS
+   ============================================================ */
 
 .relationship-action-button {
     padding: 5px 7px;
@@ -149,8 +196,14 @@
 
 .relationship-action-button:hover {
     color: #202020;
+
     background: #f1f1ef;
 }
+
+
+/* ============================================================
+   REMOVE BUTTON
+   ============================================================ */
 
 .relationship-action-button.remove {
     color: #a05a5a;
@@ -158,8 +211,14 @@
 
 .relationship-action-button.remove:hover {
     color: #8b3030;
+
     background: #f9eeee;
 }
+
+
+/* ============================================================
+   EMPTY STATE
+   ============================================================ */
 
 .relationships-empty {
     padding: 18px 0;
@@ -177,13 +236,23 @@
     color: #787774;
 }
 
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
 @media (max-width: 700px) {
+
     .relationships-section {
         max-width: 100%;
+
+        padding-left: 16px;
+        padding-right: 16px;
     }
 
     .relationship-item {
         align-items: flex-start;
+
         flex-direction: column;
 
         gap: 6px;

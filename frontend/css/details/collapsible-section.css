@@ -4,7 +4,18 @@
 
 .collapsible-section {
     width: 100%;
-    margin-bottom: 28px;
+
+    margin: 0 0 14px 0;
+
+    box-sizing: border-box;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+
+    box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
 
@@ -18,9 +29,12 @@
     justify-content: space-between;
 
     width: 100%;
+    height: 54px;
+    min-height: 54px;
+
     box-sizing: border-box;
 
-    padding: 10px 4px;
+    padding: 0 14px;
 
     font-family:
         -apple-system,
@@ -33,7 +47,7 @@
     background: transparent;
 
     border: 0;
-    border-radius: 6px;
+    border-radius: 8px;
 
     cursor: pointer;
 
@@ -44,12 +58,12 @@
 }
 
 .collapsible-section-header:hover {
-    background: #f7f7f5;
+    background: #fafafa;
 }
 
 
 /* ============================================================
-   TITLE
+   TITLE WRAPPER
    ============================================================ */
 
 .collapsible-section-title-wrapper {
@@ -70,6 +84,8 @@
     display: flex;
     align-items: center;
 
+    gap: 6px;
+
     flex-shrink: 0;
 
     margin-left: auto;
@@ -86,12 +102,15 @@
     align-items: center;
     justify-content: center;
 
-    min-width: 118px;
-    min-height: 36px;
+    min-width: auto;
+    width: auto;
+
+    height: 34px;
+    min-height: 34px;
 
     box-sizing: border-box;
 
-    padding: 7px 12px;
+    padding: 6px 12px;
 
     font-family:
         -apple-system,
@@ -101,7 +120,7 @@
         Arial,
         sans-serif;
 
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
 
     line-height: 1;
@@ -110,7 +129,7 @@
 
     background: #ffffff;
 
-    border: 1px solid #d9d9d9;
+    border: 1px solid #dcdcdc;
     border-radius: 6px;
 
     cursor: pointer;
@@ -141,6 +160,7 @@
     justify-content: center;
 
     width: 16px;
+    height: 16px;
 
     flex-shrink: 0;
 
@@ -168,7 +188,7 @@
         Arial,
         sans-serif;
 
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 600;
 
     line-height: 1.4;
@@ -184,10 +204,22 @@
 .collapsible-section-content {
     overflow: hidden;
 
+    width: 100%;
+
+    box-sizing: border-box;
+
+    border-top: 1px solid #eeeeee;
+
     transition:
         max-height 0.2s ease,
-        opacity 0.15s ease;
+        opacity 0.15s ease,
+        padding 0.2s ease;
 }
+
+
+/* ============================================================
+   EXPANDED CONTENT
+   ============================================================ */
 
 .collapsible-section-expanded {
     max-height: 5000px;
@@ -195,58 +227,111 @@
     opacity: 1;
 }
 
+
+/* ============================================================
+   COLLAPSED CONTENT
+   ============================================================ */
+
 .collapsible-section-collapsed {
     max-height: 0;
+
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
 
     opacity: 0;
 
     pointer-events: none;
+
+    border-top: 0;
 }
 
 
 /* ============================================================
-   RELATIONSHIPS HIERARCHY
+   BASIC INFORMATION
    ============================================================ */
 
-.relationships-content {
-    width: 100%;
+#basicInformation
+.collapsible-section-expanded {
+    padding: 18px 20px;
+
+    box-sizing: border-box;
 }
 
 
 /* ============================================================
-   RELATIONSHIP LEVEL
+   FORM
    ============================================================ */
 
-.relationships-content
+#formSection
+.collapsible-section-expanded {
+    padding: 18px 20px;
+
+    box-sizing: border-box;
+}
+
+
+/* ============================================================
+   RELATIONSHIPS
+   ============================================================ */
+
 .relationship-collapsible-container {
-    margin-left: 28px;
+    width: 100%;
+
+    margin: 0;
+
+    padding: 0;
+
+    box-sizing: border-box;
 }
 
 
 /* ============================================================
-   RELATIONSHIP ITEMS LEVEL
+   RELATIONSHIP LIST
    ============================================================ */
 
 .relationship-collapsible-container
 .relationships-list {
-    margin-left: 28px;
+    width: 100%;
+
+    margin-left: 0;
+
+    box-sizing: border-box;
 }
+
 
 /* ============================================================
-   SECTION CONTENT INDENTATION
+   RESPONSIVE
    ============================================================ */
 
-/* Basic Information content */
-#basicInformation
-.collapsible-section-content {
-    padding-left: 28px;
-    box-sizing: border-box;
-}
+@media (max-width: 700px) {
 
+    .collapsible-section {
+        width: 100%;
 
-/* Form content */
-#formSection
-.collapsible-section-content {
-    padding-left: 28px;
-    box-sizing: border-box;
+        margin-bottom: 12px;
+    }
+
+    .collapsible-section-header {
+        height: 52px;
+        min-height: 52px;
+
+        padding: 0 12px;
+    }
+
+    .collapsible-section-title {
+        font-size: 16px;
+    }
+
+    .collapsible-section-header-actions {
+        gap: 4px;
+    }
+
+    .collapsible-section-header-actions button {
+        height: 32px;
+        min-height: 32px;
+
+        padding: 5px 9px;
+
+        font-size: 12px;
+    }
 }

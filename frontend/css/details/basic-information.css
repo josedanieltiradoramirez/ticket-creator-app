@@ -4,7 +4,7 @@
 
 .basic-information {
     width: 100%;
-    max-width: 760px;
+    max-width: none;
 }
 
 .basic-information-header {

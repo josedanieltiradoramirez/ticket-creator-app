@@ -19,6 +19,7 @@ function renderBasicInformationComponent({
     }
 
     let editMode = false;
+    let currentExpanded = expanded;
 
 
     // ============================================================
@@ -86,7 +87,7 @@ function renderBasicInformationComponent({
             containerId: containerId,
             title: "Basic Information",
             content: content,
-            expanded: expanded
+            expanded: currentExpanded
         });
 
 
@@ -286,6 +287,22 @@ function renderBasicInformationComponent({
         `;
     }
 
+    function getCurrentExpandedState() {
+
+        const header =
+            container.querySelector(
+                ".collapsible-section-header"
+            );
+
+        if (!header) {
+            return currentExpanded;
+        }
+
+        return (
+            header.getAttribute("aria-expanded") === "true"
+        );
+    }
+
 
     // ============================================================
     // EVENTS
@@ -349,7 +366,12 @@ function renderBasicInformationComponent({
 
             editButton.addEventListener(
                 "click",
-                () => {
+                (event) => {
+
+                    event.stopPropagation();
+
+                    currentExpanded =
+                        getCurrentExpandedState();
 
                     editMode = true;
 
@@ -367,7 +389,12 @@ function renderBasicInformationComponent({
 
             cancelButton.addEventListener(
                 "click",
-                () => {
+                (event) => {
+
+                    event.stopPropagation();
+
+                    currentExpanded =
+                        getCurrentExpandedState();
 
                     editMode = false;
 
@@ -385,7 +412,9 @@ function renderBasicInformationComponent({
 
             saveButton.addEventListener(
                 "click",
-                async () => {
+                async (event) => {
+
+                    event.stopPropagation();
 
                     const updatedData = {};
 
@@ -436,6 +465,9 @@ function renderBasicInformationComponent({
                             updatedData
                         );
 
+
+                        currentExpanded =
+                            getCurrentExpandedState();
 
                         editMode = false;
 
