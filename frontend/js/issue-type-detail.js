@@ -37,84 +37,13 @@ document.addEventListener(
 
 
         await loadIssueTypeDetail();
-
-
-        try {
-
-            setupEventListeners();
-
-        } catch (error) {
-
-            console.error(
-                "Error setting up Issue Type event listeners:",
-                error
-            );
-
-        }
-
-    }
+}
 );
 
 
 // ============================================================
 // EVENT LISTENERS
 // ============================================================
-
-function setupEventListeners() {
-
-    // ========================================================
-    // BACK BUTTON
-    // ========================================================
-
-    const backButton =
-        document.getElementById("backButton");
-
-    if (backButton) {
-
-        backButton.addEventListener(
-            "click",
-            () => {
-
-                window.location.href =
-                    "issue-types.html";
-
-            }
-        );
-
-    }
-
-    // ========================================================
-    // QUEUE MODAL
-    // ========================================================
-
-
-    // ========================================================
-    // TOOL MODAL
-    // ========================================================
-
-
-
-    // ========================================================
-    // TROUBLESHOOTING TEMPLATE MODAL
-    // ========================================================
-
-
-
-    // ========================================================
-    // KNOWLEDGE BASE MODAL
-    // ========================================================
-
-
-    // ========================================================
-    // KNOWLEDGE BASE NOTE MODAL
-    // ========================================================
-
-
-    // ========================================================
-    // FORM MODAL
-    // ========================================================
-
-}
 
 // ============================================================
 // LOAD ISSUE TYPE
@@ -128,13 +57,7 @@ async function loadIssueTypeDetail() {
             await getIssueType(
                 issueTypeId
             );
-            
-        console.log(
-            "CURRENT ISSUE TYPE:",
-            currentIssueType
-        );
-
-        renderDetailHeader({
+renderDetailHeader({
             containerId: "detailHeader",
             type: "Issue Type",
             title: currentIssueType.name,
@@ -1747,13 +1670,7 @@ async function loadForm() {
             await getIssueTypeForm(
                 issueTypeId
             );
-
-        console.log(
-            "FORM RESPONSE:",
-            forms
-        );
-
-        const form =
+const form =
             forms && forms.length > 0
                 ? forms[0]
                 : null;
@@ -2843,100 +2760,6 @@ function closeEditFormModal() {
 // QUEUES
 // ============================================================
 
-async function loadQueues() {
-
-    const tableBody =
-        document.getElementById(
-            "queuesTableBody"
-        );
-
-
-    const emptyMessage =
-        document.getElementById(
-            "queuesEmptyMessage"
-        );
-
-
-    try {
-
-        const queues =
-            await getIssueTypeQueues(
-                issueTypeId
-            );
-
-
-        tableBody.innerHTML =
-            "";
-
-
-        if (
-            !queues ||
-            queues.length === 0
-        ) {
-
-            emptyMessage.style.display =
-                "block";
-
-            return;
-
-        }
-
-
-        emptyMessage.style.display =
-            "none";
-
-
-        queues.forEach(queue => {
-
-            const row =
-                document.createElement(
-                    "tr"
-                );
-
-
-            row.innerHTML = `
-
-                <td>
-                    ${escapeHtml(
-                        queue.name || "-"
-                    )}
-                </td>
-
-                <td>
-
-                    <button
-                        class="action-button"
-                        onclick="removeQueue(${queue.id})"
-                    >
-                        Remove
-                    </button>
-
-                </td>
-
-            `;
-
-
-            tableBody.appendChild(
-                row
-            );
-
-        });
-
-    } catch (error) {
-
-        console.error(
-            "Error loading queues:",
-            error
-        );
-
-        emptyMessage.style.display =
-            "block";
-
-    }
-
-}
-
-
 // ============================================================
 // OPEN QUEUE MODAL
 // ============================================================
@@ -3156,145 +2979,13 @@ async function addSelectedQueue() {
 // REMOVE QUEUE
 // ============================================================
 
-function openRemoveQueueModal(queueId) {
-
-    const content = `
-
-        <p>
-            Are you sure you want to remove this Queue
-            from the Issue Type?
-        </p>
-
-        <div class="modal-actions">
-
-            <button
-                type="button"
-                id="cancelRemoveQueueButton"
-            >
-                Cancel
-            </button>
-
-            <button
-                type="button"
-                id="confirmRemoveQueueButton"
-            >
-                Remove
-            </button>
-
-        </div>
-
-    `;
-
-    renderModal({
-
-        containerId:
-            "queueModal",
-
-        title:
-            "Remove Queue",
-
-        content:
-            content,
-
-        onClose: () => {
-            closeRemoveQueueModal();
-        }
-
-    });
-
-
-    document
-        .getElementById(
-            "cancelRemoveQueueButton"
-        )
-        .addEventListener(
-            "click",
-            closeRemoveQueueModal
-        );
-
-
-    document
-        .getElementById(
-            "confirmRemoveQueueButton"
-        )
-        .addEventListener(
-            "click",
-            () => {
-                removeQueue(
-                    queueId
-                );
-            }
-        );
-
-
-    document
-        .getElementById(
-            "queueModal"
-        )
-        .classList
-        .remove("hidden");
-
-}
-
-
 // ============================================================
 // CONFIRM REMOVE QUEUE
 // ============================================================
 
-async function removeQueue(queueId) {
-
-    try {
-
-        await removeIssueTypeQueue(
-            issueTypeId,
-            queueId
-        );
-
-        closeRemoveQueueModal();
-
-        showSuccessMessage(
-            "Queue removed successfully."
-        );
-
-        await loadRelationships();
-
-    } catch (error) {
-
-        console.error(
-            "Error removing queue:",
-            error
-        );
-
-        showErrorMessage(
-            "Error removing queue."
-        );
-
-    }
-
-}
-
-
 // ============================================================
 // CLOSE REMOVE QUEUE MODAL
 // ============================================================
-
-function closeRemoveQueueModal() {
-
-    const modal =
-        document.getElementById(
-            "queueModal"
-        );
-
-    if (!modal) {
-        return;
-    }
-
-    modal
-        .classList
-        .add("hidden");
-
-}
-
 
 // ============================================================
 // CLOSE QUEUE MODAL
@@ -3315,112 +3006,6 @@ function closeQueueModal() {
 // ============================================================
 // TOOLS
 // ============================================================
-
-async function loadTools() {
-
-    const tableBody =
-        document.getElementById(
-            "toolsTableBody"
-        );
-
-
-    const emptyMessage =
-        document.getElementById(
-            "toolsEmptyMessage"
-        );
-
-
-    try {
-
-        const tools =
-            await getIssueTypeTools(
-                issueTypeId
-            );
-
-
-        tableBody.innerHTML =
-            "";
-
-
-        if (
-            !tools ||
-            tools.length === 0
-        ) {
-
-            emptyMessage.style.display =
-                "block";
-
-            return;
-
-        }
-
-
-        emptyMessage.style.display =
-            "none";
-
-
-        tools.forEach(tool => {
-
-            const row =
-                document.createElement(
-                    "tr"
-                );
-
-
-            row.innerHTML = `
-
-                <td>
-                    ${escapeHtml(
-                        tool.name || "-"
-                    )}
-                </td>
-
-                <td>
-                    ${escapeHtml(
-                        tool.description || "-"
-                    )}
-                </td>
-
-                <td>
-                    ${createStatusBadge(
-                        tool.is_active
-                    )}
-                </td>
-
-                <td>
-
-                    <button
-                        class="action-button"
-                        onclick="removeTool(${tool.id})"
-                    >
-                        Remove
-                    </button>
-
-                </td>
-
-            `;
-
-
-            tableBody.appendChild(
-                row
-            );
-
-        });
-
-    } catch (error) {
-
-        console.error(
-            "Error loading tools:",
-            error
-        );
-
-        emptyMessage.style.display =
-            "block";
-
-    }
-
-}
-
 
 // ============================================================
 // OPEN TOOL MODAL
@@ -3629,254 +3214,17 @@ async function addSelectedTool() {
 // REMOVE TOOL
 // ============================================================
 
-function openRemoveToolModal(toolId) {
-
-    const content = `
-
-        <p>
-            Are you sure you want to remove this Tool
-            from the Issue Type?
-        </p>
-
-        <div class="modal-actions">
-
-            <button
-                type="button"
-                id="cancelRemoveToolButton"
-            >
-                Cancel
-            </button>
-
-            <button
-                type="button"
-                id="confirmRemoveToolButton"
-            >
-                Remove
-            </button>
-
-        </div>
-
-    `;
-
-    renderModal({
-
-        containerId:
-            "toolModal",
-
-        title:
-            "Remove Tool",
-
-        content:
-            content,
-
-        onClose: () => {
-            closeRemoveToolModal();
-        }
-
-    });
-
-
-    document
-        .getElementById(
-            "cancelRemoveToolButton"
-        )
-        .addEventListener(
-            "click",
-            closeRemoveToolModal
-        );
-
-
-    document
-        .getElementById(
-            "confirmRemoveToolButton"
-        )
-        .addEventListener(
-            "click",
-            () => {
-                removeTool(
-                    toolId
-                );
-            }
-        );
-
-
-    document
-        .getElementById(
-            "toolModal"
-        )
-        .classList
-        .remove("hidden");
-
-}
-
-
 // ============================================================
 // CONFIRM REMOVE TOOL
 // ============================================================
-
-async function removeTool(toolId) {
-
-    try {
-
-        await removeIssueTypeTool(
-            issueTypeId,
-            toolId
-        );
-
-        closeRemoveToolModal();
-
-        showSuccessMessage(
-            "Tool removed successfully."
-        );
-
-        await loadRelationships();
-
-    } catch (error) {
-
-        console.error(
-            "Error removing tool:",
-            error
-        );
-
-        showErrorMessage(
-            "Error removing tool."
-        );
-
-    }
-
-}
-
 
 // ============================================================
 // CLOSE REMOVE TOOL MODAL
 // ============================================================
 
-function closeRemoveToolModal() {
-
-    const modal =
-        document.getElementById(
-            "toolModal"
-        );
-
-    if (!modal) {
-        return;
-    }
-
-    modal
-        .classList
-        .add("hidden");
-
-}
-
 // ============================================================
 // TROUBLESHOOTING TEMPLATES
 // ============================================================
-
-async function loadTroubleshootingTemplates() {
-
-    const tableBody =
-        document.getElementById(
-            "troubleshootingTemplatesTableBody"
-        );
-
-
-    const emptyMessage =
-        document.getElementById(
-            "troubleshootingTemplatesEmptyMessage"
-        );
-
-
-    try {
-
-        const templates =
-            await getIssueTypeTroubleshootingTemplates(
-                issueTypeId
-            );
-
-
-        tableBody.innerHTML =
-            "";
-
-
-        if (
-            !templates ||
-            templates.length === 0
-        ) {
-
-            emptyMessage.style.display =
-                "block";
-
-            return;
-
-        }
-
-
-        emptyMessage.style.display =
-            "none";
-
-
-        templates.forEach(template => {
-
-            const row =
-                document.createElement(
-                    "tr"
-                );
-
-
-            row.innerHTML = `
-
-                <td>
-                    ${escapeHtml(
-                        template.name || "-"
-                    )}
-                </td>
-
-                <td>
-                    ${escapeHtml(
-                        template.generated_description || "-"
-                    )}
-                </td>
-
-                <td>
-                    ${createStatusBadge(
-                        template.is_active
-                    )}
-                </td>
-
-                <td>
-
-                    <button
-                        class="action-button"
-                        onclick="removeTroubleshootingTemplate(${template.id})"
-                    >
-                        Remove
-                    </button>
-
-                </td>
-
-            `;
-
-
-            tableBody.appendChild(
-                row
-            );
-
-        });
-
-    } catch (error) {
-
-        console.error(
-            "Error loading troubleshooting templates:",
-            error
-        );
-
-        emptyMessage.style.display =
-            "block";
-
-    }
-
-}
-
 
 // ============================================================
 // OPEN TROUBLESHOOTING TEMPLATE MODAL
@@ -4098,45 +3446,6 @@ async function addSelectedTroubleshootingTemplate() {
 // REMOVE TROUBLESHOOTING TEMPLATE
 // ============================================================
 
-async function removeTroubleshootingTemplate(
-    templateId
-) {
-
-    if (
-        !confirm(
-            "Remove this troubleshooting template from the issue type?"
-        )
-    ) {
-        return;
-    }
-
-
-    try {
-
-        await removeIssueTypeTroubleshootingTemplate(
-            issueTypeId,
-            templateId
-        );
-
-
-        await loadRelationships();
-
-    } catch (error) {
-
-        console.error(
-            "Error removing troubleshooting template:",
-            error
-        );
-
-        showErrorMessage(
-            "Error removing troubleshooting template."
-        );
-
-    }
-
-}
-
-
 // ============================================================
 // CLOSE TROUBLESHOOTING TEMPLATE MODAL
 // ============================================================
@@ -4156,112 +3465,6 @@ function closeTroubleshootingTemplateModal() {
 // ============================================================
 // KNOWLEDGE BASE
 // ============================================================
-
-async function loadKnowledgeBase() {
-
-    const tableBody =
-        document.getElementById(
-            "knowledgeBaseTableBody"
-        );
-
-
-    const emptyMessage =
-        document.getElementById(
-            "knowledgeBaseEmptyMessage"
-        );
-
-
-    try {
-
-        const knowledgeBase =
-            await getIssueTypeKnowledgeBase(
-                issueTypeId
-            );
-
-
-        tableBody.innerHTML =
-            "";
-
-
-        if (
-            !knowledgeBase ||
-            knowledgeBase.length === 0
-        ) {
-
-            emptyMessage.style.display =
-                "block";
-
-            return;
-
-        }
-
-
-        emptyMessage.style.display =
-            "none";
-
-
-        knowledgeBase.forEach(kb => {
-
-            const row =
-                document.createElement(
-                    "tr"
-                );
-
-
-            row.innerHTML = `
-
-                <td>
-                    ${escapeHtml(
-                        kb.article_number || "-"
-                    )}
-                </td>
-
-                <td>
-                    ${escapeHtml(
-                        kb.title || "-"
-                    )}
-                </td>
-
-                <td>
-                    ${escapeHtml(
-                        kb.description || "-"
-                    )}
-                </td>
-
-                <td>
-
-                    <button
-                        class="action-button"
-                        onclick="removeKnowledgeBase(${kb.id})"
-                    >
-                        Remove
-                    </button>
-
-                </td>
-
-            `;
-
-
-            tableBody.appendChild(
-                row
-            );
-
-        });
-
-    } catch (error) {
-
-        console.error(
-            "Error loading knowledge base:",
-            error
-        );
-
-        emptyMessage.style.display =
-            "block";
-
-    }
-
-}
-
 
 // ============================================================
 // OPEN KNOWLEDGE BASE MODAL
@@ -4480,45 +3683,6 @@ async function addSelectedKnowledgeBase() {
 // REMOVE KNOWLEDGE BASE
 // ============================================================
 
-async function removeKnowledgeBase(
-    knowledgeBaseId
-) {
-
-    if (
-        !confirm(
-            "Remove this Knowledge Base article from the issue type?"
-        )
-    ) {
-        return;
-    }
-
-
-    try {
-
-        await removeIssueTypeKnowledgeBase(
-            issueTypeId,
-            knowledgeBaseId
-        );
-
-
-        await loadRelationships();
-
-    } catch (error) {
-
-        console.error(
-            "Error removing knowledge base:",
-            error
-        );
-
-        showErrorMessage(
-            "Error removing Knowledge Base."
-        );
-
-    }
-
-}
-
-
 // ============================================================
 // CLOSE KNOWLEDGE BASE MODAL
 // ============================================================
@@ -4538,112 +3702,6 @@ function closeKnowledgeBaseModal() {
 // ============================================================
 // KNOWLEDGE BASE NOTES
 // ============================================================
-
-async function loadKnowledgeBaseNotes() {
-
-    const tableBody =
-        document.getElementById(
-            "knowledgeBaseNotesTableBody"
-        );
-
-
-    const emptyMessage =
-        document.getElementById(
-            "knowledgeBaseNotesEmptyMessage"
-        );
-
-
-    try {
-
-        const notes =
-            await getIssueTypeKnowledgeBaseNotes(
-                issueTypeId
-            );
-
-
-        tableBody.innerHTML =
-            "";
-
-
-        if (
-            !notes ||
-            notes.length === 0
-        ) {
-
-            emptyMessage.style.display =
-                "block";
-
-            return;
-
-        }
-
-
-        emptyMessage.style.display =
-            "none";
-
-
-        notes.forEach(note => {
-
-            const row =
-                document.createElement(
-                    "tr"
-                );
-
-
-            row.innerHTML = `
-
-                <td>
-                    ${escapeHtml(
-                        note.title || "-"
-                    )}
-                </td>
-
-                <td>
-                    ${escapeHtml(
-                        note.category || "-"
-                    )}
-                </td>
-
-                <td>
-                    ${createStatusBadge(
-                        note.is_active
-                    )}
-                </td>
-
-                <td>
-
-                    <button
-                        class="action-button"
-                        onclick="removeKnowledgeBaseNote(${note.id})"
-                    >
-                        Remove
-                    </button>
-
-                </td>
-
-            `;
-
-
-            tableBody.appendChild(
-                row
-            );
-
-        });
-
-    } catch (error) {
-
-        console.error(
-            "Error loading knowledge base notes:",
-            error
-        );
-
-        emptyMessage.style.display =
-            "block";
-
-    }
-
-}
-
 
 // ============================================================
 // OPEN KNOWLEDGE BASE NOTE MODAL
@@ -4868,45 +3926,6 @@ async function addSelectedKnowledgeBaseNote() {
 // REMOVE KNOWLEDGE BASE NOTE
 // ============================================================
 
-async function removeKnowledgeBaseNote(
-    noteId
-) {
-
-    if (
-        !confirm(
-            "Remove this Knowledge Base Note from the issue type?"
-        )
-    ) {
-        return;
-    }
-
-
-    try {
-
-        await removeIssueTypeKnowledgeBaseNote(
-            issueTypeId,
-            noteId
-        );
-
-
-        await loadRelationships();
-
-    } catch (error) {
-
-        console.error(
-            "Error removing knowledge base note:",
-            error
-        );
-
-        showErrorMessage(
-            "Error removing Knowledge Base Note."
-        );
-
-    }
-
-}
-
-
 // ============================================================
 // CLOSE KNOWLEDGE BASE NOTE MODAL
 // ============================================================
@@ -4942,33 +3961,6 @@ function closeToolModal() {
 // ============================================================
 // STATUS BADGE
 // ============================================================
-
-function createStatusBadge(
-    isActive
-) {
-
-    return `
-
-        <span
-            class="status-badge ${
-                isActive
-                    ? "active"
-                    : "inactive"
-            }"
-        >
-
-            ${
-                isActive
-                    ? "Active"
-                    : "Inactive"
-            }
-
-        </span>
-
-    `;
-
-}
-
 
 // ============================================================
 // ESCAPE HTML
