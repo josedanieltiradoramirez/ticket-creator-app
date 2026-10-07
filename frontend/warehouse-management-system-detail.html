@@ -12,6 +12,11 @@
 
     <title>WMS Details</title>
 
+
+    <!-- ===================================================== -->
+    <!-- GLOBAL STYLES -->
+    <!-- ===================================================== -->
+
     <link
         rel="stylesheet"
         href="css/style.css"
@@ -22,170 +27,83 @@
         href="css/tools.css"
     >
 
+
+    <!-- ===================================================== -->
+    <!-- DETAIL COMPONENT STYLES -->
+    <!-- ===================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="css/details/detail-header.css?v=1"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/details/basic-information.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/details/relationships.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/details/modal.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/details/notifications.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/details/collapsible-section.css"
+    >
+
 </head>
 
 
 <body>
 
-    <div class="page-container">
+
+    <!-- ===================================================== -->
+    <!-- NAVIGATION -->
+    <!-- ===================================================== -->
+
+    <div id="appNavigation"></div>
 
 
-        <!-- ================================================= -->
-        <!-- HEADER -->
-        <!-- ================================================= -->
+    <!-- ===================================================== -->
+    <!-- PAGE CONTENT -->
+    <!-- ===================================================== -->
 
-        <div class="crud-header">
+    <div class="app-content">
 
-            <h2 id="wmsTitle">
-                Warehouse Management System
-            </h2>
+        <main>
 
+            <!-- ================================================= -->
+            <!-- DETAIL HEADER -->
+            <!-- ================================================= -->
 
-            <div>
-
-                <button
-                    id="backButton"
-                    type="button"
-                >
-                    Back
-                </button>
-
-            </div>
-
-        </div>
+            <div id="detailHeader"></div>
 
 
-        <!-- ================================================= -->
-        <!-- BASIC INFORMATION -->
-        <!-- ================================================= -->
+            <!-- ================================================= -->
+            <!-- BASIC INFORMATION -->
+            <!-- ================================================= -->
 
-        <div class="crud-table-container">
-
-            <h3>
-                Basic Information
-            </h3>
+            <div id="basicInformation"></div>
 
 
-            <form id="wmsDetailForm">
+            <!-- ================================================= -->
+            <!-- RELATIONSHIPS -->
+            <!-- ================================================= -->
 
+            <div id="relationships"></div>
 
-                <div class="form-group">
-
-                    <label for="wmsName">
-                        Name
-                    </label>
-
-                    <input
-                        type="text"
-                        id="wmsName"
-                        required
-                    >
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="wmsDescription">
-                        Description
-                    </label>
-
-                    <textarea
-                        id="wmsDescription"
-                        rows="5"
-                    ></textarea>
-
-                </div>
-
-
-                <div class="modal-actions">
-
-                    <button
-                        type="submit"
-                        id="saveWmsButton"
-                    >
-                        Save Changes
-                    </button>
-
-                </div>
-
-            </form>
-
-        </div>
-
-
-        <!-- ================================================= -->
-        <!-- RELATED LOCATIONS -->
-        <!-- ================================================= -->
-
-        <div class="crud-table-container">
-
-            <div class="crud-header">
-
-                <h3>
-                    Related Locations
-                </h3>
-
-
-                <button
-                    id="addLocationButton"
-                    type="button"
-                >
-                    + Add Location
-                </button>
-
-            </div>
-
-
-            <table class="crud-table">
-
-                <thead>
-
-                    <tr>
-
-                        <th>
-                            Name
-                        </th>
-
-                        <th>
-                            City
-                        </th>
-
-                        <th>
-                            State
-                        </th>
-
-                        <th>
-                            Code
-                        </th>
-
-                        <th>
-                            Status
-                        </th>
-
-                        <th>
-                            Actions
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-
-                <tbody id="locationsTableBody">
-                </tbody>
-
-            </table>
-
-
-            <div
-                id="emptyLocationsMessage"
-                class="empty-message hidden"
-            >
-                No locations are associated with this WMS.
-            </div>
-
-        </div>
+        </main>
 
     </div>
 
@@ -197,74 +115,50 @@
     <div
         id="locationModal"
         class="modal hidden"
-    >
-
-        <div class="modal-content">
+    ></div>
 
 
-            <div class="modal-header">
+    <!-- ===================================================== -->
+    <!-- CONFIRMATION MODAL -->
+    <!-- ===================================================== -->
 
-                <h3>
-                    Add Location
-                </h3>
-
-
-                <button
-                    id="closeLocationModal"
-                    class="modal-close"
-                    type="button"
-                >
-                    ×
-                </button>
-
-            </div>
+    <div
+        id="confirmationModal"
+        class="modal hidden"
+    ></div>
 
 
-            <div class="form-group">
-
-                <label for="locationSelect">
-                    Location
-                </label>
-
-
-                <select id="locationSelect">
-
-                    <option value="">
-                        Select a location
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            <div class="modal-actions">
-
-                <button
-                    type="button"
-                    id="cancelLocationButton"
-                >
-                    Cancel
-                </button>
-
-
-                <button
-                    type="button"
-                    id="saveLocationButton"
-                >
-                    Add Location
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
-
+    <!-- ===================================================== -->
+    <!-- GLOBAL API -->
+    <!-- ===================================================== -->
 
     <script src="js/api.js"></script>
 
-    <script src="js/warehouse-management-system-detail.js"></script>
+    <script src="js/navigation.js"></script>
+
+
+    <!-- ===================================================== -->
+    <!-- SHARED DETAIL COMPONENTS -->
+    <!-- ===================================================== -->
+
+    <script src="js/components/detail-header.js"></script>
+
+    <script src="js/components/basic-information.js"></script>
+
+    <script src="js/components/relationships.js"></script>
+
+    <script src="js/components/modal.js"></script>
+
+    <script src="js/components/notifications.js"></script>
+
+    <script src="js/components/collapsible-section.js"></script>
+
+
+    <!-- ===================================================== -->
+    <!-- WMS DETAIL -->
+    <!-- ===================================================== -->
+
+    <script src="js/warehouse-management-system-detail.js?v=1"></script>
 
 </body>
 
