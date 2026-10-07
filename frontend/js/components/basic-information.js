@@ -19,23 +19,18 @@ function renderBasicInformationComponent({
     }
 
     let editMode = false;
-
+    let currentExpanded = expanded;
 
     // ============================================================
     // RENDER
     // ============================================================
 
     function render() {
-
         const content = `
             <div class="basic-information">
-
                 <div class="basic-information-header">
-
                     <div></div>
-
                     <div class="basic-information-actions">
-
                         ${
                             editMode
                                 ? `
@@ -46,7 +41,6 @@ function renderBasicInformationComponent({
                                     >
                                         Cancel
                                     </button>
-
                                     <button
                                         type="button"
                                         class="basic-information-button primary"
@@ -65,79 +59,50 @@ function renderBasicInformationComponent({
                                     </button>
                                 `
                         }
-
                     </div>
-
                 </div>
-
                 <div class="basic-information-content">
                     ${renderFields()}
                 </div>
-
             </div>
         `;
-
-
-        // ========================================================
-        // COLLAPSIBLE SECTION
-        // ========================================================
 
         renderCollapsibleSection({
             containerId: containerId,
             title: "Basic Information",
             content: content,
-            expanded: expanded
+            expanded: currentExpanded
         });
-
 
         setupEvents();
     }
-
 
     // ============================================================
     // FIELDS
     // ============================================================
 
     function renderFields() {
-
         return fields
             .map(field => {
-
-                const value =
-                    data[field.key];
+                const value = data[field.key];
 
                 if (editMode) {
-                    return renderEditField(
-                        field,
-                        value
-                    );
+                    return renderEditField(field, value);
                 }
 
-                return renderReadField(
-                    field,
-                    value
-                );
-
+                return renderReadField(field, value);
             })
             .join("");
     }
-
 
     // ============================================================
     // READ FIELD
     // ============================================================
 
-    function renderReadField(
-        field,
-        value
-    ) {
-
-        let displayValue =
-            value;
-
+    function renderReadField(field, value) {
+        let displayValue = value;
 
         if (field.type === "boolean") {
-
             displayValue = value
                 ? `
                     <span class="basic-information-status active">
@@ -151,6 +116,18 @@ function renderBasicInformationComponent({
                 `;
         }
 
+        if (field.type === "select") {
+            const option =
+                (field.options || []).find(
+                    option =>
+                        String(option.value) ===
+                        String(value ?? "")
+                );
+
+            displayValue = option
+                ? escapeHtml(option.label)
+                : "-";
+        }
 
         if (
             displayValue === null ||
@@ -160,103 +137,116 @@ function renderBasicInformationComponent({
             displayValue = "-";
         }
 
-
         return `
             <div class="basic-information-row">
-
                 <div class="basic-information-label">
-                    ${field.label}
+                    ${escapeHtml(field.label)}
                 </div>
-
                 <div class="basic-information-value">
                     ${displayValue}
                 </div>
-
             </div>
         `;
     }
-
 
     // ============================================================
     // EDIT FIELD
     // ============================================================
 
-    function renderEditField(
-        field,
-        value
-    ) {
-
+    function renderEditField(field, value) {
         // ========================================================
         // READONLY
         // ========================================================
 
         if (field.readonly) {
-
             return `
                 <div class="basic-information-row">
-
                     <div class="basic-information-label">
-                        ${field.label}
+                        ${escapeHtml(field.label)}
                     </div>
-
                     <div class="basic-information-value">
-
                         <span class="basic-information-readonly">
-                            ${value ?? "-"}
+                            ${escapeHtml(value ?? "-")}
                         </span>
-
                     </div>
-
                 </div>
             `;
         }
 
+        // ========================================================
+        // SELECT
+        // ========================================================
+
+        if (field.type === "select") {
+            const options = field.options || [];
+            const selectedValue = String(value ?? "");
+
+            return `
+                <div class="basic-information-row">
+                    <label
+                        class="basic-information-label"
+                        for="basicInformationField_${field.key}"
+                    >
+                        ${escapeHtml(field.label)}
+                    </label>
+                    <div class="basic-information-value">
+                        <select
+                            id="basicInformationField_${field.key}"
+                            class="basic-information-input"
+                        >
+                            ${options.map(option => `
+                                <option
+                                    value="${escapeHtmlAttribute(option.value)}"
+                                    ${
+                                        String(option.value) === selectedValue
+                                            ? "selected"
+                                            : ""
+                                    }
+                                >
+                                    ${escapeHtml(option.label)}
+                                </option>
+                            `).join("")}
+                        </select>
+                    </div>
+                </div>
+            `;
+        }
 
         // ========================================================
         // BOOLEAN
         // ========================================================
 
         if (field.type === "boolean") {
-
             return `
                 <div class="basic-information-row">
-
                     <label
                         class="basic-information-label"
                         for="basicInformationField_${field.key}"
                     >
-                        ${field.label}
+                        ${escapeHtml(field.label)}
                     </label>
-
                     <div class="basic-information-value">
-
                         <select
                             id="basicInformationField_${field.key}"
                             class="basic-information-input"
                         >
-
                             <option
                                 value="true"
                                 ${value === true ? "selected" : ""}
                             >
                                 Active
                             </option>
-
                             <option
                                 value="false"
                                 ${value === false ? "selected" : ""}
                             >
                                 Inactive
                             </option>
-
                         </select>
-
                     </div>
-
                 </div>
             `;
         }
-
 
         // ========================================================
         // TEXT
@@ -264,36 +254,43 @@ function renderBasicInformationComponent({
 
         return `
             <div class="basic-information-row">
-
                 <label
                     class="basic-information-label"
                     for="basicInformationField_${field.key}"
                 >
-                    ${field.label}
+                    ${escapeHtml(field.label)}
                 </label>
-
                 <div class="basic-information-value">
-
                     <textarea
                         id="basicInformationField_${field.key}"
                         class="basic-information-input"
                         rows="1"
                     >${escapeHtmlAttribute(value ?? "")}</textarea>
-
                 </div>
-
             </div>
         `;
     }
 
+    function getCurrentExpandedState() {
+        const header =
+            container.querySelector(
+                ".collapsible-section-header"
+            );
 
+        if (!header) {
+            return currentExpanded;
+        }
+
+        return (
+            header.getAttribute("aria-expanded") === "true"
+        );
+    }
 
     // ============================================================
     // EVENTS
     // ============================================================
 
     function setupEvents() {
-
         const editButton =
             document.getElementById(
                 "basicInformationEdit"
@@ -310,49 +307,39 @@ function renderBasicInformationComponent({
             );
 
         const textareas =
-            container.querySelectorAll(
-                "textarea"
-            );
-
+            container.querySelectorAll("textarea");
 
         // ========================================================
         // TEXTAREA AUTO HEIGHT
         // ========================================================
 
         textareas.forEach(textarea => {
-
             textarea.addEventListener(
                 "input",
                 () => {
-
-                    textarea.style.height =
-                        "auto";
-
+                    textarea.style.height = "auto";
                     textarea.style.height =
                         `${textarea.scrollHeight}px`;
                 }
             );
 
-
-            textarea.style.height =
-                "auto";
-
+            textarea.style.height = "auto";
             textarea.style.height =
                 `${textarea.scrollHeight}px`;
         });
-
 
         // ========================================================
         // EDIT
         // ========================================================
 
         if (editButton) {
-
             editButton.addEventListener(
                 "click",
                 (event) => {
-
                     event.stopPropagation();
+
+                    currentExpanded =
+                        getCurrentExpandedState();
 
                     editMode = true;
 
@@ -361,19 +348,18 @@ function renderBasicInformationComponent({
             );
         }
 
-
         // ========================================================
         // CANCEL
         // ========================================================
 
         if (cancelButton) {
-
             cancelButton.addEventListener(
                 "click",
                 (event) => {
-
                     event.stopPropagation();
 
+                    currentExpanded =
+                        getCurrentExpandedState();
 
                     editMode = false;
 
@@ -382,24 +368,19 @@ function renderBasicInformationComponent({
             );
         }
 
-
         // ========================================================
         // SAVE
         // ========================================================
 
         if (saveButton) {
-
             saveButton.addEventListener(
                 "click",
                 async (event) => {
-
                     event.stopPropagation();
 
                     const updatedData = {};
 
-
                     fields.forEach(field => {
-
                         const input =
                             document.getElementById(
                                 `basicInformationField_${field.key}`
@@ -409,102 +390,66 @@ function renderBasicInformationComponent({
                             return;
                         }
 
-
-                        if (
-                            field.type === "boolean"
-                        ) {
-
+                        if (field.type === "boolean") {
                             updatedData[field.key] =
                                 input.value === "true";
-
                         } else {
-
                             updatedData[field.key] =
                                 input.value;
                         }
-
                     });
 
-
                     saveButton.disabled = true;
-
-                    saveButton.textContent =
-                        "Saving...";
-
+                    saveButton.textContent = "Saving...";
 
                     try {
-
-                        await onSave(
-                            updatedData
-                        );
-
+                        await onSave(updatedData);
 
                         Object.assign(
                             data,
                             updatedData
                         );
 
-
-
+                        currentExpanded =
+                            getCurrentExpandedState();
 
                         editMode = false;
 
                         render();
-
-
                     } catch (error) {
-
                         console.error(
                             "Error saving Basic Information:",
                             error
                         );
 
-
-                        saveButton.disabled =
-                            false;
-
-                        saveButton.textContent =
-                            "Save";
-
+                        saveButton.disabled = false;
+                        saveButton.textContent = "Save";
 
                         showErrorMessage(
                             "Error saving changes."
                         );
                     }
-
                 }
             );
         }
     }
 
-
     // ============================================================
     // ESCAPE HTML
     // ============================================================
 
-    function escapeHtmlAttribute(
-        value
-    ) {
-
-        return String(value)
-            .replace(
-                /&/g,
-                "&amp;"
-            )
-            .replace(
-                /"/g,
-                "&quot;"
-            )
-            .replace(
-                /</g,
-                "&lt;"
-            )
-            .replace(
-                />/g,
-                "&gt;"
-            );
+    function escapeHtml(value) {
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
     }
 
+    function escapeHtmlAttribute(value) {
+        return escapeHtml(value);
+    }
 
     // ============================================================
     // INITIAL RENDER

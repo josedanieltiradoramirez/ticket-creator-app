@@ -1,278 +1,194 @@
 let locationId = null;
-
 let currentLocation = null;
-
 let warehouseManagementSystems = [];
-
 
 // ============================================================
 // INITIALIZATION
 // ============================================================
 
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener(
+    "DOMContentLoaded",
+    async () => {
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
 
-    const params =
-        new URLSearchParams(
-            window.location.search
-        );
+        locationId =
+            Number(
+                params.get("id")
+            );
 
+        if (!locationId) {
+            showErrorMessage(
+                "Invalid location ID."
+            );
 
-    locationId =
-        Number(
-            params.get("id")
-        );
+            window.location.href =
+                "locations.html";
 
+            return;
+        }
 
-    if (!locationId) {
-
-        alert(
-            "Invalid location ID."
-        );
-
-        window.location.href =
-            "locations.html";
-
-        return;
-
+        await loadLocation();
     }
-
-
-    setupEventListeners();
-
-    await loadLocation();
-
-});
-
-
-// ============================================================
-// EVENT LISTENERS
-// ============================================================
-
-function setupEventListeners() {
-
-    document
-        .getElementById("backButton")
-        .addEventListener(
-            "click",
-            () => {
-
-                window.location.href =
-                    "locations.html";
-
-            }
-        );
-
-
-    document
-        .getElementById("editButton")
-        .addEventListener(
-            "click",
-            () => {
-
-                window.location.href =
-                    `locations.html?edit=${locationId}`;
-
-            }
-        );
-
-}
-
+);
 
 // ============================================================
 // LOAD LOCATION
 // ============================================================
 
 async function loadLocation() {
-
     try {
-
         currentLocation =
             await getLocation(
                 locationId
             );
 
-
-        await loadWarehouseManagementSystems();
+        warehouseManagementSystems =
+            await getWarehouseManagementSystems();
 
         renderLocation();
-
     } catch (error) {
-
         console.error(
             "Error loading location:",
             error
         );
 
-
-        alert(
-            error.message ||
+        showErrorMessage(
             "Error loading location."
         );
 
-
         window.location.href =
             "locations.html";
-
     }
-
 }
-
-
-// ============================================================
-// LOAD WMS
-// ============================================================
-
-async function loadWarehouseManagementSystems() {
-
-    try {
-
-        warehouseManagementSystems =
-            await getWarehouseManagementSystems();
-
-    } catch (error) {
-
-        console.error(
-            "Error loading WMS:",
-            error
-        );
-
-        warehouseManagementSystems = [];
-
-    }
-
-}
-
 
 // ============================================================
 // RENDER LOCATION
 // ============================================================
 
 function renderLocation() {
-
-    const wmsName =
-        getWmsName(
-            currentLocation
-                .warehouse_management_system_id
-        );
-
-
-    // PAGE TITLE
-
     document.title =
         `${currentLocation.name} - Location`;
 
-
-    // HEADER
-
-    document.getElementById(
-        "locationName"
-    ).textContent =
-        currentLocation.name;
-
-
-    // NAME
-
-    document.getElementById(
-        "locationNameValue"
-    ).textContent =
-        currentLocation.name ?? "N/A";
-
-
-    // CITY
-
-    document.getElementById(
-        "locationCity"
-    ).textContent =
-        currentLocation.city ?? "N/A";
-
-
-    // STATE
-
-    document.getElementById(
-        "locationState"
-    ).textContent =
-        currentLocation.state ?? "N/A";
-
-
-    // CODE
-
-    document.getElementById(
-        "locationCode"
-    ).textContent =
-        currentLocation.code ?? "N/A";
-
-
-    // STATUS
-
-    const statusElement =
-        document.getElementById(
-            "locationStatus"
-        );
-
-
-    statusElement.innerHTML = `
-
-        <span class="status-badge ${
-            currentLocation.is_active
-                ? "active"
-                : "inactive"
-        }">
-
-            ${
-                currentLocation.is_active
-                    ? "Active"
-                    : "Inactive"
-            }
-
-        </span>
-
-    `;
-
-
-    // WMS
-
-    document.getElementById(
-        "locationWms"
-    ).textContent =
-        wmsName || "None";
-
-
-    // ID
-
-    document.getElementById(
-        "locationId"
-    ).textContent =
-        currentLocation.id;
-
+    renderLocationHeader();
+    renderLocationBasicInformation();
 }
 
+// ============================================================
+// DETAIL HEADER
+// ============================================================
+
+function renderLocationHeader() {
+    renderDetailHeader({
+        containerId: "detailHeader",
+        type: "Location",
+        title: currentLocation.name,
+        description: "",
+        actions: {
+            back: true,
+            edit: false
+        },
+        onBack: () => {
+            window.location.href =
+                "locations.html";
+        }
+    });
+}
 
 // ============================================================
-// GET WMS NAME
+// BASIC INFORMATION
 // ============================================================
 
-function getWmsName(wmsId) {
+function renderLocationBasicInformation() {
+    renderBasicInformationComponent({
+        containerId: "basicInformation",
+        data: currentLocation,
+        fields: [
+            {
+                key: "id",
+                label: "ID",
+                type: "text",
+                readonly: true
+            },
+            {
+                key: "name",
+                label: "Name",
+                type: "text"
+            },
+            {
+                key: "city",
+                label: "City",
+                type: "text"
+            },
+            {
+                key: "state",
+                label: "State",
+                type: "text"
+            },
+            {
+                key: "code",
+                label: "Code",
+                type: "text"
+            },
+            {
+                key: "is_active",
+                label: "Status",
+                type: "boolean"
+            },
+            {
+                key: "warehouse_management_system_id",
+                label: "Warehouse Management System",
+                type: "select",
+                options: [
+                    {
+                        value: "",
+                        label: "None"
+                    },
+                    ...warehouseManagementSystems.map(
+                        wms => ({
+                            value: wms.id,
+                            label: wms.name
+                        })
+                    )
+                ]
+            }
+        ],
+        expanded: true,
+        onSave: async (updatedData) => {
+            const data = {
+                name: updatedData.name,
+                city: updatedData.city,
+                state: updatedData.state,
+                code: updatedData.code,
+                is_active: updatedData.is_active,
+                warehouse_management_system_id:
+                    updatedData
+                        .warehouse_management_system_id === ""
+                        ? null
+                        : Number(
+                            updatedData
+                                .warehouse_management_system_id
+                        )
+            };
 
-    if (!wmsId) {
+            const updatedLocation =
+                await updateLocation(
+                    locationId,
+                    data
+                );
 
-        return "";
+            Object.assign(
+                currentLocation,
+                updatedLocation || data
+            );
 
-    }
+            renderLocationHeader();
 
-
-    const wms =
-        warehouseManagementSystems.find(
-            item => item.id === Number(wmsId)
-        );
-
-
-    if (!wms) {
-
-        return `WMS #${wmsId}`;
-
-    }
-
-
-    return wms.name;
-
+            showSuccessMessage(
+                "Location updated successfully."
+            );
+        }
+    });
 }
