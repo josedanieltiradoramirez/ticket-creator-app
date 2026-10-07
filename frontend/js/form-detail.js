@@ -382,7 +382,7 @@ function renderFormBasicInformation() {
 
                 type:
 
-                    "text"
+                    "textarea"
 
 
 

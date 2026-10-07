@@ -129,6 +129,10 @@ function renderBasicInformationComponent({
                 : "-";
         }
 
+        if (field.type === "textarea") {
+            displayValue = String(displayValue ?? "").trim();
+        }
+
         if (
             displayValue === null ||
             displayValue === undefined ||
@@ -137,14 +141,21 @@ function renderBasicInformationComponent({
             displayValue = "-";
         }
 
+        const valueClass =
+            field.type === "textarea"
+                ? "basic-information-value basic-information-description"
+                : "basic-information-value";
+
         return `
             <div class="basic-information-row">
                 <div class="basic-information-label">
                     ${escapeHtml(field.label)}
                 </div>
-                <div class="basic-information-value">
-                    ${displayValue}
-                </div>
+                <div class="${valueClass}">${ 
+                    field.type === "textarea"
+                        ? escapeHtml(displayValue)
+                        : displayValue
+                }</div>
             </div>
         `;
     }

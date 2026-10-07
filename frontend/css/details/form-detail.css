@@ -1,0 +1,303 @@
+/* ============================================================
+   FORM DETAIL NOTIFICATIONS
+   ============================================================ */
+
+#formDetailNotificationContainer {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 99999;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+
+    gap: 10px;
+
+    pointer-events: none;
+}
+
+
+/* ============================================================
+   NOTIFICATION
+   ============================================================ */
+
+.form-detail-notification {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    width: min(
+        420px,
+        calc(100vw - 40px)
+    );
+
+    box-sizing: border-box;
+
+    padding: 12px 14px;
+
+    background: #ffffff;
+
+    border: 1px solid #d9d9d9;
+
+    border-radius: 8px;
+
+    box-shadow:
+        0 8px 24px
+        rgba(0, 0, 0, 0.12);
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Helvetica,
+        Arial,
+        sans-serif;
+
+    font-size: 14px;
+
+    color: #37352f;
+
+    opacity: 0;
+
+    transform:
+        translateY(-8px);
+
+    transition:
+        opacity 0.18s ease,
+        transform 0.18s ease;
+
+    pointer-events: auto;
+}
+
+
+/* ============================================================
+   VISIBLE NOTIFICATION
+   ============================================================ */
+
+.form-detail-notification.visible {
+    opacity: 1;
+
+    transform:
+        translateY(0);
+}
+
+
+/* ============================================================
+   NOTIFICATION ICON
+   ============================================================ */
+
+.form-detail-notification-icon {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 22px;
+    height: 22px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+
+/* ============================================================
+   SUCCESS
+   ============================================================ */
+
+.form-detail-notification-success
+.form-detail-notification-icon {
+    color: #2f6f44;
+
+    background: #eaf4ec;
+}
+
+
+/* ============================================================
+   ERROR
+   ============================================================ */
+
+.form-detail-notification-error
+.form-detail-notification-icon {
+    color: #8b3030;
+
+    background: #f9eeee;
+}
+
+
+/* ============================================================
+   WARNING
+   ============================================================ */
+
+.form-detail-notification-warning
+.form-detail-notification-icon {
+    color: #80651c;
+
+    background: #faf4df;
+}
+
+
+/* ============================================================
+   INFO
+   ============================================================ */
+
+.form-detail-notification-info
+.form-detail-notification-icon {
+    color: #4f6272;
+
+    background: #edf2f5;
+}
+
+
+/* ============================================================
+   MESSAGE
+   ============================================================ */
+
+.form-detail-notification-message {
+    flex: 1;
+
+    min-width: 0;
+
+    line-height: 1.4;
+
+    overflow-wrap: anywhere;
+}
+
+
+/* ============================================================
+   CLOSE BUTTON
+   ============================================================ */
+
+.form-detail-notification-close {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 24px;
+    height: 24px;
+
+    padding: 0;
+
+    border: 0;
+
+    background: transparent;
+
+    color: #787774;
+
+    font-size: 18px;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    border-radius: 4px;
+}
+
+
+.form-detail-notification-close:hover {
+    background: #f1f1ef;
+
+    color: #202020;
+}
+
+
+/* ============================================================
+   CONFIRMATION MODAL
+   ============================================================ */
+
+.form-detail-confirmation-message {
+    margin: 0;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Helvetica,
+        Arial,
+        sans-serif;
+
+    font-size: 14px;
+
+    line-height: 1.6;
+
+    color: #37352f;
+}
+
+
+/* ============================================================
+   DANGER BUTTON
+   ============================================================ */
+
+.form-detail-danger-button {
+    min-height: 34px;
+
+    padding: 6px 12px;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Helvetica,
+        Arial,
+        sans-serif;
+
+    font-size: 14px;
+
+    font-weight: 500;
+
+    color: #ffffff;
+
+    background: #8b3030;
+
+    border: 1px solid #8b3030;
+
+    border-radius: 6px;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease;
+}
+
+
+.form-detail-danger-button:hover {
+    background: #742626;
+
+    border-color: #742626;
+}
+
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+
+@media (max-width: 600px) {
+
+    #formDetailNotificationContainer {
+
+        top: 12px;
+
+        right: 12px;
+
+        left: 12px;
+
+        align-items: stretch;
+
+    }
+
+
+    .form-detail-notification {
+
+        width: 100%;
+
+    }
+
+}

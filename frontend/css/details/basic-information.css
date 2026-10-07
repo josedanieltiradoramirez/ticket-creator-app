@@ -109,7 +109,7 @@
 
 .basic-information-label {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
 
     padding: 11px 16px 11px 0;
 
@@ -152,6 +152,21 @@
     line-height: 1.5;
 
     color: #37352f;
+}
+
+
+/* ============================================================
+   MULTILINE TEXT
+   ============================================================ */
+
+.basic-information-description {
+    display: block;
+
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+
+    line-height: 1.6;
 }
 
 
