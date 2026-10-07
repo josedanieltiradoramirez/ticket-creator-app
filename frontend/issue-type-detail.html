@@ -27,18 +27,18 @@
         href="css/details/detail-header.css?v=1"
     >
 
-    <link 
-        rel="stylesheet" 
+    <link
+        rel="stylesheet"
         href="css/details/basic-information.css"
     >
 
-    <link 
-        rel="stylesheet" 
+    <link
+        rel="stylesheet"
         href="css/details/relationships.css"
     >
 
-    <link 
-        rel="stylesheet" 
+    <link
+        rel="stylesheet"
         href="css/details/form-section.css"
     >
 
@@ -47,13 +47,13 @@
         href="css/details/modal.css"
     >
 
-    <link 
-        rel="stylesheet" 
+    <link
+        rel="stylesheet"
         href="css/details/notifications.css"
     >
 
-    <link 
-        rel="stylesheet" 
+    <link
+        rel="stylesheet"
         href="css/details/collapsible-section.css"
     >
 
@@ -61,110 +61,159 @@
 
 <body>
 
-<div id="appNavigation"></div>
+    <div id="appNavigation"></div>
 
-<div class="app-content">
+    <div class="app-content">
 
-<main>
+        <main>
 
-    <!-- =========================================================
-         DETAIL PAGE HEADER
-         ========================================================= -->
+            <!-- =========================================================
+                 DETAIL PAGE HEADER
+                 ========================================================= -->
 
-    <div id="detailHeader"></div>
-
-
-    <!-- =========================================================
-         BASIC INFORMATION
-         ========================================================= -->
-
-    <div id="basicInformation"></div>
-
-    <!-- =========================================================
-     FORM
-     ========================================================= -->
-
-    <div id="formSection"></div>
-  
-    <!-- =========================================================
-    RELATIONSHIPS
-     ========================================================= -->
-
-    <div id="relationships"></div>  
-  
-
-<!-- =========================================================
-     QUEUE MODAL
-     ========================================================= -->
-
-    <div id="queueModal" class="modal hidden"></div>
+            <div id="detailHeader"></div>
 
 
-<!-- =========================================================
-     TOOL MODAL
-     ========================================================= -->
+            <!-- =========================================================
+                 BASIC INFORMATION
+                 ========================================================= -->
 
-    <div id="toolModal" class="modal hidden"></div>
-
-
-<!-- =========================================================
-     TROUBLESHOOTING TEMPLATE MODAL
-     ========================================================= -->
-
-<div id="troubleshootingTemplateModal" class="modal hidden"></div>
-
-<!-- =========================================================
-     KNOWLEDGE BASE MODAL
-     ========================================================= -->
-
-<div id="knowledgeBaseModal" class="modal hidden"></div>
+            <div id="basicInformation"></div>
 
 
-<!-- =========================================================
-     KNOWLEDGE BASE NOTE MODAL
-     ========================================================= -->
+            <!-- =========================================================
+                 FORM
+                 ========================================================= -->
 
-<div id="knowledgeBaseNoteModal" class="modal hidden"></div>
-
-
-<!-- =========================================================
-     CHANGE FORM MODAL
-     ========================================================= -->
-
-<div id="changeFormModal" class="modal hidden"></div>
-
-<div id="createFormModal" class="modal hidden"></div>
-
-<div id="editFormModal" class="modal hidden"></div>
-
-<div id="removeFormModal" class="modal hidden"></div>
-
-<div id="relationshipItemModal" class="modal hidden"></div>
-
-<div id="removeQueueModal" class="modal hidden"></div>
-
-<div id="removeToolModal" class="modal hidden"></div>
+            <div id="formSection"></div>
 
 
-<script src="js/api.js"></script>
+            <!-- =========================================================
+                 RELATIONSHIPS
+                 ========================================================= -->
 
-<script src="js/navigation.js"></script>
+            <div id="relationships"></div>
 
-<script src="js/components/detail-header.js"></script>
 
-<script src="js/components/basic-information.js"></script>
+            <!-- =========================================================
+                 QUEUE MODAL
+                 ========================================================= -->
 
-<script src="js/components/relationships.js"></script>
+            <div
+                id="queueModal"
+                class="modal hidden"
+            ></div>
 
-<script src="js/components/form-section.js"></script>
 
-<script src="js/components/modal.js"></script>
+            <!-- =========================================================
+                 TOOL MODAL
+                 ========================================================= -->
 
-<script src="js/components/notifications.js"></script>
+            <div
+                id="toolModal"
+                class="modal hidden"
+            ></div>
 
-<script src="js/components/collapsible-section.js"></script>
 
-<script src="js/issue-type-detail.js?v=2"></script>
+            <!-- =========================================================
+                 TROUBLESHOOTING TEMPLATE MODAL
+                 ========================================================= -->
+
+            <div
+                id="troubleshootingTemplateModal"
+                class="modal hidden"
+            ></div>
+
+
+            <!-- =========================================================
+                 KNOWLEDGE BASE MODAL
+                 ========================================================= -->
+
+            <div
+                id="knowledgeBaseModal"
+                class="modal hidden"
+            ></div>
+
+
+            <!-- =========================================================
+                 KNOWLEDGE BASE NOTE MODAL
+                 ========================================================= -->
+
+            <div
+                id="knowledgeBaseNoteModal"
+                class="modal hidden"
+            ></div>
+
+
+            <!-- =========================================================
+                 CHANGE FORM MODAL
+                 ========================================================= -->
+
+            <div
+                id="changeFormModal"
+                class="modal hidden"
+            ></div>
+
+
+            <div
+                id="createFormModal"
+                class="modal hidden"
+            ></div>
+
+
+            <div
+                id="editFormModal"
+                class="modal hidden"
+            ></div>
+
+
+            <div
+                id="removeFormModal"
+                class="modal hidden"
+            ></div>
+
+
+            <div
+                id="relationshipItemModal"
+                class="modal hidden"
+            ></div>
+
+
+            <div
+                id="removeQueueModal"
+                class="modal hidden"
+            ></div>
+
+
+            <div
+                id="removeToolModal"
+                class="modal hidden"
+            ></div>
+
+        </main>
+
+    </div>
+
+
+    <script src="js/api.js"></script>
+
+    <script src="js/navigation.js"></script>
+
+    <script src="js/components/detail-header.js"></script>
+
+    <script src="js/components/basic-information.js"></script>
+
+    <script src="js/components/relationships.js"></script>
+
+    <script src="js/components/form-section.js"></script>
+
+    <script src="js/components/modal.js"></script>
+
+    <script src="js/components/notifications.js"></script>
+
+    <script src="js/components/collapsible-section.js"></script>
+
+    <script src="js/issue-type-detail.js?v=3"></script>
 
 </body>
 

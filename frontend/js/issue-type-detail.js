@@ -1638,21 +1638,48 @@ function renderBasicInformation(issueType) {
         expanded: false,
 
         onSave: async (updatedData) => {
-            const data = {
-                name: updatedData.name,
-                description: updatedData.description,
-                category: updatedData.category,
-                display_name: updatedData.display_name,
-                search_keywords: updatedData.search_keywords,
-                is_active: updatedData.is_active
-            };
+            try {
+                const data = {
+                    name: updatedData.name,
+                    description: updatedData.description,
+                    category: updatedData.category,
+                    display_name: updatedData.display_name,
+                    search_keywords: updatedData.search_keywords,
+                    is_active: updatedData.is_active
+                };
 
-            const updatedIssueType = await updateIssueType(
-                issueTypeId,
-                data
-            );
+                const updatedIssueType = await updateIssueType(
+                    issueTypeId,
+                    data
+                );
 
-            currentIssueType = updatedIssueType;
+                currentIssueType = updatedIssueType;
+
+                renderDetailHeader({
+                    containerId: "detailHeader",
+                    type: "Issue Type",
+                    title: currentIssueType.name,
+                    description: currentIssueType.description,
+                    onBack: () => {
+                        window.location.href = "issue-types.html";
+                    }
+                });
+
+                showSuccessMessage(
+                    "Issue Type updated successfully."
+                );
+            } catch (error) {
+                console.error(
+                    "Error updating Issue Type:",
+                    error
+                );
+
+                showErrorMessage(
+                    "Error updating Issue Type."
+                );
+
+                throw error;
+            }
         }
     });
 }
