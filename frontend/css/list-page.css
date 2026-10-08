@@ -1,0 +1,641 @@
+/* ============================================================
+   LIST PAGE
+   Shared styles for all entity list pages
+============================================================ */
+
+
+/* ============================================================
+   SECTION
+============================================================ */
+
+.list-page-section {
+    margin-bottom: 24px;
+}
+
+
+/* ============================================================
+   TOOLBAR
+============================================================ */
+
+.list-page-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 16px;
+
+    margin-bottom: 14px;
+}
+
+
+/* ============================================================
+   SEARCH
+============================================================ */
+
+.list-page-search {
+    width: 100%;
+    max-width: 420px;
+}
+
+
+.list-page-search input {
+    width: 100%;
+    box-sizing: border-box;
+
+    min-height: 38px;
+
+    padding: 8px 12px;
+
+    border: 1px solid #d2d2d2;
+    border-radius: 6px;
+
+    background: #fff;
+
+    color: #333;
+
+    font-family: inherit;
+    font-size: 14px;
+
+    outline: none;
+
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+
+.list-page-search input:focus {
+    border-color: #999;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(0, 0, 0, 0.05);
+}
+
+
+.list-page-search input::placeholder {
+    color: #999;
+}
+
+
+/* ============================================================
+   CREATE BUTTON
+============================================================ */
+
+.list-page-create-button {
+    appearance: none;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    min-height: 36px;
+
+    padding: 8px 14px;
+
+    border: 1px solid #333;
+    border-radius: 6px;
+
+    background: #333;
+
+    color: #fff;
+
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+
+    line-height: 1.2;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        opacity 0.15s ease;
+}
+
+
+.list-page-create-button:hover {
+    background: #222;
+
+    border-color: #222;
+}
+
+
+.list-page-create-button:disabled {
+    opacity: 0.6;
+
+    cursor: not-allowed;
+}
+
+
+/* ============================================================
+   TABLE CONTAINER
+============================================================ */
+
+.list-page-table-container {
+    width: 100%;
+
+    overflow-x: auto;
+
+    border: 1px solid #e1e1e1;
+    border-radius: 8px;
+
+    background: #fff;
+}
+
+
+/* ============================================================
+   TABLE
+============================================================ */
+
+.list-page-table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    font-size: 14px;
+}
+
+
+.list-page-table thead {
+    background: #f7f7f7;
+}
+
+
+.list-page-table th {
+    padding: 12px 14px;
+
+    border-bottom: 1px solid #dedede;
+
+    color: #555;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    text-align: left;
+
+    white-space: nowrap;
+}
+
+
+.list-page-table td {
+    padding: 13px 14px;
+
+    border-bottom: 1px solid #eeeeee;
+
+    color: #333;
+
+    vertical-align: middle;
+}
+
+
+.list-page-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+
+.list-page-table tbody tr {
+    transition:
+        background-color 0.12s ease;
+}
+
+
+.list-page-table tbody tr:hover {
+    background: #fafafa;
+}
+
+
+/* ============================================================
+   PRIMARY VALUE
+============================================================ */
+
+.list-page-primary-value {
+    color: #222;
+
+    font-weight: 500;
+}
+
+
+/* ============================================================
+   STATUS
+============================================================ */
+
+.list-page-status {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-width: 64px;
+
+    padding: 4px 8px;
+
+    border-radius: 999px;
+
+    font-size: 12px;
+    font-weight: 500;
+
+    line-height: 1.2;
+}
+
+
+.list-page-status-active {
+    background: #eaf6ee;
+
+    color: #27733f;
+}
+
+
+.list-page-status-inactive {
+    background: #f3f3f3;
+
+    color: #777;
+}
+
+
+/* ============================================================
+   ACTIONS
+============================================================ */
+
+.list-page-actions-column {
+    width: 1%;
+
+    white-space: nowrap;
+}
+
+
+.list-page-row-actions {
+    display: flex;
+
+    align-items: center;
+    justify-content: flex-start;
+
+    gap: 6px;
+
+    white-space: nowrap;
+}
+
+
+.list-page-action-button {
+    appearance: none;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-height: 32px;
+
+    padding: 6px 10px;
+
+    border: 1px solid #d2d2d2;
+    border-radius: 5px;
+
+    background: #fff;
+
+    color: #333;
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
+}
+
+
+.list-page-action-button:hover {
+    background: #f5f5f5;
+
+    border-color: #bdbdbd;
+}
+
+
+.list-page-action-button:disabled {
+    opacity: 0.6;
+
+    cursor: not-allowed;
+}
+
+
+.list-page-remove-button {
+    color: #9b3030;
+
+    border-color: #e0caca;
+}
+
+
+.list-page-remove-button:hover {
+    background: #fff5f5;
+
+    border-color: #d8aaaa;
+}
+
+
+/* ============================================================
+   EMPTY STATE
+============================================================ */
+
+.list-page-empty-state {
+    padding: 42px 24px;
+
+    text-align: center;
+}
+
+
+.list-page-empty-title {
+    margin-bottom: 6px;
+
+    color: #444;
+
+    font-size: 15px;
+    font-weight: 600;
+}
+
+
+.list-page-empty-description {
+    color: #888;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+}
+
+
+/* ============================================================
+   HIDDEN STATE
+============================================================ */
+
+.list-page-hidden {
+    display: none !important;
+}
+
+
+/* ============================================================
+   FORM
+============================================================ */
+
+.list-page-form {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 16px;
+}
+
+
+.list-page-form-group {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 6px;
+}
+
+
+.list-page-form-group label {
+    color: #444;
+
+    font-size: 13px;
+    font-weight: 500;
+}
+
+
+.list-page-form-group input,
+.list-page-form-group textarea,
+.list-page-form-group select {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 9px 11px;
+
+    border: 1px solid #d0d0d0;
+
+    border-radius: 6px;
+
+    background: #fff;
+
+    color: #333;
+
+    font-family: inherit;
+    font-size: 14px;
+
+    outline: none;
+
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+
+.list-page-form-group input,
+.list-page-form-group select {
+    min-height: 38px;
+}
+
+
+.list-page-form-group textarea {
+    min-height: 110px;
+
+    resize: vertical;
+
+    line-height: 1.5;
+}
+
+
+.list-page-form-group input:focus,
+.list-page-form-group textarea:focus,
+.list-page-form-group select:focus {
+    border-color: #999;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(0, 0, 0, 0.05);
+}
+
+
+.list-page-form-group input::placeholder,
+.list-page-form-group textarea::placeholder {
+    color: #999;
+}
+
+
+/* ============================================================
+   CHECKBOX
+============================================================ */
+
+.list-page-checkbox-group {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+}
+
+
+.list-page-checkbox-group input[type="checkbox"] {
+    appearance: none;
+
+    -webkit-appearance: none;
+
+    width: 17px;
+    height: 17px;
+
+    flex: 0 0 17px;
+
+    margin: 0;
+
+    border: 1px solid #bdbdbd;
+
+    border-radius: 4px;
+
+    background: #fff;
+
+    cursor: pointer;
+
+    position: relative;
+
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease;
+}
+
+
+.list-page-checkbox-group input[type="checkbox"]:checked {
+    background: #333;
+
+    border-color: #333;
+}
+
+
+.list-page-checkbox-group
+input[type="checkbox"]:checked::after {
+
+    content: "";
+
+    position: absolute;
+
+    left: 5px;
+    top: 2px;
+
+    width: 4px;
+    height: 8px;
+
+    border: solid #fff;
+
+    border-width: 0 2px 2px 0;
+
+    transform: rotate(45deg);
+}
+
+
+.list-page-checkbox-group
+input[type="checkbox"]:focus-visible {
+
+    outline: 2px solid #999;
+
+    outline-offset: 2px;
+}
+
+
+.list-page-checkbox-group label {
+    color: #444;
+
+    font-size: 14px;
+
+    cursor: pointer;
+}
+
+
+/* ============================================================
+   CONFIRMATION
+============================================================ */
+
+.list-page-confirmation {
+    display: flex;
+
+    flex-direction: column;
+}
+
+
+.list-page-confirmation-message {
+    margin: 0;
+
+    color: #333;
+
+    font-size: 15px;
+
+    line-height: 1.6;
+}
+
+
+.list-page-confirmation-message strong {
+    font-weight: 600;
+}
+
+
+.list-page-confirmation-description {
+    margin: 10px 0 0;
+
+    color: #777;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+}
+
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+
+@media (max-width: 800px) {
+
+    .list-page-toolbar {
+        align-items: stretch;
+
+        flex-direction: column;
+    }
+
+
+    .list-page-search {
+        max-width: none;
+    }
+
+
+    .list-page-create-button {
+        width: 100%;
+    }
+
+
+    .list-page-table th,
+    .list-page-table td {
+        padding: 11px 10px;
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .list-page-row-actions {
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+
+    .list-page-action-button {
+        width: 100%;
+    }
+
+}

@@ -1,54 +1,118 @@
+// ============================================================
+// ISSUE TYPES LIST
+// ============================================================
+
 let issueTypes = [];
+
+let forms = [];
 
 let editingIssueTypeId = null;
 
 
-document.addEventListener("DOMContentLoaded", async () => {
+// ============================================================
+// INITIALIZATION
+// ============================================================
 
-    document
-        .getElementById("backButton")
-        .addEventListener("click", () => {
+document.addEventListener(
+    "DOMContentLoaded",
+    async () => {
 
-            window.location.href = "index.html";
+        renderPageHeader();
 
-        });
+        setupEventListeners();
 
+        await loadIssueTypes();
 
-    document
-        .getElementById("addIssueTypeButton")
-        .addEventListener("click", openCreateModal);
-
-
-    document
-        .getElementById("closeModalButton")
-        .addEventListener("click", closeModal);
+    }
+);
 
 
-    document
-        .getElementById("cancelButton")
-        .addEventListener("click", closeModal);
+// ============================================================
+// PAGE HEADER
+// ============================================================
+
+function renderPageHeader() {
+
+    renderDetailHeader({
+        containerId: "pageHeader",
+        type: "Administration",
+        title: "Issue Types",
+        description:
+            "Manage and configure issue types used by the ticketing system.",
+        actions: {
+            back: true,
+            edit: false
+        },
+        onBack: () => {
+
+            window.location.href =
+                "index.html";
+
+        }
+    });
+
+}
 
 
-    document
-        .getElementById("issueTypeForm")
-        .addEventListener("submit", saveIssueType);
+// ============================================================
+// EVENT LISTENERS
+// ============================================================
+
+function setupEventListeners() {
+
+    const addButton =
+        document.getElementById(
+            "addIssueTypeButton"
+        );
+
+    if (addButton) {
+
+        addButton.addEventListener(
+            "click",
+            openCreateModal
+        );
+
+    }
 
 
-    document
-        .getElementById("searchInput")
-        .addEventListener("input", renderIssueTypes);
+    const searchInput =
+        document.getElementById(
+            "searchInput"
+        );
+
+    if (searchInput) {
+
+        searchInput.addEventListener(
+            "input",
+            renderIssueTypes
+        );
+
+    }
+
+}
 
 
-    await loadIssueTypes();
-
-});
-
+// ============================================================
+// LOAD ISSUE TYPES
+// ============================================================
 
 async function loadIssueTypes() {
 
     try {
 
-        issueTypes = await getIssueTypes();
+        const [
+            loadedIssueTypes,
+            loadedForms
+        ] = await Promise.all([
+            getIssueTypes(),
+            getForms()
+        ]);
+
+        issueTypes =
+            loadedIssueTypes || [];
+
+        forms =
+            loadedForms || [];
 
         renderIssueTypes();
 
@@ -59,7 +123,7 @@ async function loadIssueTypes() {
             error
         );
 
-        alert(
+        showErrorMessage(
             "Error loading issue types."
         );
 
@@ -68,6 +132,10 @@ async function loadIssueTypes() {
 }
 
 
+// ============================================================
+// RENDER ISSUE TYPES
+// ============================================================
+
 function renderIssueTypes() {
 
     const tableBody =
@@ -75,11 +143,27 @@ function renderIssueTypes() {
             "issueTypesTableBody"
         );
 
+    const emptyState =
+        document.getElementById(
+            "issueTypesEmptyState"
+        );
+
+    const searchInput =
+        document.getElementById(
+            "searchInput"
+        );
+
+
+    if (!tableBody) {
+        return;
+    }
+
 
     const search =
-        document
-            .getElementById("searchInput")
-            .value
+        String(
+            searchInput?.value || ""
+        )
+            .trim()
             .toLowerCase();
 
 
@@ -87,210 +171,376 @@ function renderIssueTypes() {
 
 
     const filteredIssueTypes =
-        issueTypes.filter(issueType => {
+        issueTypes.filter(
+            issueType => {
 
-            return (
+                const name =
+                    String(
+                        issueType.name || ""
+                    )
+                        .toLowerCase();
 
-                issueType.name
-                    .toLowerCase()
-                    .includes(search)
+                const category =
+                    String(
+                        issueType.category || ""
+                    )
+                        .toLowerCase();
 
-                ||
+                const displayName =
+                    String(
+                        issueType.display_name || ""
+                    )
+                        .toLowerCase();
 
-                issueType.category
-                    .toLowerCase()
-                    .includes(search)
+                const searchKeywords =
+                    String(
+                        issueType.search_keywords || ""
+                    )
+                        .toLowerCase();
 
-                ||
 
-                (
-                    issueType.display_name || ""
-                )
-                    .toLowerCase()
-                    .includes(search)
+                return (
+                    name.includes(search) ||
+                    category.includes(search) ||
+                    displayName.includes(search) ||
+                    searchKeywords.includes(search)
+                );
 
+            }
+        );
+
+
+    // ========================================================
+    // EMPTY STATE
+    // ========================================================
+
+    if (
+        filteredIssueTypes.length === 0
+    ) {
+
+        if (emptyState) {
+
+            emptyState.classList.remove(
+                "list-page-hidden"
             );
 
-        });
+        }
+
+        return;
+
+    }
 
 
-    filteredIssueTypes.forEach(issueType => {
+    if (emptyState) {
 
-        const row =
-            document.createElement("tr");
+        emptyState.classList.add(
+            "list-page-hidden"
+        );
+
+    }
 
 
-        row.innerHTML = `
+    // ========================================================
+    // TABLE ROWS
+    // ========================================================
 
-            <td>
-                ${issueType.name}
-            </td>
+    filteredIssueTypes.forEach(
+        issueType => {
 
-            <td>
-                ${issueType.category}
-            </td>
+            const row =
+                document.createElement(
+                    "tr"
+                );
 
-            <td>
-                ${issueType.display_name || ""}
-            </td>
 
-            <td>
-                ${
-                    issueType.form_template_id
-                        ? issueType.form_template_id
-                        : "None"
-                }
-            </td>
+            row.innerHTML = `
 
-            <td>
+                <td>
 
-                <span
-                    class="status-badge ${
-                        issueType.is_active
-                            ? "active"
-                            : "inactive"
-                    }"
-                >
+                    <div class="list-page-primary-value">
+
+                        ${escapeIssueTypeHtml(
+                            issueType.name || "-"
+                        )}
+
+                    </div>
+
+                </td>
+
+
+                <td>
+
+                    ${escapeIssueTypeHtml(
+                        issueType.category || "-"
+                    )}
+
+                </td>
+
+
+                <td>
 
                     ${
-                        issueType.is_active
-                            ? "Active"
-                            : "Inactive"
+                        issueType.display_name
+                            ? escapeIssueTypeHtml(
+                                issueType.display_name
+                            )
+                            : "-"
                     }
 
-                </span>
-
-            </td>
-
-            <td>
-
-                <button
-                    class="action-button"
-                    onclick="openIssueTypeDetail(${issueType.id})"
-                >
-                    View
-                </button>
-
-                <button
-                    class="action-button"
-                    onclick="openEditModal(${issueType.id})"
-                >
-                    Edit
-                </button>
-
-                <button
-                    class="action-button"
-                    onclick="deleteIssueTypeConfirm(${issueType.id})"
-                >
-                    Delete
-                </button>
-
-            </td>
-
-        `;
+                </td>
 
 
-        tableBody.appendChild(row);
+                <td>
 
-    });
+                    ${
+                        (() => {
+                            const form =
+                                forms.find(
+                                    item =>
+                                        String(item.id) ===
+                                        String(
+                                            issueType.form_template_id
+                                        )
+                                );
+
+                            return form
+                                ? escapeIssueTypeHtml(form.name)
+                                : "None";
+                        })()
+                    }
+
+                </td>
+
+
+                <td>
+
+                    <span
+                        class="
+                            list-page-status
+                            ${
+                                issueType.is_active
+                                    ? "list-page-status-active"
+                                    : "list-page-status-inactive"
+                            }
+                        "
+                    >
+
+                        ${
+                            issueType.is_active
+                                ? "Active"
+                                : "Inactive"
+                        }
+
+                    </span>
+
+                </td>
+
+
+                <td>
+
+                    <div class="list-page-row-actions">
+
+                        <button
+                            type="button"
+                            class="list-page-action-button"
+                            data-action="view"
+                            data-id="${issueType.id}"
+                        >
+                            View
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="list-page-action-button"
+                            data-action="edit"
+                            data-id="${issueType.id}"
+                        >
+                            Edit
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="
+                                list-page-action-button
+                                list-page-remove-button
+                            "
+                            data-action="remove"
+                            data-id="${issueType.id}"
+                        >
+                            Remove
+                        </button>
+
+                    </div>
+
+                </td>
+
+            `;
+
+
+            tableBody.appendChild(
+                row
+            );
+
+        }
+    );
+
+
+    setupRowActionListeners();
 
 }
 
 
-function openCreateModal() {
+// ============================================================
+// ROW ACTION LISTENERS
+// ============================================================
 
-    editingIssueTypeId = null;
+function setupRowActionListeners() {
 
-
-    document.getElementById(
-        "modalTitle"
-    ).textContent = "New Issue Type";
-
-
-    document
-        .getElementById("issueTypeForm")
-        .reset();
+    const buttons =
+        document.querySelectorAll(
+            ".list-page-action-button"
+        );
 
 
-    document.getElementById(
-        "isActive"
-    ).checked = true;
+    buttons.forEach(
+        button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    const action =
+                        button.dataset.action;
+
+                    const issueTypeId =
+                        Number(
+                            button.dataset.id
+                        );
 
 
-    document.getElementById(
-        "formTemplate"
-    ).value = "";
+                    if (!issueTypeId) {
+                        return;
+                    }
 
 
-    document.getElementById(
-        "issueTypeModal"
-    ).classList.remove("hidden");
+                    switch (action) {
+
+                        case "view":
+
+                            openIssueTypeDetail(
+                                issueTypeId
+                            );
+
+                            break;
+
+
+                        case "edit":
+
+                            openEditModal(
+                                issueTypeId
+                            );
+
+                            break;
+
+
+                        case "remove":
+
+                            openRemoveModal(
+                                issueTypeId
+                            );
+
+                            break;
+
+                    }
+
+                }
+            );
+
+        }
+    );
 
 }
 
 
-async function openEditModal(issueTypeId) {
+// ============================================================
+// CREATE MODAL
+// ============================================================
+
+async function openCreateModal() {
+
+    editingIssueTypeId =
+        null;
+
 
     try {
 
-        const issueType =
-            await getIssueType(issueTypeId);
+        const forms =
+            await getForms();
+
+
+        renderIssueTypeFormModal({
+            mode: "create",
+            issueType: null,
+            forms: forms || []
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Error loading forms:",
+            error
+        );
+
+        showErrorMessage(
+            "Error loading forms."
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// EDIT MODAL
+// ============================================================
+
+async function openEditModal(
+    issueTypeId
+) {
+
+    try {
+
+        const [
+            issueType,
+            forms
+        ] = await Promise.all([
+
+            getIssueType(
+                issueTypeId
+            ),
+
+            getForms()
+
+        ]);
 
 
         editingIssueTypeId =
             issueTypeId;
 
 
-        document.getElementById(
-            "modalTitle"
-        ).textContent = "Edit Issue Type";
+        renderIssueTypeFormModal({
 
+            mode: "edit",
 
-        document.getElementById(
-            "name"
-        ).value =
-            issueType.name;
+            issueType:
+                issueType,
 
+            forms:
+                forms || []
 
-        document.getElementById(
-            "description"
-        ).value =
-            issueType.description;
-
-
-        document.getElementById(
-            "category"
-        ).value =
-            issueType.category;
-
-
-        document.getElementById(
-            "displayName"
-        ).value =
-            issueType.display_name || "";
-
-
-        document.getElementById(
-            "searchKeywords"
-        ).value =
-            issueType.search_keywords || "";
-
-
-        document.getElementById(
-            "formTemplate"
-        ).value =
-            issueType.form_template_id || "";
-
-
-        document.getElementById(
-            "isActive"
-        ).checked =
-            issueType.is_active;
-
-
-        document.getElementById(
-            "issueTypeModal"
-        ).classList.remove("hidden");
+        });
 
 
     } catch (error) {
@@ -300,8 +550,8 @@ async function openEditModal(issueTypeId) {
             error
         );
 
-        alert(
-            "Error loading issue type."
+        showErrorMessage(
+            "Error loading Issue Type or Forms."
         );
 
     }
@@ -309,75 +559,429 @@ async function openEditModal(issueTypeId) {
 }
 
 
-function closeModal() {
+// ============================================================
+// ISSUE TYPE FORM MODAL
+// ============================================================
 
-    document.getElementById(
-        "issueTypeModal"
-    ).classList.add("hidden");
+function renderIssueTypeFormModal({
+    mode,
+    issueType,
+    forms = []
+}) {
+
+    const isEdit =
+        mode === "edit";
+
+
+    const title =
+        isEdit
+            ? "Edit Issue Type"
+            : "New Issue Type";
+
+
+    const currentFormId =
+        issueType?.form_template_id
+            ? String(
+                issueType.form_template_id
+            )
+            : "";
+
+
+    const formOptions =
+        forms
+            .map(
+                form => {
+
+                    const selected =
+                        String(form.id) ===
+                        currentFormId
+                            ? "selected"
+                            : "";
+
+
+                    return `
+
+                        <option
+                            value="${form.id}"
+                            ${selected}
+                        >
+                            ${escapeIssueTypeHtml(
+                                form.name || `Form ${form.id}`
+                            )}
+                        </option>
+
+                    `;
+
+                }
+            )
+            .join("");
+
+
+    const content = `
+
+        <form
+            id="issueTypeForm"
+            class="list-page-form"
+        >
+
+            <!-- ====================================================
+                 NAME
+            ================================================= -->
+
+            <div class="list-page-form-group">
+
+                <label for="issueTypeName">
+                    Name
+                </label>
+
+                <input
+                    type="text"
+                    id="issueTypeName"
+                    value="${escapeIssueTypeAttribute(
+                        issueType?.name || ""
+                    )}"
+                    required
+                >
+
+            </div>
+
+
+            <!-- ====================================================
+                 DESCRIPTION
+            ================================================= -->
+
+            <div class="list-page-form-group">
+
+                <label for="issueTypeDescription">
+                    Description
+                </label>
+
+                <textarea
+                    id="issueTypeDescription"
+                    rows="5"
+                    required
+                >${escapeIssueTypeHtml(
+                    issueType?.description || ""
+                )}</textarea>
+
+            </div>
+
+
+            <!-- ====================================================
+                 CATEGORY
+            ================================================= -->
+
+            <div class="list-page-form-group">
+
+                <label for="issueTypeCategory">
+                    Category
+                </label>
+
+                <input
+                    type="text"
+                    id="issueTypeCategory"
+                    value="${escapeIssueTypeAttribute(
+                        issueType?.category || ""
+                    )}"
+                    required
+                >
+
+            </div>
+
+
+            <!-- ====================================================
+                 DISPLAY NAME
+            ================================================= -->
+
+            <div class="list-page-form-group">
+
+                <label for="issueTypeDisplayName">
+                    Display Name
+                </label>
+
+                <input
+                    type="text"
+                    id="issueTypeDisplayName"
+                    value="${escapeIssueTypeAttribute(
+                        issueType?.display_name || ""
+                    )}"
+                >
+
+            </div>
+
+
+            <!-- ====================================================
+                 SEARCH KEYWORDS
+            ================================================= -->
+
+            <div class="list-page-form-group">
+
+                <label for="issueTypeSearchKeywords">
+                    Search Keywords
+                </label>
+
+                <input
+                    type="text"
+                    id="issueTypeSearchKeywords"
+                    value="${escapeIssueTypeAttribute(
+                        issueType?.search_keywords || ""
+                    )}"
+                    placeholder="Example: password, reset, AD"
+                >
+
+            </div>
+
+
+            <!-- ====================================================
+                 FORM TEMPLATE
+            ================================================= -->
+
+            <div class="list-page-form-group">
+
+                <label for="issueTypeFormTemplate">
+                    Form Template
+                </label>
+
+                <select
+                    id="issueTypeFormTemplate"
+                >
+
+                    <option value="">
+                        No Form
+                    </option>
+
+                    ${formOptions}
+
+                </select>
+
+            </div>
+
+
+            <!-- ====================================================
+                 STATUS
+            ================================================= -->
+
+            <div class="list-page-checkbox-group">
+
+                <input
+                    type="checkbox"
+                    id="issueTypeIsActive"
+                    ${
+                        issueType
+                            ? issueType.is_active
+                                ? "checked"
+                                : ""
+                            : "checked"
+                    }
+                >
+
+                <label for="issueTypeIsActive">
+                    Active
+                </label>
+
+            </div>
+
+
+            <!-- ====================================================
+                 ACTIONS
+            ================================================= -->
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    id="issueTypeCancelButton"
+                >
+                    Cancel
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                    id="issueTypeSaveButton"
+                >
+                    ${
+                        isEdit
+                            ? "Save Changes"
+                            : "Create Issue Type"
+                    }
+                </button>
+
+            </div>
+
+        </form>
+
+    `;
+
+
+    renderModal({
+        containerId: "issueTypeModal",
+        title: title,
+        content: content,
+        onClose: closeModal
+    });
+
+
+    const modal =
+        document.getElementById(
+            "issueTypeModal"
+        );
+
+
+    if (!modal) {
+        return;
+    }
+
+
+    modal.classList.remove(
+        "hidden"
+    );
+
+
+    // ========================================================
+    // CANCEL
+    // ========================================================
+
+    const cancelButton =
+        modal.querySelector(
+            "#issueTypeCancelButton"
+        );
+
+
+    if (cancelButton) {
+
+        cancelButton.addEventListener(
+            "click",
+            closeModal
+        );
+
+    }
+
+
+    // ========================================================
+    // FORM SUBMIT
+    // ========================================================
+
+    const form =
+        modal.querySelector(
+            "#issueTypeForm"
+        );
+
+
+    if (form) {
+
+        form.addEventListener(
+            "submit",
+            saveIssueType
+        );
+
+    }
 
 }
 
 
-async function saveIssueType(event) {
+// ============================================================
+// SAVE ISSUE TYPE
+// ============================================================
+
+async function saveIssueType(
+    event
+) {
 
     event.preventDefault();
+
+
+    const saveButton =
+        document.getElementById(
+            "issueTypeSaveButton"
+        );
 
 
     const issueTypeData = {
 
         name:
             document.getElementById(
-                "name"
-            ).value,
+                "issueTypeName"
+            ).value.trim(),
 
         description:
             document.getElementById(
-                "description"
-            ).value,
+                "issueTypeDescription"
+            ).value.trim(),
 
         category:
             document.getElementById(
-                "category"
-            ).value,
+                "issueTypeCategory"
+            ).value.trim(),
 
         display_name:
             document.getElementById(
-                "displayName"
-            ).value || null,
+                "issueTypeDisplayName"
+            ).value.trim() ||
+            null,
 
         search_keywords:
             document.getElementById(
-                "searchKeywords"
-            ).value || null,
+                "issueTypeSearchKeywords"
+            ).value.trim() ||
+            null,
 
         form_template_id:
             document.getElementById(
-                "formTemplate"
+                "issueTypeFormTemplate"
             ).value
                 ? Number(
                     document.getElementById(
-                        "formTemplate"
+                        "issueTypeFormTemplate"
                     ).value
                 )
                 : null,
 
         is_active:
             document.getElementById(
-                "isActive"
+                "issueTypeIsActive"
             ).checked
 
     };
 
 
+    if (
+        !issueTypeData.name ||
+        !issueTypeData.description ||
+        !issueTypeData.category
+    ) {
+
+        showWarningMessage(
+            "Please complete all required fields."
+        );
+
+        return;
+
+    }
+
+
+    if (saveButton) {
+
+        saveButton.disabled =
+            true;
+
+    }
+
+
     try {
 
-        if (editingIssueTypeId === null) {
+        if (
+            editingIssueTypeId === null
+        ) {
 
             await createIssueType(
                 issueTypeData
             );
 
-            alert(
+
+            showSuccessMessage(
                 "Issue type created successfully."
             );
 
@@ -388,7 +992,8 @@ async function saveIssueType(event) {
                 issueTypeData
             );
 
-            alert(
+
+            showSuccessMessage(
                 "Issue type updated successfully."
             );
 
@@ -407,8 +1012,153 @@ async function saveIssueType(event) {
             error
         );
 
-        alert(
+        showErrorMessage(
             "Error saving issue type."
+        );
+
+    } finally {
+
+        if (saveButton) {
+
+            saveButton.disabled =
+                false;
+
+        }
+
+    }
+
+}
+
+
+// ============================================================
+// REMOVE MODAL
+// ============================================================
+
+function openRemoveModal(
+    issueTypeId
+) {
+
+    const issueType =
+        issueTypes.find(
+            item =>
+                Number(item.id) ===
+                Number(issueTypeId)
+        );
+
+
+    if (!issueType) {
+        return;
+    }
+
+
+    const content = `
+
+        <div class="list-page-confirmation">
+
+            <p class="list-page-confirmation-message">
+
+                Are you sure you want to remove
+                <strong>
+                    ${escapeIssueTypeHtml(
+                        issueType.name
+                    )}
+                </strong>
+                ?
+
+            </p>
+
+
+            <p class="list-page-confirmation-description">
+
+                This action will remove the Issue Type
+                from the system.
+
+            </p>
+
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    id="removeCancelButton"
+                >
+                    Cancel
+                </button>
+
+
+                <button
+                    type="button"
+                    class="danger-button"
+                    id="removeConfirmButton"
+                >
+                    Remove
+                </button>
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    renderModal({
+        containerId: "issueTypeModal",
+        title: "Remove Issue Type",
+        content: content,
+        onClose: closeModal
+    });
+
+
+    const modal =
+        document.getElementById(
+            "issueTypeModal"
+        );
+
+
+    if (!modal) {
+        return;
+    }
+
+
+    modal.classList.remove(
+        "hidden"
+    );
+
+
+    const cancelButton =
+        modal.querySelector(
+            "#removeCancelButton"
+        );
+
+
+    if (cancelButton) {
+
+        cancelButton.addEventListener(
+            "click",
+            closeModal
+        );
+
+    }
+
+
+    const confirmButton =
+        modal.querySelector(
+            "#removeConfirmButton"
+        );
+
+
+    if (confirmButton) {
+
+        confirmButton.addEventListener(
+            "click",
+            async () => {
+
+                await removeIssueType(
+                    issueTypeId
+                );
+
+            }
         );
 
     }
@@ -416,16 +1166,25 @@ async function saveIssueType(event) {
 }
 
 
-async function deleteIssueTypeConfirm(issueTypeId) {
+// ============================================================
+// REMOVE ISSUE TYPE
+// ============================================================
 
-    const confirmed =
-        confirm(
-            "Are you sure you want to delete this issue type?"
+async function removeIssueType(
+    issueTypeId
+) {
+
+    const confirmButton =
+        document.getElementById(
+            "removeConfirmButton"
         );
 
 
-    if (!confirmed) {
-        return;
+    if (confirmButton) {
+
+        confirmButton.disabled =
+            true;
+
     }
 
 
@@ -436,8 +1195,11 @@ async function deleteIssueTypeConfirm(issueTypeId) {
         );
 
 
-        alert(
-            "Issue type deleted successfully."
+        closeModal();
+
+
+        showSuccessMessage(
+            "Issue type removed successfully."
         );
 
 
@@ -447,21 +1209,108 @@ async function deleteIssueTypeConfirm(issueTypeId) {
     } catch (error) {
 
         console.error(
-            "Error deleting issue type:",
+            "Error removing issue type:",
             error
         );
 
-        alert(
-            "Error deleting issue type."
+
+        showErrorMessage(
+            "Error removing issue type."
         );
+
+
+        if (confirmButton) {
+
+            confirmButton.disabled =
+                false;
+
+        }
 
     }
 
 }
 
-function openIssueTypeDetail(issueTypeId) {
+
+// ============================================================
+// CLOSE MODAL
+// ============================================================
+
+function closeModal() {
+
+    const modal =
+        document.getElementById(
+            "issueTypeModal"
+        );
+
+
+    if (!modal) {
+        return;
+    }
+
+
+    modal.classList.add(
+        "hidden"
+    );
+
+
+    modal.innerHTML = "";
+
+}
+
+
+// ============================================================
+// OPEN DETAIL
+// ============================================================
+
+function openIssueTypeDetail(
+    issueTypeId
+) {
 
     window.location.href =
         `issue-type-detail.html?id=${issueTypeId}`;
+
+}
+
+
+// ============================================================
+// HTML ESCAPING
+// ============================================================
+
+function escapeIssueTypeHtml(
+    value
+) {
+
+    return String(value ?? "")
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+function escapeIssueTypeAttribute(
+    value
+) {
+
+    return escapeIssueTypeHtml(
+        value
+    );
 
 }
