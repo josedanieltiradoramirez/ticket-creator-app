@@ -1,10 +1,13 @@
-let noteId = null;
+// ============================================================
+// KNOWLEDGE BASE NOTE DETAIL
+// ============================================================
 
+let noteId = null;
 let currentNote = null;
 
 
 // ============================================================
-// DOM CONTENT LOADED
+// INITIALIZATION
 // ============================================================
 
 document.addEventListener(
@@ -16,36 +19,25 @@ document.addEventListener(
                 window.location.search
             );
 
-
         noteId =
-            Number(
-                params.get("id")
-            );
-
+            params.get("id");
 
         if (!noteId) {
 
-            alert(
-                "Invalid Knowledge Base Note ID."
+            console.error(
+                "Knowledge Base Note ID is missing."
             );
 
-
-            window.location.href =
-                "knowledge-base-notes.html";
-
+            showErrorMessage(
+                "Knowledge Base Note ID is missing."
+            );
 
             return;
-
         }
-
 
         setupNavigation();
 
-        setupEventListeners();
-
-
         await loadNoteDetail();
-
     }
 );
 
@@ -56,231 +48,47 @@ document.addEventListener(
 
 function setupNavigation() {
 
-    document
-        .getElementById("ticketsButton")
-        .addEventListener(
-            "click",
-            () => {
+    const navigationItems = {
 
-                window.location.href =
-                    "index.html";
+        tickets:
+            "tickets.html",
 
-            }
-        );
+        tools:
+            "tools.html",
 
+        locations:
+            "locations.html",
 
-    document
-        .getElementById("toolsButton")
-        .addEventListener(
-            "click",
-            () => {
+        queues:
+            "queues.html",
 
-                window.location.href =
-                    "tools.html";
+        wms:
+            "wms.html",
 
-            }
-        );
+        forms:
+            "forms.html",
 
+        troubleshootingTemplates:
+            "troubleshooting-templates.html",
 
-    document
-        .getElementById("locationsButton")
-        .addEventListener(
-            "click",
-            () => {
+        knowledgeBase:
+            "knowledge-base.html",
 
-                window.location.href =
-                    "locations.html";
+        knowledgeBaseNotes:
+            "knowledge-base-notes.html"
+    };
 
-            }
-        );
-
-
-    document
-        .getElementById("queuesButton")
-        .addEventListener(
-            "click",
-            () => {
-
-                window.location.href =
-                    "queues.html";
-
-            }
-        );
-
-
-    document
-        .getElementById("wmsButton")
-        .addEventListener(
-            "click",
-            () => {
-
-                window.location.href =
-                    "warehouse-management-systems.html";
-
-            }
-        );
-
-
-    document
-        .getElementById("formsButton")
-        .addEventListener(
-            "click",
-            () => {
-
-                window.location.href =
-                    "forms.html";
-
-            }
-        );
-
-
-    document
-        .getElementById(
-            "troubleshootingTemplatesButton"
-        )
-        .addEventListener(
-            "click",
-            () => {
-
-                window.location.href =
-                    "troubleshooting-templates.html";
-
-            }
-        );
-
-
-    document
-        .getElementById(
-            "knowledgeBaseButton"
-        )
-        .addEventListener(
-            "click",
-            () => {
-
-                window.location.href =
-                    "knowledge-base.html";
-
-            }
-        );
-
-
-    document
-        .getElementById(
-            "knowledgeBaseNotesButton"
-        )
-        .addEventListener(
-            "click",
-            () => {
-
-                window.location.href =
-                    "knowledge-base-notes.html";
-
-            }
-        );
-
-}
-
-
-// ============================================================
-// EVENT LISTENERS
-// ============================================================
-
-function setupEventListeners() {
-
-    // ========================================================
-    // BACK
-    // ========================================================
-
-    document
-        .getElementById("backButton")
-        .addEventListener(
-            "click",
-            () => {
-
-                window.location.href =
-                    "knowledge-base-notes.html";
-
-            }
-        );
-
-
-    // ========================================================
-    // TOOLS
-    // ========================================================
-
-    document
-        .getElementById("addToolButton")
-        .addEventListener(
-            "click",
-            openToolModal
-        );
-
-
-    document
-        .getElementById("closeToolModalButton")
-        .addEventListener(
-            "click",
-            closeToolModal
-        );
-
-
-    document
-        .getElementById("cancelToolButton")
-        .addEventListener(
-            "click",
-            closeToolModal
-        );
-
-
-    document
-        .getElementById("saveToolButton")
-        .addEventListener(
-            "click",
-            addSelectedTool
-        );
-
-
-    // ========================================================
-    // ISSUE TYPES
-    // ========================================================
-
-    document
-        .getElementById("addIssueTypeButton")
-        .addEventListener(
-            "click",
-            openIssueTypeModal
-        );
-
-
-    document
-        .getElementById(
-            "closeIssueTypeModalButton"
-        )
-        .addEventListener(
-            "click",
-            closeIssueTypeModal
-        );
-
-
-    document
-        .getElementById(
-            "cancelIssueTypeButton"
-        )
-        .addEventListener(
-            "click",
-            closeIssueTypeModal
-        );
-
-
-    document
-        .getElementById(
-            "saveIssueTypeButton"
-        )
-        .addEventListener(
-            "click",
-            addSelectedIssueType
-        );
-
+    if (
+        typeof renderNavigation ===
+        "function"
+    ) {
+        renderNavigation({
+            containerId:
+                "appNavigation",
+            items:
+                navigationItems
+        });
+    }
 }
 
 
@@ -297,34 +105,92 @@ async function loadNoteDetail() {
                 noteId
             );
 
+        if (!currentNote) {
 
-        renderBasicInformation(
-            currentNote
-        );
+            showErrorMessage(
+                "Knowledge Base Note not found."
+            );
 
+            return;
+        }
 
-        await Promise.all([
+        prepareDisplayValues();
 
-            loadTools(),
+        renderNoteDetailHeader();
 
-            loadIssueTypes()
+        renderBasicInformation();
 
-        ]);
+        renderNoteEditorSection();
+
+        await loadRelationships();
 
     } catch (error) {
 
         console.error(
-            "Error loading Knowledge Base Note detail:",
+            "Error loading Knowledge Base Note:",
             error
         );
 
-
-        alert(
-            "Error loading Knowledge Base Note details."
+        showErrorMessage(
+            "Error loading Knowledge Base Note."
         );
+    }
+}
 
+
+// ============================================================
+// PREPARE DISPLAY VALUES
+// ============================================================
+
+function prepareDisplayValues() {
+
+    if (!currentNote) {
+        return;
     }
 
+    currentNote.created_at_display =
+        formatDate(
+            currentNote.created_at
+        );
+
+    currentNote.updated_at_display =
+        formatDate(
+            currentNote.updated_at
+        );
+}
+
+
+// ============================================================
+// DETAIL HEADER
+// ============================================================
+
+function renderNoteDetailHeader() {
+
+    renderDetailHeader({
+
+        containerId:
+            "detailHeader",
+
+        type:
+            "Knowledge Base Note",
+
+        title:
+            currentNote.title,
+
+        description:
+            currentNote.category || "",
+
+        actions: {
+            back: true,
+            edit: false
+        },
+
+        onBack: () => {
+
+            window.location.href =
+                "knowledge-base-notes.html";
+        }
+    });
 }
 
 
@@ -332,103 +198,233 @@ async function loadNoteDetail() {
 // BASIC INFORMATION
 // ============================================================
 
-function renderBasicInformation(
-    note
-) {
+function renderBasicInformation() {
 
-    document.getElementById(
-        "noteTitle"
-    ).textContent =
-        note.title || "Knowledge Base Note";
+    renderBasicInformationComponent({
 
+        containerId:
+            "basicInformation",
 
-    document.getElementById(
-        "noteCategory"
-    ).textContent =
-        note.category || "";
+        fields: [
 
+            {
+                key:
+                    "id",
 
-    document.getElementById(
-        "noteId"
-    ).textContent =
-        note.id;
+                label:
+                    "ID",
 
+                type:
+                    "text",
 
-    document.getElementById(
-        "noteTitleValue"
-    ).textContent =
-        note.title || "-";
+                readonly:
+                    true
+            },
 
+            {
+                key:
+                    "title",
 
-    document.getElementById(
-        "noteCategoryValue"
-    ).textContent =
-        note.category || "-";
+                label:
+                    "Title",
 
+                type:
+                    "text"
+            },
 
-    document.getElementById(
-        "noteStatus"
-    ).innerHTML =
-        createStatusBadge(
-            note.is_active
-        );
+            {
+                key:
+                    "category",
 
+                label:
+                    "Category",
 
-    document.getElementById(
-        "notePinned"
-    ).textContent =
-        note.is_pinned
-            ? "Yes"
-            : "No";
+                type:
+                    "text"
+            },
 
+            {
+                key:
+                    "is_pinned",
 
-    document.getElementById(
-        "noteCreatedBy"
-    ).textContent =
-        note.created_by ?? "-";
+                label:
+                    "Pinned",
 
+                type:
+                    "boolean"
+            },
 
-    document.getElementById(
-        "noteCreatedAt"
-    ).textContent =
-        formatDate(
-            note.created_at
-        );
+            {
+                key:
+                    "is_active",
 
+                label:
+                    "Status",
 
-    document.getElementById(
-        "noteUpdatedAt"
-    ).textContent =
-        formatDate(
-            note.updated_at
-        );
+                type:
+                    "boolean"
+            },
 
+            {
+                key:
+                    "created_by",
 
-    document.getElementById(
-        "noteContent"
-    ).textContent =
-        note.content || "-";
+                label:
+                    "Created By",
 
+                type:
+                    "text",
+
+                readonly:
+                    true
+            },
+
+            {
+                key:
+                    "created_at_display",
+
+                label:
+                    "Created At",
+
+                type:
+                    "text",
+
+                readonly:
+                    true
+            },
+
+            {
+                key:
+                    "updated_at_display",
+
+                label:
+                    "Updated At",
+
+                type:
+                    "text",
+
+                readonly:
+                    true
+            }
+        ],
+
+        data:
+            currentNote,
+
+        onSave:
+            async (
+                updatedData
+            ) => {
+
+                const data = {
+
+                    title:
+                        updatedData.title,
+
+                    category:
+                        updatedData.category,
+
+                    is_pinned:
+                        updatedData.is_pinned,
+
+                    is_active:
+                        updatedData.is_active,
+
+                    content:
+                        currentNote.content
+                };
+
+                currentNote =
+                    await updateKnowledgeBaseNote(
+                        noteId,
+                        data
+                    );
+
+                prepareDisplayValues();
+
+                renderNoteDetailHeader();
+
+                renderBasicInformation();
+
+                renderNoteEditorSection();
+
+                showSuccessMessage(
+                    "Knowledge Base Note updated successfully."
+                );
+            }
+    });
 }
 
 
 // ============================================================
-// TOOLS
+// NOTE EDITOR
 // ============================================================
 
-async function loadTools() {
+function renderNoteEditorSection() {
 
-    const tableBody =
+    renderNoteEditor({
+
+        containerId:
+            "noteEditor",
+
+        content:
+            currentNote.content || "",
+
+        onSave:
+            async (
+                newContent
+            ) => {
+
+                const data = {
+
+                    title:
+                        currentNote.title,
+
+                    category:
+                        currentNote.category,
+
+                    is_pinned:
+                        currentNote.is_pinned,
+
+                    is_active:
+                        currentNote.is_active,
+
+                    content:
+                        newContent
+                };
+
+                currentNote =
+                    await updateKnowledgeBaseNote(
+                        noteId,
+                        data
+                    );
+
+                prepareDisplayValues();
+
+                renderNoteDetailHeader();
+
+                showSuccessMessage(
+                    "Note content updated successfully."
+                );
+            }
+    });
+}
+
+
+// ============================================================
+// LOAD RELATIONSHIPS
+// ============================================================
+
+async function loadRelationships() {
+
+    const relationshipsContainer =
         document.getElementById(
-            "toolsTableBody"
+            "relationships"
         );
 
-
-    const emptyMessage =
-        document.getElementById(
-            "toolsEmptyMessage"
-        );
-
+    if (!relationshipsContainer) {
+        return;
+    }
 
     try {
 
@@ -437,77 +433,902 @@ async function loadTools() {
                 noteId
             );
 
-
-        tableBody.innerHTML =
-            "";
-
-
-        if (
-            !tools ||
-            tools.length === 0
-        ) {
-
-            emptyMessage.style.display =
-                "block";
-
-            return;
-
-        }
-
-
-        emptyMessage.style.display =
-            "none";
-
-
-        tools.forEach(tool => {
-
-            const row =
-                document.createElement(
-                    "tr"
-                );
-
-
-            row.innerHTML = `
-
-                <td>
-                    ${escapeHtml(
-                        tool.name || "-"
-                    )}
-                </td>
-
-                <td>
-
-                    <button
-                        class="action-button"
-                        onclick="removeTool(${tool.id})"
-                    >
-                        Remove
-                    </button>
-
-                </td>
-
-            `;
-
-
-            tableBody.appendChild(
-                row
+        const issueTypes =
+            await getKnowledgeBaseNoteIssueTypes(
+                noteId
             );
 
+        const relationshipSections = [
+
+            {
+                title:
+                    "Tools",
+
+                entityLabel:
+                    "Tool",
+
+                items:
+                    tools || [],
+
+                addLabel:
+                    "Add Tool",
+
+                expanded:
+                    true,
+
+                actions: {
+
+                    view:
+                        true,
+
+                    edit:
+                        true,
+
+                    remove:
+                        true,
+
+                    add:
+                        true,
+
+                    create:
+                        true
+                },
+
+                getItemName:
+                    (item) =>
+                        item.name || "-",
+
+                onView:
+                    (item) => {
+
+                        window.location.href =
+                            `tool-detail.html?id=${item.id}`;
+                    },
+
+                onEdit:
+                    (item) => {
+
+                        openRelationshipItemModal({
+                            mode:
+                                "edit",
+
+                            relationship:
+                                "tool",
+
+                            item:
+                                item
+                        });
+                    },
+
+                onRemove:
+                    (item) => {
+
+                        openRemoveRelationshipModal({
+                            relationship:
+                                "tool",
+
+                            item:
+                                item
+                        });
+                    },
+
+                onAdd:
+                    () => {
+
+                        openToolModal();
+                    },
+
+                onCreate:
+                    () => {
+
+                        openRelationshipItemModal({
+                            mode:
+                                "create",
+
+                            relationship:
+                                "tool",
+
+                            item:
+                                null
+                        });
+                    }
+            },
+
+
+            {
+                title:
+                    "Issue Types",
+
+                entityLabel:
+                    "Issue Type",
+
+                items:
+                    issueTypes || [],
+
+                addLabel:
+                    "Add Issue Type",
+
+                expanded:
+                    true,
+
+                actions: {
+
+                    view:
+                        true,
+
+                    edit:
+                        true,
+
+                    remove:
+                        true,
+
+                    add:
+                        true,
+
+                    create:
+                        true
+                },
+
+                getItemName:
+                    (item) =>
+                        item.name || "-",
+
+                onView:
+                    (item) => {
+
+                        window.location.href =
+                            `issue-type-detail.html?id=${item.id}`;
+                    },
+
+                onEdit:
+                    (item) => {
+
+                        openRelationshipItemModal({
+                            mode:
+                                "edit",
+
+                            relationship:
+                                "issueType",
+
+                            item:
+                                item
+                        });
+                    },
+
+                onRemove:
+                    (item) => {
+
+                        openRemoveRelationshipModal({
+                            relationship:
+                                "issueType",
+
+                            item:
+                                item
+                        });
+                    },
+
+                onAdd:
+                    () => {
+
+                        openIssueTypeModal();
+                    },
+
+                onCreate:
+                    () => {
+
+                        openRelationshipItemModal({
+                            mode:
+                                "create",
+
+                            relationship:
+                                "issueType",
+
+                            item:
+                                null
+                        });
+                    }
+            }
+        ];
+
+        renderRelationships({
+
+            containerId:
+                "relationships",
+
+            relationships:
+                relationshipSections,
+
+            expanded:
+                true
         });
 
     } catch (error) {
 
         console.error(
-            "Error loading tools:",
+            "Error loading relationships:",
             error
         );
 
+        showErrorMessage(
+            "Error loading relationships."
+        );
+    }
+}
 
-        emptyMessage.style.display =
-            "block";
 
+// ============================================================
+// OPEN RELATIONSHIP ITEM MODAL
+// ============================================================
+
+async function openRelationshipItemModal({
+    mode,
+    relationship,
+    item = null
+}) {
+
+    const isEdit =
+        mode === "edit";
+
+    const isCreate =
+        mode === "create";
+
+    let modalTitle = "";
+
+    let fields = [];
+
+    if (relationship === "tool") {
+
+        modalTitle =
+            isEdit
+                ? "Edit Tool"
+                : "Create Tool";
+
+        fields = [
+
+            {
+                key:
+                    "name",
+
+                label:
+                    "Name",
+
+                type:
+                    "text",
+
+                required:
+                    true
+            },
+
+            {
+                key:
+                    "description",
+
+                label:
+                    "Description",
+
+                type:
+                    "textarea"
+            },
+
+            {
+                key:
+                    "access_request",
+
+                label:
+                    "Access Request",
+
+                type:
+                    "textarea"
+            },
+
+            {
+                key:
+                    "password_reset",
+
+                label:
+                    "Password Reset",
+
+                type:
+                    "textarea"
+            },
+
+            {
+                key:
+                    "is_active",
+
+                label:
+                    "Active",
+
+                type:
+                    "boolean"
+            }
+        ];
     }
 
+    else if (
+        relationship === "issueType"
+    ) {
+
+        modalTitle =
+            isEdit
+                ? "Edit Issue Type"
+                : "Create Issue Type";
+
+        fields = [
+
+            {
+                key:
+                    "name",
+
+                label:
+                    "Name",
+
+                type:
+                    "text",
+
+                required:
+                    true
+            },
+
+            {
+                key:
+                    "description",
+
+                label:
+                    "Description",
+
+                type:
+                    "textarea"
+            },
+
+            {
+                key:
+                    "form_template_id",
+
+                label:
+                    "Form Template ID",
+
+                type:
+                    "number"
+            },
+
+            {
+                key:
+                    "category",
+
+                label:
+                    "Category",
+
+                type:
+                    "text"
+            },
+
+            {
+                key:
+                    "display_name",
+
+                label:
+                    "Display Name",
+
+                type:
+                    "text"
+            },
+
+            {
+                key:
+                    "search_keywords",
+
+                label:
+                    "Search Keywords",
+
+                type:
+                    "text"
+            },
+
+            {
+                key:
+                    "is_active",
+
+                label:
+                    "Active",
+
+                type:
+                    "boolean"
+            }
+        ];
+    }
+
+    else {
+
+        console.error(
+            `Unsupported relationship: ${relationship}`
+        );
+
+        return;
+    }
+
+    const fieldsHtml =
+        fields
+            .map(
+                (
+                    field
+                ) => {
+
+                    const value =
+                        item?.[
+                            field.key
+                        ];
+
+                    return renderRelationshipField(
+                        field,
+                        value
+                    );
+                }
+            )
+            .join("");
+
+    const content = `
+        <form
+            id="relationshipItemForm"
+            class="relationship-item-form"
+        >
+
+            <div class="modal-form-fields">
+                ${fieldsHtml}
+            </div>
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    id="relationshipItemCancelButton"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                    id="relationshipItemSaveButton"
+                >
+                    ${
+                        isEdit
+                            ? "Save"
+                            : "Create"
+                    }
+                </button>
+
+            </div>
+
+        </form>
+    `;
+
+    renderModal({
+
+        containerId:
+            "relationshipItemModal",
+
+        title:
+            modalTitle,
+
+        content:
+            content,
+
+        onClose:
+            closeRelationshipItemModal
+    });
+
+    const modal =
+        document.getElementById(
+            "relationshipItemModal"
+        );
+
+    if (!modal) {
+        return;
+    }
+
+    modal.classList.remove(
+        "hidden"
+    );
+
+    // ========================================================
+    // CANCEL
+    // ========================================================
+
+    const cancelButton =
+        modal.querySelector(
+            "#relationshipItemCancelButton"
+        );
+
+    if (cancelButton) {
+
+        cancelButton.addEventListener(
+            "click",
+            () => {
+                closeRelationshipItemModal();
+            }
+        );
+    }
+
+    // ========================================================
+    // FORM SUBMIT
+    // ========================================================
+
+    const form =
+        modal.querySelector(
+            "#relationshipItemForm"
+        );
+
+    if (form) {
+
+        form.addEventListener(
+            "submit",
+            async (
+                event
+            ) => {
+
+                event.preventDefault();
+
+                await saveRelationshipItem({
+                    mode:
+                        mode,
+
+                    relationship:
+                        relationship,
+
+                    item:
+                        item
+                });
+            }
+        );
+    }
+}
+
+
+// ============================================================
+// RENDER RELATIONSHIP FIELD
+// ============================================================
+
+function renderRelationshipField(
+    field,
+    value
+) {
+
+    const safeValue =
+        value ?? "";
+
+    if (
+        field.type ===
+        "boolean"
+    ) {
+
+        const checked =
+            value === true;
+
+        return `
+            <div class="modal-field">
+
+                <label
+                    for="relationship-${field.key}"
+                >
+                    ${escapeHtml(
+                        field.label
+                    )}
+                </label>
+
+                <div class="checkbox-group">
+
+                    <input
+                        type="checkbox"
+                        id="relationship-${field.key}"
+                        data-relationship-field="${field.key}"
+                        ${
+                            checked
+                                ? "checked"
+                                : ""
+                        }
+                    >
+
+                    <label
+                        for="relationship-${field.key}"
+                    >
+                        Active
+                    </label>
+
+                </div>
+
+            </div>
+        `;
+    }
+
+    if (
+        field.type ===
+        "textarea"
+    ) {
+
+        return `
+            <div class="modal-field">
+
+                <label
+                    for="relationship-${field.key}"
+                >
+                    ${escapeHtml(
+                        field.label
+                    )}
+                </label>
+
+                <textarea
+                    id="relationship-${field.key}"
+                    data-relationship-field="${field.key}"
+                    rows="5"
+                    ${
+                        field.required
+                            ? "required"
+                            : ""
+                    }
+                >${escapeHtml(
+                    safeValue
+                )}</textarea>
+
+            </div>
+        `;
+    }
+
+    return `
+        <div class="modal-field">
+
+            <label
+                for="relationship-${field.key}"
+            >
+                ${escapeHtml(
+                    field.label
+                )}
+                ${
+                    field.required
+                        ? `
+                            <span class="required">
+                                *
+                            </span>
+                        `
+                        : ""
+                }
+            </label>
+
+            <input
+                type="${field.type || "text"}"
+                id="relationship-${field.key}"
+                data-relationship-field="${field.key}"
+                value="${escapeHtml(
+                    safeValue
+                )}"
+                ${
+                    field.required
+                        ? "required"
+                        : ""
+                }
+            >
+
+        </div>
+    `;
+}
+
+
+// ============================================================
+// SAVE RELATIONSHIP ITEM
+// ============================================================
+
+async function saveRelationshipItem({
+    mode,
+    relationship,
+    item
+}) {
+
+    const modal =
+        document.getElementById(
+            "relationshipItemModal"
+        );
+
+    if (!modal) {
+        return;
+    }
+
+    const configMap = {
+
+        tool: {
+
+            label:
+                "Tool",
+
+            create:
+                createTool,
+
+            update:
+                updateTool,
+
+            add:
+                addKnowledgeBaseNoteTool
+        },
+
+        issueType: {
+
+            label:
+                "Issue Type",
+
+            create:
+                createIssueType,
+
+            update:
+                updateIssueType,
+
+            add:
+                addKnowledgeBaseNoteIssueType
+        }
+    };
+
+    const config =
+        configMap[
+            relationship
+        ];
+
+    if (!config) {
+
+        showErrorMessage(
+            `Unsupported relationship: ${relationship}.`
+        );
+
+        return;
+    }
+
+    const form =
+        modal.querySelector(
+            "#relationshipItemForm"
+        );
+
+    if (!form) {
+        return;
+    }
+
+    const inputs =
+        form.querySelectorAll(
+            "[data-relationship-field]"
+        );
+
+    const payload = {};
+
+    inputs.forEach(
+        (
+            input
+        ) => {
+
+            const key =
+                input.dataset
+                    .relationshipField;
+
+            if (
+                input.type ===
+                "checkbox"
+            ) {
+
+                payload[key] =
+                    input.checked;
+
+            } else {
+
+                payload[key] =
+                    input.value.trim();
+            }
+        }
+    );
+
+    if (
+        !payload.name
+    ) {
+
+        showErrorMessage(
+            `${config.label} name is required.`
+        );
+
+        return;
+    }
+
+    if (
+        payload.form_template_id ===
+        ""
+    ) {
+
+        payload.form_template_id =
+            null;
+    }
+
+    const saveButton =
+        modal.querySelector(
+            "#relationshipItemSaveButton"
+        );
+
+    if (saveButton) {
+        saveButton.disabled =
+            true;
+    }
+
+    try {
+
+        let savedItem = null;
+
+        if (
+            mode ===
+            "create"
+        ) {
+
+            savedItem =
+                await config.create(
+                    payload
+                );
+
+            if (
+                savedItem?.id
+            ) {
+
+                await config.add(
+                    noteId,
+                    savedItem.id
+                );
+            }
+
+            showSuccessMessage(
+                `${config.label} created successfully.`
+            );
+
+        }
+
+        else if (
+            mode ===
+            "edit"
+        ) {
+
+            savedItem =
+                await config.update(
+                    item.id,
+                    payload
+                );
+
+            showSuccessMessage(
+                `${config.label} updated successfully.`
+            );
+
+        }
+
+        else {
+
+            console.error(
+                `Unsupported mode: ${mode}`
+            );
+
+            return;
+        }
+
+        closeRelationshipItemModal();
+
+        await loadRelationships();
+
+    } catch (error) {
+
+        console.error(
+            `Error saving ${config.label}:`,
+            error
+        );
+
+        showErrorMessage(
+            `Error saving ${config.label}.`
+        );
+
+    } finally {
+
+        if (saveButton) {
+            saveButton.disabled =
+                false;
+        }
+    }
 }
 
 
@@ -517,321 +1338,210 @@ async function loadTools() {
 
 async function openToolModal() {
 
-    const select =
-        document.getElementById(
-            "toolSelect"
-        );
-
-
-    select.innerHTML = `
-
-        <option value="">
-            Select a tool
-        </option>
-
-    `;
-
-
     try {
 
-        const [
-            tools,
-            assignedTools
-        ] =
-            await Promise.all([
+        const tools =
+            await getTools();
 
-                getTools(),
-
-                getKnowledgeBaseNoteTools(
-                    noteId
-                )
-
-            ]);
-
-
-        const assignedIds =
-            assignedTools.map(
-                tool => tool.id
+        const relatedTools =
+            await getKnowledgeBaseNoteTools(
+                noteId
             );
 
-
-        tools.forEach(tool => {
-
-            if (
-                assignedIds.includes(
-                    tool.id
+        const relatedIds =
+            new Set(
+                relatedTools.map(
+                    tool =>
+                        Number(tool.id)
                 )
-            ) {
-
-                return;
-
-            }
-
-
-            const option =
-                document.createElement(
-                    "option"
-                );
-
-
-            option.value =
-                tool.id;
-
-
-            option.textContent =
-                tool.name;
-
-
-            select.appendChild(
-                option
             );
 
+        const availableTools =
+            tools.filter(
+                tool =>
+                    !relatedIds.has(
+                        Number(tool.id)
+                    )
+            );
+
+        const options =
+            availableTools
+                .map(
+                    tool => `
+                        <option
+                            value="${tool.id}"
+                        >
+                            ${escapeHtml(
+                                tool.name
+                            )}
+                        </option>
+                    `
+                )
+                .join("");
+
+        const content = `
+            <div class="modal-field">
+
+                <label
+                    for="knowledgeBaseNoteToolSelect"
+                >
+                    Tool
+                </label>
+
+                <select
+                    id="knowledgeBaseNoteToolSelect"
+                >
+                    <option value="">
+                        Select a Tool
+                    </option>
+
+                    ${options}
+                </select>
+
+            </div>
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    id="knowledgeBaseNoteToolCancelButton"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="button"
+                    class="primary-button"
+                    id="knowledgeBaseNoteToolAddButton"
+                >
+                    Add
+                </button>
+
+            </div>
+        `;
+
+        renderModal({
+
+            containerId:
+                "relationshipItemModal",
+
+            title:
+                "Add Tool",
+
+            content:
+                content,
+
+            onClose:
+                closeRelationshipItemModal
         });
 
+        const modal =
+            document.getElementById(
+                "relationshipItemModal"
+            );
 
-        document
-            .getElementById(
-                "toolModal"
-            )
-            .classList
-            .remove("hidden");
+        if (!modal) {
+            return;
+        }
+
+        modal.classList.remove(
+            "hidden"
+        );
+
+        const cancelButton =
+            modal.querySelector(
+                "#knowledgeBaseNoteToolCancelButton"
+            );
+
+        if (cancelButton) {
+
+            cancelButton.addEventListener(
+                "click",
+                closeRelationshipItemModal
+            );
+        }
+
+        const addButton =
+            modal.querySelector(
+                "#knowledgeBaseNoteToolAddButton"
+            );
+
+        if (addButton) {
+
+            addButton.addEventListener(
+                "click",
+                addSelectedTool
+            );
+        }
 
     } catch (error) {
 
         console.error(
-            "Error loading tools:",
+            "Error opening Tool modal:",
             error
         );
 
-
-        alert(
-            "Error loading tools."
+        showErrorMessage(
+            "Error loading Tools."
         );
-
     }
-
 }
 
 
 // ============================================================
-// ADD TOOL
+// ADD SELECTED TOOL
 // ============================================================
 
 async function addSelectedTool() {
 
     const select =
         document.getElementById(
-            "toolSelect"
+            "knowledgeBaseNoteToolSelect"
         );
 
+    if (!select) {
+        return;
+    }
 
     const toolId =
-        select.value
-            ? Number(
-                select.value
-            )
-            : null;
-
+        select.value;
 
     if (!toolId) {
 
-        alert(
-            "Please select a tool."
+        showWarningMessage(
+            "Please select a Tool."
         );
 
         return;
-
     }
-
 
     try {
 
         await addKnowledgeBaseNoteTool(
             noteId,
-            toolId
+            Number(toolId)
         );
 
+        closeRelationshipItemModal();
 
-        closeToolModal();
+        await loadRelationships();
 
-
-        await loadTools();
+        showSuccessMessage(
+            "Tool added successfully."
+        );
 
     } catch (error) {
 
         console.error(
-            "Error adding tool:",
+            "Error adding Tool:",
             error
         );
 
-
-        alert(
-            "Error adding tool."
+        showErrorMessage(
+            "Error adding Tool."
         );
-
     }
-
-}
-
-
-// ============================================================
-// REMOVE TOOL
-// ============================================================
-
-async function removeTool(
-    toolId
-) {
-
-    if (
-        !confirm(
-            "Remove this tool from the Knowledge Base Note?"
-        )
-    ) {
-
-        return;
-
-    }
-
-
-    try {
-
-        await removeKnowledgeBaseNoteTool(
-            noteId,
-            toolId
-        );
-
-
-        await loadTools();
-
-    } catch (error) {
-
-        console.error(
-            "Error removing tool:",
-            error
-        );
-
-
-        alert(
-            "Error removing tool."
-        );
-
-    }
-
-}
-
-
-// ============================================================
-// CLOSE TOOL MODAL
-// ============================================================
-
-function closeToolModal() {
-
-    document
-        .getElementById(
-            "toolModal"
-        )
-        .classList
-        .add("hidden");
-
-}
-
-
-// ============================================================
-// ISSUE TYPES
-// ============================================================
-
-async function loadIssueTypes() {
-
-    const tableBody =
-        document.getElementById(
-            "issueTypesTableBody"
-        );
-
-
-    const emptyMessage =
-        document.getElementById(
-            "issueTypesEmptyMessage"
-        );
-
-
-    try {
-
-        const issueTypes =
-            await getKnowledgeBaseNoteIssueTypes(
-                noteId
-            );
-
-
-        tableBody.innerHTML =
-            "";
-
-
-        if (
-            !issueTypes ||
-            issueTypes.length === 0
-        ) {
-
-            emptyMessage.style.display =
-                "block";
-
-            return;
-
-        }
-
-
-        emptyMessage.style.display =
-            "none";
-
-
-        issueTypes.forEach(issueType => {
-
-            const row =
-                document.createElement(
-                    "tr"
-                );
-
-
-            row.innerHTML = `
-
-                <td>
-                    ${escapeHtml(
-                        issueType.name || "-"
-                    )}
-                </td>
-
-                <td>
-
-                    <button
-                        class="action-button"
-                        onclick="removeIssueType(${issueType.id})"
-                    >
-                        Remove
-                    </button>
-
-                </td>
-
-            `;
-
-
-            tableBody.appendChild(
-                row
-            );
-
-        });
-
-    } catch (error) {
-
-        console.error(
-            "Error loading issue types:",
-            error
-        );
-
-
-        emptyMessage.style.display =
-            "block";
-
-    }
-
 }
 
 
@@ -841,254 +1551,458 @@ async function loadIssueTypes() {
 
 async function openIssueTypeModal() {
 
-    const select =
-        document.getElementById(
-            "issueTypeSelect"
-        );
-
-
-    select.innerHTML = `
-
-        <option value="">
-            Select an issue type
-        </option>
-
-    `;
-
-
     try {
 
-        const [
-            issueTypes,
-            assignedIssueTypes
-        ] =
-            await Promise.all([
+        const issueTypes =
+            await getIssueTypes();
 
-                getIssueTypes(),
+        const relatedIssueTypes =
+            await getKnowledgeBaseNoteIssueTypes(
+                noteId
+            );
 
-                getKnowledgeBaseNoteIssueTypes(
-                    noteId
+        const relatedIds =
+            new Set(
+                relatedIssueTypes.map(
+                    issueType =>
+                        Number(
+                            issueType.id
+                        )
                 )
+            );
 
-            ]);
-
-
-        const assignedIds =
-            assignedIssueTypes.map(
+        const availableIssueTypes =
+            issueTypes.filter(
                 issueType =>
-                    issueType.id
+                    !relatedIds.has(
+                        Number(
+                            issueType.id
+                        )
+                    )
             );
 
-
-        issueTypes.forEach(issueType => {
-
-            if (
-                assignedIds.includes(
-                    issueType.id
+        const options =
+            availableIssueTypes
+                .map(
+                    issueType => `
+                        <option
+                            value="${issueType.id}"
+                        >
+                            ${escapeHtml(
+                                issueType.name
+                            )}
+                        </option>
+                    `
                 )
-            ) {
+                .join("");
 
-                return;
+        const content = `
+            <div class="modal-field">
 
-            }
+                <label
+                    for="knowledgeBaseNoteIssueTypeSelect"
+                >
+                    Issue Type
+                </label>
 
+                <select
+                    id="knowledgeBaseNoteIssueTypeSelect"
+                >
+                    <option value="">
+                        Select an Issue Type
+                    </option>
 
-            const option =
-                document.createElement(
-                    "option"
-                );
+                    ${options}
+                </select>
 
+            </div>
 
-            option.value =
-                issueType.id;
+            <div class="modal-actions">
 
+                <button
+                    type="button"
+                    class="secondary-button"
+                    id="knowledgeBaseNoteIssueTypeCancelButton"
+                >
+                    Cancel
+                </button>
 
-            option.textContent =
-                issueType.name;
+                <button
+                    type="button"
+                    class="primary-button"
+                    id="knowledgeBaseNoteIssueTypeAddButton"
+                >
+                    Add
+                </button>
 
+            </div>
+        `;
 
-            select.appendChild(
-                option
-            );
+        renderModal({
 
+            containerId:
+                "relationshipItemModal",
+
+            title:
+                "Add Issue Type",
+
+            content:
+                content,
+
+            onClose:
+                closeRelationshipItemModal
         });
 
+        const modal =
+            document.getElementById(
+                "relationshipItemModal"
+            );
 
-        document
-            .getElementById(
-                "issueTypeModal"
-            )
-            .classList
-            .remove("hidden");
+        if (!modal) {
+            return;
+        }
+
+        modal.classList.remove(
+            "hidden"
+        );
+
+        const cancelButton =
+            modal.querySelector(
+                "#knowledgeBaseNoteIssueTypeCancelButton"
+            );
+
+        if (cancelButton) {
+
+            cancelButton.addEventListener(
+                "click",
+                closeRelationshipItemModal
+            );
+        }
+
+        const addButton =
+            modal.querySelector(
+                "#knowledgeBaseNoteIssueTypeAddButton"
+            );
+
+        if (addButton) {
+
+            addButton.addEventListener(
+                "click",
+                addSelectedIssueType
+            );
+        }
 
     } catch (error) {
 
         console.error(
-            "Error loading issue types:",
+            "Error opening Issue Type modal:",
             error
         );
 
-
-        alert(
-            "Error loading issue types."
+        showErrorMessage(
+            "Error loading Issue Types."
         );
-
     }
-
 }
 
 
 // ============================================================
-// ADD ISSUE TYPE
+// ADD SELECTED ISSUE TYPE
 // ============================================================
 
 async function addSelectedIssueType() {
 
     const select =
         document.getElementById(
-            "issueTypeSelect"
+            "knowledgeBaseNoteIssueTypeSelect"
         );
 
+    if (!select) {
+        return;
+    }
 
     const issueTypeId =
-        select.value
-            ? Number(
-                select.value
-            )
-            : null;
-
+        select.value;
 
     if (!issueTypeId) {
 
-        alert(
-            "Please select an issue type."
+        showWarningMessage(
+            "Please select an Issue Type."
         );
 
         return;
-
     }
-
 
     try {
 
         await addKnowledgeBaseNoteIssueType(
             noteId,
-            issueTypeId
+            Number(issueTypeId)
         );
 
+        closeRelationshipItemModal();
 
-        closeIssueTypeModal();
+        await loadRelationships();
 
-
-        await loadIssueTypes();
+        showSuccessMessage(
+            "Issue Type added successfully."
+        );
 
     } catch (error) {
 
         console.error(
-            "Error adding issue type:",
+            "Error adding Issue Type:",
             error
         );
 
-
-        alert(
-            "Error adding issue type."
+        showErrorMessage(
+            "Error adding Issue Type."
         );
-
     }
-
 }
 
 
 // ============================================================
-// REMOVE ISSUE TYPE
+// OPEN REMOVE RELATIONSHIP MODAL
 // ============================================================
 
-async function removeIssueType(
-    issueTypeId
-) {
+function openRemoveRelationshipModal({
+    relationship,
+    item
+}) {
 
-    if (
-        !confirm(
-            "Remove this issue type from the Knowledge Base Note?"
-        )
-    ) {
+    const labels = {
+
+        tool:
+            "Tool",
+
+        issueType:
+            "Issue Type"
+    };
+
+    const label =
+        labels[
+            relationship
+        ];
+
+    if (!label) {
+
+        console.error(
+            `Unsupported relationship: ${relationship}`
+        );
 
         return;
-
     }
 
+    const itemName =
+        item?.name ||
+        item?.title ||
+        "this item";
+
+    const content = `
+        <p class="remove-confirmation-message">
+
+            Are you sure you want to remove
+
+            <strong>
+                ${escapeHtml(
+                    itemName
+                )}
+            </strong>
+
+            from this Knowledge Base Note?
+
+        </p>
+
+        <div class="modal-actions">
+
+            <button
+                type="button"
+                class="secondary-button"
+                id="removeRelationshipCancelButton"
+            >
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                class="danger-button"
+                id="removeRelationshipConfirmButton"
+            >
+                Remove
+            </button>
+
+        </div>
+    `;
+
+    renderModal({
+
+        containerId:
+            "relationshipItemModal",
+
+        title:
+            `Remove ${label}`,
+
+        content:
+            content,
+
+        onClose:
+            closeRelationshipItemModal
+    });
+
+    const modal =
+        document.getElementById(
+            "relationshipItemModal"
+        );
+
+    if (!modal) {
+        return;
+    }
+
+    modal.classList.remove(
+        "hidden"
+    );
+
+    const cancelButton =
+        modal.querySelector(
+            "#removeRelationshipCancelButton"
+        );
+
+    if (cancelButton) {
+
+        cancelButton.addEventListener(
+            "click",
+            closeRelationshipItemModal
+        );
+    }
+
+    const confirmButton =
+        modal.querySelector(
+            "#removeRelationshipConfirmButton"
+        );
+
+    if (confirmButton) {
+
+        confirmButton.addEventListener(
+            "click",
+            async () => {
+
+                await removeRelationshipItem({
+                    relationship:
+                        relationship,
+
+                    item:
+                        item
+                });
+            }
+        );
+    }
+}
+
+
+// ============================================================
+// REMOVE RELATIONSHIP ITEM
+// ============================================================
+
+async function removeRelationshipItem({
+    relationship,
+    item
+}) {
+
+    const configs = {
+
+        tool: {
+
+            label:
+                "Tool",
+
+            remove:
+                removeKnowledgeBaseNoteTool
+        },
+
+        issueType: {
+
+            label:
+                "Issue Type",
+
+            remove:
+                removeKnowledgeBaseNoteIssueType
+        }
+    };
+
+    const config =
+        configs[
+            relationship
+        ];
+
+    if (!config) {
+
+        showErrorMessage(
+            `Unsupported relationship: ${relationship}.`
+        );
+
+        return;
+    }
+
+    if (!item?.id) {
+
+        showErrorMessage(
+            `${config.label} ID is missing.`
+        );
+
+        return;
+    }
 
     try {
 
-        await removeKnowledgeBaseNoteIssueType(
+        await config.remove(
             noteId,
-            issueTypeId
+            item.id
         );
 
+        closeRelationshipItemModal();
 
-        await loadIssueTypes();
+        await loadRelationships();
+
+        showSuccessMessage(
+            `${config.label} removed successfully.`
+        );
 
     } catch (error) {
 
         console.error(
-            "Error removing issue type:",
+            `Error removing ${config.label}:`,
             error
         );
 
+        showErrorMessage(
+            `Error removing ${config.label}.`
+        );
+    }
+}
 
-        alert(
-            "Error removing issue type."
+
+// ============================================================
+// CLOSE RELATIONSHIP MODAL
+// ============================================================
+
+function closeRelationshipItemModal() {
+
+    const modal =
+        document.getElementById(
+            "relationshipItemModal"
         );
 
+    if (!modal) {
+        return;
     }
 
-}
+    modal.innerHTML =
+        "";
 
-
-// ============================================================
-// CLOSE ISSUE TYPE MODAL
-// ============================================================
-
-function closeIssueTypeModal() {
-
-    document
-        .getElementById(
-            "issueTypeModal"
-        )
-        .classList
-        .add("hidden");
-
-}
-
-
-// ============================================================
-// STATUS BADGE
-// ============================================================
-
-function createStatusBadge(
-    isActive
-) {
-
-    return `
-
-        <span
-            class="status-badge ${
-                isActive
-                    ? "active"
-                    : "inactive"
-            }"
-        >
-
-            ${
-                isActive
-                    ? "Active"
-                    : "Inactive"
-            }
-
-        </span>
-
-    `;
-
+    modal.classList.add(
+        "hidden"
+    );
 }
 
 
@@ -1097,35 +2011,25 @@ function createStatusBadge(
 // ============================================================
 
 function formatDate(
-    dateString
+    value
 ) {
 
-    if (!dateString) {
-
+    if (!value) {
         return "-";
-
     }
 
-
     const date =
-        new Date(
-            dateString
-        );
-
+        new Date(value);
 
     if (
         Number.isNaN(
             date.getTime()
         )
     ) {
-
-        return dateString;
-
+        return value;
     }
 
-
     return date.toLocaleString();
-
 }
 
 
@@ -1137,17 +2041,9 @@ function escapeHtml(
     value
 ) {
 
-    if (
-        value === null ||
-        value === undefined
-    ) {
-
-        return "";
-
-    }
-
-
-    return String(value)
+    return String(
+        value ?? ""
+    )
         .replace(
             /&/g,
             "&amp;"
@@ -1168,5 +2064,4 @@ function escapeHtml(
             /'/g,
             "&#039;"
         );
-
 }

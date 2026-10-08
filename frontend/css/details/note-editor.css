@@ -1,0 +1,225 @@
+/* ============================================================
+   NOTE EDITOR
+   ============================================================ */
+
+.note-editor-section {
+    margin-bottom: 24px;
+}
+
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+
+.note-editor-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 12px;
+}
+
+.note-editor-title-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.note-editor-title {
+    margin: 0;
+
+    font-size: 20px;
+    font-weight: 600;
+
+    color: #222;
+}
+
+.note-editor-actions {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+}
+
+
+/* ============================================================
+   CONTENT
+   ============================================================ */
+
+.note-editor-content {
+    width: 100%;
+}
+
+
+/* ============================================================
+   READ MODE
+   ============================================================ */
+
+.note-editor-read {
+    width: 100%;
+    min-height: 320px;
+
+    box-sizing: border-box;
+
+    padding: 20px;
+
+    border: 1px solid #d8d8d8;
+    border-radius: 8px;
+
+    background: #fff;
+
+    white-space: pre-line;
+
+    overflow-wrap: anywhere;
+    word-break: break-word;
+
+    line-height: 1.7;
+
+    color: #333;
+}
+
+
+/* ============================================================
+   EDIT MODE
+   ============================================================ */
+
+.note-editor-textarea {
+    display: block;
+
+    width: 100%;
+    min-height: 360px;
+
+    box-sizing: border-box;
+
+    padding: 16px;
+
+    border: 1px solid #d8d8d8;
+    border-radius: 8px;
+
+    background: #fff;
+
+    resize: vertical;
+
+    font: inherit;
+    line-height: 1.7;
+
+    color: #333;
+
+    outline: none;
+}
+
+.note-editor-textarea:focus {
+    border-color: #999;
+}
+
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
+.note-editor-actions button,
+.note-editor-edit-actions button {
+    appearance: none;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 36px;
+
+    padding: 8px 14px;
+
+    border-radius: 6px;
+
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+
+    line-height: 1.2;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease,
+        opacity 0.15s ease;
+}
+
+
+/* ============================================================
+   SECONDARY BUTTON
+   ============================================================ */
+
+.note-editor-actions .secondary-button,
+.note-editor-edit-actions .secondary-button {
+    background: #fff;
+
+    border: 1px solid #cfcfcf;
+
+    color: #333;
+}
+
+.note-editor-actions .secondary-button:hover,
+.note-editor-edit-actions .secondary-button:hover {
+    background: #f5f5f5;
+
+    border-color: #bdbdbd;
+}
+
+
+/* ============================================================
+   PRIMARY BUTTON
+   ============================================================ */
+
+.note-editor-edit-actions .primary-button {
+    background: #333;
+
+    border: 1px solid #333;
+
+    color: #fff;
+}
+
+.note-editor-edit-actions .primary-button:hover {
+    background: #222;
+
+    border-color: #222;
+}
+
+
+/* ============================================================
+   DISABLED
+   ============================================================ */
+
+.note-editor-actions button:disabled,
+.note-editor-edit-actions button:disabled {
+    opacity: 0.6;
+
+    cursor: not-allowed;
+}
+
+
+/* ============================================================
+   EDIT ACTIONS
+   ============================================================ */
+
+.note-editor-edit-actions {
+    display: flex;
+
+    justify-content: flex-end;
+    align-items: center;
+
+    gap: 10px;
+
+    margin-top: 12px;
+}
+
+
+/* ============================================================
+   HIDDEN
+   ============================================================ */
+
+.note-editor-textarea.hidden,
+.note-editor-edit-actions.hidden,
+.note-editor-button.hidden {
+    display: none;
+}
