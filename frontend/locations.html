@@ -1,84 +1,134 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Locations</title>
 
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/tools.css">
+    <!-- Base styles -->
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/tools.css"
+    >
+
+    <!-- Shared component styles -->
+    <link
+        rel="stylesheet"
+        href="css/details/detail-header.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/details/modal.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/details/notifications.css"
+    >
+
+    <!-- List page styles -->
+    <link
+        rel="stylesheet"
+        href="css/list-page.css"
+    >
 </head>
 
 <body>
 
-    <div class="page-container">
+    <div id="appNavigation"></div>
 
-        <!-- HEADER -->
-        <div class="crud-header">
+    <div class="app-content">
 
-            <h2>Locations</h2>
+        <main class="list-page-container">
 
-            <div>
+            <!-- PAGE HEADER -->
 
-                <button id="backButton" type="button">
-                    Back
-                </button>
-
-                <button id="newLocationButton" type="button">
-                    + New Location
-                </button>
-
-            </div>
-
-        </div>
+            <div id="pageHeader"></div>
 
 
-        <!-- SEARCH -->
-        <div class="crud-toolbar">
+            <!-- ================================================= -->
+            <!-- LOCATIONS LIST -->
+            <!-- ================================================= -->
 
-            <input
-                type="text"
-                id="searchLocations"
-                placeholder="Search locations..."
-            >
+            <section class="list-page-section">
 
-        </div>
+                <!-- TOOLBAR -->
+
+                <div class="list-page-toolbar">
+
+                    <div class="list-page-search">
+                        <input
+                            type="text"
+                            id="searchInput"
+                            placeholder="Search locations..."
+                            aria-label="Search locations"
+                        >
+                    </div>
+
+                    <button
+                        type="button"
+                        id="addLocationButton"
+                        class="list-page-create-button"
+                    >
+                        + New Location
+                    </button>
+
+                </div>
 
 
-        <!-- TABLE -->
-        <div class="crud-table-container">
+                <!-- EMPTY STATE -->
 
-            <table class="crud-table">
+                <div
+                    id="locationsEmptyState"
+                    class="list-page-empty-state list-page-hidden"
+                >
+                    <p class="list-page-empty-message">
+                        There are no locations available yet.
+                    </p>
+                </div>
 
-                <thead>
 
-                    <tr>
-                        <th>Name</th>
-                        <th>City</th>
-                        <th>State</th>
-                        <th>Code</th>
-                        <th>Status</th>
-                        <th>WMS</th>
-                        <th>Actions</th>
-                    </tr>
+                <!-- TABLE -->
 
-                </thead>
+                <div class="list-page-table-container">
 
-                <tbody id="locationsTableBody">
-                </tbody>
+                    <table class="list-page-table">
 
-            </table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>City</th>
+                                <th>State</th>
+                                <th>Code</th>
+                                <th>Status</th>
+                                <th>WMS</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
 
-            <div
-                id="emptyLocationsMessage"
-                class="empty-message hidden"
-            >
-                No locations found.
-            </div>
+                        <tbody id="locationsTableBody">
+                        </tbody>
 
-        </div>
+                    </table>
+
+                </div>
+
+            </section>
+
+        </main>
 
     </div>
 
@@ -90,154 +140,22 @@
     <div
         id="locationModal"
         class="modal hidden"
-    >
-
-        <div class="modal-content">
-
-            <div class="modal-header">
-
-                <h3 id="modalTitle">
-                    Create Location
-                </h3>
-
-                <button
-                    id="closeLocationModal"
-                    class="modal-close"
-                    type="button"
-                >
-                    ×
-                </button>
-
-            </div>
+    ></div>
 
 
-            <form id="locationForm">
-
-                <!-- NAME -->
-                <div class="form-group">
-
-                    <label for="locationName">
-                        Name
-                    </label>
-
-                    <input
-                        type="text"
-                        id="locationName"
-                        required
-                    >
-
-                </div>
-
-
-                <!-- CITY -->
-                <div class="form-group">
-
-                    <label for="locationCity">
-                        City
-                    </label>
-
-                    <input
-                        type="text"
-                        id="locationCity"
-                        required
-                    >
-
-                </div>
-
-
-                <!-- STATE -->
-                <div class="form-group">
-
-                    <label for="locationState">
-                        State
-                    </label>
-
-                    <input
-                        type="text"
-                        id="locationState"
-                        required
-                    >
-
-                </div>
-
-
-                <!-- CODE -->
-                <div class="form-group">
-
-                    <label for="locationCode">
-                        Code
-                    </label>
-
-                    <input
-                        type="text"
-                        id="locationCode"
-                        required
-                    >
-
-                </div>
-
-
-                <!-- WMS -->
-                <div class="form-group">
-
-                    <label for="locationWms">
-                        Warehouse Management System
-                    </label>
-
-                    <select id="locationWms">
-
-                        <option value="">
-                            No WMS
-                        </option>
-
-                    </select>
-
-                </div>
-
-
-                <!-- ACTIVE -->
-                <div class="form-group checkbox-group">
-
-                    <input
-                        type="checkbox"
-                        id="locationActive"
-                        checked
-                    >
-
-                    <label for="locationActive">
-                        Active
-                    </label>
-
-                </div>
-
-
-                <!-- ACTIONS -->
-                <div class="modal-actions">
-
-                    <button
-                        type="button"
-                        id="cancelLocationButton"
-                    >
-                        Cancel
-                    </button>
-
-                    <button
-                        type="submit"
-                        id="saveLocationButton"
-                    >
-                        Save
-                    </button>
-
-                </div>
-
-            </form>
-
-        </div>
-
-    </div>
-
+    <!-- ===================================================== -->
+    <!-- SCRIPTS -->
+    <!-- ===================================================== -->
 
     <script src="js/api.js"></script>
+    <script src="js/navigation.js"></script>
+
+    <!-- Shared components -->
+    <script src="js/components/detail-header.js"></script>
+    <script src="js/components/modal.js"></script>
+    <script src="js/components/notifications.js"></script>
+
+    <!-- Page logic -->
     <script src="js/locations.js"></script>
 
 </body>

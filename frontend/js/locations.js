@@ -1,3 +1,8 @@
+
+// ============================================================
+// LOCATIONS LIST
+// ============================================================
+
 let locations = [];
 
 let warehouseManagementSystems = [];
@@ -9,33 +14,52 @@ let editingLocationId = null;
 // INITIALIZATION
 // ============================================================
 
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener(
+    "DOMContentLoaded",
+    async () => {
+        renderPageHeader();
 
-    setupLocationEventListeners();
+        setupLocationEventListeners();
 
-    await loadWarehouseManagementSystems();
+        await loadWarehouseManagementSystems();
 
-    await loadLocations();
+        await loadLocations();
 
-
-    const params =
-        new URLSearchParams(
+        const params = new URLSearchParams(
             window.location.search
         );
 
-    const editId =
-        Number(
+        const editId = Number(
             params.get("edit")
         );
 
-
-    if (editId) {
-
-        editLocation(editId);
-
+        if (editId) {
+            openEditModal(editId);
+        }
     }
+);
 
-});
+
+// ============================================================
+// PAGE HEADER
+// ============================================================
+
+function renderPageHeader() {
+    renderDetailHeader({
+        containerId: "pageHeader",
+        type: "Administration",
+        title: "Locations",
+        description:
+            "Manage locations and their associated Warehouse Management Systems.",
+        actions: {
+            back: true,
+            edit: false
+        },
+        onBack: () => {
+            window.location.href = "index.html";
+        }
+    });
+}
 
 
 // ============================================================
@@ -43,55 +67,25 @@ document.addEventListener("DOMContentLoaded", async () => {
 // ============================================================
 
 function setupLocationEventListeners() {
+    const addButton =
+        document.getElementById("addLocationButton");
 
-    document
-        .getElementById("backButton")
-        .addEventListener("click", () => {
-
-            window.location.href = "index.html";
-
-        });
-
-
-    document
-        .getElementById("newLocationButton")
-        .addEventListener(
+    if (addButton) {
+        addButton.addEventListener(
             "click",
-            openCreateLocationModal
+            openCreateModal
         );
+    }
 
+    const searchInput =
+        document.getElementById("searchInput");
 
-    document
-        .getElementById("closeLocationModal")
-        .addEventListener(
-            "click",
-            closeLocationModal
-        );
-
-
-    document
-        .getElementById("cancelLocationButton")
-        .addEventListener(
-            "click",
-            closeLocationModal
-        );
-
-
-    document
-        .getElementById("locationForm")
-        .addEventListener(
-            "submit",
-            saveLocation
-        );
-
-
-    document
-        .getElementById("searchLocations")
-        .addEventListener(
+    if (searchInput) {
+        searchInput.addEventListener(
             "input",
             renderLocations
         );
-
+    }
 }
 
 
@@ -100,44 +94,32 @@ function setupLocationEventListeners() {
 // ============================================================
 
 async function loadLocations() {
-
     try {
-
-        locations = await getLocations();
+        locations = await getLocations() || [];
 
         renderLocations();
-
     } catch (error) {
-
         console.error(
             "Error loading locations:",
             error
         );
 
-        alert(
+        showErrorMessage(
             "Error loading locations."
         );
-
     }
-
 }
 
 
 // ============================================================
-// LOAD WMS
+// LOAD WAREHOUSE MANAGEMENT SYSTEMS
 // ============================================================
 
 async function loadWarehouseManagementSystems() {
-
     try {
-
         warehouseManagementSystems =
-            await getWarehouseManagementSystems();
-
-        populateWmsSelect();
-
+            await getWarehouseManagementSystems() || [];
     } catch (error) {
-
         console.error(
             "Error loading Warehouse Management Systems:",
             error
@@ -145,263 +127,10 @@ async function loadWarehouseManagementSystems() {
 
         warehouseManagementSystems = [];
 
-        populateWmsSelect();
-
+        showErrorMessage(
+            "Error loading Warehouse Management Systems."
+        );
     }
-
-}
-
-
-// ============================================================
-// POPULATE WMS SELECT
-// ============================================================
-
-function populateWmsSelect() {
-
-    const select =
-        document.getElementById(
-            "locationWms"
-        );
-
-
-    select.innerHTML = "";
-
-
-    const noWmsOption =
-        document.createElement("option");
-
-    noWmsOption.value = "";
-
-    noWmsOption.textContent = "No WMS";
-
-    select.appendChild(noWmsOption);
-
-
-    warehouseManagementSystems.forEach(wms => {
-
-        const option =
-            document.createElement("option");
-
-        option.value = wms.id;
-
-        option.textContent = wms.name;
-
-        select.appendChild(option);
-
-    });
-
-}
-
-
-// ============================================================
-// RENDER LOCATIONS
-// ============================================================
-
-function renderLocations() {
-
-    const tableBody =
-        document.getElementById(
-            "locationsTableBody"
-        );
-
-
-    const emptyMessage =
-        document.getElementById(
-            "emptyLocationsMessage"
-        );
-
-
-    const search =
-        document.getElementById(
-            "searchLocations"
-        )
-        .value
-        .trim()
-        .toLowerCase();
-
-
-    tableBody.innerHTML = "";
-
-
-    const filteredLocations =
-        locations.filter(location => {
-
-            const name =
-                String(location.name ?? "")
-                    .toLowerCase();
-
-            const city =
-                String(location.city ?? "")
-                    .toLowerCase();
-
-            const state =
-                String(location.state ?? "")
-                    .toLowerCase();
-
-            const code =
-                String(location.code ?? "")
-                    .toLowerCase();
-
-            const wmsName =
-                getWmsName(
-                    location.warehouse_management_system_id
-                )
-                .toLowerCase();
-
-
-            return (
-                name.includes(search) ||
-                city.includes(search) ||
-                state.includes(search) ||
-                code.includes(search) ||
-                wmsName.includes(search)
-            );
-
-        });
-
-
-    if (filteredLocations.length === 0) {
-
-        emptyMessage.classList.remove("hidden");
-
-        return;
-
-    }
-
-
-    emptyMessage.classList.add("hidden");
-
-
-    filteredLocations.forEach(location => {
-
-        const row =
-            document.createElement("tr");
-
-
-        const wmsName =
-            getWmsName(
-                location.warehouse_management_system_id
-            );
-
-
-        row.innerHTML = `
-
-            <td>
-                ${escapeHtml(location.name)}
-            </td>
-
-            <td>
-                ${escapeHtml(location.city)}
-            </td>
-
-            <td>
-                ${escapeHtml(location.state)}
-            </td>
-
-            <td>
-                ${escapeHtml(location.code)}
-            </td>
-
-            <td>
-
-                <span class="status-badge ${
-                    location.is_active
-                        ? "active"
-                        : "inactive"
-                }">
-
-                    ${
-                        location.is_active
-                            ? "Active"
-                            : "Inactive"
-                    }
-
-                </span>
-
-            </td>
-
-            <td>
-                ${
-                    wmsName
-                        ? escapeHtml(wmsName)
-                        : "None"
-                }
-            </td>
-
-            <td>
-
-                <button
-                    type="button"
-                    class="action-button view-button"
-                >
-                    View
-                </button>
-
-                <button
-                    type="button"
-                    class="action-button edit-button"
-                >
-                    Edit
-                </button>
-
-                <button
-                    type="button"
-                    class="action-button delete-button"
-                >
-                    Delete
-                </button>
-
-            </td>
-
-        `;
-
-
-        // VIEW
-
-        row
-            .querySelector(".view-button")
-            .addEventListener(
-                "click",
-                () => openLocationDetail(location.id)
-            );
-
-
-        // EDIT
-
-        row
-            .querySelector(".edit-button")
-            .addEventListener(
-                "click",
-                () => editLocation(location.id)
-            );
-
-
-        // DELETE
-
-        row
-            .querySelector(".delete-button")
-            .addEventListener(
-                "click",
-                () => deleteLocation(location.id)
-            );
-
-
-        tableBody.appendChild(row);
-
-    });
-
-}
-
-
-// ============================================================
-// OPEN LOCATION DETAIL
-// ============================================================
-
-function openLocationDetail(locationId) {
-
-    window.location.href =
-        `location-detail.html?id=${locationId}`;
-
 }
 
 
@@ -410,172 +139,559 @@ function openLocationDetail(locationId) {
 // ============================================================
 
 function getWmsName(wmsId) {
-
-    if (!wmsId) {
-
+    if (
+        wmsId === null ||
+        wmsId === undefined ||
+        wmsId === ""
+    ) {
         return "";
-
     }
-
 
     const wms =
         warehouseManagementSystems.find(
-            item => item.id === Number(wmsId)
+            item =>
+                String(item.id) === String(wmsId)
         );
 
-
     if (!wms) {
-
         return `WMS #${wmsId}`;
+    }
 
+    return wms.name || `WMS #${wmsId}`;
+}
+
+
+// ============================================================
+// RENDER LOCATIONS
+// ============================================================
+
+function renderLocations() {
+    const tableBody =
+        document.getElementById(
+            "locationsTableBody"
+        );
+
+    const emptyState =
+        document.getElementById(
+            "locationsEmptyState"
+        );
+
+    const searchInput =
+        document.getElementById(
+            "searchInput"
+        );
+
+    if (!tableBody) {
+        return;
+    }
+
+    const search =
+        String(searchInput?.value || "")
+            .trim()
+            .toLowerCase();
+
+    tableBody.innerHTML = "";
+
+    const filteredLocations =
+        locations.filter(location => {
+            const name =
+                String(location.name || "")
+                    .toLowerCase();
+
+            const city =
+                String(location.city || "")
+                    .toLowerCase();
+
+            const state =
+                String(location.state || "")
+                    .toLowerCase();
+
+            const code =
+                String(location.code || "")
+                    .toLowerCase();
+
+            const wmsName =
+                getWmsName(
+                    location.warehouse_management_system_id
+                ).toLowerCase();
+
+            return (
+                name.includes(search) ||
+                city.includes(search) ||
+                state.includes(search) ||
+                code.includes(search) ||
+                wmsName.includes(search)
+            );
+        });
+
+
+    // ========================================================
+    // EMPTY STATE
+    // ========================================================
+
+    if (filteredLocations.length === 0) {
+        if (emptyState) {
+            emptyState.classList.remove(
+                "list-page-hidden"
+            );
+
+            const message =
+                emptyState.querySelector(
+                    ".list-page-empty-message"
+                );
+
+            if (message) {
+                message.textContent =
+                    locations.length === 0
+                        ? "There are no locations available yet."
+                        : "No locations match your search.";
+            }
+        }
+
+        return;
+    }
+
+    if (emptyState) {
+        emptyState.classList.add(
+            "list-page-hidden"
+        );
     }
 
 
-    return wms.name;
+    // ========================================================
+    // TABLE ROWS
+    // ========================================================
 
+    filteredLocations.forEach(location => {
+        const row =
+            document.createElement("tr");
+
+        const wmsName =
+            getWmsName(
+                location.warehouse_management_system_id
+            );
+
+        row.innerHTML = `
+            <td>
+                <div class="list-page-primary-value">
+                    ${escapeLocationHtml(
+                        location.name || "-"
+                    )}
+                </div>
+            </td>
+
+            <td>
+                ${escapeLocationHtml(
+                    location.city || "-"
+                )}
+            </td>
+
+            <td>
+                ${escapeLocationHtml(
+                    location.state || "-"
+                )}
+            </td>
+
+            <td>
+                ${escapeLocationHtml(
+                    location.code || "-"
+                )}
+            </td>
+
+            <td>
+                <span class="
+                    list-page-status
+                    ${
+                        location.is_active
+                            ? "list-page-status-active"
+                            : "list-page-status-inactive"
+                    }
+                ">
+                    ${
+                        location.is_active
+                            ? "Active"
+                            : "Inactive"
+                    }
+                </span>
+            </td>
+
+            <td>
+                ${escapeLocationHtml(
+                    wmsName || "None"
+                )}
+            </td>
+
+            <td>
+                <div class="list-page-row-actions">
+                    <button
+                        type="button"
+                        class="list-page-action-button"
+                        data-action="view"
+                        data-id="${location.id}"
+                    >
+                        View
+                    </button>
+
+                    <button
+                        type="button"
+                        class="list-page-action-button"
+                        data-action="edit"
+                        data-id="${location.id}"
+                    >
+                        Edit
+                    </button>
+
+                    <button
+                        type="button"
+                        class="list-page-action-button list-page-remove-button"
+                        data-action="remove"
+                        data-id="${location.id}"
+                    >
+                        Remove
+                    </button>
+                </div>
+            </td>
+        `;
+
+        tableBody.appendChild(row);
+    });
+
+    setupLocationRowActionListeners();
 }
 
 
 // ============================================================
-// CREATE LOCATION
+// ROW ACTION LISTENERS
 // ============================================================
 
-function openCreateLocationModal() {
-
-    editingLocationId = null;
-
-
-    document.getElementById(
-        "modalTitle"
-    ).textContent =
-        "Create Location";
-
-
-    document.getElementById(
-        "locationName"
-    ).value = "";
-
-
-    document.getElementById(
-        "locationCity"
-    ).value = "";
-
-
-    document.getElementById(
-        "locationState"
-    ).value = "";
-
-
-    document.getElementById(
-        "locationCode"
-    ).value = "";
-
-
-    document.getElementById(
-        "locationWms"
-    ).value = "";
-
-
-    document.getElementById(
-        "locationActive"
-    ).checked = true;
-
-
-    document
-        .getElementById("locationModal")
-        .classList.remove("hidden");
-
-}
-
-
-// ============================================================
-// EDIT LOCATION
-// ============================================================
-
-function editLocation(locationId) {
-
-    const location =
-        locations.find(
-            location => location.id === locationId
+function setupLocationRowActionListeners() {
+    const buttons =
+        document.querySelectorAll(
+            "#locationsTableBody [data-action]"
         );
 
+    buttons.forEach(button => {
+        button.addEventListener("click", () => {
+            const action =
+                button.dataset.action;
+
+            const locationId =
+                Number(button.dataset.id);
+
+            if (!locationId) {
+                return;
+            }
+
+            switch (action) {
+                case "view":
+                    openLocationDetail(locationId);
+                    break;
+
+                case "edit":
+                    openEditModal(locationId);
+                    break;
+
+                case "remove":
+                    openRemoveModal(locationId);
+                    break;
+            }
+        });
+    });
+}
+
+
+// ============================================================
+// OPEN LOCATION DETAIL
+// ============================================================
+
+function openLocationDetail(locationId) {
+    window.location.href =
+        `location-detail.html?id=${locationId}`;
+}
+
+
+// ============================================================
+// CREATE MODAL
+// ============================================================
+
+function openCreateModal() {
+    editingLocationId = null;
+
+    renderLocationFormModal({
+        mode: "create",
+        location: null
+    });
+}
+
+
+// ============================================================
+// EDIT MODAL
+// ============================================================
+
+function openEditModal(locationId) {
+    const location =
+        locations.find(
+            item =>
+                Number(item.id) ===
+                Number(locationId)
+        );
 
     if (!location) {
-
-        alert(
+        showErrorMessage(
             "Location not found."
         );
 
         return;
-
     }
-
 
     editingLocationId = locationId;
 
-
-    document.getElementById(
-        "modalTitle"
-    ).textContent =
-        "Edit Location";
-
-
-    document.getElementById(
-        "locationName"
-    ).value =
-        location.name ?? "";
-
-
-    document.getElementById(
-        "locationCity"
-    ).value =
-        location.city ?? "";
-
-
-    document.getElementById(
-        "locationState"
-    ).value =
-        location.state ?? "";
-
-
-    document.getElementById(
-        "locationCode"
-    ).value =
-        location.code ?? "";
-
-
-    document.getElementById(
-        "locationWms"
-    ).value =
-        location.warehouse_management_system_id ?? "";
-
-
-    document.getElementById(
-        "locationActive"
-    ).checked =
-        location.is_active ?? true;
-
-
-    document
-        .getElementById("locationModal")
-        .classList.remove("hidden");
-
+    renderLocationFormModal({
+        mode: "edit",
+        location: location
+    });
 }
 
 
 // ============================================================
-// CLOSE MODAL
+// LOCATION FORM MODAL
 // ============================================================
 
-function closeLocationModal() {
+function renderLocationFormModal({
+    mode,
+    location
+}) {
+    const isEdit =
+        mode === "edit";
 
-    document
-        .getElementById("locationModal")
-        .classList.add("hidden");
+    const title =
+        isEdit
+            ? "Edit Location"
+            : "New Location";
+
+    const currentWmsId =
+        location?.warehouse_management_system_id !== null &&
+        location?.warehouse_management_system_id !== undefined
+            ? String(
+                location.warehouse_management_system_id
+            )
+            : "";
+
+    const wmsOptions =
+        warehouseManagementSystems
+            .map(wms => {
+                const selected =
+                    String(wms.id) === currentWmsId
+                        ? "selected"
+                        : "";
+
+                return `
+                    <option
+                        value="${wms.id}"
+                        ${selected}
+                    >
+                        ${escapeLocationHtml(
+                            wms.name || `WMS ${wms.id}`
+                        )}
+                    </option>
+                `;
+            })
+            .join("");
+
+    const content = `
+        <form
+            id="locationForm"
+            class="list-page-form"
+        >
+
+            <!-- NAME -->
+
+            <div class="list-page-form-group">
+                <label for="locationName">
+                    Name
+                </label>
+
+                <input
+                    type="text"
+                    id="locationName"
+                    value="${escapeLocationAttribute(
+                        location?.name || ""
+                    )}"
+                    required
+                >
+            </div>
 
 
-    editingLocationId = null;
+            <!-- CITY -->
 
+            <div class="list-page-form-group">
+                <label for="locationCity">
+                    City
+                </label>
+
+                <input
+                    type="text"
+                    id="locationCity"
+                    value="${escapeLocationAttribute(
+                        location?.city || ""
+                    )}"
+                    required
+                >
+            </div>
+
+
+            <!-- STATE -->
+
+            <div class="list-page-form-group">
+                <label for="locationState">
+                    State
+                </label>
+
+                <input
+                    type="text"
+                    id="locationState"
+                    value="${escapeLocationAttribute(
+                        location?.state || ""
+                    )}"
+                    required
+                >
+            </div>
+
+
+            <!-- CODE -->
+
+            <div class="list-page-form-group">
+                <label for="locationCode">
+                    Code
+                </label>
+
+                <input
+                    type="text"
+                    id="locationCode"
+                    value="${escapeLocationAttribute(
+                        location?.code || ""
+                    )}"
+                    required
+                >
+            </div>
+
+
+            <!-- WMS -->
+
+            <div class="list-page-form-group">
+                <label for="locationWms">
+                    Warehouse Management System
+                </label>
+
+                <select id="locationWms">
+                    <option value="">
+                        No WMS
+                    </option>
+
+                    ${wmsOptions}
+                </select>
+            </div>
+
+
+            <!-- STATUS -->
+
+            <div class="list-page-checkbox-group">
+                <input
+                    type="checkbox"
+                    id="locationIsActive"
+                    ${
+                        location
+                            ? location.is_active
+                                ? "checked"
+                                : ""
+                            : "checked"
+                    }
+                >
+
+                <label for="locationIsActive">
+                    Active
+                </label>
+            </div>
+
+
+            <!-- ACTIONS -->
+
+            <div class="modal-actions">
+                <button
+                    type="button"
+                    class="secondary-button"
+                    id="locationCancelButton"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                    id="locationSaveButton"
+                >
+                    ${
+                        isEdit
+                            ? "Save Changes"
+                            : "Create Location"
+                    }
+                </button>
+            </div>
+
+        </form>
+    `;
+
+    renderModal({
+        containerId: "locationModal",
+        title: title,
+        content: content,
+        onClose: closeLocationModal
+    });
+
+    const modal =
+        document.getElementById(
+            "locationModal"
+        );
+
+    if (!modal) {
+        return;
+    }
+
+    modal.classList.remove("hidden");
+
+
+    // ========================================================
+    // CANCEL
+    // ========================================================
+
+    const cancelButton =
+        modal.querySelector(
+            "#locationCancelButton"
+        );
+
+    if (cancelButton) {
+        cancelButton.addEventListener(
+            "click",
+            closeLocationModal
+        );
+    }
+
+
+    // ========================================================
+    // FORM SUBMIT
+    // ========================================================
+
+    const form =
+        modal.querySelector(
+            "#locationForm"
+        );
+
+    if (form) {
+        form.addEventListener(
+            "submit",
+            saveLocation
+        );
+    }
 }
 
 
@@ -584,54 +700,50 @@ function closeLocationModal() {
 // ============================================================
 
 async function saveLocation(event) {
-
     event.preventDefault();
 
+    const saveButton =
+        document.getElementById(
+            "locationSaveButton"
+        );
 
     const locationData = {
-
         name:
-            document
-                .getElementById("locationName")
-                .value
-                .trim(),
+            document.getElementById(
+                "locationName"
+            ).value.trim(),
 
         city:
-            document
-                .getElementById("locationCity")
-                .value
-                .trim(),
+            document.getElementById(
+                "locationCity"
+            ).value.trim(),
 
         state:
-            document
-                .getElementById("locationState")
-                .value
-                .trim(),
+            document.getElementById(
+                "locationState"
+            ).value.trim(),
 
         code:
-            document
-                .getElementById("locationCode")
-                .value
-                .trim(),
+            document.getElementById(
+                "locationCode"
+            ).value.trim(),
 
         is_active:
-            document
-                .getElementById("locationActive")
-                .checked,
+            document.getElementById(
+                "locationIsActive"
+            ).checked,
 
         warehouse_management_system_id:
-            document
-                .getElementById("locationWms")
-                .value
+            document.getElementById(
+                "locationWms"
+            ).value
                 ? Number(
-                    document
-                        .getElementById("locationWms")
-                        .value
+                    document.getElementById(
+                        "locationWms"
+                    ).value
                 )
                 : null
-
     };
-
 
     if (
         !locationData.name ||
@@ -639,144 +751,231 @@ async function saveLocation(event) {
         !locationData.state ||
         !locationData.code
     ) {
-
-        alert(
+        showWarningMessage(
             "Please complete all required fields."
         );
 
         return;
-
     }
 
+    if (saveButton) {
+        saveButton.disabled = true;
+    }
 
     try {
-
         if (editingLocationId === null) {
+            await createLocation(locationData);
 
-            await createLocation(
-                locationData
-            );
-
-
-            alert(
+            showSuccessMessage(
                 "Location created successfully."
             );
-
         } else {
-
             await updateLocation(
                 editingLocationId,
                 locationData
             );
 
-
-            alert(
+            showSuccessMessage(
                 "Location updated successfully."
             );
-
         }
-
 
         closeLocationModal();
 
         await loadLocations();
-
     } catch (error) {
-
         console.error(
             "Error saving location:",
             error
         );
 
-
-        alert(
+        showErrorMessage(
             error.message ||
             "Error saving location."
         );
-
+    } finally {
+        if (saveButton) {
+            saveButton.disabled = false;
+        }
     }
-
 }
 
 
 // ============================================================
-// DELETE LOCATION
+// REMOVE MODAL
 // ============================================================
 
-async function deleteLocation(locationId) {
-
+function openRemoveModal(locationId) {
     const location =
         locations.find(
-            location => location.id === locationId
+            item =>
+                Number(item.id) ===
+                Number(locationId)
         );
-
 
     if (!location) {
-
         return;
-
     }
 
+    const content = `
+        <div class="list-page-confirmation">
 
-    const confirmed =
-        confirm(
-            `Are you sure you want to delete "${location.name}"?`
+            <p class="list-page-confirmation-message">
+                Are you sure you want to remove
+                <strong>
+                    ${escapeLocationHtml(
+                        location.name || "-"
+                    )}
+                </strong>?
+            </p>
+
+            <p class="list-page-confirmation-description">
+                This action will remove the Location
+                from the system.
+            </p>
+
+            <div class="modal-actions">
+                <button
+                    type="button"
+                    class="secondary-button"
+                    id="locationRemoveCancelButton"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="button"
+                    class="danger-button"
+                    id="locationRemoveConfirmButton"
+                >
+                    Remove
+                </button>
+            </div>
+
+        </div>
+    `;
+
+    renderModal({
+        containerId: "locationModal",
+        title: "Remove Location",
+        content: content,
+        onClose: closeLocationModal
+    });
+
+    const modal =
+        document.getElementById(
+            "locationModal"
         );
 
-
-    if (!confirmed) {
-
+    if (!modal) {
         return;
-
     }
 
+    modal.classList.remove("hidden");
+
+    const cancelButton =
+        modal.querySelector(
+            "#locationRemoveCancelButton"
+        );
+
+    if (cancelButton) {
+        cancelButton.addEventListener(
+            "click",
+            closeLocationModal
+        );
+    }
+
+    const confirmButton =
+        modal.querySelector(
+            "#locationRemoveConfirmButton"
+        );
+
+    if (confirmButton) {
+        confirmButton.addEventListener(
+            "click",
+            () => removeLocation(locationId)
+        );
+    }
+}
+
+
+// ============================================================
+// REMOVE LOCATION
+// ============================================================
+
+async function removeLocation(locationId) {
+    const confirmButton =
+        document.getElementById(
+            "locationRemoveConfirmButton"
+        );
+
+    if (confirmButton) {
+        confirmButton.disabled = true;
+    }
 
     try {
+        await deleteLocationApi(locationId);
 
-        await deleteLocationApi(
-            locationId
+        closeLocationModal();
+
+        showSuccessMessage(
+            "Location removed successfully."
         );
-
-
-        alert(
-            "Location deleted successfully."
-        );
-
 
         await loadLocations();
-
     } catch (error) {
-
         console.error(
-            "Error deleting location:",
+            "Error removing location:",
             error
         );
 
-
-        alert(
+        showErrorMessage(
             error.message ||
-            "Error deleting location."
+            "Error removing location."
         );
 
+        if (confirmButton) {
+            confirmButton.disabled = false;
+        }
     }
-
 }
 
 
 // ============================================================
-// ESCAPE HTML
+// CLOSE MODAL
 // ============================================================
 
-function escapeHtml(value) {
+function closeLocationModal() {
+    const modal =
+        document.getElementById(
+            "locationModal"
+        );
 
-    const div =
-        document.createElement("div");
+    if (!modal) {
+        return;
+    }
+
+    modal.classList.add("hidden");
+    modal.innerHTML = "";
+
+    editingLocationId = null;
+}
 
 
-    div.textContent =
-        String(value ?? "");
+// ============================================================
+// HTML ESCAPING
+// ============================================================
+
+function escapeLocationHtml(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
 
 
-    return div.innerHTML;
-
+function escapeLocationAttribute(value) {
+    return escapeLocationHtml(value);
 }
