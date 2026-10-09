@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,197 +8,73 @@
 
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/tools.css">
+    <link rel="stylesheet" href="css/details/detail-header.css">
+    <link rel="stylesheet" href="css/details/modal.css">
+    <link rel="stylesheet" href="css/details/notifications.css">
+    <link rel="stylesheet" href="css/list-page.css">
 </head>
 
 <body>
+    <div id="appNavigation"></div>
 
-    <div class="page-container">
+    <div class="app-content">
+        <main class="list-page-container">
+            <div id="pageHeader"></div>
 
-        <!-- HEADER -->
-
-        <div class="crud-header">
-
-            <h2>Queues</h2>
-
-            <div>
-
-                <button
-                    id="backButton"
-                    type="button"
-                >
-                    Back
-                </button>
-
-                <button
-                    id="newQueueButton"
-                    type="button"
-                >
-                    + New Queue
-                </button>
-
-            </div>
-
-        </div>
-
-
-        <!-- SEARCH -->
-
-        <div class="crud-toolbar">
-
-            <input
-                type="text"
-                id="searchQueues"
-                placeholder="Search queues..."
-            >
-
-        </div>
-
-
-        <!-- TABLE -->
-
-        <div class="crud-table-container">
-
-            <table class="crud-table">
-
-                <thead>
-
-                    <tr>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-
-                </thead>
-
-                <tbody id="queuesTableBody">
-                </tbody>
-
-            </table>
-
-            <div
-                id="emptyQueuesMessage"
-                class="empty-message hidden"
-            >
-                No queues found.
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- ===================================================== -->
-    <!-- QUEUE MODAL -->
-    <!-- ===================================================== -->
-
-    <div
-        id="queueModal"
-        class="modal hidden"
-    >
-
-        <div class="modal-content">
-
-            <div class="modal-header">
-
-                <h3 id="modalTitle">
-                    Create Queue
-                </h3>
-
-                <button
-                    id="closeQueueModal"
-                    class="modal-close"
-                    type="button"
-                >
-                    ×
-                </button>
-
-            </div>
-
-
-            <form id="queueForm">
-
-                <!-- NAME -->
-
-                <div class="form-group">
-
-                    <label for="queueName">
-                        Name
-                    </label>
-
-                    <input
-                        type="text"
-                        id="queueName"
-                        required
-                    >
-
-                </div>
-
-
-                <!-- DESCRIPTION -->
-
-                <div class="form-group">
-
-                    <label for="queueDescription">
-                        Description
-                    </label>
-
-                    <textarea
-                        id="queueDescription"
-                        rows="4"
-                        required
-                    ></textarea>
-
-                </div>
-
-
-                <!-- ACTIVE -->
-
-                <div class="form-group checkbox-group">
-
-                    <input
-                        type="checkbox"
-                        id="queueActive"
-                        checked
-                    >
-
-                    <label for="queueActive">
-                        Active
-                    </label>
-
-                </div>
-
-
-                <!-- ACTIONS -->
-
-                <div class="modal-actions">
+            <section class="list-page-section">
+                <div class="list-page-toolbar">
+                    <div class="list-page-search">
+                        <input
+                            type="text"
+                            id="searchInput"
+                            placeholder="Search queues..."
+                            aria-label="Search queues"
+                        >
+                    </div>
 
                     <button
                         type="button"
-                        id="cancelQueueButton"
+                        id="addQueueButton"
+                        class="list-page-create-button"
                     >
-                        Cancel
+                        + New Queue
                     </button>
-
-                    <button
-                        type="submit"
-                        id="saveQueueButton"
-                    >
-                        Save
-                    </button>
-
                 </div>
 
-            </form>
+                <div
+                    id="queuesEmptyState"
+                    class="list-page-empty-state list-page-hidden"
+                >
+                    <p class="list-page-empty-message">
+                        No queues found.
+                    </p>
+                </div>
 
-        </div>
+                <div class="list-page-table-container">
+                    <table class="list-page-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
 
+                        <tbody id="queuesTableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
     </div>
 
+    <div id="queueModal" class="modal hidden"></div>
 
     <script src="js/api.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/components/detail-header.js"></script>
+    <script src="js/components/modal.js"></script>
+    <script src="js/components/notifications.js"></script>
     <script src="js/queues.js"></script>
-
 </body>
-
 </html>

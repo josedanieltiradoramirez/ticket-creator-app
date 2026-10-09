@@ -1,613 +1,441 @@
 let queues = [];
-
 let editingQueueId = null;
-
 
 // ============================================================
 // INITIALIZATION
 // ============================================================
 
 document.addEventListener("DOMContentLoaded", async () => {
-
+    renderPageHeader();
     setupQueueEventListeners();
-
     await loadQueues();
 
-
     // If we arrived from Queue Detail -> Edit
-
-    const params =
-        new URLSearchParams(
-            window.location.search
-        );
-
-    const editId =
-        Number(
-            params.get("edit")
-        );
-
+    const params = new URLSearchParams(window.location.search);
+    const editId = Number(params.get("edit"));
 
     if (editId) {
-
         editQueue(editId);
-
     }
-
 });
 
+// ============================================================
+// PAGE HEADER
+// ============================================================
+
+function renderPageHeader() {
+    renderDetailHeader({
+        containerId: "pageHeader",
+        type: "Administration",
+        title: "Queues",
+        description: "Manage and configure ticket queues.",
+        actions: {
+            back: true,
+            edit: false
+        },
+        onBack: () => {
+            window.location.href = "index.html";
+        }
+    });
+}
 
 // ============================================================
 // EVENT LISTENERS
 // ============================================================
 
 function setupQueueEventListeners() {
+    document
+        .getElementById("addQueueButton")
+        .addEventListener("click", openCreateQueueModal);
 
     document
-        .getElementById("backButton")
-        .addEventListener(
-            "click",
-            () => {
-
-                window.location.href =
-                    "index.html";
-
-            }
-        );
-
-
-    document
-        .getElementById("newQueueButton")
-        .addEventListener(
-            "click",
-            openCreateQueueModal
-        );
-
-
-    document
-        .getElementById("closeQueueModal")
-        .addEventListener(
-            "click",
-            closeQueueModal
-        );
-
-
-    document
-        .getElementById("cancelQueueButton")
-        .addEventListener(
-            "click",
-            closeQueueModal
-        );
-
-
-    document
-        .getElementById("queueForm")
-        .addEventListener(
-            "submit",
-            saveQueue
-        );
-
-
-    document
-        .getElementById("searchQueues")
-        .addEventListener(
-            "input",
-            renderQueues
-        );
-
+        .getElementById("searchInput")
+        .addEventListener("input", renderQueues);
 }
-
 
 // ============================================================
 // LOAD QUEUES
 // ============================================================
 
 async function loadQueues() {
-
     try {
-
-        queues =
-            await getQueues();
-
-
+        queues = await getQueues() || [];
         renderQueues();
-
     } catch (error) {
-
-        console.error(
-            "Error loading queues:",
-            error
-        );
-
-
-        alert(
-            error.message ||
-            "Error loading queues."
-        );
-
+        console.error("Error loading queues:", error);
+        showErrorMessage(error.message || "Error loading queues.");
     }
-
 }
-
 
 // ============================================================
 // RENDER QUEUES
 // ============================================================
 
 function renderQueues() {
-
-    const tableBody =
-        document.getElementById(
-            "queuesTableBody"
-        );
-
-
-    const emptyMessage =
-        document.getElementById(
-            "emptyQueuesMessage"
-        );
-
-
-    const search =
-        document.getElementById(
-            "searchQueues"
-        )
+    const tableBody = document.getElementById("queuesTableBody");
+    const emptyState = document.getElementById("queuesEmptyState");
+    const search = document
+        .getElementById("searchInput")
         .value
         .trim()
         .toLowerCase();
 
-
     tableBody.innerHTML = "";
 
+    const filteredQueues = queues.filter((queue) => {
+        const name = String(queue.name ?? "").toLowerCase();
+        const description = String(queue.description ?? "").toLowerCase();
 
-    const filteredQueues =
-        queues.filter(queue => {
-
-            const name =
-                String(
-                    queue.name ?? ""
-                )
-                .toLowerCase();
-
-
-            const description =
-                String(
-                    queue.description ?? ""
-                )
-                .toLowerCase();
-
-
-            return (
-                name.includes(search) ||
-                description.includes(search)
-            );
-
-        });
-
-
-    // ========================================================
-    // EMPTY STATE
-    // ========================================================
-
-    if (filteredQueues.length === 0) {
-
-        emptyMessage.classList.remove(
-            "hidden"
-        );
-
-        return;
-
-    }
-
-
-    emptyMessage.classList.add(
-        "hidden"
-    );
-
-
-    // ========================================================
-    // TABLE ROWS
-    // ========================================================
-
-    filteredQueues.forEach(queue => {
-
-        const row =
-            document.createElement("tr");
-
-
-        row.innerHTML = `
-
-            <td>
-                ${escapeHtml(queue.name)}
-            </td>
-
-            <td>
-                ${escapeHtml(queue.description)}
-            </td>
-
-            <td>
-
-                <span class="status-badge ${
-                    queue.is_active
-                        ? "active"
-                        : "inactive"
-                }">
-
-                    ${
-                        queue.is_active
-                            ? "Active"
-                            : "Inactive"
-                    }
-
-                </span>
-
-            </td>
-
-            <td>
-
-                <button
-                    type="button"
-                    class="action-button view-button"
-                >
-                    View
-                </button>
-
-                <button
-                    type="button"
-                    class="action-button edit-button"
-                >
-                    Edit
-                </button>
-
-                <button
-                    type="button"
-                    class="action-button delete-button"
-                >
-                    Delete
-                </button>
-
-            </td>
-
-        `;
-
-
-        // VIEW
-
-        row
-            .querySelector(".view-button")
-            .addEventListener(
-                "click",
-                () => openQueueDetail(queue.id)
-            );
-
-
-        // EDIT
-
-        row
-            .querySelector(".edit-button")
-            .addEventListener(
-                "click",
-                () => editQueue(queue.id)
-            );
-
-
-        // DELETE
-
-        row
-            .querySelector(".delete-button")
-            .addEventListener(
-                "click",
-                () => deleteQueue(queue.id)
-            );
-
-
-        tableBody.appendChild(row);
-
+        return name.includes(search) || description.includes(search);
     });
 
-}
+    emptyState.classList.toggle("list-page-hidden", filteredQueues.length !== 0);
 
+    if (filteredQueues.length === 0) {
+        return;
+    }
+
+    filteredQueues.forEach((queue) => {
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+            <td>
+                <span class="list-page-primary-value">
+                    ${escapeQueueHtml(queue.name)}
+                </span>
+            </td>
+
+            <td>
+                ${escapeQueueHtml(queue.description)}
+            </td>
+
+            <td>
+                <span class="list-page-status ${
+                    queue.is_active
+                        ? "list-page-status-active"
+                        : "list-page-status-inactive"
+                }">
+                    ${queue.is_active ? "Active" : "Inactive"}
+                </span>
+            </td>
+
+            <td>
+                <div class="list-page-row-actions">
+                    <button
+                        type="button"
+                        class="list-page-action-button"
+                        data-action="view"
+                        data-id="${escapeQueueAttribute(queue.id)}"
+                    >
+                        View
+                    </button>
+
+                    <button
+                        type="button"
+                        class="list-page-action-button"
+                        data-action="edit"
+                        data-id="${escapeQueueAttribute(queue.id)}"
+                    >
+                        Edit
+                    </button>
+
+                    <button
+                        type="button"
+                        class="list-page-action-button list-page-remove-button"
+                        data-action="remove"
+                        data-id="${escapeQueueAttribute(queue.id)}"
+                    >
+                        Remove
+                    </button>
+                </div>
+            </td>
+        `;
+
+        tableBody.appendChild(row);
+    });
+
+    tableBody.querySelectorAll("[data-action]").forEach((button) => {
+        button.addEventListener("click", () => {
+            const queueId = Number(button.dataset.id);
+            const action = button.dataset.action;
+
+            if (action === "view") {
+                openQueueDetail(queueId);
+            } else if (action === "edit") {
+                editQueue(queueId);
+            } else if (action === "remove") {
+                openRemoveQueueModal(queueId);
+            }
+        });
+    });
+}
 
 // ============================================================
 // OPEN QUEUE DETAIL
 // ============================================================
 
 function openQueueDetail(queueId) {
-
-    window.location.href =
-        `queue-detail.html?id=${queueId}`;
-
+    window.location.href = `queue-detail.html?id=${queueId}`;
 }
-
 
 // ============================================================
 // CREATE QUEUE
 // ============================================================
 
 function openCreateQueueModal() {
-
     editingQueueId = null;
-
-
-    document.getElementById(
-        "modalTitle"
-    ).textContent =
-        "Create Queue";
-
-
-    document.getElementById(
-        "queueName"
-    ).value = "";
-
-
-    document.getElementById(
-        "queueDescription"
-    ).value = "";
-
-
-    document.getElementById(
-        "queueActive"
-    ).checked = true;
-
-
-    document
-        .getElementById("queueModal")
-        .classList.remove("hidden");
-
+    renderQueueFormModal();
 }
-
 
 // ============================================================
 // EDIT QUEUE
 // ============================================================
 
 function editQueue(queueId) {
-
-    const queue =
-        queues.find(
-            queue => queue.id === queueId
-        );
-
+    const queue = queues.find(
+        (item) => String(item.id) === String(queueId)
+    );
 
     if (!queue) {
-
-        alert(
-            "Queue not found."
-        );
-
+        showErrorMessage("Queue not found.");
         return;
-
     }
 
-
-    editingQueueId = queueId;
-
-
-    document.getElementById(
-        "modalTitle"
-    ).textContent =
-        "Edit Queue";
-
-
-    document.getElementById(
-        "queueName"
-    ).value =
-        queue.name ?? "";
-
-
-    document.getElementById(
-        "queueDescription"
-    ).value =
-        queue.description ?? "";
-
-
-    document.getElementById(
-        "queueActive"
-    ).checked =
-        queue.is_active ?? true;
-
-
-    document
-        .getElementById("queueModal")
-        .classList.remove("hidden");
-
+    editingQueueId = queue.id;
+    renderQueueFormModal(queue);
 }
 
+// ============================================================
+// QUEUE FORM MODAL
+// ============================================================
+
+function renderQueueFormModal(queue = null) {
+    const isEditing = queue !== null;
+
+    const content = `
+        <form id="queueForm" class="list-page-form">
+            <div class="list-page-form-group">
+                <label for="queueName">Name</label>
+                <input
+                    type="text"
+                    id="queueName"
+                    name="name"
+                    value="${escapeQueueAttribute(queue?.name ?? "")}"
+                    required
+                >
+            </div>
+
+            <div class="list-page-form-group">
+                <label for="queueDescription">Description</label>
+                <textarea
+                    id="queueDescription"
+                    name="description"
+                    rows="4"
+                    required
+                >${escapeQueueHtml(queue?.description ?? "")}</textarea>
+            </div>
+
+            <div class="list-page-checkbox-group">
+                <input
+                    type="checkbox"
+                    id="queueActive"
+                    name="is_active"
+                    ${queue?.is_active !== false ? "checked" : ""}
+                >
+                <label for="queueActive">Active</label>
+            </div>
+
+            <div class="modal-actions">
+                <button
+                    type="button"
+                    id="cancelQueueButton"
+                    class="secondary-button"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    id="saveQueueButton"
+                    class="primary-button"
+                >
+                    ${isEditing ? "Save Changes" : "Create Queue"}
+                </button>
+            </div>
+        </form>
+    `;
+
+    document.getElementById("queueModal").classList.remove("hidden");
+
+    renderModal({
+        containerId: "queueModal",
+        title: isEditing ? "Edit Queue" : "Create Queue",
+        content,
+        onClose: closeQueueModal
+    });
+
+    document
+        .getElementById("queueForm")
+        .addEventListener("submit", saveQueue);
+
+    document
+        .getElementById("cancelQueueButton")
+        .addEventListener("click", closeQueueModal);
+}
 
 // ============================================================
 // CLOSE MODAL
 // ============================================================
 
 function closeQueueModal() {
+    const modal = document.getElementById("queueModal");
 
-    document
-        .getElementById("queueModal")
-        .classList.add("hidden");
-
-
+    modal.classList.add("hidden");
+    modal.innerHTML = "";
     editingQueueId = null;
-
 }
-
 
 // ============================================================
 // SAVE QUEUE
 // ============================================================
 
 async function saveQueue(event) {
-
     event.preventDefault();
 
-
     const queueData = {
-
-        name:
-            document
-                .getElementById("queueName")
-                .value
-                .trim(),
-
-        description:
-            document
-                .getElementById("queueDescription")
-                .value
-                .trim(),
-
-        is_active:
-            document
-                .getElementById("queueActive")
-                .checked
-
+        name: document.getElementById("queueName").value.trim(),
+        description: document.getElementById("queueDescription").value.trim(),
+        is_active: document.getElementById("queueActive").checked
     };
 
-
-    if (
-        !queueData.name ||
-        !queueData.description
-    ) {
-
-        alert(
-            "Please complete all required fields."
-        );
-
+    if (!queueData.name || !queueData.description) {
+        showWarningMessage("Please complete all required fields.");
         return;
-
     }
 
+    const saveButton = document.getElementById("saveQueueButton");
+    saveButton.disabled = true;
 
     try {
-
-        // CREATE
-
         if (editingQueueId === null) {
-
-            await createQueue(
-                queueData
-            );
-
-
-            alert(
-                "Queue created successfully."
-            );
-
+            await createQueue(queueData);
+            closeQueueModal();
+            showSuccessMessage("Queue created successfully.");
+        } else {
+            await updateQueue(editingQueueId, queueData);
+            closeQueueModal();
+            showSuccessMessage("Queue updated successfully.");
         }
-
-        // UPDATE
-
-        else {
-
-            await updateQueue(
-                editingQueueId,
-                queueData
-            );
-
-
-            alert(
-                "Queue updated successfully."
-            );
-
-        }
-
-
-        closeQueueModal();
 
         await loadQueues();
-
     } catch (error) {
+        console.error("Error saving queue:", error);
+        showErrorMessage(error.message || "Error saving queue.");
 
-        console.error(
-            "Error saving queue:",
-            error
-        );
-
-
-        alert(
-            error.message ||
-            "Error saving queue."
-        );
-
+        if (saveButton.isConnected) {
+            saveButton.disabled = false;
+        }
     }
-
 }
 
-
 // ============================================================
-// DELETE QUEUE
+// REMOVE QUEUE
 // ============================================================
 
-async function deleteQueue(queueId) {
-
-    const queue =
-        queues.find(
-            queue => queue.id === queueId
-        );
-
+function openRemoveQueueModal(queueId) {
+    const queue = queues.find(
+        (item) => String(item.id) === String(queueId)
+    );
 
     if (!queue) {
-
+        showErrorMessage("Queue not found.");
         return;
-
     }
 
+    const content = `
+        <div class="list-page-confirmation">
+            <p class="list-page-confirmation-message">
+                Are you sure you want to remove "${escapeQueueHtml(queue.name)}"?
+            </p>
 
-    const confirmed =
-        confirm(
-            `Are you sure you want to delete "${queue.name}"?`
-        );
+            <p class="list-page-confirmation-description">
+                This action cannot be undone.
+            </p>
 
+            <div class="modal-actions">
+                <button
+                    type="button"
+                    id="cancelRemoveQueueButton"
+                    class="secondary-button"
+                >
+                    Cancel
+                </button>
 
-    if (!confirmed) {
+                <button
+                    type="button"
+                    id="confirmRemoveQueueButton"
+                    class="danger-button"
+                >
+                    Remove Queue
+                </button>
+            </div>
+        </div>
+    `;
 
-        return;
+    document.getElementById("queueModal").classList.remove("hidden");
 
-    }
+    renderModal({
+        containerId: "queueModal",
+        title: "Remove Queue",
+        content,
+        onClose: closeQueueModal
+    });
 
+    document
+        .getElementById("cancelRemoveQueueButton")
+        .addEventListener("click", closeQueueModal);
 
-    try {
-
-        await deleteQueueApi(
-            queueId
-        );
-
-
-        alert(
-            "Queue deleted successfully."
-        );
-
-
-        await loadQueues();
-
-    } catch (error) {
-
-        console.error(
-            "Error deleting queue:",
-            error
-        );
-
-
-        alert(
-            error.message ||
-            "Error deleting queue."
-        );
-
-    }
-
+    document
+        .getElementById("confirmRemoveQueueButton")
+        .addEventListener("click", () => removeQueue(queue.id));
 }
 
+async function removeQueue(queueId) {
+    const confirmButton = document.getElementById("confirmRemoveQueueButton");
+
+    if (confirmButton) {
+        confirmButton.disabled = true;
+    }
+
+    try {
+        await deleteQueueApi(queueId);
+
+        closeQueueModal();
+        showSuccessMessage("Queue removed successfully.");
+
+        await loadQueues();
+    } catch (error) {
+        console.error("Error removing queue:", error);
+        showErrorMessage(error.message || "Error removing queue.");
+
+        if (confirmButton?.isConnected) {
+            confirmButton.disabled = false;
+        }
+    }
+}
 
 // ============================================================
 // ESCAPE HTML
 // ============================================================
 
-function escapeHtml(value) {
-
-    const div =
-        document.createElement("div");
-
-
-    div.textContent =
-        String(value ?? "");
-
-
+function escapeQueueHtml(value) {
+    const div = document.createElement("div");
+    div.textContent = String(value ?? "");
     return div.innerHTML;
+}
 
+function escapeQueueAttribute(value) {
+    return escapeQueueHtml(value)
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
 }
