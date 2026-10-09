@@ -1,225 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Warehouse Management Systems</title>
 
-    <link
-        rel="stylesheet"
-        href="css/style.css"
-    >
-
-    <link
-        rel="stylesheet"
-        href="css/tools.css"
-    >
-
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/tools.css">
+    <link rel="stylesheet" href="css/details/detail-header.css">
+    <link rel="stylesheet" href="css/details/modal.css">
+    <link rel="stylesheet" href="css/details/notifications.css">
+    <link rel="stylesheet" href="css/list-page.css">
 </head>
 
-
 <body>
-
-    <div class="page-container">
-
-
-        <!-- HEADER -->
-
-        <div class="crud-header">
-
-            <h2>
-                Warehouse Management Systems
-            </h2>
-
-
-            <div>
-
-                <button
-                    id="backButton"
-                    type="button"
-                >
-                    Back
-                </button>
-
-
-                <button
-                    id="newWmsButton"
-                    type="button"
-                >
-                    + New WMS
-                </button>
-
-            </div>
-
-        </div>
-
-
-        <!-- SEARCH -->
-
-        <div class="crud-toolbar">
-
-            <input
-                type="text"
-                id="searchWms"
-                placeholder="Search WMS..."
-            >
-
-        </div>
-
-
-        <!-- TABLE -->
-
-        <div class="crud-table-container">
-
-            <table class="crud-table">
-
-                <thead>
-
-                    <tr>
-
-                        <th>
-                            Name
-                        </th>
-
-                        <th>
-                            Description
-                        </th>
-
-                        <th>
-                            Actions
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-
-                <tbody id="wmsTableBody">
-                </tbody>
-
-            </table>
-
-
-            <div
-                id="emptyWmsMessage"
-                class="empty-message hidden"
-            >
-                No Warehouse Management Systems found.
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- ===================================================== -->
-    <!-- WMS MODAL -->
-    <!-- ===================================================== -->
-
-    <div
-        id="wmsModal"
-        class="modal hidden"
-    >
-
-        <div class="modal-content">
-
-
-            <div class="modal-header">
-
-                <h3 id="modalTitle">
-                    Create WMS
-                </h3>
-
-
-                <button
-                    id="closeWmsModal"
-                    class="modal-close"
-                    type="button"
-                >
-                    ×
-                </button>
-
-            </div>
-
-
-            <form id="wmsForm">
-
-
-                <!-- NAME -->
-
-                <div class="form-group">
-
-                    <label for="wmsName">
-                        Name
-                    </label>
-
-
-                    <input
-                        type="text"
-                        id="wmsName"
-                        required
-                    >
-
-                </div>
-
-
-                <!-- DESCRIPTION -->
-
-                <div class="form-group">
-
-                    <label for="wmsDescription">
-                        Description
-                    </label>
-
-
-                    <textarea
-                        id="wmsDescription"
-                        rows="4"
-                        required
-                    ></textarea>
-
-                </div>
-
-
-                <!-- ACTIONS -->
-
-                <div class="modal-actions">
+    <div id="appNavigation"></div>
+
+    <div class="app-content">
+        <main class="list-page-container">
+            <div id="pageHeader"></div>
+
+            <section class="list-page-section">
+                <div class="list-page-toolbar">
+                    <div class="list-page-search">
+                        <input
+                            type="text"
+                            id="searchInput"
+                            placeholder="Search WMS..."
+                            aria-label="Search warehouse management systems"
+                        >
+                    </div>
 
                     <button
                         type="button"
-                        id="cancelWmsButton"
+                        id="addWmsButton"
+                        class="list-page-create-button"
                     >
-                        Cancel
+                        + New WMS
                     </button>
-
-
-                    <button
-                        type="submit"
-                        id="saveWmsButton"
-                    >
-                        Save
-                    </button>
-
                 </div>
 
-            </form>
+                <div
+                    id="wmsEmptyState"
+                    class="list-page-empty-state list-page-hidden"
+                >
+                    <p class="list-page-empty-message">
+                        No Warehouse Management Systems found.
+                    </p>
+                </div>
 
-        </div>
+                <div class="list-page-table-container">
+                    <table class="list-page-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
 
+                        <tbody id="wmsTableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
     </div>
 
+    <div id="wmsModal" class="modal hidden"></div>
 
     <script src="js/api.js"></script>
-
+    <script src="js/navigation.js"></script>
+    <script src="js/components/detail-header.js"></script>
+    <script src="js/components/modal.js"></script>
+    <script src="js/components/notifications.js"></script>
     <script src="js/warehouse-management-systems.js"></script>
-
 </body>
-
 </html>
