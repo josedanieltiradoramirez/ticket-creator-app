@@ -1,177 +1,176 @@
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Ticket Creator</title>
+    <title>Tickets</title>
 
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/details/detail-header.css">
+    <link rel="stylesheet" href="css/list-page.css">
+    <link rel="stylesheet" href="css/ticket-page.css">
 </head>
 
 <body>
+    <div id="appNavigation"></div>
 
-    <!-- HEADER -->
-    <header>
+    <div class="app-content">
+        <main class="list-page-container">
 
-        <h1>Ticket Creator</h1>
+            <!-- Shared header, just like Tools -->
+            <div id="pageHeader"></div>
 
-        <nav>
-            <button id="ticketsButton">
-                Tickets
-            </button>
+            <section class="list-page-section" id="ticketsSection">
 
-            <button id="toolsButton">
-                Tools
-            </button>
+                <!-- Ticket actions -->
+                <div class="list-page-toolbar">
+                    <div class="tickets-toolbar-label">
+                        All Tickets
+                    </div>
 
-            <button id="locationsButton">
-                Locations
-            </button>
-            <button id="queuesButton">
-                Queues
-            </button>
-            <button id="warehouseManagementSystemsButton">
-                WMS
-            </button>
-            <button id="issueTypesButton">
-                Issue Types
-            </button>
-            <button id="formsButton">
-                Forms
-            </button>
-            <button id="troubleshootingTemplatesButton">
-                Troubleshooting Templates
-            </button>
-            <button id="knowledgeBaseButton">
-                Knowledge Base
-            </button>
-            <button id="knowledgeBaseNotesButton">
-                Knowledge Base Notes
-            </button>
-        </nav>
+                    <button
+                        type="button"
+                        id="newTicketButton"
+                        class="list-page-create-button">
+                        + New Ticket
+                    </button>
+                </div>
 
-        <button id="logoutButton">
-            Logout
-        </button>
+                <!-- Filters -->
+                <div id="filters" class="tickets-filters">
 
-    </header>
+                    <div class="tickets-filter-field">
+                        <label for="ticketNumberFilter">Ticket number</label>
+                        <input type="text" id="ticketNumberFilter"
+                               placeholder="Search ticket...">
+                    </div>
 
+                    <div class="tickets-filter-field">
+                        <label for="userNameFilter">User name</label>
+                        <input type="text" id="userNameFilter"
+                               placeholder="Search user...">
+                    </div>
 
-    <!-- MAIN CONTENT -->
-    <main>
+                    <div class="tickets-filter-field">
+                        <label for="statusFilter">Status</label>
+                        <select id="statusFilter">
+                            <option value="">All</option>
+                        </select>
+                    </div>
 
-       <div class="tickets-header">
+                    <div class="tickets-filter-field">
+                        <label for="issueTypeFilter">Issue type</label>
+                        <select id="issueTypeFilter">
+                            <option value="">All</option>
+                        </select>
+                    </div>
 
-            <h2>Tickets</h2>
+                    <div class="tickets-filter-field">
+                        <label for="priorityFilter">Priority</label>
+                        <select id="priorityFilter">
+                            <option value="">All</option>
+                        </select>
+                    </div>
 
-            <button id="newTicketButton">
-                New Ticket
-            </button>
+                    <div class="tickets-filter-field">
+                        <label for="queueFilter">Queue</label>
+                        <select id="queueFilter">
+                            <option value="">All</option>
+                        </select>
+                    </div>
 
-        </div>
+                    <div class="tickets-filter-field">
+                        <label for="toolFilter">Tool</label>
+                        <select id="toolFilter">
+                            <option value="">All</option>
+                        </select>
+                    </div>
 
-        <!-- TICKETS -->
-        <!-- FILTERS -->
-    
-        <section id="ticketsSection">
+                    <div class="tickets-filter-field">
+                        <label for="locationFilter">Location</label>
+                        <select id="locationFilter">
+                            <option value="">All</option>
+                        </select>
+                    </div>
 
-            <div id="filters">
+                    <div class="tickets-filter-field">
+                        <label for="ticketDateFilter">Created date</label>
+                        <input type="date" id="ticketDateFilter">
+                    </div>
 
-                <label for="statusFilter">Status:</label>
-                <select id="statusFilter">
-                    <option value="">All</option>
-                </select>
+                    <div class="tickets-filter-actions">
+                        <button type="button" id="applyFilters"
+                                class="tickets-filter-button-primary">
+                            Apply filters
+                        </button>
 
-                <label for="issueTypeFilter">Issue Type:</label>
-                <select id="issueTypeFilter">
-                    <option value="">All</option>
-                </select>
+                        <button type="button" id="clearFilters"
+                                class="tickets-filter-button-secondary">
+                            Clear
+                        </button>
+                    </div>
+                </div>
 
-                <label for="priorityFilter">Priority:</label>
-                <select id="priorityFilter">
-                    <option value="">All</option>
-                </select>
+                <!-- Tickets table -->
+                <div class="list-page-table-container">
+                    <table id="ticketsTable" class="list-page-table tickets-table">
+                        <thead>
+                            <tr>
+                                <th>Ticket number</th>
+                                <th>Title</th>
+                                <th>Issue type</th>
+                                <th>Tool</th>
+                                <th>Status</th>
+                                <th>Priority</th>
+                                <th>Queue</th>
+                                <th>Location</th>
+                                <th>Created at</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ticketsContainer"></tbody>
+                    </table>
+                </div>
 
-                <label for="queueFilter">Queue:</label>
-                <select id="queueFilter">
-                    <option value="">All</option>
-                </select>
+                <!-- Pagination -->
+                <div id="pagination" class="tickets-pagination">
+                    <span id="pageInfo">Page 1</span>
 
-                <label for="toolFilter">Tool:</label>
-                <select id="toolFilter">
-                    <option value="">All</option>
-                </select>
+                    <div class="tickets-pagination-controls">
+                        <button type="button" id="previousPage"
+                                class="tickets-filter-button-secondary">
+                            Previous
+                        </button>
 
-                <label for="locationFilter">Location:</label>
-                <select id="locationFilter">
-                    <option value="">All</option>
-                </select>
+                        <button type="button" id="nextPage"
+                                class="tickets-filter-button-secondary">
+                            Next
+                        </button>
+                    </div>
+                </div>
 
-                <label for="ticketNumberFilter">Ticket Number:</label>
-                <input
-                    type="text"
-                    id="ticketNumberFilter"
-                    placeholder="Search ticket..."
-                >
-
-                <label for="userNameFilter">User Name:</label>
-                <input
-                    type="text"
-                    id="userNameFilter"
-                    placeholder="Search user..."
-                >
-
-                <label for="ticketDateFilter">Date:</label>
-                <input
-                    type="date"
-                    id="ticketDateFilter"
-                >
-
-                <button id="applyFilters">Apply Filters</button>
-                <button id="clearFilters">Clear Filters</button>
-
-            </div>
-
-            <table id="ticketsTable">
-
-                <thead>
-                    <tr>
-                        <th>Ticket number</th>
-                        <th>Title</th>
-                        <th>Issue type</th>
-                        <th>Tool</th>
-                        <th>Status</th>
-                        <th>Priority</th>
-                        <th>Queue</th>
-                        <th>Location</th>
-                        <th>Created at</th>
-                    </tr>
-                </thead>
-
-                <tbody id="ticketsContainer">
-                </tbody>
-
-            </table>
-            <div id="pagination">
-                <button id="previousPage">Last</button>
-
-                <span id="pageInfo"></span>
-
-                <button id="nextPage">Next</button>
-            </div>
-
-
-        </section>
-
-    </main>
-
+            </section>
+        </main>
+    </div>
 
     <script src="js/api.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/components/detail-header.js"></script>
+
+    <script>
+        renderDetailHeader({
+            containerId: "pageHeader",
+            type: "Workspace",
+            title: "Tickets",
+            description: "Review, filter, and manage support tickets.",
+            actions: {
+                back: false,
+                edit: false
+            }
+        });
+    </script>
+
     <script src="js/app.js"></script>
-
 </body>
-
 </html>
