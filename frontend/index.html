@@ -30,12 +30,20 @@
                         Today's Tickets
                     </div>
 
-                    <button
-                        type="button"
-                        id="newTicketButton"
-                        class="list-page-create-button">
-                        + New Ticket
-                    </button>
+                    <div class="tickets-toolbar-actions">
+                        <button
+                            type="button"
+                            id="quickCallButton"
+                            class="tickets-quick-call-button">
+                            Quick Call
+                        </button>
+                        <button
+                            type="button"
+                            id="newTicketButton"
+                            class="list-page-create-button">
+                            + New Ticket
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Main ticket views -->
@@ -196,6 +204,7 @@
                                 <th>Queue</th>
                                 <th>Location</th>
                                 <th>Created at</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="ticketsContainer"></tbody>
@@ -221,6 +230,91 @@
 
             </section>
         </main>
+    </div>
+
+    <!-- Ticket quick-view side panel -->
+    <div id="ticketViewOverlay" class="ticket-view-overlay" hidden>
+        <aside class="ticket-view-panel" role="dialog" aria-modal="true" aria-labelledby="ticketViewTitle">
+            <header class="ticket-view-header">
+                <div>
+                    <p class="tickets-section-eyebrow">TICKET OVERVIEW</p>
+                    <h2 id="ticketViewTitle">Ticket details</h2>
+                    <p id="ticketViewSubtitle" class="ticket-view-subtitle">Loading ticket details…</p>
+                </div>
+                <button type="button" id="closeTicketView" class="ticket-view-close" aria-label="Close ticket details">×</button>
+            </header>
+            <div id="ticketViewContent" class="ticket-view-content">
+                <p class="tickets-loading">Loading ticket details…</p>
+            </div>
+            <footer class="ticket-view-footer">
+                <button type="button" id="ticketViewOpenFull" class="tickets-filter-button-primary" disabled>Open full ticket</button>
+                <button type="button" id="ticketViewCloseFooter" class="tickets-filter-button-secondary">Close</button>
+            </footer>
+        </aside>
+    </div>
+
+    <!-- Quick Call modal -->
+    <div id="quickCallModal" class="quick-call-overlay" hidden>
+        <section class="quick-call-modal" role="dialog" aria-modal="true" aria-labelledby="quickCallTitle" aria-describedby="quickCallDescription">
+            <header class="quick-call-header">
+                <div>
+                    <p class="tickets-section-eyebrow">FAST TICKET INTAKE</p>
+                    <h2 id="quickCallTitle">Quick Call</h2>
+                    <p id="quickCallDescription">Capture the essentials now. You can complete troubleshooting and routing in the ticket detail page.</p>
+                </div>
+                <button type="button" id="closeQuickCallModal" class="ticket-view-close" aria-label="Close Quick Call form">×</button>
+            </header>
+            <form id="quickCallForm" class="quick-call-form">
+                <div class="quick-call-field">
+                    <label for="quickUserName">User Name</label>
+                    <input type="text" id="quickUserName" name="user_name" autocomplete="name" placeholder="Enter user's full name">
+                </div>
+                <div class="quick-call-field">
+                    <label for="quickEmployeeType">Employee Type</label>
+                    <div class="quick-call-combobox" data-select-id="quickEmployeeType">
+                        <input type="text" id="quickEmployeeTypeSearch" class="quick-call-combobox-input" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="quickEmployeeTypeOptions" autocomplete="off" value="Employee" placeholder="Search employee type">
+                        <div id="quickEmployeeTypeOptions" class="quick-call-combobox-options" role="listbox" hidden></div>
+                        <select id="quickEmployeeType" name="user_type" class="quick-call-native-select" tabindex="-1" aria-hidden="true">
+                            <option value="Employee" selected>Employee</option>
+                            <option value="Contractor">Contractor</option>
+                            <option value="Customer">Customer</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="quick-call-field">
+                    <label for="quickContactNumber">Best Contact Number</label>
+                    <input type="tel" id="quickContactNumber" name="user_best_contact_number" autocomplete="tel" placeholder="Enter contact number">
+                </div>
+                <div class="quick-call-field">
+                    <label for="quickLocation">Location</label>
+                    <div class="quick-call-combobox" data-select-id="quickLocation">
+                        <input type="text" id="quickLocationSearch" class="quick-call-combobox-input" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="quickLocationOptions" autocomplete="off" placeholder="Search location">
+                        <div id="quickLocationOptions" class="quick-call-combobox-options" role="listbox" hidden></div>
+                        <select id="quickLocation" name="location_id" class="quick-call-native-select" tabindex="-1" aria-hidden="true">
+                            <option value="">Select location</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="quick-call-field quick-call-field-full">
+                    <label for="quickIssueDescription">Detailed Issue Description</label>
+                    <textarea id="quickIssueDescription" name="issue_description" rows="5" placeholder="Describe the issue reported by the user…"></textarea>
+                </div>
+                <p id="quickCallError" class="quick-call-error" role="alert" hidden></p>
+                <div class="quick-call-actions">
+                    <button type="button" id="cancelQuickCallButton" class="tickets-filter-button-secondary">Cancel</button>
+                    <button type="submit" id="createQuickTicketButton" class="tickets-filter-button-primary">Create ticket</button>
+                </div>
+            </form>
+        </section>
+    </div>
+    <div id="quickCallMinimized" class="quick-call-minimized" hidden role="status" aria-live="polite">
+        <div class="quick-call-minimized-copy">
+            <strong>Quick Call draft</strong>
+            <span>Your information is saved temporarily.</span>
+        </div>
+        <button type="button" id="restoreQuickCallButton" class="tickets-filter-button-primary">Restore</button>
+        <button type="button" id="discardQuickCallButton" class="quick-call-discard-button">Discard</button>
     </div>
 
     <!-- Delete ticket confirmation modal -->

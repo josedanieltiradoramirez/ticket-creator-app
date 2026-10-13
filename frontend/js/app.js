@@ -106,6 +106,10 @@ function ticketRowMarkup(ticket) {
         <td>${ticket.queue?.name ?? "—"}</td>
         <td>${ticket.location?.name ?? "—"}</td>
         <td><span class="ticket-created-date">${formatTicketDate(ticket.created_at)}</span></td>
+        <td class="ticket-row-actions-cell">
+            <button type="button" class="ticket-row-view" aria-label="View ticket">View</button>
+            <button type="button" class="ticket-row-open" aria-label="Open full ticket">Open</button>
+        </td>
     `;
 }
 
@@ -116,6 +120,14 @@ function appendTicketRow(container, ticket) {
     row.addEventListener("click", () => {
         window.location.href = `ticket-detail.html?id=${ticket.id}`;
     });
+    row.querySelector(".ticket-row-view")?.addEventListener("click", event => {
+        event.stopPropagation();
+        openTicketView(ticket.id);
+    });
+    row.querySelector(".ticket-row-open")?.addEventListener("click", event => {
+        event.stopPropagation();
+        window.location.href = `ticket-detail.html?id=${ticket.id}`;
+    });
     container.appendChild(row);
 }
 
@@ -124,7 +136,7 @@ function renderTickets(tickets, container = ticketsContainer) {
     if (!tickets.length) {
         const row = document.createElement("tr");
         const cell = document.createElement("td");
-        cell.colSpan = 9;
+        cell.colSpan = 10;
         cell.className = "tickets-empty-cell";
         cell.textContent = "No tickets found for this view.";
         row.appendChild(cell);
@@ -478,6 +490,13 @@ function createTodayTicketCard(ticket) {
     const actions = document.createElement('div');
     actions.className = 'today-ticket-actions';
 
+    const viewButton = document.createElement('button');
+    viewButton.type = 'button';
+    viewButton.className = 'today-ticket-view';
+    viewButton.textContent = 'View';
+    viewButton.setAttribute('aria-label', `View ticket ${ticket.ticket_number || ''}`);
+    viewButton.addEventListener('click', () => openTicketView(ticket.id));
+
     const openButton = document.createElement('button');
     openButton.type = 'button';
     openButton.className = 'today-ticket-open';
@@ -494,7 +513,7 @@ function createTodayTicketCard(ticket) {
     deleteButton.setAttribute('aria-label', `Delete ticket ${ticket.ticket_number || ''}`);
     deleteButton.addEventListener('click', () => openDeleteTicketModal(ticket));
 
-    actions.append(openButton, deleteButton);
+    actions.append(viewButton, openButton, deleteButton);
     row.append(number, title, user, created, status, priority, actions);
     return row;
 }
@@ -866,7 +885,7 @@ async function loadAllTickets() {
         nextPageButton.disabled = pages === 0 || currentPage >= pages;
     } catch (error) {
         console.error(error);
-        ticketsContainer.innerHTML = '<tr><td colspan="9" class="tickets-empty-cell">Could not load tickets. Please try again.</td></tr>';
+        ticketsContainer.innerHTML = '<tr><td colspan="10" class="tickets-empty-cell">Could not load tickets. Please try again.</td></tr>';
     }
 }
 
@@ -1065,6 +1084,430 @@ async function loadPriorities() { await populateSelect(priorityFilter, getPriori
 async function loadQueues() { await populateSelect(queueFilter, getQueues); }
 async function loadTools() { await populateSelect(toolFilter, getTools); }
 async function loadLocations() { await populateSelect(locationFilter, getLocations); }
+
+// =========================
+// TICKET QUICK VIEW PANEL
+// =========================
+let ticketBeingViewed = null;
+const ticketViewOverlay = document.getElementById("ticketViewOverlay");
+const ticketViewContent = document.getElementById("ticketViewContent");
+const ticketViewTitle = document.getElementById("ticketViewTitle");
+const ticketViewSubtitle = document.getElementById("ticketViewSubtitle");
+const ticketViewOpenFull = document.getElementById("ticketViewOpenFull");
+
+function addTicketViewSection(container, title, value, options = {}) {
+    if (value === null || value === undefined || String(value).trim() === "") return;
+    const section = document.createElement("section");
+    section.className = "ticket-view-section";
+    const heading = document.createElement("h3");
+    heading.textContent = title;
+    const body = document.createElement(options.pre ? "pre" : "p");
+    body.className = options.pre ? "ticket-view-pre" : "ticket-view-value";
+    body.textContent = String(value);
+    section.append(heading, body);
+    container.appendChild(section);
+}
+
+function addTicketViewMeta(container, label, value) {
+    const item = document.createElement("div");
+    item.className = "ticket-view-meta-item";
+    const name = document.createElement("span");
+    name.className = "ticket-view-meta-label";
+    name.textContent = label;
+    const val = document.createElement("strong");
+    val.textContent = value === null || value === undefined || value === "" ? "—" : String(value);
+    item.append(name, val);
+    container.appendChild(item);
+}
+
+function renderTicketView(ticket) {
+    ticketViewContent.innerHTML = "";
+    ticketViewTitle.textContent = ticket.title || "Ticket details";
+    ticketViewSubtitle.textContent = ticket.ticket_number ? `Ticket ${ticket.ticket_number}` : "Ticket overview";
+    ticketViewOpenFull.disabled = false;
+    ticketViewOpenFull.onclick = () => {
+        window.location.href = `ticket-detail.html?id=${ticket.id}`;
+    };
+
+    const overview = document.createElement("section");
+    overview.className = "ticket-view-section ticket-view-overview";
+    const overviewTitle = document.createElement("h3");
+    overviewTitle.textContent = "Overview";
+    const metaGrid = document.createElement("div");
+    metaGrid.className = "ticket-view-meta-grid";
+    addTicketViewMeta(metaGrid, "Status", ticket.status?.name || "No status");
+    addTicketViewMeta(metaGrid, "Priority", ticket.priority?.name || "Unassigned");
+    addTicketViewMeta(metaGrid, "User", ticket.user_name);
+    addTicketViewMeta(metaGrid, "Employee type", ticket.user_type);
+    addTicketViewMeta(metaGrid, "Best contact number", ticket.user_best_contact_number);
+    addTicketViewMeta(metaGrid, "Location", ticket.location?.name || ticket.location_name);
+    addTicketViewMeta(metaGrid, "Issue type", ticket.issue_type?.name);
+    addTicketViewMeta(metaGrid, "Tool", ticket.tool?.name);
+    addTicketViewMeta(metaGrid, "Queue", ticket.queue?.name);
+    addTicketViewMeta(metaGrid, "Created at", formatTicketDate(ticket.created_at));
+    overview.append(overviewTitle, metaGrid);
+    ticketViewContent.appendChild(overview);
+
+    addTicketViewSection(ticketViewContent, "Detailed issue description", ticket.issue_description);
+    addTicketViewSection(ticketViewContent, "Short issue", ticket.short_issue);
+    addTicketViewSection(ticketViewContent, "Ticket content", ticket.generated_ticket || ticket.ticket_body);
+    addTicketViewSection(ticketViewContent, "Troubleshooting steps", ticket.troubleshooting_steps);
+    addTicketViewSection(ticketViewContent, "Form content", ticket.form_content);
+    addTicketViewSection(ticketViewContent, "Time entry", ticket.generated_time_entry || ticket.generated_status_time_entry, { pre: true });
+    addTicketViewSection(ticketViewContent, "Additional notes", ticket.additional_notes);
+
+    if (ticket.form_template?.name || ticket.form_template?.title || ticket.troubleshooting_template?.name || ticket.troubleshooting_template?.title) {
+        const resources = document.createElement("section");
+        resources.className = "ticket-view-section";
+        const heading = document.createElement("h3");
+        heading.textContent = "Related resources";
+        resources.appendChild(heading);
+        const list = document.createElement("ul");
+        list.className = "ticket-view-resource-list";
+        const formName = ticket.form_template?.name || ticket.form_template?.title;
+        const troubleshootingName = ticket.troubleshooting_template?.name || ticket.troubleshooting_template?.title;
+        [formName && `Form template: ${formName}`, troubleshootingName && `Troubleshooting template: ${troubleshootingName}`].filter(Boolean).forEach(label => {
+            const item = document.createElement("li");
+            item.textContent = label;
+            list.appendChild(item);
+        });
+        resources.appendChild(list);
+        ticketViewContent.appendChild(resources);
+    }
+
+    if (Array.isArray(ticket.knowledge_base) && ticket.knowledge_base.length) {
+        const resources = document.createElement("section");
+        resources.className = "ticket-view-section";
+        const heading = document.createElement("h3");
+        heading.textContent = "Knowledge base";
+        const list = document.createElement("ul");
+        list.className = "ticket-view-resource-list";
+        ticket.knowledge_base.forEach(article => {
+            const item = document.createElement("li");
+            item.textContent = article.title || article.name || "Knowledge base article";
+            list.appendChild(item);
+        });
+        resources.append(heading, list);
+        ticketViewContent.appendChild(resources);
+    }
+
+    if (!ticketViewContent.children.length) {
+        const empty = document.createElement("p");
+        empty.className = "tickets-empty-cell";
+        empty.textContent = "No additional ticket details are available.";
+        ticketViewContent.appendChild(empty);
+    }
+}
+
+async function openTicketView(ticketId) {
+    if (!ticketViewOverlay) return;
+    ticketBeingViewed = ticketId;
+    ticketViewOverlay.hidden = false;
+    document.body.classList.add("ticket-panel-open");
+    ticketViewTitle.textContent = "Loading ticket…";
+    ticketViewSubtitle.textContent = "Fetching ticket details";
+    ticketViewContent.innerHTML = '<p class="tickets-loading">Loading ticket details…</p>';
+    ticketViewOpenFull.disabled = true;
+    try {
+        const ticket = await getTicket(ticketId);
+        if (ticketBeingViewed !== ticketId) return;
+        renderTicketView(ticket);
+    } catch (error) {
+        console.error("Could not load ticket preview:", error);
+        ticketViewContent.innerHTML = '<p class="tickets-error-message">Could not load ticket details. Please try again.</p>';
+        ticketViewTitle.textContent = "Ticket details";
+        ticketViewSubtitle.textContent = "Unable to load ticket";
+    }
+}
+
+function closeTicketView() {
+    ticketBeingViewed = null;
+    if (ticketViewOverlay) ticketViewOverlay.hidden = true;
+    document.body.classList.remove("ticket-panel-open");
+}
+
+document.getElementById("closeTicketView")?.addEventListener("click", closeTicketView);
+document.getElementById("ticketViewCloseFooter")?.addEventListener("click", closeTicketView);
+ticketViewOverlay?.addEventListener("click", event => {
+    if (event.target === ticketViewOverlay) closeTicketView();
+});
+
+// =========================
+// QUICK CALL / QUICK TICKET
+// =========================
+const quickCallModal = document.getElementById("quickCallModal");
+const quickCallForm = document.getElementById("quickCallForm");
+const quickCallLocation = document.getElementById("quickLocation");
+const quickCallError = document.getElementById("quickCallError");
+const quickCallMinimized = document.getElementById("quickCallMinimized");
+const createQuickTicketButton = document.getElementById("createQuickTicketButton");
+let quickCallLocationsLoaded = false;
+
+function openQuickCallModal() {
+    if (!quickCallModal) return;
+    quickCallModal.hidden = false;
+    if (quickCallMinimized) quickCallMinimized.hidden = true;
+    quickCallError.hidden = true;
+    quickCallError.textContent = "";
+    if (!quickCallLocationsLoaded) loadQuickCallLocations();
+    document.getElementById("quickUserName")?.focus();
+}
+
+// Clicking outside, pressing Escape, or using the header close/cancel controls
+// minimizes the draft instead of destroying the information entered so far.
+function minimizeQuickCallModal() {
+    if (!quickCallModal || quickCallModal.hidden) return;
+    quickCallModal.hidden = true;
+    if (quickCallMinimized) quickCallMinimized.hidden = false;
+}
+
+function discardQuickCallDraft() {
+    if (quickCallModal) quickCallModal.hidden = true;
+    if (quickCallMinimized) quickCallMinimized.hidden = true;
+    quickCallForm?.reset();
+    if (quickCallLocation) quickCallLocation.value = "";
+    const employeeSelect = document.getElementById("quickEmployeeType");
+    if (employeeSelect) employeeSelect.value = "Employee";
+    document.getElementById("quickEmployeeTypeSearch").value = "Employee";
+    document.getElementById("quickLocationSearch").value = "";
+    document.querySelectorAll(".quick-call-combobox-options").forEach(list => list.hidden = true);
+    document.querySelectorAll(".quick-call-combobox-input").forEach(input => input.setAttribute("aria-expanded", "false"));
+    if (quickCallError) {
+        quickCallError.hidden = true;
+        quickCallError.textContent = "";
+    }
+}
+
+function refreshQuickCallCombobox(selectId) {
+    const select = document.getElementById(selectId);
+    const input = document.querySelector(`.quick-call-combobox[data-select-id="${selectId}"] .quick-call-combobox-input`);
+    const list = document.getElementById(selectId === "quickLocation" ? "quickLocationOptions" : "quickEmployeeTypeOptions");
+    if (!select || !input || !list) return;
+    list.innerHTML = "";
+    Array.from(select.options).filter(option => option.value !== "").forEach(option => {
+        const item = document.createElement("button");
+        item.type = "button";
+        item.className = "quick-call-combobox-option";
+        item.role = "option";
+        item.dataset.value = option.value;
+        item.textContent = option.textContent;
+        item.setAttribute("aria-selected", option.value === select.value ? "true" : "false");
+        item.addEventListener("mousedown", event => event.preventDefault());
+        item.addEventListener("click", () => selectQuickCallOption(selectId, option.value));
+        list.appendChild(item);
+    });
+}
+
+function showQuickCallOptions(selectId, query = "") {
+    const input = document.querySelector(`.quick-call-combobox[data-select-id="${selectId}"] .quick-call-combobox-input`);
+    const list = document.getElementById(selectId === "quickLocation" ? "quickLocationOptions" : "quickEmployeeTypeOptions");
+    if (!input || !list) return;
+    const normalizedQuery = query.trim().toLowerCase();
+    let visibleItems = 0;
+    list.querySelectorAll(".quick-call-combobox-option").forEach(item => {
+        const matches = item.textContent.toLowerCase().includes(normalizedQuery);
+        item.hidden = !matches;
+        if (matches) visibleItems += 1;
+    });
+    list.hidden = false;
+    input.setAttribute("aria-expanded", "true");
+    list.querySelectorAll(".quick-call-no-results").forEach(node => node.remove());
+    if (!visibleItems) {
+        const empty = document.createElement("div");
+        empty.className = "quick-call-no-results";
+        empty.textContent = "No matching options";
+        list.appendChild(empty);
+    }
+}
+
+function selectQuickCallOption(selectId, value) {
+    const select = document.getElementById(selectId);
+    const input = document.querySelector(`.quick-call-combobox[data-select-id="${selectId}"] .quick-call-combobox-input`);
+    const list = document.getElementById(selectId === "quickLocation" ? "quickLocationOptions" : "quickEmployeeTypeOptions");
+    if (!select || !input || !list) return;
+    const option = Array.from(select.options).find(item => item.value === String(value));
+    if (!option) return;
+    select.value = option.value;
+    input.value = option.textContent;
+    list.hidden = true;
+    input.setAttribute("aria-expanded", "false");
+    list.querySelectorAll(".quick-call-combobox-option").forEach(item => item.setAttribute("aria-selected", item.dataset.value === option.value ? "true" : "false"));
+    input.focus();
+}
+
+function initializeQuickCallCombobox(selectId, defaultValue = "") {
+    const select = document.getElementById(selectId);
+    const input = document.querySelector(`.quick-call-combobox[data-select-id="${selectId}"] .quick-call-combobox-input`);
+    const list = document.getElementById(selectId === "quickLocation" ? "quickLocationOptions" : "quickEmployeeTypeOptions");
+    if (!select || !input || !list) return;
+    refreshQuickCallCombobox(selectId);
+    if (defaultValue) selectQuickCallOption(selectId, defaultValue);
+    input.addEventListener("focus", () => showQuickCallOptions(selectId, input.value === select.options[select.selectedIndex]?.textContent ? "" : input.value));
+    input.addEventListener("input", () => {
+        // Clear the submitted value until the user chooses a real matching option.
+        select.value = "";
+        showQuickCallOptions(selectId, input.value);
+    });
+    input.addEventListener("keydown", event => {
+        const visible = Array.from(list.querySelectorAll(".quick-call-combobox-option:not([hidden])"));
+        const active = list.querySelector(".quick-call-combobox-option.is-active");
+        let index = visible.indexOf(active);
+        if (event.key === "ArrowDown") {
+            event.preventDefault();
+            showQuickCallOptions(selectId, input.value);
+            const refreshed = Array.from(list.querySelectorAll(".quick-call-combobox-option:not([hidden])"));
+            index = refreshed.indexOf(list.querySelector(".quick-call-combobox-option.is-active"));
+            refreshed.forEach(item => item.classList.remove("is-active"));
+            const next = refreshed[Math.min(index + 1, refreshed.length - 1)];
+            if (next) { next.classList.add("is-active"); next.scrollIntoView({block:"nearest"}); }
+        } else if (event.key === "ArrowUp") {
+            event.preventDefault();
+            visible.forEach(item => item.classList.remove("is-active"));
+            const previous = visible[Math.max(index - 1, 0)];
+            if (previous) { previous.classList.add("is-active"); previous.scrollIntoView({block:"nearest"}); }
+        } else if (event.key === "Enter" && !list.hidden) {
+            const candidate = active || visible[0];
+            if (candidate) {
+                event.preventDefault();
+                selectQuickCallOption(selectId, candidate.dataset.value);
+            }
+        } else if (event.key === "Escape" && !list.hidden) {
+            event.preventDefault();
+            list.hidden = true;
+            input.setAttribute("aria-expanded", "false");
+        }
+    });
+    input.addEventListener("blur", () => {
+        window.setTimeout(() => {
+            if (!list.contains(document.activeElement)) {
+                list.hidden = true;
+                input.setAttribute("aria-expanded", "false");
+                // Restore the selected label if the typed text wasn't a valid option.
+                const selected = Array.from(select.options).find(option => option.value === select.value);
+                input.value = selected ? selected.textContent : "";
+            }
+        }, 100);
+    });
+}
+
+initializeQuickCallCombobox("quickEmployeeType", "Employee");
+initializeQuickCallCombobox("quickLocation");
+document.addEventListener("click", event => {
+    document.querySelectorAll(".quick-call-combobox").forEach(combo => {
+        if (!combo.contains(event.target)) {
+            const input = combo.querySelector(".quick-call-combobox-input");
+            const list = combo.querySelector(".quick-call-combobox-options");
+            if (list) list.hidden = true;
+            if (input) input.setAttribute("aria-expanded", "false");
+        }
+    });
+});
+
+async function loadQuickCallLocations() {
+    if (!quickCallLocation) return;
+    quickCallLocation.disabled = true;
+    quickCallLocation.innerHTML = "";
+    const loading = document.createElement("option");
+    loading.value = "";
+    loading.textContent = "Loading locations…";
+    quickCallLocation.appendChild(loading);
+    refreshQuickCallCombobox("quickLocation");
+    try {
+        const locations = await getLocations();
+        quickCallLocation.innerHTML = "";
+        const empty = document.createElement("option");
+        empty.value = "";
+        empty.textContent = "Select location";
+        quickCallLocation.appendChild(empty);
+        locations.forEach(location => {
+            const option = document.createElement("option");
+            option.value = String(location.id);
+            option.textContent = location.name;
+            quickCallLocation.appendChild(option);
+        });
+        quickCallLocationsLoaded = true;
+        refreshQuickCallCombobox("quickLocation");
+    } catch (error) {
+        console.error("Could not load locations for quick ticket:", error);
+        quickCallLocation.innerHTML = "";
+        const empty = document.createElement("option");
+        empty.value = "";
+        empty.textContent = "Locations unavailable";
+        quickCallLocation.appendChild(empty);
+        refreshQuickCallCombobox("quickLocation");
+        quickCallError.textContent = "Locations could not be loaded. You can still create the ticket without selecting a location.";
+        quickCallError.hidden = false;
+    } finally {
+        quickCallLocation.disabled = false;
+    }
+}
+
+function findOptionId(items, expectedName) {
+    const item = (items || []).find(entry => String(entry.name || "").trim().toLowerCase() === expectedName.toLowerCase());
+    return item ? Number(item.id) : null;
+}
+
+quickCallForm?.addEventListener("submit", async event => {
+    event.preventDefault();
+    const userName = document.getElementById("quickUserName").value.trim();
+    const userType = document.getElementById("quickEmployeeType").value;
+    const contactNumber = document.getElementById("quickContactNumber").value.trim();
+    const locationId = quickCallLocation.value;
+    const issueDescription = document.getElementById("quickIssueDescription").value.trim();
+
+    createQuickTicketButton.disabled = true;
+    createQuickTicketButton.textContent = "Creating…";
+    quickCallError.hidden = true;
+    try {
+        const [statuses, priorities] = await Promise.all([getTicketStatuses(), getPriorities()]);
+        const statusId = findOptionId(statuses, "New");
+        const priorityId = findOptionId(priorities, "Medium");
+        const payload = {
+            title: null,
+            short_issue: null,
+            user_name: userName || null,
+            user_type: userType || "Employee",
+            user_best_contact_number: contactNumber || null,
+            location_id: locationId ? Number(locationId) : null,
+            issue_description: issueDescription || null,
+            status_id: statusId,
+            priority_id: priorityId,
+            is_routed: false
+        };
+        const created = await createTicket(payload);
+        discardQuickCallDraft();
+        showNotification("Ticket created. Opening details…", "success");
+        if (created?.id) {
+            window.location.href = `ticket-detail.html?id=${created.id}`;
+        } else {
+            await Promise.all([loadTodayTickets(), loadPendingTickets()]);
+            if (activeView === "all") await loadAllTickets();
+        }
+    } catch (error) {
+        console.error("Could not create quick ticket:", error);
+        quickCallError.textContent = error.message || "Could not create the ticket. Please try again.";
+        quickCallError.hidden = false;
+    } finally {
+        createQuickTicketButton.disabled = false;
+        createQuickTicketButton.textContent = "Create ticket";
+    }
+});
+
+document.getElementById("quickCallButton")?.addEventListener("click", openQuickCallModal);
+document.getElementById("closeQuickCallModal")?.addEventListener("click", minimizeQuickCallModal);
+document.getElementById("cancelQuickCallButton")?.addEventListener("click", minimizeQuickCallModal);
+document.getElementById("restoreQuickCallButton")?.addEventListener("click", openQuickCallModal);
+document.getElementById("discardQuickCallButton")?.addEventListener("click", discardQuickCallDraft);
+quickCallModal?.addEventListener("click", event => {
+    if (event.target === quickCallModal) minimizeQuickCallModal();
+});
+
+document.addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+        if (ticketViewOverlay && !ticketViewOverlay.hidden) closeTicketView();
+        if (quickCallModal && !quickCallModal.hidden) minimizeQuickCallModal();
+    }
+});
 
 // =========================
 // NEW TICKET — AVAILABLE IN EVERY TAB

@@ -4,11 +4,17 @@
 
 // ============================================================
 
+
+
 const params = new URLSearchParams(window.location.search);
+
+
 
 const ticketId = params.get("id");
 
 const isNewTicket = params.get("new") === "true";
+
+
 
 let troubleshootingTemplates = [];
 
@@ -16,11 +22,17 @@ let forms = [];
 
 let usedKnowledgeBase = [];
 
+
+
+
+
 // ============================================================
 
 // DOM READY
 
 // ============================================================
+
+
 
 document.addEventListener(
 
@@ -28,11 +40,19 @@ document.addEventListener(
 
     () => {
 
+
+
         initializeTicketPage();
+
+
 
     }
 
 );
+
+
+
+
 
 // ============================================================
 
@@ -40,9 +60,15 @@ document.addEventListener(
 
 // ============================================================
 
+
+
 async function initializeTicketPage() {
 
+
+
     setupEventListeners();
+
+
 
     if (isNewTicket) {
 
@@ -56,13 +82,19 @@ async function initializeTicketPage() {
 
 }
 
+
+
 async function initializeNewTicket() {
+
+
 
     await loadPriorities(null);
 
     const prioritySelect =
 
         document.getElementById("priority");
+
+
 
     const mediumOption =
 
@@ -78,6 +110,8 @@ async function initializeNewTicket() {
 
             );
 
+
+
     if (mediumOption) {
 
         prioritySelect.value =
@@ -86,20 +120,7 @@ async function initializeNewTicket() {
 
     }
 
-    // Select the "New" status automatically for new tickets.
     await loadStatuses(null);
-
-    const statusSelect = document.getElementById("status");
-    const newStatusOption = Array.from(statusSelect.options).find(
-        option => option.textContent.trim().toLowerCase() === "new"
-    );
-
-    if (newStatusOption) {
-        statusSelect.value = newStatusOption.value;
-    } else {
-        console.error('The "New" status was not found.');
-        alert('The "New" status does not exist. Please create it before creating tickets.');
-    }
 
     await loadQueues(null);
 
@@ -107,9 +128,13 @@ async function initializeNewTicket() {
 
     await loadTools(null);
 
+
+
     // Load all Issue Types
 
     await loadIssueTypes(null);
+
+
 
     // Load all Forms and Troubleshooting Templates
 
@@ -117,9 +142,17 @@ async function initializeNewTicket() {
 
     await loadTroubleshootingTemplates();
 
+
+
+
+
     updateTitleSuggestion();
 
 }
+
+
+
+
 
 // ============================================================
 
@@ -127,13 +160,23 @@ async function initializeNewTicket() {
 
 // ============================================================
 
+
+
 async function loadTicket() {
 
+
+
     try {
+
+
 
         const ticket =
 
             await getTicket(ticketId);
+
+
+
+
 
         // ====================================================
 
@@ -141,7 +184,13 @@ async function loadTicket() {
 
         // ====================================================
 
+
+
         await loadUsedKnowledgeBase();
+
+
+
+
 
         // ====================================================
 
@@ -149,11 +198,15 @@ async function loadTicket() {
 
         // ====================================================
 
+
+
         await loadPriorities(
 
             ticket.priority_id
 
         );
+
+
 
         await loadStatuses(
 
@@ -161,11 +214,15 @@ async function loadTicket() {
 
         );
 
+
+
         await loadQueues(
 
             ticket.queue_id
 
         );
+
+
 
         await loadLocations(
 
@@ -173,11 +230,17 @@ async function loadTicket() {
 
         );
 
+
+
+
+
         // ====================================================
 
         // TOOL
 
         // ====================================================
+
+
 
         await loadTools(
 
@@ -185,11 +248,17 @@ async function loadTicket() {
 
         );
 
+
+
         await loadToolKnowledgeBase(
 
             ticket.tool_id
 
         );
+
+
+
+
 
         // ====================================================
 
@@ -197,11 +266,15 @@ async function loadTicket() {
 
         // ====================================================
 
+
+
         await loadIssueTypes(
 
             ticket.issue_type_id
 
         );
+
+
 
         await loadIssueTypeKnowledgeBase(
 
@@ -209,11 +282,17 @@ async function loadTicket() {
 
         );
 
+
+
+
+
         // ====================================================
 
         // TROUBLESHOOTING TEMPLATES
 
         // ====================================================
+
+
 
         await loadTroubleshootingTemplates(
 
@@ -223,11 +302,17 @@ async function loadTicket() {
 
         );
 
+
+
+
+
         // ====================================================
 
         // FORMS
 
         // ====================================================
+
+
 
         await loadForms(
 
@@ -237,11 +322,17 @@ async function loadTicket() {
 
         );
 
+
+
+
+
         // ====================================================
 
         // TICKET INFORMATION
 
         // ====================================================
+
+
 
         document.getElementById(
 
@@ -251,6 +342,10 @@ async function loadTicket() {
 
             ticket.ticket_number ?? "";
 
+
+
+
+
         document.getElementById(
 
             "ticketTitle"
@@ -259,11 +354,17 @@ async function loadTicket() {
 
             ticket.title ?? "";
 
+
+
+
+
         // ====================================================
 
         // USER
 
         // ====================================================
+
+
 
         document.getElementById(
 
@@ -273,6 +374,10 @@ async function loadTicket() {
 
             ticket.user_name ?? "";
 
+
+
+
+
         document.getElementById(
 
             "userEmail"
@@ -280,6 +385,10 @@ async function loadTicket() {
         ).value =
 
             ticket.user_email ?? "";
+
+
+
+
 
         document.getElementById(
 
@@ -289,6 +398,10 @@ async function loadTicket() {
 
             ticket.user_best_contact_number ?? "";
 
+
+
+
+
         document.getElementById(
 
             "userType"
@@ -297,11 +410,17 @@ async function loadTicket() {
 
             ticket.user_type ?? "";
 
+
+
+
+
         // ====================================================
 
         // ISSUE
 
         // ====================================================
+
+
 
         document.getElementById(
 
@@ -311,6 +430,8 @@ async function loadTicket() {
 
             ticket.issue_description ?? "";
 
+
+
         document.getElementById(
 
             "shortIssue"
@@ -319,11 +440,15 @@ async function loadTicket() {
 
             ticket.short_issue ?? "";
 
+
+
         // ====================================================
 
         // FORM
 
         // ====================================================
+
+
 
         document.getElementById(
 
@@ -333,11 +458,15 @@ async function loadTicket() {
 
             ticket.form_content ?? "";
 
+
+
         // ====================================================
 
         // TROUBLESHOOTING
 
         // ====================================================
+
+
 
         document.getElementById(
 
@@ -347,11 +476,17 @@ async function loadTicket() {
 
             ticket.troubleshooting_steps ?? "";
 
+
+
+
+
         // ====================================================
 
         // ADDITIONAL NOTES
 
         // ====================================================
+
+
 
         document.getElementById(
 
@@ -361,11 +496,15 @@ async function loadTicket() {
 
             ticket.additional_notes ?? "";
 
+
+
         // ====================================================
 
         // GENERATED TICKET
 
         // ====================================================
+
+
 
         document.getElementById(
 
@@ -375,15 +514,21 @@ async function loadTicket() {
 
             ticket.is_routed ?? false;
 
+
+
         // ====================================================
 
         // GENERATED TICKET
 
         // ====================================================
 
+
+
         const generatedTicket =
 
             ticket.generated_ticket;
+
+
 
         document.getElementById("ticketPreview").textContent =
 
@@ -395,15 +540,23 @@ async function loadTicket() {
 
                 : "-";
 
+
+
+
+
         // ====================================================
 
         // GENERATED TIME ENTRY
 
         // ====================================================
 
+
+
         const generatedTimeEntry =
 
             ticket.generated_time_entry;
+
+
 
         document.getElementById("timeEntryPreview").textContent =
 
@@ -415,13 +568,21 @@ async function loadTicket() {
 
                 : "-";
 
+
+
         updateTitleSuggestion();
+
+
+
+
 
         // ====================================================
 
         // DATES
 
         // ====================================================
+
+
 
         document.getElementById(
 
@@ -439,6 +600,10 @@ async function loadTicket() {
 
                 : "";
 
+
+
+
+
         document.getElementById(
 
             "updatedAt"
@@ -454,6 +619,10 @@ async function loadTicket() {
                 ).toLocaleString()
 
                 : "";
+
+
+
+
 
         document.getElementById(
 
@@ -471,7 +640,13 @@ async function loadTicket() {
 
                 : "Not closed";
 
+
+
+
+
     } catch (error) {
+
+
 
         console.error(
 
@@ -480,6 +655,8 @@ async function loadTicket() {
             error
 
         );
+
+
 
         alert(
 
@@ -491,11 +668,17 @@ async function loadTicket() {
 
 }
 
+
+
+
+
 // ============================================================
 
 // PRIORITIES
 
 // ============================================================
+
+
 
 async function loadPriorities(
 
@@ -503,9 +686,15 @@ async function loadPriorities(
 
 ) {
 
+
+
     const priorities =
 
         await getPriorities();
+
+
+
+
 
     const prioritySelect =
 
@@ -515,11 +704,21 @@ async function loadPriorities(
 
         );
 
+
+
+
+
     prioritySelect.innerHTML = "";
+
+
+
+
 
     priorities.forEach(
 
         priority => {
+
+
 
             const option =
 
@@ -529,13 +728,23 @@ async function loadPriorities(
 
                 );
 
+
+
+
+
             option.value =
 
                 priority.id;
 
+
+
             option.textContent =
 
                 priority.name;
+
+
+
+
 
             if (
 
@@ -545,9 +754,15 @@ async function loadPriorities(
 
             ) {
 
+
+
                 option.selected = true;
 
             }
+
+
+
+
 
             prioritySelect.appendChild(
 
@@ -561,11 +776,17 @@ async function loadPriorities(
 
 }
 
+
+
+
+
 // ============================================================
 
 // STATUSES
 
 // ============================================================
+
+
 
 async function loadStatuses(
 
@@ -573,9 +794,15 @@ async function loadStatuses(
 
 ) {
 
+
+
     const statuses =
 
         await getTicketStatuses();
+
+
+
+
 
     const statusSelect =
 
@@ -585,11 +812,21 @@ async function loadStatuses(
 
         );
 
+
+
+
+
     statusSelect.innerHTML = "";
+
+
+
+
 
     statuses.forEach(
 
         status => {
+
+
 
             const option =
 
@@ -599,13 +836,23 @@ async function loadStatuses(
 
                 );
 
+
+
+
+
             option.value =
 
                 status.id;
 
+
+
             option.textContent =
 
                 status.name;
+
+
+
+
 
             if (
 
@@ -615,9 +862,15 @@ async function loadStatuses(
 
             ) {
 
+
+
                 option.selected = true;
 
             }
+
+
+
+
 
             statusSelect.appendChild(
 
@@ -631,11 +884,17 @@ async function loadStatuses(
 
 }
 
+
+
+
+
 // ============================================================
 
 // QUEUES
 
 // ============================================================
+
+
 
 async function loadQueues(
 
@@ -643,9 +902,15 @@ async function loadQueues(
 
 ) {
 
+
+
     const queues =
 
         await getQueues();
+
+
+
+
 
     const queueSelect =
 
@@ -655,11 +920,21 @@ async function loadQueues(
 
         );
 
+
+
+
+
     queueSelect.innerHTML = "";
+
+
+
+
 
     queues.forEach(
 
         queue => {
+
+
 
             const option =
 
@@ -669,13 +944,23 @@ async function loadQueues(
 
                 );
 
+
+
+
+
             option.value =
 
                 queue.id;
 
+
+
             option.textContent =
 
                 queue.name;
+
+
+
+
 
             if (
 
@@ -685,9 +970,15 @@ async function loadQueues(
 
             ) {
 
+
+
                 option.selected = true;
 
             }
+
+
+
+
 
             queueSelect.appendChild(
 
@@ -701,11 +992,17 @@ async function loadQueues(
 
 }
 
+
+
+
+
 // ============================================================
 
 // TOOLS
 
 // ============================================================
+
+
 
 async function loadTools(
 
@@ -713,9 +1010,15 @@ async function loadTools(
 
 ) {
 
+
+
     const tools =
 
         await getTools();
+
+
+
+
 
     const toolSelect =
 
@@ -725,11 +1028,17 @@ async function loadTools(
 
         );
 
+
+
+
+
     toolSelect.innerHTML = "";
 
     const emptyOption =
 
         document.createElement("option");
+
+
 
     emptyOption.value = "";
 
@@ -737,15 +1046,21 @@ async function loadTools(
 
         "Select a Tool";
 
+
+
     toolSelect.appendChild(
 
         emptyOption
 
-    );   
+    );  
+
+
 
     tools.forEach(
 
         tool => {
+
+
 
             const option =
 
@@ -755,13 +1070,23 @@ async function loadTools(
 
                 );
 
+
+
+
+
             option.value =
 
                 tool.id;
 
+
+
             option.textContent =
 
                 tool.name;
+
+
+
+
 
             if (
 
@@ -771,9 +1096,15 @@ async function loadTools(
 
             ) {
 
+
+
                 option.selected = true;
 
             }
+
+
+
+
 
             toolSelect.appendChild(
 
@@ -787,17 +1118,25 @@ async function loadTools(
 
 }
 
+
+
+
+
 // ============================================================
 
 // TOOL KNOWLEDGE BASE
 
 // ============================================================
 
+
+
 async function loadToolKnowledgeBase(
 
     toolId
 
 ) {
+
+
 
     const container =
 
@@ -807,19 +1146,37 @@ async function loadToolKnowledgeBase(
 
         );
 
+
+
+
+
     container.innerHTML = "";
+
+
+
+
 
     if (!toolId) {
 
+
+
         container.innerHTML =
 
-            "<p>No Knowledge Base articles selected.</p>";
+            "\<p>No Knowledge Base articles selected.\</p>";
+
+
 
         return;
 
     }
 
+
+
+
+
     try {
+
+
 
         const knowledgeBase =
 
@@ -829,6 +1186,10 @@ async function loadToolKnowledgeBase(
 
             );
 
+
+
+
+
         if (
 
             !knowledgeBase ||
@@ -837,17 +1198,27 @@ async function loadToolKnowledgeBase(
 
         ) {
 
+
+
             container.innerHTML =
 
-                "<p>No Knowledge Base articles associated.</p>";
+                "\<p>No Knowledge Base articles associated.\</p>";
+
+
 
             return;
 
         }
 
+
+
+
+
         knowledgeBase.forEach(
 
             kb => {
+
+
 
                 const item =
 
@@ -857,9 +1228,17 @@ async function loadToolKnowledgeBase(
 
                     );
 
+
+
+
+
                 item.textContent =
 
                     `${kb.article_number} - ${kb.title}`;
+
+
+
+
 
                 container.appendChild(
 
@@ -871,7 +1250,13 @@ async function loadToolKnowledgeBase(
 
         );
 
+
+
+
+
     } catch (error) {
+
+
 
         console.error(
 
@@ -881,13 +1266,19 @@ async function loadToolKnowledgeBase(
 
         );
 
+
+
         container.innerHTML =
 
-            "<p>Error loading Knowledge Base articles.</p>";
+            "\<p>Error loading Knowledge Base articles.\</p>";
 
     }
 
 }
+
+
+
+
 
 // ============================================================
 
@@ -895,15 +1286,23 @@ async function loadToolKnowledgeBase(
 
 // ============================================================
 
+
+
 async function loadLocations(
 
     currentLocationId
 
 ) {
 
+
+
     const locations =
 
         await getLocations();
+
+
+
+
 
     const locationSelect =
 
@@ -913,11 +1312,19 @@ async function loadLocations(
 
         );
 
+
+
+
+
     locationSelect.innerHTML = "";
+
+
 
     const emptyOption =
 
         document.createElement("option");
+
+
 
     emptyOption.value = "";
 
@@ -925,15 +1332,21 @@ async function loadLocations(
 
         "Select a Location";
 
+
+
     locationSelect.appendChild(
 
         emptyOption
 
     );
 
+
+
     locations.forEach(
 
         location => {
+
+
 
             const option =
 
@@ -943,17 +1356,29 @@ async function loadLocations(
 
                 );
 
+
+
+
+
             option.value =
 
                 location.id;
+
+
 
             option.textContent =
 
                 location.name;
 
+
+
             option.dataset.code =
 
                 location.code ?? "";
+
+
+
+
 
             if (
 
@@ -963,9 +1388,15 @@ async function loadLocations(
 
             ) {
 
+
+
                 option.selected = true;
 
             }
+
+
+
+
 
             locationSelect.appendChild(
 
@@ -979,11 +1410,17 @@ async function loadLocations(
 
 }
 
+
+
+
+
 // ============================================================
 
 // ISSUE TYPES
 
 // ============================================================
+
+
 
 async function loadIssueTypes(
 
@@ -991,9 +1428,15 @@ async function loadIssueTypes(
 
 ) {
 
+
+
     const issueTypes =
 
         await getIssueTypes();
+
+
+
+
 
     const issueTypeSelect =
 
@@ -1003,11 +1446,17 @@ async function loadIssueTypes(
 
         );
 
+
+
+
+
     issueTypeSelect.innerHTML = "";
 
     const emptyOption =
 
         document.createElement("option");
+
+
 
     emptyOption.value = "";
 
@@ -1015,15 +1464,21 @@ async function loadIssueTypes(
 
         "Select an Issue Type";
 
+
+
     issueTypeSelect.appendChild(
 
         emptyOption
 
-    );
+    );    
+
+
 
     issueTypes.forEach(
 
         issueType => {
+
+
 
             const option =
 
@@ -1033,13 +1488,23 @@ async function loadIssueTypes(
 
                 );
 
+
+
+
+
             option.value =
 
                 issueType.id;
 
+
+
             option.textContent =
 
                 issueType.name;
+
+
+
+
 
             if (
 
@@ -1049,9 +1514,15 @@ async function loadIssueTypes(
 
             ) {
 
+
+
                 option.selected = true;
 
             }
+
+
+
+
 
             issueTypeSelect.appendChild(
 
@@ -1065,17 +1536,25 @@ async function loadIssueTypes(
 
 }
 
+
+
 // ============================================================
 
 // ISSUE TYPES BY TOOL — RECOMMENDATIONS
 
 // ============================================================
 
+
+
 async function loadIssueTypesByTool(toolId) {
+
+
 
     const issueTypeSelect =
 
         document.getElementById("issueType");
+
+
 
     if (!toolId) {
 
@@ -1083,21 +1562,31 @@ async function loadIssueTypesByTool(toolId) {
 
     }
 
+
+
     try {
+
+
 
         const recommendedIssueTypes =
 
             await getToolIssueTypes(toolId);
 
+
+
         const currentIssueTypeId =
 
             issueTypeSelect.value;
+
+
 
         // Get all existing options
 
         const allOptions =
 
             Array.from(issueTypeSelect.options);
+
+
 
         // Separate the options
 
@@ -1113,11 +1602,17 @@ async function loadIssueTypesByTool(toolId) {
 
             );
 
+
+
         const recommendedOptions = [];
 
         const otherOptions = [];
 
+
+
         allOptions.forEach(option => {
+
+
 
             // Keep the default option at the top
 
@@ -1126,6 +1621,8 @@ async function loadIssueTypesByTool(toolId) {
                 return;
 
             }
+
+
 
             if (recommendedIds.has(option.value)) {
 
@@ -1139,9 +1636,13 @@ async function loadIssueTypesByTool(toolId) {
 
         });
 
+
+
         // Rebuild the dropdown
 
         issueTypeSelect.innerHTML = "";
+
+
 
         // Default option
 
@@ -1149,11 +1650,15 @@ async function loadIssueTypesByTool(toolId) {
 
             document.createElement("option");
 
+
+
         defaultOption.value = "";
 
         defaultOption.textContent =
 
             "Select Issue Type";
+
+
 
         issueTypeSelect.appendChild(
 
@@ -1161,23 +1666,33 @@ async function loadIssueTypesByTool(toolId) {
 
         );
 
+
+
         // Recommended group
 
         if (recommendedOptions.length > 0) {
+
+
 
             const recommendedGroup =
 
                 document.createElement("optgroup");
 
+
+
             recommendedGroup.label =
 
                 "Recommended for selected Tool";
+
+
 
             recommendedOptions.forEach(option => {
 
                 recommendedGroup.appendChild(option);
 
             });
+
+
 
             issueTypeSelect.appendChild(
 
@@ -1187,23 +1702,33 @@ async function loadIssueTypesByTool(toolId) {
 
         }
 
+
+
         // Other Issue Types
 
         if (otherOptions.length > 0) {
+
+
 
             const otherGroup =
 
                 document.createElement("optgroup");
 
+
+
             otherGroup.label =
 
                 "Other Issue Types";
+
+
 
             otherOptions.forEach(option => {
 
                 otherGroup.appendChild(option);
 
             });
+
+
 
             issueTypeSelect.appendChild(
 
@@ -1212,6 +1737,8 @@ async function loadIssueTypesByTool(toolId) {
             );
 
         }
+
+
 
         // Restore the Issue Type that was already selected
 
@@ -1233,7 +1760,11 @@ async function loadIssueTypesByTool(toolId) {
 
         }
 
+
+
     } catch (error) {
+
+
 
         console.error(
 
@@ -1253,11 +1784,15 @@ async function loadIssueTypesByTool(toolId) {
 
 // ============================================================
 
+
+
 async function loadIssueTypeKnowledgeBase(
 
     issueTypeId
 
 ) {
+
+
 
     const container =
 
@@ -1267,19 +1802,37 @@ async function loadIssueTypeKnowledgeBase(
 
         );
 
+
+
+
+
     container.innerHTML = "";
+
+
+
+
 
     if (!issueTypeId) {
 
+
+
         container.innerHTML =
 
-            "<p>No Knowledge Base articles selected.</p>";
+            "\<p>No Knowledge Base articles selected.\</p>";
+
+
 
         return;
 
     }
 
+
+
+
+
     try {
+
+
 
         const knowledgeBase =
 
@@ -1289,6 +1842,10 @@ async function loadIssueTypeKnowledgeBase(
 
             );
 
+
+
+
+
         if (
 
             !knowledgeBase ||
@@ -1297,17 +1854,27 @@ async function loadIssueTypeKnowledgeBase(
 
         ) {
 
+
+
             container.innerHTML =
 
-                "<p>No Knowledge Base articles associated.</p>";
+                "\<p>No Knowledge Base articles associated.\</p>";
+
+
 
             return;
 
         }
 
+
+
+
+
         knowledgeBase.forEach(
 
             kb => {
+
+
 
                 const item =
 
@@ -1317,9 +1884,17 @@ async function loadIssueTypeKnowledgeBase(
 
                     );
 
+
+
+
+
                 item.textContent =
 
                     `${kb.article_number} - ${kb.title}`;
+
+
+
+
 
                 container.appendChild(
 
@@ -1331,7 +1906,13 @@ async function loadIssueTypeKnowledgeBase(
 
         );
 
+
+
+
+
     } catch (error) {
+
+
 
         console.error(
 
@@ -1341,19 +1922,27 @@ async function loadIssueTypeKnowledgeBase(
 
         );
 
+
+
         container.innerHTML =
 
-            "<p>Error loading Knowledge Base articles.</p>";
+            "\<p>Error loading Knowledge Base articles.\</p>";
 
     }
 
 }
+
+
+
+
 
 // ============================================================
 
 // TROUBLESHOOTING TEMPLATES
 
 // ============================================================
+
+
 
 async function loadTroubleshootingTemplates(
 
@@ -1363,11 +1952,17 @@ async function loadTroubleshootingTemplates(
 
 ) {
 
+
+
     const allTemplates =
 
         await getTroubleshootingTemplates();
 
+
+
     let relatedTemplates = [];
+
+
 
     // Only load related templates if an Issue Type was selected
 
@@ -1383,6 +1978,8 @@ async function loadTroubleshootingTemplates(
 
     }
 
+
+
     const templateSelect =
 
         document.getElementById(
@@ -1391,15 +1988,27 @@ async function loadTroubleshootingTemplates(
 
         );
 
+
+
     templateSelect.innerHTML = "";
+
+
 
     troubleshootingTemplates = allTemplates;
 
+
+
+
+
     // Empty option
+
+
 
     const emptyOption =
 
         document.createElement("option");
+
+
 
     emptyOption.value = "";
 
@@ -1407,13 +2016,21 @@ async function loadTroubleshootingTemplates(
 
         "Select a Troubleshooting Template";
 
+
+
     templateSelect.appendChild(
 
         emptyOption
 
     );
 
+
+
+
+
     // Related template IDs
+
+
 
     const relatedIds =
 
@@ -1427,19 +2044,35 @@ async function loadTroubleshootingTemplates(
 
         );
 
+
+
+
+
     // Related templates
 
+
+
     if (relatedTemplates.length > 0) {
+
+
 
         const relatedGroup =
 
             document.createElement("optgroup");
 
+
+
         relatedGroup.label = "Related";
+
+
+
+
 
         relatedTemplates.forEach(
 
             template => {
+
+
 
                 const option =
 
@@ -1449,15 +2082,21 @@ async function loadTroubleshootingTemplates(
 
                     );
 
+
+
                 option.value =
 
                     template.id;
+
+
 
                 option.textContent =
 
                     template.name ??
 
                     template.generated_description;
+
+
 
                 relatedGroup.appendChild(
 
@@ -1469,6 +2108,8 @@ async function loadTroubleshootingTemplates(
 
         );
 
+
+
         templateSelect.appendChild(
 
             relatedGroup
@@ -1477,7 +2118,13 @@ async function loadTroubleshootingTemplates(
 
     }
 
+
+
+
+
     // Other templates
+
+
 
     const otherTemplates =
 
@@ -1493,7 +2140,13 @@ async function loadTroubleshootingTemplates(
 
         );
 
+
+
+
+
     if (otherTemplates.length > 0) {
+
+
 
         const allGroup =
 
@@ -1503,6 +2156,8 @@ async function loadTroubleshootingTemplates(
 
             );
 
+
+
         allGroup.label =
 
             issueTypeId
@@ -1511,9 +2166,15 @@ async function loadTroubleshootingTemplates(
 
                 : "All Templates";
 
+
+
+
+
         otherTemplates.forEach(
 
             template => {
+
+
 
                 const option =
 
@@ -1523,15 +2184,21 @@ async function loadTroubleshootingTemplates(
 
                     );
 
+
+
                 option.value =
 
                     template.id;
+
+
 
                 option.textContent =
 
                     template.name ??
 
                     template.generated_description;
+
+
 
                 allGroup.appendChild(
 
@@ -1543,6 +2210,8 @@ async function loadTroubleshootingTemplates(
 
         );
 
+
+
         templateSelect.appendChild(
 
             allGroup
@@ -1551,7 +2220,13 @@ async function loadTroubleshootingTemplates(
 
     }
 
+
+
+
+
     // Select template
+
+
 
     if (
 
@@ -1561,15 +2236,21 @@ async function loadTroubleshootingTemplates(
 
     ) {
 
+
+
         templateSelect.value =
 
             String(currentTemplateId);
+
+
 
     } else if (
 
         relatedTemplates.length > 0
 
     ) {
+
+
 
         templateSelect.value =
 
@@ -1579,17 +2260,33 @@ async function loadTroubleshootingTemplates(
 
             );
 
+
+
     } else {
+
+
 
         templateSelect.value = "";
 
     }
 
+
+
+
+
     // Update preview
+
+
 
     loadTemplatePreview();
 
+
+
+
+
     // Update template KB
+
+
 
     await loadTemplateKnowledgeBase(
 
@@ -1599,13 +2296,25 @@ async function loadTroubleshootingTemplates(
 
 }
 
+
+
+
+
+
+
+
+
 // ============================================================
 
 // SELECTED TEMPLATE
 
 // ============================================================
 
+
+
 async function loadSelectedTemplate() {
+
+
 
     const templateSelect =
 
@@ -1614,6 +2323,10 @@ async function loadSelectedTemplate() {
             "troubleshootingTemplate"
 
         );
+
+
+
+
 
     const templateId =
 
@@ -1627,7 +2340,15 @@ async function loadSelectedTemplate() {
 
             : null;
 
+
+
+
+
     loadTemplatePreview();
+
+
+
+
 
     await loadTemplateKnowledgeBase(
 
@@ -1637,13 +2358,21 @@ async function loadSelectedTemplate() {
 
 }
 
+
+
+
+
 // ============================================================
 
 // TEMPLATE PREVIEW
 
 // ============================================================
 
+
+
 function loadTemplatePreview() {
+
+
 
     const templateSelect =
 
@@ -1653,6 +2382,10 @@ function loadTemplatePreview() {
 
         );
 
+
+
+
+
     const preview =
 
         document.getElementById(
@@ -1660,6 +2393,10 @@ function loadTemplatePreview() {
             "troubleshootingTemplatePreview"
 
         );
+
+
+
+
 
     const selectedTemplateId =
 
@@ -1673,6 +2410,10 @@ function loadTemplatePreview() {
 
             : null;
 
+
+
+
+
     const selectedTemplate =
 
         troubleshootingTemplates.find(
@@ -1685,7 +2426,13 @@ function loadTemplatePreview() {
 
         );
 
+
+
+
+
     if (selectedTemplate) {
+
+
 
         preview.value =
 
@@ -1695,7 +2442,11 @@ function loadTemplatePreview() {
 
             "";
 
+
+
     } else {
+
+
 
         preview.value = "";
 
@@ -1703,17 +2454,25 @@ function loadTemplatePreview() {
 
 }
 
+
+
+
+
 // ============================================================
 
 // TEMPLATE KNOWLEDGE BASE
 
 // ============================================================
 
+
+
 async function loadTemplateKnowledgeBase(
 
     templateId
 
 ) {
+
+
 
     const container =
 
@@ -1723,19 +2482,37 @@ async function loadTemplateKnowledgeBase(
 
         );
 
+
+
+
+
     container.innerHTML = "";
+
+
+
+
 
     if (!templateId) {
 
+
+
         container.innerHTML =
 
-            "<p>No Knowledge Base articles associated.</p>";
+            "\<p>No Knowledge Base articles associated.\</p>";
+
+
 
         return;
 
     }
 
+
+
+
+
     try {
+
+
 
         const knowledgeBase =
 
@@ -1745,6 +2522,10 @@ async function loadTemplateKnowledgeBase(
 
             );
 
+
+
+
+
         if (
 
             !knowledgeBase ||
@@ -1753,17 +2534,27 @@ async function loadTemplateKnowledgeBase(
 
         ) {
 
+
+
             container.innerHTML =
 
-                "<p>No Knowledge Base articles associated.</p>";
+                "\<p>No Knowledge Base articles associated.\</p>";
+
+
 
             return;
 
         }
 
+
+
+
+
         knowledgeBase.forEach(
 
             kb => {
+
+
 
                 const item =
 
@@ -1773,9 +2564,17 @@ async function loadTemplateKnowledgeBase(
 
                     );
 
+
+
+
+
                 item.textContent =
 
                     `${kb.article_number} - ${kb.title}`;
+
+
+
+
 
                 container.appendChild(
 
@@ -1787,7 +2586,13 @@ async function loadTemplateKnowledgeBase(
 
         );
 
+
+
+
+
     } catch (error) {
+
+
 
         console.error(
 
@@ -1797,19 +2602,27 @@ async function loadTemplateKnowledgeBase(
 
         );
 
+
+
         container.innerHTML =
 
-            "<p>Error loading Knowledge Base articles.</p>";
+            "\<p>Error loading Knowledge Base articles.\</p>";
 
     }
 
 }
+
+
+
+
 
 // ============================================================
 
 // FORMS
 
 // ============================================================
+
+
 
 async function loadForms(
 
@@ -1819,11 +2632,17 @@ async function loadForms(
 
 ) {
 
+
+
     const allForms =
 
         await getForms();
 
+
+
     let relatedForms = [];
+
+
 
     // Only load related forms if an Issue Type was selected
 
@@ -1839,19 +2658,33 @@ async function loadForms(
 
     }
 
+
+
     forms = allForms;
+
+
 
     const formSelect =
 
         document.getElementById("form");
 
+
+
     formSelect.innerHTML = "";
 
+
+
+
+
     // Empty option
+
+
 
     const emptyOption =
 
         document.createElement("option");
+
+
 
     emptyOption.value = "";
 
@@ -1859,13 +2692,21 @@ async function loadForms(
 
         "Select a Form";
 
+
+
     formSelect.appendChild(
 
         emptyOption
 
     );
 
+
+
+
+
     // Related form IDs
+
+
 
     const relatedIds =
 
@@ -1879,9 +2720,17 @@ async function loadForms(
 
         );
 
+
+
+
+
     // Related forms
 
+
+
     if (relatedForms.length > 0) {
+
+
 
         const relatedGroup =
 
@@ -1891,13 +2740,21 @@ async function loadForms(
 
             );
 
+
+
         relatedGroup.label =
 
             "Related";
 
+
+
+
+
         relatedForms.forEach(
 
             form => {
+
+
 
                 const option =
 
@@ -1907,13 +2764,19 @@ async function loadForms(
 
                     );
 
+
+
                 option.value =
 
                     form.id;
 
+
+
                 option.textContent =
 
                     form.name;
+
+
 
                 relatedGroup.appendChild(
 
@@ -1925,6 +2788,8 @@ async function loadForms(
 
         );
 
+
+
         formSelect.appendChild(
 
             relatedGroup
@@ -1933,7 +2798,13 @@ async function loadForms(
 
     }
 
+
+
+
+
     // Other forms
+
+
 
     const otherForms =
 
@@ -1949,7 +2820,13 @@ async function loadForms(
 
         );
 
+
+
+
+
     if (otherForms.length > 0) {
+
+
 
         const allGroup =
 
@@ -1959,6 +2836,8 @@ async function loadForms(
 
             );
 
+
+
         allGroup.label =
 
             issueTypeId
@@ -1967,9 +2846,15 @@ async function loadForms(
 
                 : "All Forms";
 
+
+
+
+
         otherForms.forEach(
 
             form => {
+
+
 
                 const option =
 
@@ -1979,13 +2864,19 @@ async function loadForms(
 
                     );
 
+
+
                 option.value =
 
                     form.id;
 
+
+
                 option.textContent =
 
                     form.name;
+
+
 
                 allGroup.appendChild(
 
@@ -1997,6 +2888,8 @@ async function loadForms(
 
         );
 
+
+
         formSelect.appendChild(
 
             allGroup
@@ -2005,7 +2898,13 @@ async function loadForms(
 
     }
 
+
+
+
+
     // Select form
+
+
 
     if (
 
@@ -2015,15 +2914,21 @@ async function loadForms(
 
     ) {
 
+
+
         formSelect.value =
 
             String(currentFormId);
+
+
 
     } else if (
 
         relatedForms.length > 0
 
     ) {
+
+
 
         formSelect.value =
 
@@ -2033,13 +2938,23 @@ async function loadForms(
 
             );
 
+
+
     } else {
+
+
 
         formSelect.value = "";
 
     }
 
+
+
+
+
     // Update preview
+
+
 
     await loadSelectedForm(
 
@@ -2049,17 +2964,25 @@ async function loadForms(
 
 }
 
+
+
+
+
 // ============================================================
 
 // SELECTED FORM
 
 // ============================================================
 
+
+
 async function loadSelectedForm(
 
     formId
 
 ) {
+
+
 
     await loadFormPreview(
 
@@ -2069,17 +2992,25 @@ async function loadSelectedForm(
 
 }
 
+
+
+
+
 // ============================================================
 
 // FORM PREVIEW
 
 // ============================================================
 
+
+
 async function loadFormPreview(
 
     formId
 
 ) {
+
+
 
     const preview =
 
@@ -2089,13 +3020,25 @@ async function loadFormPreview(
 
         );
 
+
+
+
+
     if (!formId) {
 
+
+
         preview.value = "";
+
+
 
         return;
 
     }
+
+
+
+
 
     const form =
 
@@ -2109,15 +3052,29 @@ async function loadFormPreview(
 
         );
 
+
+
+
+
     if (!form) {
 
+
+
         preview.value = "";
+
+
 
         return;
 
     }
 
+
+
+
+
     try {
+
+
 
         const fields =
 
@@ -2127,6 +3084,10 @@ async function loadFormPreview(
 
             );
 
+
+
+
+
         if (
 
             !fields ||
@@ -2135,19 +3096,33 @@ async function loadFormPreview(
 
         ) {
 
+
+
             preview.value =
 
                 form.description ?? "";
+
+
 
             return;
 
         }
 
+
+
+
+
         let previewText = "";
+
+
+
+
 
         fields.forEach(
 
             field => {
+
+
 
                 previewText +=
 
@@ -2157,11 +3132,21 @@ async function loadFormPreview(
 
         );
 
+
+
+
+
         preview.value =
 
             previewText;
 
+
+
+
+
     } catch (error) {
+
+
 
         console.error(
 
@@ -2171,6 +3156,10 @@ async function loadFormPreview(
 
         );
 
+
+
+
+
         preview.value =
 
             form.description ?? "";
@@ -2179,13 +3168,21 @@ async function loadFormPreview(
 
 }
 
+
+
+
+
 // ============================================================
 
 // COPY FORM PREVIEW
 
 // ============================================================
 
+
+
 async function copyFormPreview() {
+
+
 
     const preview =
 
@@ -2195,13 +3192,25 @@ async function copyFormPreview() {
 
         );
 
+
+
+
+
     if (!preview.value) {
+
+
 
         return;
 
     }
 
+
+
+
+
     try {
+
+
 
         await navigator.clipboard.writeText(
 
@@ -2209,13 +3218,23 @@ async function copyFormPreview() {
 
         );
 
+
+
+
+
         alert(
 
             "Form copied to clipboard."
 
         );
 
+
+
+
+
     } catch (error) {
+
+
 
         console.error(
 
@@ -2229,13 +3248,19 @@ async function copyFormPreview() {
 
 }
 
+
+
 // ============================================================
 
 // COPY TICKET PREVIEW
 
 // ============================================================
 
+
+
 async function copyTicketPreview() {
+
+
 
     const preview =
 
@@ -2245,9 +3270,13 @@ async function copyTicketPreview() {
 
         );
 
+
+
     const text =
 
         preview.textContent.trim();
+
+
 
     if (!text || text === "-") {
 
@@ -2255,7 +3284,11 @@ async function copyTicketPreview() {
 
     }
 
+
+
     try {
+
+
 
         await navigator.clipboard.writeText(
 
@@ -2263,13 +3296,19 @@ async function copyTicketPreview() {
 
         );
 
+
+
         alert(
 
             "Ticket copied to clipboard."
 
         );
 
+
+
     } catch (error) {
+
+
 
         console.error(
 
@@ -2283,13 +3322,21 @@ async function copyTicketPreview() {
 
 }
 
+
+
+
+
 // ============================================================
 
 // COPY TIME ENTRY PREVIEW
 
 // ============================================================
 
+
+
 async function copyTimeEntryPreview() {
+
+
 
     const preview =
 
@@ -2299,9 +3346,13 @@ async function copyTimeEntryPreview() {
 
         );
 
+
+
     const text =
 
         preview.textContent.trim();
+
+
 
     if (!text || text === "-") {
 
@@ -2309,7 +3360,11 @@ async function copyTimeEntryPreview() {
 
     }
 
+
+
     try {
+
+
 
         await navigator.clipboard.writeText(
 
@@ -2317,13 +3372,19 @@ async function copyTimeEntryPreview() {
 
         );
 
+
+
         alert(
 
             "Time Entry copied to clipboard."
 
         );
 
+
+
     } catch (error) {
+
+
 
         console.error(
 
@@ -2337,13 +3398,21 @@ async function copyTimeEntryPreview() {
 
 }
 
+
+
+
+
 // ============================================================
 
 // COPY TEMPLATE
 
 // ============================================================
 
+
+
 async function copyTemplatePreview() {
+
+
 
     const preview =
 
@@ -2353,13 +3422,25 @@ async function copyTemplatePreview() {
 
         );
 
+
+
+
+
     if (!preview.value) {
+
+
 
         return;
 
     }
 
+
+
+
+
     try {
+
+
 
         await navigator.clipboard.writeText(
 
@@ -2367,13 +3448,23 @@ async function copyTemplatePreview() {
 
         );
 
+
+
+
+
         alert(
 
             "Template copied to clipboard."
 
         );
 
+
+
+
+
     } catch (error) {
+
+
 
         console.error(
 
@@ -2387,15 +3478,25 @@ async function copyTemplatePreview() {
 
 }
 
+
+
+
+
 // ============================================================
 
 // LOAD USED KNOWLEDGE BASE
 
 // ============================================================
 
+
+
 async function loadUsedKnowledgeBase() {
 
+
+
     try {
+
+
 
         const knowledgeBaseItems =
 
@@ -2405,13 +3506,27 @@ async function loadUsedKnowledgeBase() {
 
             );
 
+
+
+
+
         usedKnowledgeBase =
 
             knowledgeBaseItems ?? [];
 
+
+
+
+
         renderUsedKnowledgeBase();
 
+
+
+
+
     } catch (error) {
+
+
 
         console.error(
 
@@ -2421,7 +3536,13 @@ async function loadUsedKnowledgeBase() {
 
         );
 
+
+
+
+
         usedKnowledgeBase = [];
+
+
 
         renderUsedKnowledgeBase();
 
@@ -2429,13 +3550,21 @@ async function loadUsedKnowledgeBase() {
 
 }
 
+
+
+
+
 // ============================================================
 
 // USED KNOWLEDGE BASE
 
 // ============================================================
 
+
+
 async function useCurrentTemplate() {
+
+
 
     const templateSelect =
 
@@ -2444,6 +3573,10 @@ async function useCurrentTemplate() {
             "troubleshootingTemplate"
 
         );
+
+
+
+
 
     const templateId =
 
@@ -2457,7 +3590,13 @@ async function useCurrentTemplate() {
 
             : null;
 
+
+
+
+
     if (!templateId) {
+
+
 
         alert(
 
@@ -2465,11 +3604,19 @@ async function useCurrentTemplate() {
 
         );
 
+
+
         return;
 
     }
 
+
+
+
+
     try {
+
+
 
         const knowledgeBase =
 
@@ -2479,6 +3626,10 @@ async function useCurrentTemplate() {
 
             );
 
+
+
+
+
         if (
 
             !knowledgeBase ||
@@ -2487,21 +3638,31 @@ async function useCurrentTemplate() {
 
         ) {
 
+
+
             alert(
 
                 "This template has no associated Knowledge Base articles."
 
             );
 
+
+
             return;
 
         }
+
+
+
+
 
         for (
 
             const kb of knowledgeBase
 
         ) {
+
+
 
             const alreadyExists =
 
@@ -2515,11 +3676,17 @@ async function useCurrentTemplate() {
 
                 );
 
+
+
+
+
             if (
 
                 !alreadyExists
 
             ) {
+
+
 
                 await addTicketKnowledgeBase(
 
@@ -2528,6 +3695,8 @@ async function useCurrentTemplate() {
                     kb.id
 
                 );
+
+
 
                 usedKnowledgeBase.push(
 
@@ -2539,9 +3708,19 @@ async function useCurrentTemplate() {
 
         }
 
+
+
+
+
         renderUsedKnowledgeBase();
 
+
+
+
+
     } catch (error) {
+
+
 
         console.error(
 
@@ -2550,6 +3729,10 @@ async function useCurrentTemplate() {
             error
 
         );
+
+
+
+
 
         alert(
 
@@ -2561,13 +3744,21 @@ async function useCurrentTemplate() {
 
 }
 
+
+
+
+
 // ============================================================
 
 // RENDER USED KNOWLEDGE BASE
 
 // ============================================================
 
+
+
 function renderUsedKnowledgeBase() {
+
+
 
     const container =
 
@@ -2577,7 +3768,15 @@ function renderUsedKnowledgeBase() {
 
         );
 
+
+
+
+
     container.innerHTML = "";
+
+
+
+
 
     if (
 
@@ -2585,17 +3784,27 @@ function renderUsedKnowledgeBase() {
 
     ) {
 
+
+
         container.innerHTML =
 
-            "<p>No Knowledge Base articles selected.</p>";
+            "\<p>No Knowledge Base articles selected.\</p>";
+
+
 
         return;
 
     }
 
+
+
+
+
     usedKnowledgeBase.forEach(
 
         kb => {
+
+
 
             const item =
 
@@ -2605,15 +3814,21 @@ function renderUsedKnowledgeBase() {
 
                 );
 
+
+
+
+
             item.innerHTML = `
 
-                <span>
+                \<span>
 
                     ${kb.article_number} - ${kb.title}
 
-                </span>
+                \</span>
 
-                <button
+
+
+                \<button
 
                     type="button"
 
@@ -2623,9 +3838,13 @@ function renderUsedKnowledgeBase() {
 
                     Remove
 
-                </button>
+                \</button>
 
             `;
+
+
+
+
 
             container.appendChild(
 
@@ -2639,11 +3858,17 @@ function renderUsedKnowledgeBase() {
 
 }
 
+
+
+
+
 // ============================================================
 
 // REMOVE USED KNOWLEDGE BASE
 
 // ============================================================
+
+
 
 async function removeUsedKnowledgeBase(
 
@@ -2651,7 +3876,11 @@ async function removeUsedKnowledgeBase(
 
 ) {
 
+
+
     try {
+
+
 
         await removeTicketKnowledgeBase(
 
@@ -2660,6 +3889,10 @@ async function removeUsedKnowledgeBase(
             knowledgeBaseId
 
         );
+
+
+
+
 
         usedKnowledgeBase =
 
@@ -2673,9 +3906,19 @@ async function removeUsedKnowledgeBase(
 
             );
 
+
+
+
+
         renderUsedKnowledgeBase();
 
+
+
+
+
     } catch (error) {
+
+
 
         console.error(
 
@@ -2684,6 +3927,10 @@ async function removeUsedKnowledgeBase(
             error
 
         );
+
+
+
+
 
         alert(
 
@@ -2695,15 +3942,25 @@ async function removeUsedKnowledgeBase(
 
 }
 
+
+
+
+
 // ============================================================
 
 // TEMPLATE NOT USED
 
 // ============================================================
 
+
+
 function doNotUseTemplate() {
 
+
+
     // Intentionally does nothing.
+
+
 
     // Selecting a template is only for visualization.
 
@@ -2711,35 +3968,53 @@ function doNotUseTemplate() {
 
 }
 
-// ============================================================
 
-// TITLE SUGGESTION
-
-// ============================================================
 
 // ============================================================
 
 // TITLE SUGGESTION
 
 // ============================================================
+
+
+
+// ============================================================
+
+// TITLE SUGGESTION
+
+// ============================================================
+
+
 
 function updateTitleSuggestion() {
+
+
 
     const locationSelect =
 
         document.getElementById("location");
 
+
+
     const toolSelect =
 
         document.getElementById("tool");
+
+
 
     const shortIssueInput =
 
         document.getElementById("shortIssue");
 
+
+
     const suggestion =
 
         document.getElementById("titleSuggestion");
+
+
+
+
 
     // LOCATION CODE
 
@@ -2751,9 +4026,15 @@ function updateTitleSuggestion() {
 
         ];
 
+
+
     const locationCode =
 
         selectedLocation?.dataset.code ?? "";
+
+
+
+
 
     // TOOL NAME
 
@@ -2765,11 +4046,19 @@ function updateTitleSuggestion() {
 
         ]?.textContent ?? "";
 
+
+
+
+
     // SHORT ISSUE
 
     const shortIssue =
 
         shortIssueInput.value.trim();
+
+
+
+
 
     const parts = [
 
@@ -2784,6 +4073,10 @@ function updateTitleSuggestion() {
         part => part !== ""
 
     );
+
+
+
+
 
     suggestion.textContent =
 
@@ -2801,13 +4094,21 @@ function updateTitleSuggestion() {
 
 // ============================================================
 
+
+
 function setupEventListeners() {
+
+
+
+
 
     // ========================================================
 
     // BACK
 
     // ========================================================
+
+
 
     document.getElementById(
 
@@ -2819,19 +4120,29 @@ function setupEventListeners() {
 
         () => {
 
+
+
             window.location.href =
 
                 "index.html";
 
+
+
         }
 
     );
+
+
+
+
 
     // ========================================================
 
     // SAVE
 
     // ========================================================
+
+
 
     document.getElementById(
 
@@ -2845,11 +4156,15 @@ function setupEventListeners() {
 
     );
 
+
+
     // ========================================================
 
     // GENERATE TICKET
 
     // ========================================================
+
+
 
     document.getElementById(
 
@@ -2862,6 +4177,8 @@ function setupEventListeners() {
         generateTicket
 
     );
+
+
 
     // ========================================================
 
@@ -2881,11 +4198,15 @@ function setupEventListeners() {
 
     );
 
+
+
     // ========================================================
 
     // COPY TICKET
 
     // ========================================================
+
+
 
     document.getElementById(
 
@@ -2899,11 +4220,17 @@ function setupEventListeners() {
 
     );
 
+
+
+
+
     // ========================================================
 
     // COPY TIME ENTRY
 
     // ========================================================
+
+
 
     document.getElementById(
 
@@ -2917,11 +4244,15 @@ function setupEventListeners() {
 
     );
 
+
+
     // ========================================================
 
     // COPY FORM
 
     // ========================================================
+
+
 
     document.getElementById(
 
@@ -2935,11 +4266,17 @@ function setupEventListeners() {
 
     );
 
+
+
+
+
     // ========================================================
 
     // COPY TEMPLATE
 
     // ========================================================
+
+
 
     document.getElementById(
 
@@ -2953,11 +4290,17 @@ function setupEventListeners() {
 
     );
 
+
+
+
+
     // ========================================================
 
     // TEMPLATE CHANGE
 
     // ========================================================
+
+
 
     document.getElementById(
 
@@ -2969,17 +4312,27 @@ function setupEventListeners() {
 
         async () => {
 
+
+
             await loadSelectedTemplate();
+
+
 
         }
 
     );
+
+
+
+
 
     // ========================================================
 
     // TEMPLATE USED — YES
 
     // ========================================================
+
+
 
     document.getElementById(
 
@@ -2993,11 +4346,17 @@ function setupEventListeners() {
 
     );
 
+
+
+
+
     // ========================================================
 
     // TEMPLATE USED — NO
 
     // ========================================================
+
+
 
     document.getElementById(
 
@@ -3011,11 +4370,17 @@ function setupEventListeners() {
 
     );
 
+
+
+
+
     // ========================================================
 
     // FORM CHANGE
 
     // ========================================================
+
+
 
     document.getElementById(
 
@@ -3026,6 +4391,8 @@ function setupEventListeners() {
         "change",
 
         async event => {
+
+
 
             const formId =
 
@@ -3039,6 +4406,10 @@ function setupEventListeners() {
 
                     : null;
 
+
+
+
+
             await loadSelectedForm(
 
                 formId
@@ -3049,11 +4420,17 @@ function setupEventListeners() {
 
     );
 
+
+
+
+
     // ============================================================
 
     // TOOL CHANGE
 
     // ============================================================
+
+
 
     document.getElementById(
 
@@ -3064,6 +4441,8 @@ function setupEventListeners() {
         "change",
 
         async event => {
+
+
 
             const toolId =
 
@@ -3077,11 +4456,15 @@ function setupEventListeners() {
 
                     : null;
 
+
+
             await loadToolKnowledgeBase(
 
                 toolId
 
             );
+
+
 
             await loadIssueTypesByTool(
 
@@ -3093,11 +4476,17 @@ function setupEventListeners() {
 
     );
 
+
+
+
+
     // ========================================================
 
     // ISSUE TYPE CHANGE
 
     // ========================================================
+
+
 
     document.getElementById(
 
@@ -3109,6 +4498,8 @@ function setupEventListeners() {
 
         async (event) => {
 
+
+
             const issueTypeId =
 
                 event.target.value
@@ -3117,13 +4508,27 @@ function setupEventListeners() {
 
                     : null;
 
+
+
+
+
             if (!issueTypeId) {
+
+
+
+
 
                 return;
 
             }
 
+
+
+
+
             // Change Form Template
+
+
 
             await loadForms(
 
@@ -3133,7 +4538,13 @@ function setupEventListeners() {
 
             );
 
+
+
+
+
             // Change Troubleshooting Template
+
+
 
             await loadTroubleshootingTemplates(
 
@@ -3143,13 +4554,21 @@ function setupEventListeners() {
 
             );
 
+
+
+
+
             // Change Issue Type KB
+
+
 
             await loadIssueTypeKnowledgeBase(
 
                 issueTypeId
 
             );
+
+
 
         }
 
@@ -3160,6 +4579,8 @@ function setupEventListeners() {
     // TITLE SUGGESTION
 
     // ========================================================
+
+
 
     document.getElementById(
 
@@ -3173,6 +4594,10 @@ function setupEventListeners() {
 
     );
 
+
+
+
+
     document.getElementById(
 
         "issueType"
@@ -3184,6 +4609,10 @@ function setupEventListeners() {
         updateTitleSuggestion
 
     );
+
+
+
+
 
     document.getElementById(
 
@@ -3197,11 +4626,15 @@ function setupEventListeners() {
 
     );
 
+
+
     // ========================================================
 
     // COPY TITLE SUGGESTION
 
     // ========================================================
+
+
 
     document.getElementById(
 
@@ -3213,6 +4646,8 @@ function setupEventListeners() {
 
         async () => {
 
+
+
             const suggestion =
 
                 document.getElementById(
@@ -3221,11 +4656,15 @@ function setupEventListeners() {
 
                 ).textContent;
 
+
+
             if (!suggestion || suggestion === "-") {
 
                 return;
 
             }
+
+
 
             await navigator.clipboard.writeText(
 
@@ -3237,11 +4676,15 @@ function setupEventListeners() {
 
     );
 
+
+
     // ========================================================
 
     // USE TITLE SUGGESTION
 
     // ========================================================
+
+
 
     document.getElementById(
 
@@ -3253,6 +4696,8 @@ function setupEventListeners() {
 
         () => {
 
+
+
             const suggestion =
 
                 document.getElementById(
@@ -3261,11 +4706,15 @@ function setupEventListeners() {
 
                 ).textContent;
 
+
+
             if (!suggestion || suggestion === "-") {
 
                 return;
 
             }
+
+
 
             document.getElementById(
 
@@ -3277,7 +4726,11 @@ function setupEventListeners() {
 
     );
 
+
+
 }
+
+
 
 // ============================================================
 
@@ -3285,11 +4738,17 @@ function setupEventListeners() {
 
 // ============================================================
 
+
+
 function generateTicket() {
+
+
 
     const prioritySelect =
 
         document.getElementById("priority");
+
+
 
     const userType =
 
@@ -3297,15 +4756,21 @@ function generateTicket() {
 
             .value.trim();
 
+
+
     const userName =
 
         document.getElementById("userName")
 
             .value.trim();
 
+
+
     const locationSelect =
 
         document.getElementById("location");
+
+
 
     const userPhone =
 
@@ -3313,11 +4778,15 @@ function generateTicket() {
 
             .value.trim();
 
+
+
     const userEmail =
 
         document.getElementById("userEmail")
 
             .value.trim();
+
+
 
     const shortIssue =
 
@@ -3325,11 +4794,15 @@ function generateTicket() {
 
             .value.trim();
 
+
+
     const issueDescription =
 
         document.getElementById("issueDescription")
 
             .value.trim();
+
+
 
     const formContent =
 
@@ -3337,11 +4810,15 @@ function generateTicket() {
 
             .value.trim();
 
+
+
     const troubleshootingSteps =
 
         document.getElementById("troubleshootingSteps")
 
             .value.trim();
+
+
 
     const additionalNotes =
 
@@ -3349,11 +4826,17 @@ function generateTicket() {
 
             .value.trim();
 
+
+
+
+
     // ========================================================
 
     // PRIORITY
 
     // ========================================================
+
+
 
     const priority =
 
@@ -3363,11 +4846,17 @@ function generateTicket() {
 
         ]?.textContent.trim() ?? "";
 
+
+
+
+
     // ========================================================
 
     // LOCATION
 
     // ========================================================
+
+
 
     const selectedLocation =
 
@@ -3377,35 +4866,57 @@ function generateTicket() {
 
         ];
 
+
+
     const locationValue =
 
         locationSelect.value;
 
+
+
     let affectedLocation = "";
 
+
+
     if (locationValue) {
+
+
 
         const locationName =
 
             selectedLocation?.textContent.trim() ?? "";
 
+
+
         const locationCode =
 
             selectedLocation?.dataset.code?.trim() ?? "";
 
+
+
         if (locationName && locationCode) {
+
+
 
             affectedLocation =
 
                 `${locationName}. ${locationCode}`;
 
+
+
         } else if (locationName) {
+
+
 
             affectedLocation =
 
                 locationName;
 
+
+
         } else if (locationCode) {
+
+
 
             affectedLocation =
 
@@ -3415,15 +4926,25 @@ function generateTicket() {
 
     }
 
+
+
     // ========================================================
 
     // BUILD USER INFORMATION
 
     // ========================================================
 
+
+
     const userInformation = [];
 
+
+
+
+
     if (priority) {
+
+
 
         userInformation.push(
 
@@ -3433,7 +4954,13 @@ function generateTicket() {
 
     }
 
+
+
+
+
     if (userType) {
+
+
 
         userInformation.push(
 
@@ -3443,7 +4970,13 @@ function generateTicket() {
 
     }
 
+
+
+
+
     if (userName) {
+
+
 
         userInformation.push(
 
@@ -3453,7 +4986,13 @@ function generateTicket() {
 
     }
 
+
+
+
+
     if (affectedLocation) {
+
+
 
         userInformation.push(
 
@@ -3463,7 +5002,13 @@ function generateTicket() {
 
     }
 
+
+
+
+
     if (userPhone) {
+
+
 
         userInformation.push(
 
@@ -3473,7 +5018,13 @@ function generateTicket() {
 
     }
 
+
+
+
+
     if (userEmail) {
+
+
 
         userInformation.push(
 
@@ -3483,15 +5034,27 @@ function generateTicket() {
 
     }
 
+
+
+
+
     // ========================================================
 
     // BUILD TICKET
 
     // ========================================================
 
+
+
     const sections = [];
 
+
+
+
+
     if (userInformation.length > 0) {
+
+
 
         sections.push(
 
@@ -3501,7 +5064,13 @@ function generateTicket() {
 
     }
 
+
+
+
+
     if (shortIssue) {
+
+
 
         sections.push(
 
@@ -3511,7 +5080,13 @@ function generateTicket() {
 
     }
 
+
+
+
+
     if (issueDescription) {
+
+
 
         sections.push(
 
@@ -3521,7 +5096,13 @@ function generateTicket() {
 
     }
 
+
+
+
+
     if (formContent) {
+
+
 
         sections.push(
 
@@ -3531,7 +5112,13 @@ function generateTicket() {
 
     }
 
+
+
+
+
     if (troubleshootingSteps) {
+
+
 
         sections.push(
 
@@ -3541,7 +5128,13 @@ function generateTicket() {
 
     }
 
+
+
+
+
     if (additionalNotes) {
+
+
 
         sections.push(
 
@@ -3551,15 +5144,25 @@ function generateTicket() {
 
     }
 
+
+
+
+
     const ticketText =
 
         sections.join("\n\n");
+
+
+
+
 
     // ========================================================
 
     // UPDATE PREVIEW
 
     // ========================================================
+
+
 
     document.getElementById(
 
@@ -3571,13 +5174,19 @@ function generateTicket() {
 
 }
 
+
+
 // ============================================================
 
 // GENERATE TIME ENTRY
 
 // ============================================================
 
+
+
 function generateTimeEntry() {
+
+
 
     const issueDescription =
 
@@ -3585,11 +5194,15 @@ function generateTimeEntry() {
 
             .value.trim();
 
+
+
     const troubleshootingSteps =
 
         document.getElementById("troubleshootingSteps")
 
             .value.trim();
+
+
 
     const userName =
 
@@ -3597,11 +5210,15 @@ function generateTimeEntry() {
 
             .value.trim();
 
+
+
     const userPhone =
 
         document.getElementById("userPhone")
 
             .value.trim();
+
+
 
     const userEmail =
 
@@ -3609,11 +5226,17 @@ function generateTimeEntry() {
 
             .value.trim();
 
+
+
     const formContent =
 
         document.getElementById("formContent")
 
             .value.trim();
+
+
+
+
 
     // ========================================================
 
@@ -3621,7 +5244,13 @@ function generateTimeEntry() {
 
     // ========================================================
 
+
+
     const details = [];
+
+
+
+
 
     if (userName) {
 
@@ -3629,11 +5258,19 @@ function generateTimeEntry() {
 
     }
 
+
+
+
+
     if (userPhone) {
 
         details.push(`Primary Contact: ${userPhone}`);
 
     }
+
+
+
+
 
     if (userEmail) {
 
@@ -3641,11 +5278,19 @@ function generateTimeEntry() {
 
     }
 
+
+
+
+
     if (formContent) {
 
         details.push(`Form:\n${formContent}`);
 
     }
+
+
+
+
 
     // ========================================================
 
@@ -3653,7 +5298,13 @@ function generateTimeEntry() {
 
     // ========================================================
 
+
+
     const timeEntrySections = [];
+
+
+
+
 
     // Situation
 
@@ -3663,6 +5314,10 @@ function generateTimeEntry() {
 
     );
 
+
+
+
+
     // Action Taken
 
     timeEntrySections.push(
@@ -3671,11 +5326,19 @@ function generateTimeEntry() {
 
     );
 
+
+
+
+
     // Next Steps
+
+
 
     const isRouted =
 
         document.getElementById("isRouted").checked;
+
+
 
     const nextSteps =
 
@@ -3685,11 +5348,17 @@ function generateTimeEntry() {
 
             : "Complete the ticket";
 
+
+
     timeEntrySections.push(
 
         `Next Steps:\n${nextSteps}`
 
     );
+
+
+
+
 
     // Details
 
@@ -3699,15 +5368,25 @@ function generateTimeEntry() {
 
     );
 
+
+
+
+
     const timeEntryText =
 
         timeEntrySections.join("\n\n");
+
+
+
+
 
     // ========================================================
 
     // UPDATE PREVIEW
 
     // ========================================================
+
+
 
     document.getElementById(
 
@@ -3719,13 +5398,21 @@ function generateTimeEntry() {
 
 }
 
+
+
 // ============================================================
 
 // SAVE TICKET
 
 // ============================================================
 
+
+
 async function saveTicket() {
+
+    const saveButton = document.getElementById("saveButton");
+    const originalSaveText = saveButton?.textContent || "Save Changes";
+    if (saveButton) { saveButton.disabled = true; saveButton.textContent = "Saving…"; }
 
     const ticketData = {
 
@@ -3733,57 +5420,85 @@ async function saveTicket() {
 
             document.getElementById("ticketNumber").value,
 
+
+
         title:
 
             document.getElementById("ticketTitle").value,
+
+
 
         user_name:
 
             document.getElementById("userName").value,
 
+
+
         user_email:
 
             document.getElementById("userEmail").value,
+
+
 
         user_best_contact_number:
 
             document.getElementById("userPhone").value,
 
+
+
         user_type:
 
             document.getElementById("userType").value,
+
+
 
         short_issue:
 
             document.getElementById("shortIssue").value,
 
+
+
         issue_description:
 
             document.getElementById("issueDescription").value,
+
+
 
         troubleshooting_steps:
 
             document.getElementById("troubleshootingSteps").value,
 
+
+
         additional_notes:
 
             document.getElementById("additionalNotes").value,
+
+
 
         form_content:
 
             document.getElementById("formContent").value,
 
+
+
         is_routed:
 
             document.getElementById("isRouted").checked,
+
+
 
         generated_ticket:
 
             document.getElementById("ticketPreview").textContent,
 
+
+
         generated_time_entry:
 
             document.getElementById("timeEntryPreview").textContent,
+
+
 
         form_template_id:
 
@@ -3793,6 +5508,8 @@ async function saveTicket() {
 
                 : null,
 
+
+
         tool_id:
 
             document.getElementById("tool").value
@@ -3800,6 +5517,8 @@ async function saveTicket() {
                 ? Number(document.getElementById("tool").value)
 
                 : null,
+
+
 
         location_id:
 
@@ -3809,6 +5528,8 @@ async function saveTicket() {
 
                 : null,
 
+
+
         priority_id:
 
             document.getElementById("priority").value
@@ -3816,6 +5537,8 @@ async function saveTicket() {
                 ? Number(document.getElementById("priority").value)
 
                 : null,
+
+
 
         issue_type_id:
 
@@ -3825,6 +5548,8 @@ async function saveTicket() {
 
                 : null,
 
+
+
         troubleshooting_template_id:
 
             document.getElementById("troubleshootingTemplate").value
@@ -3833,6 +5558,8 @@ async function saveTicket() {
 
                 : null,
 
+
+
         status_id:
 
             document.getElementById("status").value
@@ -3840,6 +5567,8 @@ async function saveTicket() {
                 ? Number(document.getElementById("status").value)
 
                 : null,
+
+
 
         queue_id:
 
@@ -3851,23 +5580,35 @@ async function saveTicket() {
 
     };
 
+
+
     try {
 
+
+
         // NEW TICKET
+
         if (isNewTicket) {
 
-            if (!ticketData.status_id) {
-                alert('Cannot create the ticket without a status. Please select "New".');
-                return;
-            }
 
-            await createTicket(ticketData);
 
-            // Return to the Today dashboard after creating the ticket.
-            window.location.href = "index.html";
+            const createdTicket =
+
+                await createTicket(ticketData);
+
+
+
+            window.location.href =
+
+                `ticket-detail.html?id=${createdTicket.id}`;
+
+
 
             return;
+
         }
+
+
 
         // EXISTING TICKET
 
@@ -3879,13 +5620,15 @@ async function saveTicket() {
 
         );
 
-        alert(
 
-            "Ticket updated successfully."
 
-        );
+        showDetailNotification("Ticket updated successfully.", "success");
+
+
 
     } catch (error) {
+
+
 
         console.error(
 
@@ -3895,12 +5638,12 @@ async function saveTicket() {
 
         );
 
-        alert(
 
-            "Error saving ticket."
 
-        );
+        showDetailNotification("Error saving ticket. Please try again.", "error");
 
+    } finally {
+        if (saveButton) { saveButton.disabled = false; saveButton.textContent = originalSaveText; }
     }
 
 }
