@@ -101,6 +101,28 @@ async function updateTicket(ticketId, ticketData) {
 
 
 
+async function deleteTicket(ticketId) {
+    const response = await fetch(
+        `${API_URL}/api/tickets/${ticketId}`,
+        {
+            method: "DELETE",
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        let message = "Error deleting ticket";
+        try {
+            const data = await response.json();
+            if (data?.detail) message = data.detail;
+        } catch (_) {
+            // A 204 response or an empty error body has no JSON to parse.
+        }
+        throw new Error(message);
+    }
+}
+
+
 async function createTicket(ticketData) {
 
     const response = await fetch(

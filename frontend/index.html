@@ -25,9 +25,9 @@
             <section class="list-page-section" id="ticketsSection">
 
                 <!-- Ticket actions -->
-                <div class="list-page-toolbar">
-                    <div class="tickets-toolbar-label">
-                        All Tickets
+                <div class="list-page-toolbar tickets-sticky-toolbar">
+                    <div class="tickets-toolbar-label" id="ticketsViewLabel">
+                        Today's Tickets
                     </div>
 
                     <button
@@ -37,6 +37,46 @@
                         + New Ticket
                     </button>
                 </div>
+
+                <!-- Main ticket views -->
+                <nav class="tickets-tabs" id="ticketsTabs" aria-label="Ticket views">
+                    <button type="button" class="tickets-tab active" data-view="today" aria-selected="true">Today</button>
+                    <button type="button" class="tickets-tab" data-view="by-day" aria-selected="false">By Day</button>
+                    <button type="button" class="tickets-tab" data-view="all" aria-selected="false">All Tickets</button>
+                </nav>
+
+                <section id="todayView" class="tickets-view">
+                    <div class="tickets-today-heading">
+                        <p class="tickets-section-eyebrow">CREATED TODAY</p>
+                        <p class="tickets-view-description">Today's tickets, organized by their current status.</p>
+                    </div>
+                    <div id="todayTicketsByStatus" class="tickets-status-groups tickets-today-groups"></div>
+
+                    <section class="tickets-pending-section" aria-labelledby="pendingTicketsHeading">
+                        <div class="tickets-pending-heading">
+                            <div>
+                                <p class="tickets-section-eyebrow">OPEN WORK OVERVIEW</p>
+                                <h2 id="pendingTicketsHeading">Pending Tickets</h2>
+                                <p class="tickets-view-description">All open tickets, including tickets created today. Completed tickets are hidden from this section.</p>
+                            </div>
+                        </div>
+                        <div id="pendingTicketsByStatus" class="tickets-status-groups tickets-today-groups"></div>
+                    </section>
+                </section>
+
+                <section id="byDayView" class="tickets-view" hidden>
+                    <div class="tickets-day-toolbar">
+                        <div class="tickets-day-picker">
+                            <label for="dayPicker">Select a day</label>
+                            <input type="date" id="dayPicker">
+                        </div>
+                        <p class="tickets-view-description">Tickets are grouped by their current status and ordered from oldest to newest within each group.</p>
+                    </div>
+                    <div id="ticketsGroupedByStatus" class="tickets-status-groups"></div>
+                </section>
+
+                <section id="allTicketsView" class="tickets-view" hidden>
+                    <p class="tickets-view-description">Search and filter across your tickets.</p>
 
                 <!-- Filters -->
                 <div id="filters" class="tickets-filters">
@@ -112,9 +152,10 @@
                         </button>
                     </div>
                 </div>
+                </section>
 
-                <!-- Tickets table -->
-                <div class="list-page-table-container">
+                <!-- Shared table used by All Tickets -->
+                <div id="ticketsTableContainer" class="list-page-table-container">
                     <table id="ticketsTable" class="list-page-table tickets-table">
                         <thead>
                             <tr>
@@ -153,6 +194,26 @@
             </section>
         </main>
     </div>
+
+    <!-- Delete ticket confirmation modal -->
+    <div id="deleteTicketModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="deleteTicketModalTitle" aria-describedby="deleteTicketModalMessage">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="deleteTicketModalTitle">Delete ticket?</h2>
+                <button type="button" class="modal-close" id="closeDeleteTicketModal" aria-label="Close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="deleteTicketModalMessage">Are you sure you want to delete this ticket?</p>
+            </div>
+            <div class="modal-actions">
+                <button type="button" id="cancelDeleteTicketButton">Cancel</button>
+                <button type="button" id="confirmDeleteTicketButton" class="modal-action-danger">Delete ticket</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- App notifications -->
+    <div id="notificationContainer" aria-live="polite" aria-atomic="false"></div>
 
     <script src="js/api.js"></script>
     <script src="js/navigation.js"></script>

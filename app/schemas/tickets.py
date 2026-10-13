@@ -46,7 +46,8 @@ class TicketCreate(TicketBase):
     pass
 
 class TicketUpdate(TicketBase):
-    pass
+    # Editable from the Today dashboard when correcting a ticket's creation timestamp.
+    created_at: Optional[datetime] = None
     
 class TicketResponse(TicketBase):
     id: int
