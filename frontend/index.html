@@ -84,11 +84,23 @@
                     </div>
                 </section>
 
-                <section id="allTicketsView" class="tickets-view" hidden>
-                    <p class="tickets-view-description">Search and filter across your tickets.</p>
+                <section id="allTicketsView" class="tickets-view tickets-all-view" hidden>
+                    <div class="tickets-all-heading">
+                        <p class="tickets-section-eyebrow">TICKET DATABASE</p>
+                        <h2>All Tickets</h2>
+                        <p class="tickets-view-description">Search, filter, and open any ticket in your queue.</p>
+                    </div>
 
-                <!-- Filters -->
-                <div id="filters" class="tickets-filters">
+                    <!-- Filters -->
+                    <div class="tickets-filter-panel">
+                        <div class="tickets-filter-panel-heading">
+                            <div>
+                                <h3>Filter tickets</h3>
+                                <p>Combine filters to narrow your results.</p>
+                            </div>
+                            <span class="tickets-filter-panel-icon" aria-hidden="true">☷</span>
+                        </div>
+                        <div id="filters" class="tickets-filters">
 
                     <div class="tickets-filter-field">
                         <label for="ticketNumberFilter">Ticket number</label>
@@ -160,11 +172,18 @@
                             Clear
                         </button>
                     </div>
-                </div>
+                        </div>
+                    </div>
                 </section>
 
                 <!-- Shared table used by All Tickets -->
-                <div id="ticketsTableContainer" class="list-page-table-container">
+                <div class="tickets-results-heading" id="ticketsResultsHeading" hidden>
+                    <div>
+                        <h3>Ticket results</h3>
+                        <p>Choose a ticket to view or edit its details.</p>
+                    </div>
+                </div>
+                <div id="ticketsTableContainer" class="list-page-table-container tickets-results-table">
                     <table id="ticketsTable" class="list-page-table tickets-table">
                         <thead>
                             <tr>

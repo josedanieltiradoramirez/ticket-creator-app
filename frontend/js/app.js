@@ -88,17 +88,24 @@ function formatTicketDate(value) {
     return Number.isNaN(date.getTime()) ? "" : date.toLocaleString();
 }
 
+function ticketLabelClass(value, fallback = "unset") {
+    const slug = String(value || "").trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    return slug || fallback;
+}
+
 function ticketRowMarkup(ticket) {
+    const statusName = ticket.status?.name || "No status";
+    const priorityName = ticket.priority?.name || "Unassigned";
     return `
-        <td>${ticket.ticket_number ?? ""}</td>
-        <td>${ticket.title ?? "No title"}</td>
-        <td>${ticket.issue_type?.name ?? ""}</td>
-        <td>${ticket.tool?.name ?? ""}</td>
-        <td>${ticket.status?.name ?? "No status"}</td>
-        <td>${ticket.priority?.name ?? ""}</td>
-        <td>${ticket.queue?.name ?? ""}</td>
-        <td>${ticket.location?.name ?? ""}</td>
-        <td>${formatTicketDate(ticket.created_at)}</td>
+        <td><span class="ticket-number-label">${ticket.ticket_number ?? "—"}</span></td>
+        <td><span class="ticket-title-label">${ticket.title ?? "No title"}</span></td>
+        <td>${ticket.issue_type?.name ?? "—"}</td>
+        <td>${ticket.tool?.name ?? "—"}</td>
+        <td><span class="ticket-status-pill status-${ticketLabelClass(statusName)}">${statusName}</span></td>
+        <td><span class="ticket-priority-pill priority-${ticketLabelClass(priorityName)}">${priorityName}</span></td>
+        <td>${ticket.queue?.name ?? "—"}</td>
+        <td>${ticket.location?.name ?? "—"}</td>
+        <td><span class="ticket-created-date">${formatTicketDate(ticket.created_at)}</span></td>
     `;
 }
 
@@ -973,6 +980,8 @@ function switchView(view) {
     ticketsTableContainer.hidden = view !== "all";
     pagination.hidden = view !== "all";
     filtersContainer.hidden = view !== "all";
+    const resultsHeading = document.getElementById("ticketsResultsHeading");
+    if (resultsHeading) resultsHeading.hidden = view !== "all";
 
     const labels = { today: "Today's Tickets", "by-day": "Tickets by Day", all: "All Tickets" };
     ticketsViewLabel.textContent = labels[view];
