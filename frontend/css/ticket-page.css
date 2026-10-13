@@ -1034,3 +1034,135 @@
     .modal-actions { flex-wrap: wrap; }
     #notificationContainer { right: 16px; bottom: 16px; width: calc(100vw - 32px); }
 }
+
+/* ============================================================
+   TICKETS BY DAY: day index and reusable day detail view
+   ============================================================ */
+.tickets-day-index-heading {
+    margin: 4px 0 18px;
+}
+
+.tickets-by-day-list {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.tickets-by-day-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto 20px;
+    align-items: center;
+    gap: 18px;
+    width: 100%;
+    min-height: 76px;
+    padding: 15px 18px;
+    text-align: left;
+    color: #262626;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 9px;
+    cursor: pointer;
+    transition: border-color .15s ease, background-color .15s ease, box-shadow .15s ease;
+}
+
+.tickets-by-day-item:hover {
+    background: #fafafa;
+    border-color: #cbd5e1;
+    box-shadow: 0 2px 7px rgb(15 23 42 / 5%);
+}
+
+.tickets-by-day-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+}
+
+.tickets-by-day-date {
+    font-size: 14px;
+    font-weight: 650;
+    line-height: 1.4;
+    text-transform: capitalize;
+}
+
+.tickets-by-day-subtitle {
+    color: #737373;
+    font-size: 12px;
+}
+
+.tickets-by-day-count {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 64px;
+    gap: 2px;
+    color: #737373;
+    font-size: 11px;
+}
+
+.tickets-by-day-count strong {
+    color: #262626;
+    font-size: 20px;
+    font-weight: 650;
+    line-height: 1.1;
+}
+
+.tickets-by-day-arrow {
+    color: #a3a3a3;
+    font-size: 26px;
+    line-height: 1;
+    text-align: center;
+}
+
+.tickets-day-detail-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin: 4px 0 20px;
+}
+
+.tickets-back-to-days {
+    flex-shrink: 0;
+    min-height: 35px;
+    padding: 7px 11px;
+    color: #404040;
+    background: #fff;
+    border: 1px solid #d4d4d4;
+    border-radius: 6px;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 550;
+    cursor: pointer;
+}
+
+.tickets-back-to-days:hover {
+    background: #f7f7f7;
+    border-color: #a3a3a3;
+}
+
+.tickets-selected-day-title {
+    margin: 2px 0 0;
+    color: #262626;
+    font-size: 20px;
+    font-weight: 650;
+    text-transform: capitalize;
+}
+
+@media (max-width: 600px) {
+    .tickets-by-day-item {
+        grid-template-columns: minmax(0, 1fr) auto 12px;
+        gap: 10px;
+        padding: 13px 12px;
+    }
+
+    .tickets-day-detail-toolbar {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .tickets-selected-day-title {
+        font-size: 18px;
+    }
+}

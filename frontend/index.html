@@ -65,14 +65,23 @@
                 </section>
 
                 <section id="byDayView" class="tickets-view" hidden>
-                    <div class="tickets-day-toolbar">
-                        <div class="tickets-day-picker">
-                            <label for="dayPicker">Select a day</label>
-                            <input type="date" id="dayPicker">
+                    <div id="ticketsByDayIndexView">
+                        <div class="tickets-day-index-heading">
+                            <p class="tickets-section-eyebrow">TICKET HISTORY</p>
+                            <p class="tickets-view-description">All days with tickets created, ordered from newest to oldest.</p>
                         </div>
-                        <p class="tickets-view-description">Tickets are grouped by their current status and ordered from oldest to newest within each group.</p>
+                        <div id="ticketsByDayList" class="tickets-by-day-list"></div>
                     </div>
-                    <div id="ticketsGroupedByStatus" class="tickets-status-groups"></div>
+                    <div id="ticketsByDayDetailView" hidden>
+                        <div class="tickets-day-detail-toolbar">
+                            <button type="button" id="backToTicketsByDay" class="tickets-back-to-days">← All days</button>
+                            <div>
+                                <p class="tickets-section-eyebrow">TICKETS CREATED ON</p>
+                                <h2 id="selectedTicketsDayTitle" class="tickets-selected-day-title"></h2>
+                            </div>
+                        </div>
+                        <div id="ticketsGroupedByStatus" class="tickets-status-groups tickets-today-groups"></div>
+                    </div>
                 </section>
 
                 <section id="allTicketsView" class="tickets-view" hidden>

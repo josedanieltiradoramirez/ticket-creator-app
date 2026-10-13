@@ -53,8 +53,13 @@ const todayView = document.getElementById("todayView");
 const byDayView = document.getElementById("byDayView");
 const allTicketsView = document.getElementById("allTicketsView");
 const ticketsViewLabel = document.getElementById("ticketsViewLabel");
-const dayPicker = document.getElementById("dayPicker");
+const byDayIndexView = document.getElementById("ticketsByDayIndexView");
+const byDayListContainer = document.getElementById("ticketsByDayList");
+const byDayDetailView = document.getElementById("ticketsByDayDetailView");
+const backToDaysButton = document.getElementById("backToTicketsByDay");
+const selectedDayTitle = document.getElementById("selectedTicketsDayTitle");
 const groupedTicketsContainer = document.getElementById("ticketsGroupedByStatus");
+let selectedDayDate = null;
 const todayTicketsContainer = document.getElementById("todayTicketsByStatus");
 const pendingTicketsContainer = document.getElementById("pendingTicketsByStatus");
 
@@ -179,7 +184,8 @@ let ticketPendingDeletion = null;
 // Keep collapse choices across dashboard refreshes. Completed starts collapsed to keep focus on open work.
 const collapsedStatusGroups = {
     today: new Set(["completed"]),
-    pending: new Set()
+    pending: new Set(),
+    day: new Set(["completed"])
 };
 
 
@@ -279,6 +285,7 @@ function createEditableCreatedAt(ticket) {
             input.classList.add('field-save-success');
             // Refresh both sections because changing the date can move a ticket between them.
             await Promise.all([loadTodayTickets(), loadPendingTickets()]);
+            if (activeView === "by-day") await loadTicketsByDay();
         } catch (error) {
             console.error('Error updating ticket creation date:', error);
             input.value = lastSavedValue;
@@ -448,6 +455,7 @@ function createTodayTicketCard(ticket) {
             status.classList.add('field-save-success');
             // Re-fetch so the ticket moves to the matching section immediately.
             await Promise.all([loadTodayTickets(), loadPendingTickets()]);
+            if (activeView === "by-day") await loadTicketsByDay();
         } catch (error) {
             console.error('Error updating ticket status:', error);
             status.value = String(previousStatusId);
@@ -580,6 +588,10 @@ function createDraftTicketRow(groupData, context) {
             });
             showNotification("Ticket created.", "success");
             await Promise.all([loadTodayTickets(), loadPendingTickets()]);
+            if (activeView === "by-day") {
+                if (context === "day") selectedDayDate = getLocalDateString();
+                await loadTicketsByDay();
+            }
         } catch (error) {
             console.error("Could not create inline ticket:", error);
             showNotification("Could not create the ticket. Please try again.", "error");
@@ -779,7 +791,7 @@ async function confirmDeleteTicket() {
         showNotification("Ticket deleted.", "success");
         await Promise.all([loadTodayTickets(), loadPendingTickets()]);
         if (activeView === "all") await loadAllTickets();
-        if (activeView === "by-day") await loadTicketsByDay(dayPicker.value || getLocalDateString());
+        if (activeView === "by-day") await loadTicketsByDay();
     } catch (error) {
         console.error("Could not delete ticket:", error);
         confirmButton.disabled = false;
@@ -851,55 +863,99 @@ async function loadAllTickets() {
     }
 }
 
-async function loadTicketsByDay(dateString) {
-    groupedTicketsContainer.innerHTML = '<p class="tickets-loading">Loading tickets…</p>';
-    try {
-        const tickets = await getAllTicketsForDate(dateString);
-        // Group by each ticket's CURRENT status name, not a hard-coded status list.
-        const groups = new Map();
-        tickets.forEach(ticket => {
-            const statusName = ticket.status?.name || "No status";
-            if (!groups.has(statusName)) groups.set(statusName, []);
-            groups.get(statusName).push(ticket);
-        });
+function formatDayHeading(dateString) {
+    const [year, month, day] = dateString.split("-").map(Number);
+    const date = new Date(year, month - 1, day);
+    return date.toLocaleDateString(undefined, { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+}
 
-        groupedTicketsContainer.innerHTML = "";
-        if (!tickets.length) {
-            groupedTicketsContainer.innerHTML = '<p class="tickets-empty-message">No tickets were created on this day.</p>';
+function getTicketLocalDate(ticket) {
+    if (!ticket.created_at) return "Unknown date";
+    const date = new Date(ticket.created_at);
+    return Number.isNaN(date.getTime()) ? "Unknown date" : getLocalDateString(date);
+}
+
+function renderTicketsByDayIndex(tickets) {
+    byDayListContainer.innerHTML = "";
+    const days = new Map();
+    tickets.forEach(ticket => {
+        const dateKey = getTicketLocalDate(ticket);
+        if (!days.has(dateKey)) days.set(dateKey, []);
+        days.get(dateKey).push(ticket);
+    });
+
+    if (!days.size) {
+        byDayListContainer.innerHTML = '<p class="tickets-empty-message">No tickets have been created yet.</p>';
+        return;
+    }
+
+    [...days.entries()]
+        .sort(([dateA], [dateB]) => dateB.localeCompare(dateA))
+        .forEach(([dateKey, dayTickets]) => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "tickets-by-day-item";
+
+            const copy = document.createElement("span");
+            copy.className = "tickets-by-day-copy";
+            const title = document.createElement("span");
+            title.className = "tickets-by-day-date";
+            title.textContent = dateKey === "Unknown date" ? dateKey : formatDayHeading(dateKey);
+            const subtitle = document.createElement("span");
+            subtitle.className = "tickets-by-day-subtitle";
+            subtitle.textContent = "View tickets created on this day";
+            copy.append(title, subtitle);
+
+            const count = document.createElement("span");
+            count.className = "tickets-by-day-count";
+            count.innerHTML = `<strong>${dayTickets.length}</strong><span>ticket${dayTickets.length === 1 ? "" : "s"}</span>`;
+            const arrow = document.createElement("span");
+            arrow.className = "tickets-by-day-arrow";
+            arrow.setAttribute("aria-hidden", "true");
+            arrow.textContent = "›";
+            button.append(copy, count, arrow);
+            button.addEventListener("click", () => {
+                selectedDayDate = dateKey;
+                loadTicketsByDay();
+            });
+            byDayListContainer.appendChild(button);
+        });
+}
+
+async function loadTicketsByDay() {
+    const showingDayDetail = Boolean(selectedDayDate);
+    if (showingDayDetail) {
+        byDayIndexView.hidden = true;
+        byDayDetailView.hidden = false;
+        selectedDayTitle.textContent = selectedDayDate === "Unknown date" ? selectedDayDate : formatDayHeading(selectedDayDate);
+        groupedTicketsContainer.innerHTML = '<p class="tickets-loading">Loading tickets…</p>';
+    } else {
+        byDayIndexView.hidden = false;
+        byDayDetailView.hidden = true;
+        byDayListContainer.innerHTML = '<p class="tickets-loading">Loading days…</p>';
+    }
+
+    try {
+        if (!availableTicketStatuses.length) {
+            availableTicketStatuses = getCanonicalTicketStatuses(await getTicketStatuses());
+        }
+        if (!availablePriorities.length) {
+            availablePriorities = await getPriorities();
+        }
+        const allTickets = await getAllTickets();
+        if (!selectedDayDate) {
+            renderTicketsByDayIndex(allTickets);
             return;
         }
-
-        [...groups.entries()]
-            .sort(([statusA], [statusB]) => statusA.localeCompare(statusB))
-            .forEach(([statusName, statusTickets]) => {
-                // Within each current-status group, show tickets in opening order.
-                statusTickets.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-                const group = document.createElement("section");
-                group.className = "tickets-status-group";
-
-                const heading = document.createElement("div");
-                heading.className = "tickets-status-group-heading";
-                heading.innerHTML = `<h3>${statusName}</h3><span>${statusTickets.length} ticket${statusTickets.length === 1 ? "" : "s"}</span>`;
-                group.appendChild(heading);
-
-                const tableWrap = document.createElement("div");
-                tableWrap.className = "list-page-table-container";
-                const table = document.createElement("table");
-                table.className = "list-page-table tickets-table";
-                table.innerHTML = `
-                    <thead><tr>
-                        <th>Ticket number</th><th>Title</th><th>Issue type</th><th>Tool</th>
-                        <th>Status</th><th>Priority</th><th>Queue</th><th>Location</th><th>Created at</th>
-                    </tr></thead><tbody></tbody>`;
-                const tbody = table.querySelector("tbody");
-                statusTickets.forEach(ticket => appendTicketRow(tbody, ticket));
-                tableWrap.appendChild(table);
-                group.appendChild(tableWrap);
-                groupedTicketsContainer.appendChild(group);
-            });
+        const dayTickets = allTickets.filter(ticket => getTicketLocalDate(ticket) === selectedDayDate);
+        renderStatusGroups(groupedTicketsContainer, dayTickets, "day", { includeCompleted: true });
     } catch (error) {
         console.error(error);
-        groupedTicketsContainer.innerHTML = '<p class="tickets-error-message">Could not load tickets for this day. Please try again.</p>';
+        if (showingDayDetail) {
+            groupedTicketsContainer.innerHTML = '<p class="tickets-error-message">Could not load tickets for this day. Please try again.</p>';
+        } else {
+            byDayListContainer.innerHTML = '<p class="tickets-error-message">Could not load ticket history. Please try again.</p>';
+        }
     }
 }
 
@@ -922,7 +978,7 @@ function switchView(view) {
     ticketsViewLabel.textContent = labels[view];
 
     if (view === "today") { loadTodayTickets(); loadPendingTickets(); }
-    if (view === "by-day") loadTicketsByDay(dayPicker.value || getLocalDateString());
+    if (view === "by-day") loadTicketsByDay();
     if (view === "all") loadAllTickets();
 }
 
@@ -1012,10 +1068,12 @@ document.querySelectorAll(".tickets-tab").forEach(tab => {
     tab.addEventListener("click", () => switchView(tab.dataset.view));
 });
 
-dayPicker.value = getLocalDateString();
-dayPicker.addEventListener("change", () => {
-    if (activeView === "by-day") loadTicketsByDay(dayPicker.value || getLocalDateString());
-});
+if (backToDaysButton) {
+    backToDaysButton.addEventListener("click", () => {
+        selectedDayDate = null;
+        loadTicketsByDay();
+    });
+}
 
 // =========================
 // INITIAL LOAD
