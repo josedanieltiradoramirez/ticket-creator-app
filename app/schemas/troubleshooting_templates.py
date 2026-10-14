@@ -6,11 +6,13 @@ from app.schemas.summaries import (
     IssueTypeSummary
 )
 
+
 class TroubleshootingTemplateCreate(BaseModel):
     name: str | None = None
     steps: str
-    generated_description: str
-    is_active: bool
+    generated_description: str = ""
+    is_active: bool = True
+
 
 class TroubleshootingTemplateUpdate(BaseModel):
     name: str | None = None
@@ -32,7 +34,9 @@ class TroubleshootingTemplateResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class TroubleshootingTemplateDetailResponse(TroubleshootingTemplateResponse):
+class TroubleshootingTemplateDetailResponse(
+    TroubleshootingTemplateResponse
+):
     tools: list[ToolSummary]
     knowledge_base: list[KnowledgeBaseSummary]
     issue_types: list[IssueTypeSummary]

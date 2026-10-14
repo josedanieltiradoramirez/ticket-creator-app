@@ -18,6 +18,8 @@ let autosaveTimer = null;
 let autosaveDirty = false;
 let autosaveInProgress = false;
 
+// ID of a Troubleshooting Template created directly from Ticket Detail.
+let newlyCreatedTroubleshootingTemplateId = null;
 
 
 let troubleshootingTemplates = [];
@@ -1074,13 +1076,9 @@ async function loadTools(
 
 ) {
 
-
-
     const tools =
 
         await getTools();
-
-
 
 
 
@@ -1094,9 +1092,9 @@ async function loadTools(
 
 
 
-
-
     toolSelect.innerHTML = "";
+
+
 
     const emptyOption =
 
@@ -1116,15 +1114,13 @@ async function loadTools(
 
         emptyOption
 
-    );  
+    );
 
 
 
     tools.forEach(
 
         tool => {
-
-
 
             const option =
 
@@ -1133,8 +1129,6 @@ async function loadTools(
                     "option"
 
                 );
-
-
 
 
 
@@ -1150,23 +1144,17 @@ async function loadTools(
 
 
 
-
-
             if (
 
-                tool.id ===
+                String(tool.id) ===
 
-                currentToolId
+                String(currentToolId ?? "")
 
             ) {
-
-
 
                 option.selected = true;
 
             }
-
-
 
 
 
@@ -1180,9 +1168,969 @@ async function loadTools(
 
     );
 
+
+
+    setupToolSearchDropdown(
+
+        toolSelect,
+
+        tools
+
+    );
 }
 
 
+
+// ============================================================
+// TOOL SEARCH / QUICK CREATE
+// ============================================================
+
+function setupToolSearchDropdown(
+
+    toolSelect,
+
+    tools
+
+) {
+
+    if (!toolSelect) {
+        return;
+    }
+
+
+
+    const existingWrapper =
+
+        toolSelect.closest(
+
+            ".tool-search-dropdown"
+
+        );
+
+
+
+    if (existingWrapper) {
+
+        existingWrapper.parentNode.insertBefore(
+
+            toolSelect,
+
+            existingWrapper
+
+        );
+
+        existingWrapper.remove();
+
+    }
+
+
+
+    const wrapper =
+
+        document.createElement("div");
+
+    wrapper.className =
+
+        "tool-search-dropdown";
+
+
+
+    const input =
+
+        document.createElement("input");
+
+    input.type = "text";
+
+    input.className =
+
+        "tool-search-input";
+
+    input.autocomplete = "off";
+
+    input.placeholder =
+
+        "Search or select a tool...";
+
+    input.setAttribute(
+
+        "role",
+
+        "combobox"
+
+    );
+
+    input.setAttribute(
+
+        "aria-expanded",
+
+        "false"
+
+    );
+
+
+
+    const dropdown =
+
+        document.createElement("div");
+
+    dropdown.className =
+
+        "tool-search-options";
+
+    dropdown.setAttribute(
+
+        "role",
+
+        "listbox"
+
+    );
+
+
+
+    toolSelect.parentNode.insertBefore(
+
+        wrapper,
+
+        toolSelect
+
+    );
+
+    wrapper.appendChild(input);
+
+    wrapper.appendChild(dropdown);
+
+    wrapper.appendChild(toolSelect);
+
+
+
+    toolSelect.style.display = "none";
+
+
+
+    let highlightedIndex = -1;
+    let visibleOptions = [];
+
+
+
+    function getSelectedToolName() {
+
+        const selectedOption =
+
+            toolSelect.options[
+
+                toolSelect.selectedIndex
+
+            ];
+
+
+
+        return selectedOption &&
+
+            selectedOption.value
+
+            ? selectedOption.textContent.trim()
+
+            : "";
+
+    }
+
+
+
+    function syncInputWithSelect() {
+
+        input.value =
+
+            getSelectedToolName();
+
+    }
+
+
+
+    function closeDropdown() {
+
+        dropdown.classList.remove(
+
+            "tool-search-options-visible"
+
+        );
+
+        input.setAttribute(
+
+            "aria-expanded",
+
+            "false"
+
+        );
+
+        highlightedIndex = -1;
+
+    }
+
+
+
+    function openDropdown() {
+
+        renderOptions(
+
+            input.value
+
+        );
+
+
+
+        dropdown.classList.add(
+
+            "tool-search-options-visible"
+
+        );
+
+        input.setAttribute(
+
+            "aria-expanded",
+
+            "true"
+
+        );
+
+    }
+
+
+
+    function selectTool(toolId) {
+
+        toolSelect.value =
+
+            String(toolId);
+
+
+
+        toolSelect.dispatchEvent(
+
+            new Event(
+
+                "change",
+
+                { bubbles: true }
+
+            )
+
+        );
+
+
+
+        syncInputWithSelect();
+
+        closeDropdown();
+
+    }
+
+
+
+    function renderOptions(searchValue = "") {
+
+        const query =
+
+            searchValue.trim().toLowerCase();
+
+
+
+        dropdown.innerHTML = "";
+
+        visibleOptions = [];
+
+        highlightedIndex = -1;
+
+
+
+        const matchingTools = tools.filter(
+
+            tool =>
+
+                !query ||
+
+                String(tool.name)
+
+                    .toLowerCase()
+
+                    .includes(query)
+
+        );
+
+
+
+        matchingTools.forEach(
+
+            tool => {
+
+                const option =
+
+                    document.createElement("button");
+
+                option.type = "button";
+
+                option.className =
+
+                    "tool-search-option";
+
+                option.setAttribute(
+
+                    "role",
+
+                    "option"
+
+                );
+
+                option.textContent =
+
+                    tool.name;
+
+
+
+                option.addEventListener(
+
+                    "mousedown",
+
+                    event => {
+
+                        event.preventDefault();
+
+                    }
+
+                );
+
+
+
+                option.addEventListener(
+
+                    "click",
+
+                    () => {
+
+                        selectTool(tool.id);
+
+                    }
+
+                );
+
+
+
+                dropdown.appendChild(
+
+                    option
+
+                );
+
+                visibleOptions.push(option);
+
+            }
+
+        );
+
+
+
+        const exactMatch =
+
+            tools.some(
+
+                tool =>
+
+                    String(tool.name)
+
+                        .trim()
+
+                        .toLowerCase() === query
+
+            );
+
+
+
+        if (query && !exactMatch) {
+
+            const addOption =
+
+                document.createElement("button");
+
+            addOption.type = "button";
+
+            addOption.className =
+
+                "tool-search-option tool-search-add";
+
+            addOption.setAttribute(
+
+                "role",
+
+                "option"
+
+            );
+
+            addOption.innerHTML =
+
+                `<span class="tool-search-add-icon">+</span>` +
+
+                `<span>Add "${escapeNotificationHtml(searchValue.trim())}"</span>`;
+
+
+
+            addOption.addEventListener(
+
+                "mousedown",
+
+                event => {
+
+                    event.preventDefault();
+
+                }
+
+            );
+
+
+
+            addOption.addEventListener(
+
+                "click",
+
+                async () => {
+
+                    await createToolFromSearch(
+
+                        searchValue.trim(),
+
+                        tools,
+
+                        toolSelect,
+
+                        input,
+
+                        dropdown
+
+                    );
+
+                }
+
+            );
+
+
+
+            dropdown.appendChild(
+
+                addOption
+
+            );
+
+            visibleOptions.push(addOption);
+
+        }
+
+
+
+        if (
+
+            visibleOptions.length === 0
+
+        ) {
+
+            const emptyMessage =
+
+                document.createElement("div");
+
+            emptyMessage.className =
+
+                "tool-search-empty";
+
+            emptyMessage.textContent =
+
+                "No tools found.";
+
+            dropdown.appendChild(
+
+                emptyMessage
+
+            );
+
+        }
+
+    }
+
+
+
+    async function handleKeyboard(event) {
+
+        if (event.key === "ArrowDown") {
+
+            event.preventDefault();
+
+            if (!dropdown.classList.contains("tool-search-options-visible")) {
+
+                openDropdown();
+
+            }
+
+            if (visibleOptions.length > 0) {
+
+                highlightedIndex =
+
+                    Math.min(
+
+                        highlightedIndex + 1,
+
+                        visibleOptions.length - 1
+
+                    );
+
+                visibleOptions.forEach(
+
+                    (option, index) => {
+
+                        option.classList.toggle(
+
+                            "tool-search-option-highlighted",
+
+                            index === highlightedIndex
+
+                        );
+
+                    }
+
+                );
+
+            }
+
+            return;
+
+        }
+
+
+
+        if (event.key === "ArrowUp") {
+
+            event.preventDefault();
+
+
+
+            if (visibleOptions.length > 0) {
+
+                highlightedIndex =
+
+                    highlightedIndex <= 0
+
+                        ? visibleOptions.length - 1
+
+                        : highlightedIndex - 1;
+
+
+
+                visibleOptions.forEach(
+
+                    (option, index) => {
+
+                        option.classList.toggle(
+
+                            "tool-search-option-highlighted",
+
+                            index === highlightedIndex
+
+                        );
+
+                    }
+
+                );
+
+            }
+
+            return;
+
+        }
+
+
+
+        if (event.key === "Enter") {
+
+            event.preventDefault();
+
+
+
+            if (
+
+                highlightedIndex >= 0 &&
+
+                visibleOptions[highlightedIndex]
+
+            ) {
+
+                visibleOptions[
+
+                    highlightedIndex
+
+                ].click();
+
+                return;
+
+            }
+
+
+
+            const typedName =
+
+                input.value.trim();
+
+
+
+            if (!typedName) {
+
+                selectTool("");
+
+                return;
+
+            }
+
+
+
+            const exactTool =
+
+                tools.find(
+
+                    tool =>
+
+                        String(tool.name)
+
+                            .trim()
+
+                            .toLowerCase() ===
+
+                        typedName.toLowerCase()
+
+                );
+
+
+
+            if (exactTool) {
+
+                selectTool(exactTool.id);
+
+                return;
+
+            }
+
+
+
+            await createToolFromSearch(
+
+                typedName,
+
+                tools,
+
+                toolSelect,
+
+                input,
+
+                dropdown
+
+            );
+
+        }
+
+
+
+        if (event.key === "Escape") {
+
+            syncInputWithSelect();
+
+            closeDropdown();
+
+        }
+
+    }
+
+
+
+    input.addEventListener(
+
+        "focus",
+
+        openDropdown
+
+    );
+
+
+
+    input.addEventListener(
+
+        "input",
+
+        () => {
+
+            openDropdown();
+
+        }
+
+    );
+
+
+
+    input.addEventListener(
+
+        "keydown",
+
+        handleKeyboard
+
+    );
+
+
+
+    input.addEventListener(
+
+        "blur",
+
+        () => {
+
+            setTimeout(
+
+                () => {
+
+                    closeDropdown();
+
+                    if (!toolSelect.value) {
+
+                        input.value = "";
+
+                    } else {
+
+                        syncInputWithSelect();
+
+                    }
+
+                },
+
+                150
+
+            );
+
+        }
+
+    );
+
+
+
+    document.addEventListener(
+
+        "click",
+
+        event => {
+
+            if (!wrapper.contains(event.target)) {
+
+                closeDropdown();
+
+            }
+
+        }
+
+    );
+
+
+
+    toolSelect.addEventListener(
+
+        "change",
+
+        syncInputWithSelect
+
+    );
+
+
+
+    syncInputWithSelect();
+}
+
+
+
+async function createToolFromSearch(
+
+    toolName,
+
+    tools,
+
+    toolSelect,
+
+    input,
+
+    dropdown
+
+) {
+
+    const cleanName =
+
+        String(toolName ?? "").trim();
+
+
+
+    if (!cleanName) {
+
+        return;
+
+    }
+
+
+
+    const existingTool =
+
+        tools.find(
+
+            tool =>
+
+                String(tool.name)
+
+                    .trim()
+
+                    .toLowerCase() ===
+
+                cleanName.toLowerCase()
+
+        );
+
+
+
+    if (existingTool) {
+
+        toolSelect.value =
+
+            String(existingTool.id);
+
+
+
+        toolSelect.dispatchEvent(
+
+            new Event(
+
+                "change",
+
+                { bubbles: true }
+
+            )
+
+        );
+
+        input.value = existingTool.name;
+
+        dropdown.classList.remove(
+
+            "tool-search-options-visible"
+
+        );
+
+        return;
+
+    }
+
+
+
+    input.disabled = true;
+
+
+
+    try {
+
+        const createdTool =
+
+            await createTool({
+
+                name: cleanName,
+
+                description:
+
+                    "Created from Ticket Creator",
+
+                is_active: true
+
+            });
+
+
+
+        tools.push(createdTool);
+
+
+
+        const option =
+
+            document.createElement("option");
+
+        option.value =
+
+            createdTool.id;
+
+        option.textContent =
+
+            createdTool.name;
+
+        toolSelect.appendChild(option);
+
+        toolSelect.value =
+
+            String(createdTool.id);
+
+
+
+        toolSelect.dispatchEvent(
+
+            new Event(
+
+                "change",
+
+                { bubbles: true }
+
+            )
+
+        );
+
+
+
+        input.value =
+
+            createdTool.name;
+
+
+
+        dropdown.classList.remove(
+
+            "tool-search-options-visible"
+
+        );
+
+
+
+        showSuccessMessage(
+
+            `Tool "${createdTool.name}" created successfully.`
+
+        );
+
+    } catch (error) {
+
+        console.error(
+
+            "Error creating tool:",
+
+            error
+
+        );
+
+
+
+        showErrorMessage(
+
+            "Could not create the tool."
+
+        );
+
+    } finally {
+
+        input.disabled = false;
+
+        input.focus();
+
+    }
+}
 
 
 
@@ -4133,9 +5081,913 @@ function updateTitleSuggestion() {
 
 
 
+
+function setupGenericSearchDropdowns() {
+
+    const configs = [
+
+        {
+            id: "location",
+            label: "Location",
+            create: async (name, description, extraData = {}) =>
+                createLocation({
+                    name,
+                    city: extraData.city || "",
+                    state: extraData.state || "",
+                    code: extraData.code || name,
+                    is_active: true,
+                    warehouse_management_system_id: null
+                })
+        },
+
+        {
+            id: "queue",
+            label: "Queue",
+            create: async (name, description) =>
+                createQueue({
+                    name,
+                    description: description || "Created from Ticket Creator",
+                    is_active: true
+                })
+        },
+
+        {
+            id: "issueType",
+            label: "Issue Type",
+            create: async (name, description) =>
+                createIssueType({
+                    name,
+                    description: description || "Created from Ticket Creator"
+                })
+        },
+
+        {
+            id: "troubleshootingTemplate",
+            label: "Troubleshooting Template",
+            create: async (name, description) =>
+                createTroubleshootingTemplate({
+                    name,
+                    steps: "",
+                    generated_description: description || "Created from Ticket Creator",
+                    is_active: true
+                })
+        },
+
+        {
+            id: "form",
+            label: "Form",
+            create: async (name, description) =>
+                createForm({
+                    name,
+                    description: description || "Created from Ticket Creator"
+                })
+        }
+    ];
+
+    configs.forEach(config => {
+
+        const select = document.getElementById(config.id);
+
+        if (!select || select.dataset.genericSearchReady === "true") {
+            return;
+        }
+
+        select.dataset.genericSearchReady = "true";
+
+        setupGenericSearchDropdown(select, config);
+    });
+}
+
+function setupGenericSearchDropdown(select, config) {
+
+    const existingWrapper = select.closest(".catalog-search-dropdown");
+
+    if (existingWrapper) {
+        existingWrapper.parentNode.insertBefore(select, existingWrapper);
+        existingWrapper.remove();
+    }
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "catalog-search-dropdown";
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.className = "catalog-search-input";
+    input.autocomplete = "off";
+    input.placeholder = `Search or select ${config.label.toLowerCase()}...`;
+    input.setAttribute("role", "combobox");
+    input.setAttribute("aria-expanded", "false");
+
+    const dropdown = document.createElement("div");
+    dropdown.className = "catalog-search-options";
+    dropdown.setAttribute("role", "listbox");
+
+    select.parentNode.insertBefore(wrapper, select);
+    wrapper.appendChild(input);
+    wrapper.appendChild(dropdown);
+    wrapper.appendChild(select);
+    select.style.display = "none";
+
+    let highlightedIndex = -1;
+    let visibleOptions = [];
+
+    function selectedName() {
+        const option = select.options[select.selectedIndex];
+        return option && option.value ? option.textContent.trim() : "";
+    }
+
+    function syncInput() {
+        input.value = selectedName();
+    }
+
+    function closeDropdown() {
+        dropdown.classList.remove("catalog-search-options-visible");
+        input.setAttribute("aria-expanded", "false");
+        highlightedIndex = -1;
+    }
+
+    function getOptions() {
+        return Array.from(select.options)
+            .filter(option => option.value && option.textContent.trim());
+    }
+
+    function selectValue(value) {
+        select.value = String(value);
+        select.dispatchEvent(new Event("change", { bubbles: true }));
+        syncInput();
+        closeDropdown();
+        markAutosaveDirty();
+    }
+
+    function renderOptions(searchValue = "") {
+
+        const query = searchValue.trim().toLowerCase();
+
+        dropdown.innerHTML = "";
+        visibleOptions = [];
+        highlightedIndex = -1;
+
+        // Search ALL options. Related/All is presentation only.
+        const allOptions = getOptions();
+
+        const options = allOptions.filter(option =>
+            !query || option.textContent.trim().toLowerCase().includes(query)
+        );
+
+        let currentGroup = null;
+
+        options.forEach(option => {
+            const parent = option.parentElement;
+            const groupLabel =
+                parent && parent.tagName === "OPTGROUP"
+                    ? parent.label
+                    : "";
+
+            if (groupLabel !== currentGroup) {
+                currentGroup = groupLabel;
+
+                if (groupLabel) {
+                    const groupHeader = document.createElement("div");
+                    groupHeader.className = "catalog-search-group-label";
+                    groupHeader.textContent = groupLabel;
+                    dropdown.appendChild(groupHeader);
+                }
+            }
+
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "catalog-search-option";
+            button.setAttribute("role", "option");
+            button.textContent = option.textContent.trim();
+            button.dataset.value = option.value;
+
+            button.addEventListener("mousedown", event => event.preventDefault());
+            button.addEventListener("click", () => selectValue(option.value));
+
+            dropdown.appendChild(button);
+            visibleOptions.push(button);
+        });
+
+        const exactMatch = allOptions.some(option =>
+            option.textContent.trim().toLowerCase() === query
+        );
+
+        if (query && !exactMatch) {
+            const addOption = document.createElement("button");
+            addOption.type = "button";
+            addOption.className = "catalog-search-option catalog-search-add";
+            addOption.innerHTML =
+                `<span class="catalog-search-add-icon">+</span>` +
+                `<span>Add "${escapeNotificationHtml(searchValue.trim())}"</span>`;
+
+            addOption.addEventListener("mousedown", event => event.preventDefault());
+            addOption.addEventListener("click", async () => {
+                await openCatalogCreateModal(
+                    config,
+                    searchValue.trim(),
+                    async result => {
+                        await refreshGenericDropdown(
+                            select,
+                            input,
+                            dropdown,
+                            result
+                        );
+                    }
+                );
+            });
+
+            dropdown.appendChild(addOption);
+            visibleOptions.push(addOption);
+        }
+
+        if (visibleOptions.length === 0) {
+            const empty = document.createElement("div");
+            empty.className = "catalog-search-empty";
+            empty.textContent = `No ${config.label.toLowerCase()}s found.`;
+            dropdown.appendChild(empty);
+        }
+    }
+
+    function openDropdown() {
+        renderOptions(input.value);
+        dropdown.classList.add("catalog-search-options-visible");
+        input.setAttribute("aria-expanded", "true");
+    }
+
+    async function handleKeyboard(event) {
+
+        if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+            event.preventDefault();
+
+            if (!dropdown.classList.contains("catalog-search-options-visible")) {
+                openDropdown();
+            }
+
+            if (!visibleOptions.length) return;
+
+            highlightedIndex = event.key === "ArrowDown"
+                ? Math.min(highlightedIndex + 1, visibleOptions.length - 1)
+                : highlightedIndex <= 0
+                    ? visibleOptions.length - 1
+                    : highlightedIndex - 1;
+
+            visibleOptions.forEach((option, index) => {
+                option.classList.toggle(
+                    "catalog-search-option-highlighted",
+                    index === highlightedIndex
+                );
+            });
+
+            return;
+        }
+
+        if (event.key === "Enter") {
+            event.preventDefault();
+
+            if (highlightedIndex >= 0 && visibleOptions[highlightedIndex]) {
+                visibleOptions[highlightedIndex].click();
+                return;
+            }
+
+            const value = input.value.trim();
+
+            if (!value) {
+                selectValue("");
+                return;
+            }
+
+            const exact = getOptions().find(option =>
+                option.textContent.trim().toLowerCase() === value.toLowerCase()
+            );
+
+            if (exact) {
+                selectValue(exact.value);
+                return;
+            }
+
+            await openCatalogCreateModal(
+                config,
+                value,
+                async result => {
+                    await refreshGenericDropdown(
+                        select,
+                        input,
+                        dropdown,
+                        result
+                    );
+                }
+            );
+        }
+
+        if (event.key === "Escape") {
+            syncInput();
+            closeDropdown();
+        }
+    }
+
+    input.addEventListener("focus", openDropdown);
+    input.addEventListener("input", openDropdown);
+    input.addEventListener("keydown", handleKeyboard);
+
+    input.addEventListener("blur", () => {
+        setTimeout(() => {
+            closeDropdown();
+            syncInput();
+        }, 150);
+    });
+
+    select.addEventListener("change", syncInput);
+
+    syncInput();
+}
+
+async function createTroubleshootingTemplateInline(
+    config,
+    name,
+    select,
+    input,
+    dropdown
+) {
+
+    const cleanName = name.trim();
+
+    if (!cleanName) {
+        return;
+    }
+
+    try {
+
+        const created = await config.create(
+            cleanName,
+            "Created from Ticket Creator"
+        );
+
+        if (!created) {
+            return;
+        }
+
+        await refreshGenericDropdown(
+            select,
+            input,
+            dropdown,
+            created
+        );
+
+        // A newly created template starts without troubleshooting steps.
+        // Unlock the existing ticket field so the user can enter the steps
+        // directly in Ticket Detail. No modal is required.
+        newlyCreatedTroubleshootingTemplateId = created.id;
+
+        const troubleshootingSteps =
+            document.getElementById("troubleshootingSteps");
+
+        if (troubleshootingSteps) {
+            troubleshootingSteps.readOnly = false;
+            troubleshootingSteps.value = "";
+            troubleshootingSteps.focus();
+            markAutosaveDirty();
+        }
+
+        showDetailNotification(
+            `Troubleshooting Template "${cleanName}" created. Add the troubleshooting steps below.`,
+            "success"
+        );
+
+        return created;
+
+    } catch (error) {
+
+        console.error(
+            "Error creating Troubleshooting Template:",
+            error
+        );
+
+        showDetailNotification(
+            "Error creating Troubleshooting Template.",
+            "error"
+        );
+    }
+}
+
+
+async function refreshGenericDropdown(select, input, dropdown, createdItem) {
+
+    if (!createdItem) return;
+
+    const option = document.createElement("option");
+    option.value = String(createdItem.id);
+    option.textContent = createdItem.name;
+
+    select.appendChild(option);
+    select.value = String(createdItem.id);
+    select.dispatchEvent(new Event("change", { bubbles: true }));
+
+    input.value = createdItem.name;
+    dropdown.classList.remove("catalog-search-options-visible");
+
+    markAutosaveDirty();
+
+    showDetailNotification(
+        `${createdItem.name} created successfully.`,
+        "success"
+    );
+}
+
+function openCatalogCreateModal(config, initialName, onCreated) {
+
+    return new Promise(resolve => {
+
+        const overlay = document.createElement("div");
+        overlay.className = "catalog-create-overlay";
+
+        const modal = document.createElement("div");
+        modal.className = "catalog-create-modal";
+        modal.setAttribute("role", "dialog");
+        modal.setAttribute("aria-modal", "true");
+
+        const isLocation = config.id === "location";
+        const isTroubleshooting = config.id === "troubleshootingTemplate";
+
+        modal.innerHTML = `
+            <div class="catalog-create-header">
+                <div>
+                    <div class="catalog-create-eyebrow">Quick Create</div>
+                    <h3>Add ${escapeNotificationHtml(config.label)}</h3>
+                </div>
+
+                <button
+                    type="button"
+                    class="catalog-create-close"
+                    aria-label="Close"
+                >×</button>
+            </div>
+
+            <div class="catalog-create-body">
+
+                <label>Name</label>
+                <input
+                    type="text"
+                    class="catalog-create-name"
+                    value="${escapeNotificationHtml(initialName)}"
+                    autocomplete="off"
+                >
+
+                ${isLocation ? `
+                    <label>City</label>
+                    <input
+                        type="text"
+                        class="catalog-create-city"
+                        autocomplete="off"
+                    >
+
+                    <label>State</label>
+                    <input
+                        type="text"
+                        class="catalog-create-state"
+                        autocomplete="off"
+                    >
+
+                    <label>Code</label>
+                    <input
+                        type="text"
+                        class="catalog-create-code"
+                        autocomplete="off"
+                    >
+                ` : `
+                    <label>Description</label>
+                    <textarea
+                        class="catalog-create-description"
+                        rows="3"
+                        placeholder="Optional description"
+                    ></textarea>
+
+                `}
+
+            </div>
+
+            <div class="catalog-create-actions">
+
+                <button
+                    type="button"
+                    class="button button-secondary catalog-create-cancel"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="button"
+                    class="button button-primary catalog-create-submit"
+                >
+                    Add ${escapeNotificationHtml(config.label)}
+                </button>
+
+            </div>
+        `;
+
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+
+        const nameInput = modal.querySelector(".catalog-create-name");
+        const descriptionInput = modal.querySelector(".catalog-create-description");
+        const cityInput = modal.querySelector(".catalog-create-city");
+        const stateInput = modal.querySelector(".catalog-create-state");
+        const codeInput = modal.querySelector(".catalog-create-code");
+
+        const closeButton = modal.querySelector(".catalog-create-close");
+        const cancelButton = modal.querySelector(".catalog-create-cancel");
+        const submitButton = modal.querySelector(".catalog-create-submit");
+
+        const close = () => {
+            overlay.remove();
+            resolve(null);
+        };
+
+        closeButton.addEventListener("click", close);
+        cancelButton.addEventListener("click", close);
+
+        overlay.addEventListener("mousedown", event => {
+            if (event.target === overlay) {
+                close();
+            }
+        });
+
+        const submit = async () => {
+
+            const name = nameInput.value.trim();
+
+            if (!name) {
+                nameInput.focus();
+                return;
+            }
+
+            if (isLocation) {
+
+                if (!cityInput.value.trim()) {
+                    cityInput.focus();
+                    return;
+                }
+
+                if (!stateInput.value.trim()) {
+                    stateInput.focus();
+                    return;
+                }
+
+                if (!codeInput.value.trim()) {
+                    codeInput.focus();
+                    return;
+                }
+            }
+
+            submitButton.disabled = true;
+            submitButton.textContent = "Adding…";
+
+            try {
+
+                let created;
+
+                if (isLocation) {
+
+                    created = await config.create(
+                        name,
+                        "",
+                        {
+                            city: cityInput.value.trim(),
+                            state: stateInput.value.trim(),
+                            code: codeInput.value.trim()
+                        }
+                    );
+
+                } else {
+
+                    created = await config.create(
+                        name,
+                        descriptionInput
+                            ? descriptionInput.value.trim()
+                            : "",
+                        {}
+                    );
+                }
+
+                overlay.remove();
+
+                await onCreated(created);
+
+                resolve(created);
+
+            } catch (error) {
+
+                console.error(
+                    `Error creating ${config.label}:`,
+                    error
+                );
+
+                showDetailNotification(
+                    `Error creating ${config.label}. Please check the required fields.`,
+                    "error"
+                );
+
+                submitButton.disabled = false;
+                submitButton.textContent =
+                    `Add ${config.label}`;
+            }
+        };
+
+        submitButton.addEventListener("click", submit);
+
+        nameInput.addEventListener("keydown", event => {
+
+            if (event.key === "Enter") {
+                event.preventDefault();
+                submit();
+            }
+
+            if (event.key === "Escape") {
+                close();
+            }
+        });
+
+        setTimeout(() => {
+            nameInput.focus();
+            nameInput.select();
+        }, 0);
+    });
+}
+
+function setupSaveTroubleshootingTemplateButton() {
+
+    const troubleshootingSteps =
+        document.getElementById("troubleshootingSteps");
+
+    if (!troubleshootingSteps) {
+        return;
+    }
+
+    const existingButton =
+        document.getElementById("saveTroubleshootingTemplateButton");
+
+    if (existingButton) {
+        return;
+    }
+
+    const button = document.createElement("button");
+
+    button.type = "button";
+    button.id = "saveTroubleshootingTemplateButton";
+    button.className = "button button-secondary";
+    button.textContent = "Save as a template?";
+    button.style.marginTop = "10px";
+    button.style.transition = "opacity 0.15s ease";
+
+    troubleshootingSteps.insertAdjacentElement("afterend", button);
+
+    // Keep the value that existed when the button was initialized.
+    // The button is only enabled when the user actually changes the
+    // troubleshooting steps from that original value.
+    let originalSteps = troubleshootingSteps.value;
+
+    const updateButtonState = () => {
+        const currentSteps = troubleshootingSteps.value;
+        const hasChanges = currentSteps !== originalSteps;
+
+        button.disabled = !hasChanges;
+
+        // Make the disabled state visually obvious.
+        button.style.opacity = button.disabled ? "0.5" : "1";
+        button.style.cursor = button.disabled
+            ? "not-allowed"
+            : "pointer";
+    };
+
+    // Called after a template has been successfully saved. The current
+    // steps are now the new saved state, so there are no pending changes.
+    button.markSaved = () => {
+        originalSteps = troubleshootingSteps.value;
+        updateButtonState();
+    };
+
+    troubleshootingSteps.addEventListener(
+        "input",
+        updateButtonState
+    );
+
+    button.addEventListener(
+        "click",
+        () => {
+            const steps = troubleshootingSteps.value.trim();
+
+            if (!steps) {
+                return;
+            }
+
+            openSaveTroubleshootingTemplateModal(steps);
+        }
+    );
+
+    updateButtonState();
+}
+
+function openSaveTroubleshootingTemplateModal(steps) {
+
+    const overlay = document.createElement("div");
+    overlay.className = "catalog-create-overlay";
+
+    const modal = document.createElement("div");
+    modal.className = "catalog-create-modal";
+    modal.setAttribute("role", "dialog");
+    modal.setAttribute("aria-modal", "true");
+
+    modal.innerHTML = `
+        <div class="catalog-create-header">
+            <div>
+                <div class="catalog-create-eyebrow">Save Template</div>
+                <h3>Save as a Troubleshooting Template</h3>
+            </div>
+
+            <button
+                type="button"
+                class="catalog-create-close"
+                aria-label="Close"
+            >×</button>
+        </div>
+
+        <div class="catalog-create-body">
+
+            <label for="saveTroubleshootingTemplateName">
+                Template Name
+            </label>
+
+            <input
+                type="text"
+                id="saveTroubleshootingTemplateName"
+                class="catalog-create-name"
+                autocomplete="off"
+                placeholder="Enter template name"
+            >
+
+        </div>
+
+        <div class="catalog-create-actions">
+
+            <button
+                type="button"
+                class="button button-secondary catalog-create-cancel"
+            >
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                class="button button-primary catalog-create-submit"
+            >
+                Save Template
+            </button>
+
+        </div>
+    `;
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    const nameInput =
+        modal.querySelector("#saveTroubleshootingTemplateName");
+
+    const closeButton =
+        modal.querySelector(".catalog-create-close");
+
+    const cancelButton =
+        modal.querySelector(".catalog-create-cancel");
+
+    const submitButton =
+        modal.querySelector(".catalog-create-submit");
+
+    const close = () => {
+        overlay.remove();
+    };
+
+    closeButton.addEventListener("click", close);
+    cancelButton.addEventListener("click", close);
+
+    overlay.addEventListener("mousedown", event => {
+        if (event.target === overlay) {
+            close();
+        }
+    });
+
+    const submit = async () => {
+
+        const name = nameInput.value.trim();
+
+        if (!name) {
+            nameInput.focus();
+            return;
+        }
+
+        submitButton.disabled = true;
+        submitButton.textContent = "Saving…";
+
+        try {
+
+            const created =
+                await createTroubleshootingTemplate({
+                    name,
+                    steps,
+                    generated_description: "Created from Ticket",
+                    is_active: true
+                });
+
+            if (!created) {
+                throw new Error("Template was not created");
+            }
+
+            // Refresh the normal Troubleshooting Template dropdown so
+            // the new template appears in the regular Related/All lists.
+            const issueTypeSelect =
+                document.getElementById("issueType");
+
+            const issueTypeId =
+                issueTypeSelect?.value
+                    ? Number(issueTypeSelect.value)
+                    : null;
+
+            const troubleshootingTemplateSelect =
+                document.getElementById("troubleshootingTemplate");
+
+            await loadTroubleshootingTemplates(
+                issueTypeId,
+                created.id
+            );
+
+            if (troubleshootingTemplateSelect) {
+                troubleshootingTemplateSelect.value =
+                    String(created.id);
+
+                troubleshootingTemplateSelect.dispatchEvent(
+                    new Event("change", { bubbles: true })
+                );
+            }
+
+            overlay.remove();
+
+            const saveAsTemplateButton =
+                document.getElementById("saveTroubleshootingTemplateButton");
+
+            if (saveAsTemplateButton) {
+                if (typeof saveAsTemplateButton.markSaved === "function") {
+                    saveAsTemplateButton.markSaved();
+                } else {
+                    saveAsTemplateButton.disabled = true;
+                    saveAsTemplateButton.style.opacity = "0.5";
+                    saveAsTemplateButton.style.cursor = "not-allowed";
+                }
+            }
+
+            markAutosaveDirty();
+
+            showDetailNotification(
+                `Troubleshooting Template "${name}" saved successfully.`,
+                "success"
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Error saving Troubleshooting Template:",
+                error
+            );
+
+            showDetailNotification(
+                "Error saving Troubleshooting Template.",
+                "error"
+            );
+
+            submitButton.disabled = false;
+            submitButton.textContent = "Save Template";
+        }
+    };
+
+    submitButton.addEventListener("click", submit);
+
+    nameInput.addEventListener("keydown", event => {
+
+        if (event.key === "Enter") {
+            event.preventDefault();
+            submit();
+        }
+
+        if (event.key === "Escape") {
+            close();
+        }
+    });
+
+    setTimeout(() => {
+        nameInput.focus();
+    }, 0);
+}
+
 function setupEventListeners() {
 
     setupAutosaveListeners();
+    setupSaveTroubleshootingTemplateButton();
 
 
 
@@ -4793,8 +6645,6 @@ function setupEventListeners() {
 
             ).value = suggestion;
 
-            markAutosaveDirty();
-
             showSuccessMessage("Title suggestion applied.");
 
         }
@@ -5247,8 +7097,6 @@ function generateTicket() {
 
         ticketText || "-";
 
-    markAutosaveDirty();
-
     if (ticketText) showSuccessMessage("Ticket generated.");
 
 }
@@ -5475,8 +7323,6 @@ function generateTimeEntry() {
 
         timeEntryText;
 
-    markAutosaveDirty();
-
     if (timeEntryText) showSuccessMessage("Time Entry generated.");
 
 }
@@ -5520,7 +7366,13 @@ function setupAutosaveListeners() {
                 : "input";
 
         element.addEventListener(eventName, () => {
-            markAutosaveDirty();
+            autosaveDirty = true;
+
+            if (autosaveTimer) clearTimeout(autosaveTimer);
+
+            autosaveTimer = setTimeout(() => {
+                saveTicket({ silent: true });
+            }, 900);
         });
     });
 }

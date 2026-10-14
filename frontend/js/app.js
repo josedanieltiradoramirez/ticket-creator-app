@@ -986,6 +986,11 @@ async function loadTicketsByDay() {
 }
 
 function switchView(view) {
+    // This script can also be loaded on pages that do not contain the tickets UI.
+    if (!todayView || !byDayView || !allTicketsView || !ticketsTableContainer || !pagination || !filtersContainer || !ticketsViewLabel) {
+        return;
+    }
+
     activeView = view;
     document.querySelectorAll(".tickets-tab").forEach(tab => {
         const selected = tab.dataset.view === view;
@@ -1013,14 +1018,14 @@ function switchView(view) {
 // =========================
 // PAGINATION
 // =========================
-previousPageButton.addEventListener("click", () => {
+previousPageButton?.addEventListener("click", () => {
     if (currentPage > 1) {
         currentPage--;
         loadAllTickets();
     }
 });
 
-nextPageButton.addEventListener("click", () => {
+nextPageButton?.addEventListener("click", () => {
     currentPage++;
     loadAllTickets();
 });
@@ -1028,10 +1033,12 @@ nextPageButton.addEventListener("click", () => {
 // =========================
 // FILTERS (ALL TICKETS)
 // =========================
-applyFiltersButton.addEventListener("click", applyFilters);
-clearFiltersButton.addEventListener("click", clearFilters);
+applyFiltersButton?.addEventListener("click", applyFilters);
+clearFiltersButton?.addEventListener("click", clearFilters);
 
 [ticketNumberFilter, userNameFilter].forEach(input => {
+    if (!input) return;
+
     input.addEventListener("keydown", event => {
         if (event.key === "Enter") applyFilters();
     });
@@ -1512,7 +1519,7 @@ document.addEventListener("keydown", event => {
 // =========================
 // NEW TICKET — AVAILABLE IN EVERY TAB
 // =========================
-document.getElementById("newTicketButton").addEventListener("click", () => {
+document.getElementById("newTicketButton")?.addEventListener("click", () => {
     window.location.href = "ticket-detail.html?new=true";
 });
 
@@ -1531,6 +1538,13 @@ if (backToDaysButton) {
 // INITIAL LOAD
 // =========================
 async function initialize() {
+    // app.js is shared by multiple pages. Only initialize the ticket index
+    // when its ticket-page elements are actually present. This prevents
+    // unauthenticated pages such as Login from making API requests.
+    if (!statusFilter || !issueTypeFilter || !priorityFilter || !queueFilter || !toolFilter || !locationFilter) {
+        return;
+    }
+
     await Promise.all([
         loadStatuses(), loadIssueTypes(), loadPriorities(), loadQueues(), loadTools(), loadLocations()
     ]);

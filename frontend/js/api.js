@@ -2029,24 +2029,69 @@ async function createTroubleshootingTemplate(
 
             headers: {
                 ...getAuthHeaders(),
-                "Content-Type":
-                    "application/json"
+                "Content-Type": "application/json"
             },
 
-            body:
-                JSON.stringify(templateData)
+            body: JSON.stringify(templateData)
         }
     );
 
     if (!response.ok) {
-        throw new Error(
-            "Error creating troubleshooting template"
-        );
+
+        let errorMessage =
+            "Error creating troubleshooting template";
+
+        try {
+
+            const errorData =
+                await response.json();
+
+            console.error(
+                "Troubleshooting Template API error:",
+                errorData
+            );
+
+            if (errorData.detail) {
+
+                if (Array.isArray(errorData.detail)) {
+
+                    errorMessage =
+                        errorData.detail
+                            .map(error => {
+
+                                const field =
+                                    error.loc
+                                        ? error.loc.join(".")
+                                        : "field";
+
+                                return `${field}: ${error.msg}`;
+
+                            })
+                            .join("\n");
+
+                } else {
+
+                    errorMessage =
+                        String(errorData.detail);
+
+                }
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Could not parse API error:",
+                error
+            );
+
+        }
+
+        throw new Error(errorMessage);
     }
 
     return await response.json();
 }
-
 
 
 async function updateTroubleshootingTemplate(
