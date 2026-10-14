@@ -5713,6 +5713,273 @@ function openCatalogCreateModal(config, initialName, onCreated) {
     });
 }
 
+
+function setupSaveFormTemplateButton() {
+
+    const formContent =
+        document.getElementById("formContent");
+
+    if (!formContent) {
+        return;
+    }
+
+    const existingButton =
+        document.getElementById("saveFormTemplateButton");
+
+    if (existingButton) {
+        return;
+    }
+
+    const button = document.createElement("button");
+
+    button.type = "button";
+    button.id = "saveFormTemplateButton";
+    button.className = "button button-secondary";
+    button.textContent = "Save as a template?";
+    button.style.marginTop = "10px";
+    button.style.transition = "opacity 0.15s ease";
+
+    formContent.insertAdjacentElement("afterend", button);
+
+    // The current form content is the saved baseline. The button only
+    // becomes available when the user changes the content.
+    let originalContent = formContent.value;
+
+    const updateButtonState = () => {
+        const currentContent = formContent.value;
+        const hasChanges = currentContent !== originalContent;
+
+        button.disabled = !hasChanges;
+        button.style.opacity = button.disabled ? "0.5" : "1";
+        button.style.cursor = button.disabled
+            ? "not-allowed"
+            : "pointer";
+    };
+
+    button.markSaved = () => {
+        originalContent = formContent.value;
+        updateButtonState();
+    };
+
+    formContent.addEventListener(
+        "input",
+        updateButtonState
+    );
+
+    button.addEventListener(
+        "click",
+        () => {
+            const content = formContent.value.trim();
+
+            if (!content) {
+                return;
+            }
+
+            openSaveFormTemplateModal(content);
+        }
+    );
+
+    updateButtonState();
+}
+
+function openSaveFormTemplateModal(content) {
+
+    const overlay = document.createElement("div");
+    overlay.className = "catalog-create-overlay";
+
+    const modal = document.createElement("div");
+    modal.className = "catalog-create-modal";
+    modal.setAttribute("role", "dialog");
+    modal.setAttribute("aria-modal", "true");
+
+    modal.innerHTML = `
+        <div class="catalog-create-header">
+            <div>
+                <div class="catalog-create-eyebrow">Save Template</div>
+                <h3>Save as a Form Template</h3>
+            </div>
+
+            <button
+                type="button"
+                class="catalog-create-close"
+                aria-label="Close"
+            >×</button>
+        </div>
+
+        <div class="catalog-create-body">
+
+            <label for="saveFormTemplateName">
+                Template Name
+            </label>
+
+            <input
+                type="text"
+                id="saveFormTemplateName"
+                class="catalog-create-name"
+                autocomplete="off"
+                placeholder="Enter template name"
+            >
+
+        </div>
+
+        <div class="catalog-create-actions">
+
+            <button
+                type="button"
+                class="button button-secondary catalog-create-cancel"
+            >
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                class="button button-primary catalog-create-submit"
+            >
+                Save Template
+            </button>
+
+        </div>
+    `;
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    const nameInput =
+        modal.querySelector("#saveFormTemplateName");
+
+    const closeButton =
+        modal.querySelector(".catalog-create-close");
+
+    const cancelButton =
+        modal.querySelector(".catalog-create-cancel");
+
+    const submitButton =
+        modal.querySelector(".catalog-create-submit");
+
+    const close = () => {
+        overlay.remove();
+    };
+
+    closeButton.addEventListener("click", close);
+    cancelButton.addEventListener("click", close);
+
+    overlay.addEventListener("mousedown", event => {
+        if (event.target === overlay) {
+            close();
+        }
+    });
+
+    const submit = async () => {
+
+        const name = nameInput.value.trim();
+
+        if (!name) {
+            nameInput.focus();
+            return;
+        }
+
+        submitButton.disabled = true;
+        submitButton.textContent = "Saving…";
+
+        try {
+
+            // The form content is stored as the Form description because
+            // the current Form API exposes description as the template body.
+            const created =
+                await createForm({
+                    name,
+                    description: content,
+                    is_active: true
+                });
+
+            if (!created) {
+                throw new Error("Form was not created");
+            }
+
+            const issueTypeSelect =
+                document.getElementById("issueType");
+
+            const issueTypeId =
+                issueTypeSelect?.value
+                    ? Number(issueTypeSelect.value)
+                    : null;
+
+            const formSelect =
+                document.getElementById("form");
+
+            await loadForms(
+                issueTypeId,
+                created.id
+            );
+
+            if (formSelect) {
+                formSelect.value = String(created.id);
+
+                formSelect.dispatchEvent(
+                    new Event("change", { bubbles: true })
+                );
+            }
+
+            // Keep the form content in the ticket. The newly created form
+            // now represents the saved baseline for the button.
+            const saveAsTemplateButton =
+                document.getElementById("saveFormTemplateButton");
+
+            if (saveAsTemplateButton) {
+                if (typeof saveAsTemplateButton.markSaved === "function") {
+                    saveAsTemplateButton.markSaved();
+                } else {
+                    saveAsTemplateButton.disabled = true;
+                    saveAsTemplateButton.style.opacity = "0.5";
+                    saveAsTemplateButton.style.cursor = "not-allowed";
+                }
+            }
+
+            overlay.remove();
+
+            markAutosaveDirty();
+
+            showDetailNotification(
+                `Form Template "${name}" saved successfully.`,
+                "success"
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Error saving Form Template:",
+                error
+            );
+
+            showDetailNotification(
+                "Error saving Form Template.",
+                "error"
+            );
+
+            submitButton.disabled = false;
+            submitButton.textContent = "Save Template";
+        }
+    };
+
+    submitButton.addEventListener("click", submit);
+
+    nameInput.addEventListener("keydown", event => {
+
+        if (event.key === "Enter") {
+            event.preventDefault();
+            submit();
+        }
+
+        if (event.key === "Escape") {
+            close();
+        }
+    });
+
+    setTimeout(() => {
+        nameInput.focus();
+    }, 0);
+}
+
 function setupSaveTroubleshootingTemplateButton() {
 
     const troubleshootingSteps =
@@ -5988,6 +6255,7 @@ function setupEventListeners() {
 
     setupAutosaveListeners();
     setupSaveTroubleshootingTemplateButton();
+    setupSaveFormTemplateButton();
 
 
 

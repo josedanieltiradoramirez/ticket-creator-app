@@ -1886,11 +1886,60 @@ async function createForm(formData) {
         }
     );
 
+
     if (!response.ok) {
+
+        let errorData = null;
+
+        try {
+            errorData = await response.json();
+        } catch (error) {
+            errorData = null;
+        }
+
+
+        console.error(
+            "Form API error:",
+            errorData
+        );
+
+
+        const detail =
+            errorData?.detail;
+
+
+        if (Array.isArray(detail)) {
+
+            const message =
+                detail
+                    .map(error => {
+
+                        const location =
+                            error.loc
+                                ?.join(".") ||
+                            "unknown";
+
+                        return `${location}: ${error.msg}`;
+
+                    })
+                    .join("\n");
+
+
+            throw new Error(
+                message ||
+                "Error creating form"
+            );
+
+        }
+
+
         throw new Error(
+            detail ||
             "Error creating form"
         );
+
     }
+
 
     return await response.json();
 }
