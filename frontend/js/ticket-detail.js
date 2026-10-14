@@ -10,9 +10,13 @@ const params = new URLSearchParams(window.location.search);
 
 
 
-const ticketId = params.get("id");
+let ticketId = params.get("id");
 
-const isNewTicket = params.get("new") === "true";
+let isNewTicket = params.get("new") === "true";
+
+let autosaveTimer = null;
+let autosaveDirty = false;
+let autosaveInProgress = false;
 
 
 
@@ -155,6 +159,70 @@ async function initializeNewTicket() {
 
 
 // ============================================================
+
+// TICKET DETAIL NOTIFICATIONS
+
+// ============================================================
+
+function showDetailNotification(message, type = "info", duration = 3000) {
+
+    let container = document.getElementById("notificationContainer");
+
+    if (!container) {
+        container = document.createElement("div");
+        container.id = "notificationContainer";
+        document.body.appendChild(container);
+    }
+
+    const notification = document.createElement("div");
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <span class="notification-icon">${getNotificationIcon(type)}</span>
+        <span class="notification-message">${escapeNotificationHtml(message)}</span>
+        <button type="button" class="notification-close" aria-label="Close notification">×</button>
+    `;
+
+    container.appendChild(notification);
+    requestAnimationFrame(() => notification.classList.add("notification-visible"));
+
+    const closeButton = notification.querySelector(".notification-close");
+    if (closeButton) {
+        closeButton.addEventListener("click", () => removeDetailNotification(notification));
+    }
+
+    if (duration > 0) {
+        setTimeout(() => removeDetailNotification(notification), duration);
+    }
+}
+
+function showSuccessMessage(message) { showDetailNotification(message, "success", 3000); }
+function showErrorMessage(message) { showDetailNotification(message, "error", 4000); }
+function showWarningMessage(message) { showDetailNotification(message, "warning", 3500); }
+function showInfoMessage(message) { showDetailNotification(message, "info", 3000); }
+
+function removeDetailNotification(notification) {
+    if (!notification) return;
+    notification.classList.remove("notification-visible");
+    setTimeout(() => notification.remove(), 180);
+}
+
+function getNotificationIcon(type) {
+    switch (type) {
+        case "success": return "✓";
+        case "error": return "!";
+        case "warning": return "⚠";
+        default: return "i";
+    }
+}
+
+function escapeNotificationHtml(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
 
 // LOAD TICKET
 
@@ -658,11 +726,7 @@ async function loadTicket() {
 
 
 
-        alert(
-
-            "Error loading ticket."
-
-        );
+        showErrorMessage("Error loading ticket.");
 
     }
 
@@ -3222,11 +3286,7 @@ async function copyFormPreview() {
 
 
 
-        alert(
-
-            "Form copied to clipboard."
-
-        );
+        showSuccessMessage("Form copied to clipboard.");
 
 
 
@@ -3298,11 +3358,7 @@ async function copyTicketPreview() {
 
 
 
-        alert(
-
-            "Ticket copied to clipboard."
-
-        );
+        showSuccessMessage("Ticket copied to clipboard.");
 
 
 
@@ -3374,11 +3430,7 @@ async function copyTimeEntryPreview() {
 
 
 
-        alert(
-
-            "Time Entry copied to clipboard."
-
-        );
+        showSuccessMessage("Time Entry copied to clipboard.");
 
 
 
@@ -3452,11 +3504,7 @@ async function copyTemplatePreview() {
 
 
 
-        alert(
-
-            "Template copied to clipboard."
-
-        );
+        showSuccessMessage("Template copied to clipboard.");
 
 
 
@@ -3598,11 +3646,7 @@ async function useCurrentTemplate() {
 
 
 
-        alert(
-
-            "Please select a troubleshooting template first."
-
-        );
+        showWarningMessage("Please select a troubleshooting template first.");
 
 
 
@@ -3640,11 +3684,7 @@ async function useCurrentTemplate() {
 
 
 
-            alert(
-
-                "This template has no associated Knowledge Base articles."
-
-            );
+            showInfoMessage("This template has no associated Knowledge Base articles.");
 
 
 
@@ -3734,11 +3774,7 @@ async function useCurrentTemplate() {
 
 
 
-        alert(
-
-            "Error adding Knowledge Base articles."
-
-        );
+        showErrorMessage("Error adding Knowledge Base articles.");
 
     }
 
@@ -3932,11 +3968,7 @@ async function removeUsedKnowledgeBase(
 
 
 
-        alert(
-
-            "Error removing Knowledge Base article."
-
-        );
+        showErrorMessage("Error removing Knowledge Base article.");
 
     }
 
@@ -4038,13 +4070,18 @@ function updateTitleSuggestion() {
 
     // TOOL NAME
 
-    const toolName =
+    const selectedTool =
 
         toolSelect.options[
 
             toolSelect.selectedIndex
 
-        ]?.textContent ?? "";
+        ];
+
+    const toolName =
+        selectedTool?.value
+            ? selectedTool.textContent.trim()
+            : "";
 
 
 
@@ -4098,6 +4135,8 @@ function updateTitleSuggestion() {
 
 function setupEventListeners() {
 
+    setupAutosaveListeners();
+
 
 
 
@@ -4111,25 +4150,34 @@ function setupEventListeners() {
 
 
     document.getElementById(
-
         "backButton"
-
     ).addEventListener(
-
         "click",
+        async () => {
 
-        () => {
+            if (autosaveTimer) {
+                clearTimeout(autosaveTimer);
+                autosaveTimer = null;
+            }
 
+            try {
+                if (autosaveDirty) {
+                    await saveTicket({
+                        silent: true,
+                        force: true
+                    });
+                }
+            } catch (error) {
+                console.error("Error saving before leaving:", error);
+                showDetailNotification(
+                    "Changes could not be saved. Please try again.",
+                    "error"
+                );
+                return;
+            }
 
-
-            window.location.href =
-
-                "index.html";
-
-
-
+            window.location.href = "index.html";
         }
-
     );
 
 
@@ -4611,6 +4659,19 @@ function setupEventListeners() {
     );
 
 
+    document.getElementById(
+
+        "tool"
+
+    ).addEventListener(
+
+        "change",
+
+        updateTitleSuggestion
+
+    );
+
+
 
 
 
@@ -4666,11 +4727,21 @@ function setupEventListeners() {
 
 
 
-            await navigator.clipboard.writeText(
+            try {
 
-                suggestion
+                await navigator.clipboard.writeText(
 
-            );
+                    suggestion
+
+                );
+
+                showSuccessMessage("Title suggestion copied to clipboard.");
+
+            } catch (error) {
+
+                console.error("Error copying title suggestion:", error);
+                showErrorMessage("Unable to copy title suggestion.");
+            }
 
         }
 
@@ -4721,6 +4792,10 @@ function setupEventListeners() {
                 "ticketTitle"
 
             ).value = suggestion;
+
+            markAutosaveDirty();
+
+            showSuccessMessage("Title suggestion applied.");
 
         }
 
@@ -5172,6 +5247,10 @@ function generateTicket() {
 
         ticketText || "-";
 
+    markAutosaveDirty();
+
+    if (ticketText) showSuccessMessage("Ticket generated.");
+
 }
 
 
@@ -5396,6 +5475,10 @@ function generateTimeEntry() {
 
         timeEntryText;
 
+    markAutosaveDirty();
+
+    if (timeEntryText) showSuccessMessage("Time Entry generated.");
+
 }
 
 
@@ -5403,247 +5486,143 @@ function generateTimeEntry() {
 // ============================================================
 
 // SAVE TICKET
-
 // ============================================================
 
+function markAutosaveDirty() {
+    autosaveDirty = true;
 
+    if (autosaveTimer) {
+        clearTimeout(autosaveTimer);
+    }
 
-async function saveTicket() {
+    autosaveTimer = setTimeout(() => {
+        saveTicket({ silent: true });
+    }, 900);
+}
+
+function setupAutosaveListeners() {
+
+    const editableFields = [
+        "ticketNumber", "ticketTitle", "userName", "userEmail",
+        "userPhone", "userType", "shortIssue", "issueDescription",
+        "troubleshootingSteps", "additionalNotes", "formContent",
+        "isRouted", "form", "tool", "location", "priority",
+        "issueType", "troubleshootingTemplate", "status", "queue"
+    ];
+
+    editableFields.forEach(id => {
+        const element = document.getElementById(id);
+        if (!element) return;
+
+        const eventName =
+            element.type === "checkbox" || element.tagName === "SELECT"
+                ? "change"
+                : "input";
+
+        element.addEventListener(eventName, () => {
+            markAutosaveDirty();
+        });
+    });
+}
+
+function buildTicketData() {
+    return {
+        ticket_number: document.getElementById("ticketNumber").value,
+        title: document.getElementById("ticketTitle").value,
+        user_name: document.getElementById("userName").value,
+        user_email: document.getElementById("userEmail").value,
+        user_best_contact_number: document.getElementById("userPhone").value,
+        user_type: document.getElementById("userType").value,
+        short_issue: document.getElementById("shortIssue").value,
+        issue_description: document.getElementById("issueDescription").value,
+        troubleshooting_steps: document.getElementById("troubleshootingSteps").value,
+        additional_notes: document.getElementById("additionalNotes").value,
+        form_content: document.getElementById("formContent").value,
+        is_routed: document.getElementById("isRouted").checked,
+        generated_ticket: document.getElementById("ticketPreview").textContent,
+        generated_time_entry: document.getElementById("timeEntryPreview").textContent,
+        form_template_id: document.getElementById("form").value ? Number(document.getElementById("form").value) : null,
+        tool_id: document.getElementById("tool").value ? Number(document.getElementById("tool").value) : null,
+        location_id: document.getElementById("location").value ? Number(document.getElementById("location").value) : null,
+        priority_id: document.getElementById("priority").value ? Number(document.getElementById("priority").value) : null,
+        issue_type_id: document.getElementById("issueType").value ? Number(document.getElementById("issueType").value) : null,
+        troubleshooting_template_id: document.getElementById("troubleshootingTemplate").value ? Number(document.getElementById("troubleshootingTemplate").value) : null,
+        status_id: document.getElementById("status").value ? Number(document.getElementById("status").value) : null,
+        queue_id: document.getElementById("queue").value ? Number(document.getElementById("queue").value) : null
+    };
+}
+
+async function saveTicket(options = {}) {
+
+    const { silent = false, force = false } = options;
+
+    if (autosaveInProgress) return;
+    if (!force && !autosaveDirty) return;
+
+    if (autosaveTimer) {
+        clearTimeout(autosaveTimer);
+        autosaveTimer = null;
+    }
+
+    autosaveInProgress = true;
 
     const saveButton = document.getElementById("saveButton");
     const originalSaveText = saveButton?.textContent || "Save Changes";
-    if (saveButton) { saveButton.disabled = true; saveButton.textContent = "Saving…"; }
 
-    const ticketData = {
+    if (!silent && saveButton) {
+        saveButton.disabled = true;
+        saveButton.textContent = "Saving…";
+    }
 
-        ticket_number:
-
-            document.getElementById("ticketNumber").value,
-
-
-
-        title:
-
-            document.getElementById("ticketTitle").value,
-
-
-
-        user_name:
-
-            document.getElementById("userName").value,
-
-
-
-        user_email:
-
-            document.getElementById("userEmail").value,
-
-
-
-        user_best_contact_number:
-
-            document.getElementById("userPhone").value,
-
-
-
-        user_type:
-
-            document.getElementById("userType").value,
-
-
-
-        short_issue:
-
-            document.getElementById("shortIssue").value,
-
-
-
-        issue_description:
-
-            document.getElementById("issueDescription").value,
-
-
-
-        troubleshooting_steps:
-
-            document.getElementById("troubleshootingSteps").value,
-
-
-
-        additional_notes:
-
-            document.getElementById("additionalNotes").value,
-
-
-
-        form_content:
-
-            document.getElementById("formContent").value,
-
-
-
-        is_routed:
-
-            document.getElementById("isRouted").checked,
-
-
-
-        generated_ticket:
-
-            document.getElementById("ticketPreview").textContent,
-
-
-
-        generated_time_entry:
-
-            document.getElementById("timeEntryPreview").textContent,
-
-
-
-        form_template_id:
-
-            document.getElementById("form").value
-
-                ? Number(document.getElementById("form").value)
-
-                : null,
-
-
-
-        tool_id:
-
-            document.getElementById("tool").value
-
-                ? Number(document.getElementById("tool").value)
-
-                : null,
-
-
-
-        location_id:
-
-            document.getElementById("location").value
-
-                ? Number(document.getElementById("location").value)
-
-                : null,
-
-
-
-        priority_id:
-
-            document.getElementById("priority").value
-
-                ? Number(document.getElementById("priority").value)
-
-                : null,
-
-
-
-        issue_type_id:
-
-            document.getElementById("issueType").value
-
-                ? Number(document.getElementById("issueType").value)
-
-                : null,
-
-
-
-        troubleshooting_template_id:
-
-            document.getElementById("troubleshootingTemplate").value
-
-                ? Number(document.getElementById("troubleshootingTemplate").value)
-
-                : null,
-
-
-
-        status_id:
-
-            document.getElementById("status").value
-
-                ? Number(document.getElementById("status").value)
-
-                : null,
-
-
-
-        queue_id:
-
-            document.getElementById("queue").value
-
-                ? Number(document.getElementById("queue").value)
-
-                : null
-
-    };
-
-
+    const ticketData = buildTicketData();
 
     try {
 
+        if (isNewTicket || !ticketId) {
+            const createdTicket = await createTicket(ticketData);
 
+            ticketId = createdTicket.id;
+            isNewTicket = false;
 
-        // NEW TICKET
+            window.history.replaceState(
+                {},
+                "",
+                `ticket-detail.html?id=${createdTicket.id}`
+            );
 
-        if (isNewTicket) {
+            autosaveDirty = false;
 
+            if (!silent) {
+                showDetailNotification("Ticket created successfully.", "success");
+            }
 
-
-            const createdTicket =
-
-                await createTicket(ticketData);
-
-
-
-            window.location.href =
-
-                `ticket-detail.html?id=${createdTicket.id}`;
-
-
-
-            return;
-
+            return createdTicket;
         }
 
+        await updateTicket(ticketId, ticketData);
+        autosaveDirty = false;
 
-
-        // EXISTING TICKET
-
-        await updateTicket(
-
-            ticketId,
-
-            ticketData
-
-        );
-
-
-
-        showDetailNotification("Ticket updated successfully.", "success");
-
-
+        if (!silent) {
+            showDetailNotification("Ticket updated successfully.", "success");
+        }
 
     } catch (error) {
 
+        console.error("Error saving ticket:", error);
+        autosaveDirty = true;
 
+        if (!silent) {
+            showDetailNotification("Error saving ticket. Please try again.", "error");
+        }
 
-        console.error(
-
-            "Error saving ticket:",
-
-            error
-
-        );
-
-
-
-        showDetailNotification("Error saving ticket. Please try again.", "error");
+        throw error;
 
     } finally {
-        if (saveButton) { saveButton.disabled = false; saveButton.textContent = originalSaveText; }
-    }
+        autosaveInProgress = false;
 
+        if (!silent && saveButton) {
+            saveButton.disabled = false;
+            saveButton.textContent = originalSaveText;
+        }
+    }
 }

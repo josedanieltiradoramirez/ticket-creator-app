@@ -1,22 +1,1120 @@
-/* Ticket Detail Page refinements — keeps the existing fields and API workflow. */
-.ticket-page { max-width: 1600px; margin: 0 auto; padding: 24px clamp(14px,2.5vw,36px) 40px; }
-.ticket-main { min-width: 0; }
-.ticket-header { position: sticky; top: 0; z-index: 40; display:flex; align-items:flex-end; justify-content:space-between; gap:20px; padding:16px 0; margin-bottom:18px; background:rgb(255 255 255 / 96%); backdrop-filter:blur(10px); border-bottom:1px solid #e5e7eb; }
-.ticket-header-left { display:flex; align-items:flex-end; flex:1; gap:16px; min-width:0; }
-.ticket-header .header-field { min-width:150px; }
-.ticket-header .ticket-title-field { flex:1; min-width:220px; }
-.ticket-header-actions { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
-.ticket-section { border:1px solid #e5e7eb; border-radius:12px; background:#fff; box-shadow:0 2px 8px rgb(15 23 42 / 3%); margin-bottom:16px; padding:20px; }
-.section-title { margin-bottom:18px; color:#262626; font-size:15px; font-weight:700; }
-.user-column-title,.component-card-title { margin-bottom:14px; color:#404040; font-size:12px; font-weight:700; letter-spacing:.035em; text-transform:uppercase; }
-.ticket-field input,.ticket-field select,.ticket-field textarea,.header-field input { max-width:100%; box-sizing:border-box; border-radius:7px; border-color:#d4d4d4; transition:border-color .15s ease,box-shadow .15s ease; }
-.ticket-field input:focus,.ticket-field select:focus,.ticket-field textarea:focus,.header-field input:focus { border-color:#94a3b8; box-shadow:0 0 0 3px rgb(100 116 139 / 12%); outline:none; }
-.component-card { border:1px solid #e5e7eb; border-radius:10px; background:#fcfcfc; padding:16px; min-width:0; }
-.component-content,.component-preview,.sidebar-preview { overflow-wrap:anywhere; white-space:pre-wrap; }
-.button:disabled,.preview-copy-button:disabled { opacity:.6; cursor:wait; }
-.ticket-detail-notifications { position:fixed; top:16px; right:16px; z-index:2000; display:flex; flex-direction:column; gap:8px; max-width:min(420px,calc(100vw - 32px)); }
-.ticket-detail-notification { padding:12px 15px; border:1px solid #d1d5db; border-radius:9px; background:#fff; color:#333; box-shadow:0 8px 25px rgb(15 23 42 / 12%); font-size:13px; line-height:1.45; animation:ticketDetailToastIn .18s ease-out; }
-.ticket-detail-notification.notification-success { border-color:#bbf7d0; background:#f0fdf4; color:#166534; }
-.ticket-detail-notification.notification-error { border-color:#fecaca; background:#fff1f2; color:#b91c1c; }
-@keyframes ticketDetailToastIn { from { transform:translateY(-6px); opacity:0; } to { transform:translateY(0); opacity:1; } }
-@media (max-width:800px) { .ticket-page { padding:12px 12px 28px; } .ticket-header { position:static; align-items:stretch; flex-direction:column; } .ticket-header-left { flex-direction:column; align-items:stretch; } .ticket-header .header-field,.ticket-header .ticket-title-field { min-width:0; width:100%; } .ticket-header-actions { justify-content:flex-start; } .ticket-section { padding:15px; } }
+/*
+ * Ticket Detail — visual layer
+ *
+ * Visual-only redesign.
+ * Does not modify HTML IDs, JavaScript hooks or functionality.
+ */
+
+
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+
+.ticket-page {
+    --td-text: #20242b;
+    --td-text-soft: #667085;
+    --td-text-muted: #98a2b3;
+
+    --td-border: #e5e7eb;
+    --td-border-soft: #edf0f3;
+
+    --td-background: #f7f8fa;
+    --td-surface: #ffffff;
+    --td-surface-soft: #fafbfc;
+
+    --td-blue: #3f67d8;
+    --td-blue-soft: #f3f6ff;
+
+    --td-green: #3f7d50;
+    --td-green-soft: #f1f7f3;
+
+    --td-radius: 10px;
+    --td-radius-small: 7px;
+
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 330px;
+
+    width: 100%;
+    min-width: 0;
+    min-height: 100vh;
+
+    background: var(--td-background);
+
+    overflow-x: hidden;
+}
+
+
+/* ============================================================
+   MAIN CONTENT
+   ============================================================ */
+
+.ticket-page > .ticket-main {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+
+    margin: 0;
+
+    padding: 28px 36px 60px;
+}
+
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+
+.ticket-page .ticket-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+
+    gap: 28px;
+
+    width: 100%;
+    min-width: 0;
+
+    margin-bottom: 22px;
+    padding: 0 0 22px;
+
+    border-bottom: 1px solid var(--td-border);
+}
+
+
+.ticket-page .ticket-header-left {
+    display: flex;
+    align-items: flex-end;
+
+    flex: 1 1 auto;
+
+    min-width: 0;
+
+    gap: 16px;
+}
+
+
+.ticket-page .header-field {
+    flex: 0 0 145px;
+
+    min-width: 0;
+}
+
+
+.ticket-page .ticket-title-field {
+    flex: 1 1 auto;
+
+    min-width: 180px;
+}
+
+
+.ticket-page .ticket-header-actions {
+    display: flex;
+    align-items: center;
+
+    flex: 0 0 auto;
+
+    gap: 8px;
+}
+
+
+/* ============================================================
+   HEADER INPUTS
+   ============================================================ */
+
+.ticket-page #ticketNumber,
+.ticket-page #ticketTitle {
+    width: 100%;
+    min-width: 0;
+}
+
+
+.ticket-page #ticketNumber {
+    background: #f4f5f7;
+
+    font-weight: 600;
+
+    color: #475467;
+}
+
+
+.ticket-page #ticketTitle {
+    min-height: 42px;
+
+    font-size: 17px;
+    font-weight: 600;
+
+    color: var(--td-text);
+}
+
+
+.ticket-page .ticket-header-actions .button {
+    min-height: 40px;
+
+    padding-left: 16px;
+    padding-right: 16px;
+
+    white-space: nowrap;
+}
+
+
+/* ============================================================
+   GENERAL SECTIONS
+   ============================================================ */
+
+.ticket-page .ticket-section {
+    width: 100%;
+    min-width: 0;
+
+    margin-bottom: 18px;
+    padding: 22px 24px;
+
+    background: var(--td-surface);
+
+    border: 1px solid var(--td-border);
+    border-radius: var(--td-radius);
+
+    box-shadow:
+        0 1px 2px rgba(16, 24, 40, 0.025);
+}
+
+
+/* ============================================================
+   SECTION TITLES
+   ============================================================ */
+
+.ticket-page .section-title {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    margin-bottom: 20px;
+
+    color: var(--td-text);
+
+    font-size: 13px;
+    font-weight: 700;
+
+    letter-spacing: 0.04em;
+}
+
+
+.ticket-page .section-title::after {
+    content: "";
+
+    flex: 1;
+
+    height: 1px;
+
+    background: var(--td-border-soft);
+}
+
+
+/* ============================================================
+   LABELS
+   ============================================================ */
+
+.ticket-page label {
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: #475467;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    line-height: 1.4;
+}
+
+
+/* ============================================================
+   FORM CONTROLS
+   ============================================================ */
+
+.ticket-page input,
+.ticket-page select,
+.ticket-page textarea {
+    width: 100%;
+    max-width: 100%;
+
+    box-sizing: border-box;
+
+    color: var(--td-text);
+
+    background: #ffffff;
+
+    border: 1px solid #d9dee7;
+    border-radius: var(--td-radius-small);
+
+    outline: none;
+
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease,
+        background-color 0.15s ease;
+}
+
+
+.ticket-page input,
+.ticket-page select {
+    min-height: 39px;
+
+    padding: 8px 10px;
+}
+
+
+.ticket-page textarea {
+    padding: 10px 11px;
+
+    line-height: 1.55;
+
+    resize: vertical;
+}
+
+
+.ticket-page input:hover,
+.ticket-page select:hover,
+.ticket-page textarea:hover {
+    border-color: #c8ced8;
+}
+
+
+.ticket-page input:focus,
+.ticket-page select:focus,
+.ticket-page textarea:focus {
+    border-color: #7892e4;
+
+    box-shadow:
+        0 0 0 3px rgba(63, 103, 216, 0.09);
+}
+
+
+/* ============================================================
+   USER INFORMATION
+   ============================================================ */
+
+.ticket-page .user-information-columns {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(0, 1fr);
+
+    gap: 0;
+
+    width: 100%;
+}
+
+
+.ticket-page .user-information-column {
+    min-width: 0;
+
+    padding-right: 28px;
+}
+
+
+.ticket-page .user-information-column
+    + .user-information-column {
+
+    padding-right: 0;
+    padding-left: 28px;
+
+    border-left: 1px solid var(--td-border-soft);
+}
+
+
+.ticket-page .user-column-title {
+    margin-bottom: 16px;
+
+    color: #98a2b3;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    letter-spacing: 0.09em;
+
+    text-transform: uppercase;
+}
+
+
+/* ============================================================
+   FIELD SPACING
+   ============================================================ */
+
+.ticket-page .ticket-field {
+    margin-bottom: 16px;
+}
+
+
+.ticket-page .ticket-field:last-child {
+    margin-bottom: 0;
+}
+
+
+/* ============================================================
+   ISSUE SECTION
+   ============================================================ */
+
+.ticket-page .issue-description-field {
+    margin-top: 0;
+}
+
+
+.ticket-page #issueDescription {
+    min-height: 185px;
+
+    background: #fbfcfe;
+
+    font-size: 14px;
+}
+
+
+.ticket-page #shortIssue {
+    font-weight: 500;
+}
+
+
+/* ============================================================
+   ISSUE SELECTS
+   ============================================================ */
+
+.ticket-page .issue-select-grid {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(0, 1fr);
+
+    gap: 18px;
+
+    width: 100%;
+}
+
+
+.ticket-page .ticket-detail-help {
+    margin: 6px 0 0;
+
+    color: var(--td-text-muted);
+
+    font-size: 11px;
+    line-height: 1.45;
+}
+
+
+/* ============================================================
+   TROUBLESHOOTING — PRIMARY WORK AREA
+   ============================================================ */
+
+.ticket-page .ticket-section:has(#troubleshootingSteps) {
+    position: relative;
+
+    border-color: #d9e1f7;
+
+    background:
+        linear-gradient(
+            180deg,
+            #f8faff 0%,
+            #ffffff 130px
+        );
+
+    box-shadow:
+        0 3px 12px rgba(48, 78, 160, 0.055);
+}
+
+
+.ticket-page .ticket-section:has(#troubleshootingSteps)
+    .section-title {
+
+    color: #294fae;
+}
+
+
+.ticket-page .ticket-section:has(#troubleshootingSteps)
+    .section-title::before {
+
+    content: "";
+
+    width: 4px;
+    height: 18px;
+
+    flex: 0 0 4px;
+
+    border-radius: 4px;
+
+    background: var(--td-blue);
+}
+
+
+/* ============================================================
+   TROUBLESHOOTING GRID
+   ============================================================ */
+
+.ticket-page .ticket-section:has(#troubleshootingSteps)
+    .component-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1.35fr)
+        minmax(280px, 0.85fr);
+
+    gap: 18px;
+
+    align-items: stretch;
+}
+
+
+.ticket-page .component-grid {
+    gap: 18px;
+}
+
+
+/* ============================================================
+   COMPONENT CARDS
+   ============================================================ */
+
+.ticket-page .component-card {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 0;
+
+    padding: 18px;
+
+    gap: 9px;
+
+    background: #ffffff;
+
+    border: 1px solid var(--td-border);
+
+    border-radius: 9px;
+}
+
+
+.ticket-page .ticket-section:has(#troubleshootingSteps)
+    .component-card:first-child {
+
+    border-color: #ccd8f7;
+
+    box-shadow:
+        inset 3px 0 0 var(--td-blue);
+}
+
+
+.ticket-page .component-card-title {
+    margin-bottom: 2px;
+
+    color: var(--td-text);
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+
+/* ============================================================
+   TROUBLESHOOTING TEXT AREA
+   ============================================================ */
+
+.ticket-page .troubleshooting-content {
+    flex: 1;
+
+    min-height: 330px;
+
+    background: #fcfdff;
+
+    font-family: inherit;
+
+    line-height: 1.65;
+}
+
+
+.ticket-page .component-content {
+    min-height: 190px;
+}
+
+
+/* ============================================================
+   TEMPLATE PREVIEW
+   ============================================================ */
+
+.ticket-page .component-preview {
+    min-height: 135px;
+
+    background: #f8f9fb;
+
+    color: #667085;
+
+    font-size: 12px;
+}
+
+
+.ticket-page .component-card .button {
+    align-self: flex-start;
+
+    margin-top: 4px;
+}
+
+
+/* ============================================================
+   TEMPLATE USED
+   ============================================================ */
+
+.ticket-page .template-used {
+    margin-top: auto;
+
+    padding-top: 14px;
+
+    border-top: 1px solid var(--td-border-soft);
+}
+
+
+.ticket-page .template-used-title {
+    margin-bottom: 8px;
+
+    color: #667085;
+
+    font-size: 11px;
+    font-weight: 600;
+}
+
+
+.ticket-page .button-group {
+    display: flex;
+
+    gap: 7px;
+}
+
+
+/* ============================================================
+   INFORMATION SECTION
+   ============================================================ */
+
+.ticket-page .ticket-section:has(#formContent) {
+    background: #ffffff;
+}
+
+
+/* ============================================================
+   ADDITIONAL NOTES
+   ============================================================ */
+
+.ticket-page .notes-textarea {
+    min-height: 130px;
+
+    background: #fcfcfd;
+}
+
+
+/* ============================================================
+   TICKET META
+   ============================================================ */
+
+.ticket-page .ticket-meta-section {
+    background: #f9fafb;
+}
+
+
+.ticket-page .ticket-meta-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 12px;
+
+    min-width: 0;
+}
+
+
+.ticket-page .ticket-meta-grid > div {
+    min-width: 0;
+
+    padding: 13px 14px;
+
+    background: #ffffff;
+
+    border: 1px solid var(--td-border);
+
+    border-radius: 8px;
+}
+
+
+.ticket-page .meta-label {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #98a2b3;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    letter-spacing: 0.07em;
+
+    text-transform: uppercase;
+}
+
+
+.ticket-page .ticket-meta-grid p {
+    margin: 0;
+
+    color: #475467;
+
+    font-size: 13px;
+}
+
+
+/* ============================================================
+   RIGHT SIDEBAR
+   ============================================================ */
+
+.ticket-page > .ticket-sidebar {
+    position: sticky;
+
+    top: 0;
+
+    width: 330px;
+    min-width: 0;
+    max-width: 100%;
+
+    height: 100vh;
+
+    box-sizing: border-box;
+
+    padding: 24px 20px;
+
+    overflow-y: auto;
+
+    background: #ffffff;
+
+    border-left: 1px solid var(--td-border);
+}
+
+
+/* ============================================================
+   SIDEBAR FIELD
+   ============================================================ */
+
+.ticket-page .sidebar-field {
+    margin-bottom: 17px;
+}
+
+
+/* ============================================================
+   SIDEBAR CARDS
+   ============================================================ */
+
+.ticket-page .sidebar-card {
+    margin-bottom: 14px;
+
+    padding: 15px;
+
+    background: #ffffff;
+
+    border: 1px solid var(--td-border);
+
+    border-radius: 9px;
+
+    box-shadow:
+        0 1px 3px rgba(16, 24, 40, 0.025);
+}
+
+
+.ticket-page .sidebar-card-title {
+    margin-bottom: 12px;
+
+    color: #344054;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    letter-spacing: 0.07em;
+
+    text-transform: uppercase;
+}
+
+
+/* ============================================================
+   KB SUMMARY
+   ============================================================ */
+
+.ticket-page .kb-summary-card {
+    background: #fcfdff;
+}
+
+
+.ticket-page .kb-summary-section {
+    padding: 11px 0;
+
+    border-bottom: 1px solid var(--td-border-soft);
+}
+
+
+.ticket-page .kb-summary-section:first-of-type {
+    padding-top: 0;
+}
+
+
+.ticket-page .kb-summary-section:last-child {
+    padding-bottom: 0;
+
+    border-bottom: 0;
+}
+
+
+.ticket-page .kb-summary-label {
+    margin-bottom: 5px;
+
+    color: #98a2b3;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    letter-spacing: 0.06em;
+
+    text-transform: uppercase;
+}
+
+
+.ticket-page .kb-summary-section p {
+    margin: 0;
+
+    color: #667085;
+
+    font-size: 12px;
+
+    line-height: 1.45;
+}
+
+
+/* ============================================================
+   TITLE SUGGESTION
+   ============================================================ */
+
+.ticket-page .title-suggestion-content {
+    min-height: 44px;
+
+    padding: 10px;
+
+    background: #f8f9fb;
+
+    border: 1px solid var(--td-border-soft);
+
+    border-radius: 7px;
+
+    color: #475467;
+
+    font-size: 12px;
+
+    line-height: 1.45;
+}
+
+
+.ticket-page .title-suggestion-actions {
+    display: flex;
+
+    gap: 7px;
+
+    margin-top: 9px;
+}
+
+
+.ticket-page .title-suggestion-actions .button {
+    flex: 1;
+
+    min-width: 0;
+}
+
+
+/* ============================================================
+   PREVIEWS
+   ============================================================ */
+
+.ticket-page .sidebar-preview-card {
+    padding-bottom: 14px;
+}
+
+
+.ticket-page .preview-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 8px;
+}
+
+
+.ticket-page .preview-actions {
+    display: flex;
+    align-items: center;
+
+    gap: 5px;
+
+    flex-shrink: 0;
+}
+
+
+.ticket-page .preview-copy-button {
+    min-height: 27px;
+
+    padding: 4px 8px;
+
+    color: #475467;
+
+    background: #f8f9fb;
+
+    border: 1px solid #dfe3e8;
+
+    border-radius: 6px;
+
+    font-size: 11px;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease;
+}
+
+
+.ticket-page .preview-copy-button:hover {
+    background: #f1f3f6;
+
+    border-color: #cfd5dd;
+}
+
+
+.ticket-page .sidebar-preview {
+    min-height: 105px;
+    max-height: 250px;
+
+    padding: 11px;
+
+    overflow: auto;
+
+    background: #f8faff;
+
+    border: 1px solid #e4e8ef;
+
+    border-radius: 7px;
+
+    color: #475467;
+
+    font-size: 12px;
+
+    line-height: 1.55;
+}
+
+
+/* ============================================================
+   CHECKBOX
+   ============================================================ */
+
+.ticket-page .small-checkbox {
+    width: 16px;
+    height: 16px;
+
+    margin: 6px 0 0;
+
+    accent-color: var(--td-blue);
+
+    cursor: pointer;
+}
+
+
+/* ============================================================
+   BUTTON REFINEMENT
+   ============================================================ */
+
+.ticket-page .button {
+    border-radius: 7px;
+
+    font-size: 13px;
+
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+
+/* ============================================================
+   NOTIFICATIONS
+   ============================================================ */
+
+.ticket-page .ticket-detail-notifications {
+    position: fixed;
+
+    top: 16px;
+    right: 18px;
+
+    z-index: 2000;
+}
+
+
+/* ============================================================
+   RESPONSIVE — TABLET
+   ============================================================ */
+
+@media (max-width: 1150px) {
+
+    .ticket-page {
+        grid-template-columns:
+            minmax(0, 1fr)
+            300px;
+    }
+
+    .ticket-page > .ticket-sidebar {
+        width: 300px;
+
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+
+    .ticket-page > .ticket-main {
+        padding-left: 26px;
+        padding-right: 26px;
+    }
+
+    .ticket-page .ticket-header {
+        gap: 18px;
+    }
+}
+
+
+/* ============================================================
+   RESPONSIVE — SMALL DESKTOP / TABLET
+   ============================================================ */
+
+@media (max-width: 950px) {
+
+    .ticket-page {
+        display: block;
+    }
+
+    .ticket-page > .ticket-main {
+        width: 100%;
+    }
+
+    .ticket-page > .ticket-sidebar {
+        position: relative;
+
+        top: auto;
+
+        width: 100%;
+        height: auto;
+
+        max-height: none;
+
+        padding: 22px 26px;
+
+        border-top: 1px solid var(--td-border);
+        border-left: 0;
+    }
+
+    .ticket-page .ticket-section:has(#troubleshootingSteps)
+        .component-grid {
+
+        grid-template-columns:
+            minmax(0, 1fr);
+    }
+
+    .ticket-page .troubleshooting-content {
+        min-height: 250px;
+    }
+}
+
+
+/* ============================================================
+   RESPONSIVE — MOBILE
+   ============================================================ */
+
+@media (max-width: 700px) {
+
+    .ticket-page > .ticket-main {
+        padding: 20px 14px 36px;
+    }
+
+    .ticket-page .ticket-header {
+        flex-direction: column;
+        align-items: stretch;
+
+        gap: 14px;
+    }
+
+    .ticket-page .ticket-header-left {
+        flex-direction: column;
+        align-items: stretch;
+
+        gap: 12px;
+    }
+
+    .ticket-page .header-field,
+    .ticket-page .ticket-title-field {
+        width: 100%;
+
+        flex: 1 1 auto;
+    }
+
+    .ticket-page .ticket-header-actions {
+        width: 100%;
+    }
+
+    .ticket-page .ticket-header-actions .button {
+        flex: 1;
+    }
+
+    .ticket-page .user-information-columns {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .ticket-page .user-information-column {
+        padding-right: 0;
+    }
+
+    .ticket-page .user-information-column
+        + .user-information-column {
+
+        padding-left: 0;
+        padding-top: 18px;
+
+        border-left: 0;
+        border-top: 1px solid var(--td-border-soft);
+    }
+
+    .ticket-page .issue-select-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .ticket-page .ticket-meta-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .ticket-page > .ticket-sidebar {
+        padding: 20px 14px;
+    }
+
+    .ticket-page .ticket-section {
+        padding: 18px 16px;
+    }
+}
+
+
+/* ============================================================
+   RESPONSIVE — VERY SMALL
+   ============================================================ */
+
+@media (max-width: 480px) {
+
+    .ticket-page .ticket-header-actions {
+        flex-direction: column;
+    }
+
+    .ticket-page .ticket-header-actions .button {
+        width: 100%;
+    }
+
+    .ticket-page .title-suggestion-actions {
+        flex-direction: column;
+    }
+}
