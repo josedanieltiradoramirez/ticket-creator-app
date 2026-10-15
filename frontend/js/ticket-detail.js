@@ -6366,13 +6366,16 @@ function renderTroubleshootingTemplateSteps() {
             "troubleshooting-template-check";
 
         marker.textContent = "";
+
         const text =
             document.createElement("div");
 
         text.className =
             "troubleshooting-template-step-text";
 
-        text.textContent = step;
+        const displayStep = step.replace(/^\s*-\s*/, "");
+
+        text.textContent = displayStep;
 
         const useButton =
             document.createElement("button");
@@ -6403,6 +6406,55 @@ function renderTroubleshootingTemplateSteps() {
 
         container.appendChild(card);
     });
+}
+
+
+function setupTroubleshootingTemplateKBRefresh() {
+    const refreshButton =
+        document.getElementById(
+            "refreshTroubleshootingTemplateKB"
+        );
+
+    const select =
+        document.getElementById(
+            "troubleshootingTemplate"
+        );
+
+    if (!refreshButton || !select) {
+        return;
+    }
+
+    refreshButton.addEventListener(
+        "click",
+        async () => {
+            const templateId = select.value;
+
+            if (!templateId) {
+                return;
+            }
+
+            refreshButton.disabled = true;
+
+            try {
+                /*
+                 * Re-run the same KB loading flow used when the
+                 * troubleshooting template is selected.
+                 */
+                const event =
+                    new Event("change", {
+                        bubbles: true
+                    });
+
+                select.dispatchEvent(event);
+
+                await new Promise(
+                    resolve => setTimeout(resolve, 0)
+                );
+            } finally {
+                refreshButton.disabled = false;
+            }
+        }
+    );
 }
 
 function setupTroubleshootingTemplateSteps() {
@@ -6503,7 +6555,11 @@ function setupSaveTroubleshootingTemplateButton() {
     button.addEventListener(
         "click",
         () => {
-            const steps = troubleshootingSteps.value.trim();
+            const steps = troubleshootingSteps.value
+                .trim()
+                .split(/\r?\n/)
+                .map(line => line.replace(/^\s*-\s*/, ""))
+                .join("\n");
 
             if (!steps) {
                 return;
@@ -6719,6 +6775,7 @@ function setupEventListeners() {
     setupAutosaveListeners();
     setupSaveTroubleshootingTemplateButton();
     setupTroubleshootingTemplateSteps();
+    setupTroubleshootingTemplateKBRefresh();
     setupSaveFormTemplateButton();
 
 

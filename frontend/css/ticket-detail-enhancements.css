@@ -1118,3 +1118,43 @@
 .ticket-page .kb-summary-section .troubleshooting-template-use:hover:not(:disabled) {
     transform: none;
 }
+
+
+/* ============================================================
+   TROUBLESHOOTING TEMPLATE REFRESH
+   ============================================================ */
+
+.ticket-page .troubleshooting-template-selector-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.ticket-page .troubleshooting-template-selector-row select {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.ticket-page .troubleshooting-template-refresh {
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 1px solid #d5dcef;
+    border-radius: 6px;
+    background: #ffffff;
+    color: #475467;
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+}
+
+.ticket-page .troubleshooting-template-refresh:hover:not(:disabled) {
+    background: #f2f5ff;
+    color: #315de8;
+}
+
+.ticket-page .troubleshooting-template-refresh:disabled {
+    opacity: 0.55;
+    cursor: wait;
+}
