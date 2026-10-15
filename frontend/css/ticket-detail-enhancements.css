@@ -880,3 +880,241 @@
     border-top: 1px solid #edf0f5;
     background: #fafbfc;
 }
+
+
+/* ============================================================
+   COMPACT TICKET DETAIL WORKSPACE
+   ============================================================ */
+
+.ticket-page {
+    gap: 12px;
+}
+
+.ticket-page .ticket-main {
+    gap: 12px;
+}
+
+.ticket-page .ticket-section {
+    margin-bottom: 8px;
+    padding: 13px 16px;
+}
+
+.ticket-page .section-title {
+    margin-bottom: 10px;
+    line-height: 1.2;
+}
+
+.ticket-page .user-information-columns {
+    gap: 16px;
+}
+
+.ticket-page .user-information-column {
+    gap: 8px;
+}
+
+.ticket-page .user-information-column + .user-information-column {
+    padding-left: 16px;
+}
+
+.ticket-page .ticket-field {
+    margin-bottom: 7px;
+}
+
+.ticket-page .ticket-field label {
+    margin-bottom: 4px;
+}
+
+.ticket-page .component-grid,
+.ticket-page .issue-select-grid {
+    gap: 10px;
+}
+
+.ticket-page .component-card {
+    padding: 12px;
+    gap: 6px;
+}
+
+.ticket-page .component-card-title {
+    margin-bottom: 2px;
+}
+
+.ticket-page .component-content {
+    min-height: 120px;
+}
+
+.ticket-page .component-preview {
+    min-height: 80px;
+}
+
+/* ============================================================
+   TROUBLESHOOTING TEMPLATE STEP CARDS
+   ============================================================ */
+
+.ticket-page .troubleshooting-template-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 330px;
+    overflow-y: auto;
+    margin: 5px 0 8px;
+    padding: 2px;
+}
+
+.ticket-page .troubleshooting-template-step {
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 9px;
+    border: 1px solid #e3e8f2;
+    border-radius: 8px;
+    background: #ffffff;
+}
+
+.ticket-page .troubleshooting-template-step.is-used {
+    background: #f7faf8;
+}
+
+.ticket-page .troubleshooting-template-check {
+    display: grid;
+    place-items: center;
+    width: 21px;
+    height: 21px;
+    border-radius: 50%;
+    background: #eef3ff;
+    color: #315de8;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.ticket-page .troubleshooting-template-step.is-used
+.troubleshooting-template-check {
+    background: #ecfdf3;
+    color: #027a48;
+}
+
+.ticket-page .troubleshooting-template-step-text {
+    min-width: 0;
+    color: #344054;
+    font-size: 11px;
+    line-height: 1.4;
+    white-space: pre-wrap;
+}
+
+.ticket-page .troubleshooting-template-use {
+    min-width: 48px;
+    min-height: 27px;
+    padding: 4px 9px;
+    border: 1px solid #d5dcef;
+    border-radius: 6px;
+    background: #ffffff;
+    color: #315de8;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.ticket-page .troubleshooting-template-use:hover:not(:disabled) {
+    background: #f2f5ff;
+}
+
+.ticket-page .troubleshooting-template-use:disabled {
+    border-color: #d1fadf;
+    background: #ecfdf3;
+    color: #027a48;
+    cursor: default;
+}
+
+.ticket-page .troubleshooting-template-empty {
+    padding: 12px;
+    border: 1px dashed #d9dee8;
+    border-radius: 7px;
+    color: #98a2b3;
+    font-size: 11px;
+    text-align: center;
+}
+
+.ticket-page .troubleshooting-template-source {
+    display: none;
+}
+
+.ticket-page .troubleshooting-content {
+    min-height: 260px;
+    resize: vertical;
+}
+
+
+/* ============================================================
+   KB SUMMARY - USE BUTTONS
+   Match Troubleshooting Template "Use" buttons
+   ============================================================ */
+
+.ticket-page .kb-use-button,
+.ticket-page .troubleshooting-template-use {
+    min-width: 48px;
+    min-height: 27px;
+    padding: 4px 9px;
+    border: 1px solid #d5dcef;
+    border-radius: 6px;
+    background: #ffffff;
+    color: #315de8;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.ticket-page .kb-use-button:hover:not(:disabled),
+.ticket-page .troubleshooting-template-use:hover:not(:disabled) {
+    background: #f2f5ff;
+}
+
+.ticket-page .kb-use-button:disabled,
+.ticket-page .troubleshooting-template-use:disabled {
+    border-color: #d1fadf;
+    background: #ecfdf3;
+    color: #027a48;
+    cursor: default;
+}
+
+/* Template steps use a simple dash. */
+.ticket-page .troubleshooting-template-check {
+    width: 16px;
+    height: 21px;
+    border-radius: 0;
+    background: transparent;
+    color: #667085;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.ticket-page .troubleshooting-template-step.is-used
+.troubleshooting-template-check {
+    background: transparent;
+    color: #027a48;
+}
+
+
+/* ============================================================
+   KB SUMMARY - USE BUTTONS
+   Compact alignment inside KB Summary rows
+   ============================================================ */
+
+.ticket-page .kb-summary-section .kb-use-button,
+.ticket-page .kb-summary-section .troubleshooting-template-use {
+    min-width: 44px;
+    width: auto;
+    min-height: 26px;
+    height: 26px;
+    padding: 3px 8px;
+    margin-left: 6px;
+    flex: 0 0 auto;
+    border-radius: 6px;
+    font-size: 10px;
+    line-height: 1;
+    align-self: center;
+}
+
+.ticket-page .kb-summary-section .kb-use-button:hover:not(:disabled),
+.ticket-page .kb-summary-section .troubleshooting-template-use:hover:not(:disabled) {
+    transform: none;
+}

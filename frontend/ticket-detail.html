@@ -330,6 +330,119 @@
         <section class="ticket-section">
 
             <div class="section-title">
+                Troubleshooting
+            </div>
+
+
+            <div class="component-grid">
+
+                <!-- =========================================
+                    COLUMN 1
+                    TROUBLESHOOTING FORM
+                    ========================================= -->
+
+                <div class="component-card">
+
+                    <div class="component-card-title">
+                        Troubleshooting Form
+                    </div>
+
+
+                                        <label for="troubleshootingSteps">
+                        Troubleshooting Steps
+                    </label>
+
+                    <textarea
+                        id="troubleshootingSteps"
+                        class="component-content troubleshooting-content"
+                        placeholder="Document the troubleshooting performed..."
+                    ></textarea>
+
+
+                </div>
+
+
+<!-- =========================================
+                    COLUMN 2
+                    TROUBLESHOOTING TEMPLATE
+                    ========================================= -->
+
+                <div class="component-card">
+
+                    <div class="component-card-title">
+                        Troubleshooting Template
+                    </div>
+
+
+                    <label for="troubleshootingTemplate">
+                        Troubleshooting Template
+                    </label>
+
+                    <select id="troubleshootingTemplate"></select>
+
+                    <div
+                        id="troubleshootingTemplateSteps"
+                        class="troubleshooting-template-steps"
+                        aria-live="polite"
+                    ></div>
+
+                    <textarea
+                        id="troubleshootingTemplatePreview"
+                        class="component-preview troubleshooting-template-source"
+                        readonly
+                        aria-hidden="true"
+                        tabindex="-1"
+                    ></textarea>
+
+
+                    <button
+                        type="button"
+                        id="copyTemplateButton"
+                        class="button button-secondary"
+                    >
+                        Copy Troubleshooting
+                    </button>
+
+
+                    <div class="template-used">
+
+                        <div class="template-used-title">
+                            Did you use this template?
+                        </div>
+
+
+                        <div class="button-group">
+
+                            <button
+                                type="button"
+                                id="useTemplateYes"
+                                class="button button-primary"
+                            >
+                                Yes
+                            </button>
+
+
+                            <button
+                                type="button"
+                                id="useTemplateNo"
+                                class="button button-secondary"
+                            >
+                                No
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+<section class="ticket-section">
+
+            <div class="section-title">
                 Information
             </div>
 
@@ -409,113 +522,7 @@
              TROUBLESHOOTING
              ================================================= -->
 
-        <section class="ticket-section">
-
-            <div class="section-title">
-                Troubleshooting
-            </div>
-
-
-            <div class="component-grid">
-
-                <!-- =========================================
-                    COLUMN 1
-                    TROUBLESHOOTING FORM
-                    ========================================= -->
-
-                <div class="component-card">
-
-                    <div class="component-card-title">
-                        Troubleshooting Form
-                    </div>
-
-
-                    <label for="troubleshootingSteps">
-                        Troubleshooting Steps
-                    </label>
-
-                    <textarea
-                        id="troubleshootingSteps"
-                        class="component-content troubleshooting-content"
-                    ></textarea>
-
-                </div>
-
-
-                <!-- =========================================
-                    COLUMN 2
-                    TROUBLESHOOTING TEMPLATE
-                    ========================================= -->
-
-                <div class="component-card">
-
-                    <div class="component-card-title">
-                        Troubleshooting Template
-                    </div>
-
-
-                    <label for="troubleshootingTemplate">
-                        Troubleshooting Template
-                    </label>
-
-                    <select id="troubleshootingTemplate"></select>
-
-
-                    <label for="troubleshootingTemplatePreview">
-                        Template Preview
-                    </label>
-
-                    <textarea
-                        id="troubleshootingTemplatePreview"
-                        class="component-preview"
-                        readonly
-                    ></textarea>
-
-
-                    <button
-                        type="button"
-                        id="copyTemplateButton"
-                        class="button button-secondary"
-                    >
-                        Copy Troubleshooting
-                    </button>
-
-
-                    <div class="template-used">
-
-                        <div class="template-used-title">
-                            Did you use this template?
-                        </div>
-
-
-                        <div class="button-group">
-
-                            <button
-                                type="button"
-                                id="useTemplateYes"
-                                class="button button-primary"
-                            >
-                                Yes
-                            </button>
-
-
-                            <button
-                                type="button"
-                                id="useTemplateNo"
-                                class="button button-secondary"
-                            >
-                                No
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </section>
+        
 
 
         <!-- =================================================

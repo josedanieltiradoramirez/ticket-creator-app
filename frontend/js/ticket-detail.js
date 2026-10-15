@@ -2161,153 +2161,36 @@ async function createToolFromSearch(
 
 
 async function loadToolKnowledgeBase(
-
     toolId
-
 ) {
-
-
-
     const container =
+        document.getElementById("toolKnowledgeBase");
 
-        document.getElementById(
-
-            "toolKnowledgeBase"
-
-        );
-
-
-
-
+    if (!container) return;
 
     container.innerHTML = "";
 
-
-
-
-
     if (!toolId) {
-
-
-
         container.innerHTML =
-
-            "\<p>No Knowledge Base articles selected.\</p>";
-
-
-
+            "<p>Select a Tool to see related Knowledge Base articles.</p>";
         return;
-
     }
-
-
-
-
 
     try {
-
-
-
         const knowledgeBase =
+            await getToolKnowledgeBase(toolId);
 
-            await getToolKnowledgeBase(
-
-                toolId
-
-            );
-
-
-
-
-
-        if (
-
-            !knowledgeBase ||
-
-            knowledgeBase.length === 0
-
-        ) {
-
-
-
-            container.innerHTML =
-
-                "\<p>No Knowledge Base articles associated.\</p>";
-
-
-
-            return;
-
-        }
-
-
-
-
-
-        knowledgeBase.forEach(
-
-            kb => {
-
-
-
-                const item =
-
-                    document.createElement(
-
-                        "div"
-
-                    );
-
-
-
-
-
-                item.textContent =
-
-                    `${kb.article_number} - ${kb.title}`;
-
-
-
-
-
-                container.appendChild(
-
-                    item
-
-                );
-
-            }
-
+        renderRelatedKnowledgeBase(
+            container,
+            knowledgeBase
         );
-
-
-
-
 
     } catch (error) {
-
-
-
-        console.error(
-
-            "Error loading Tool KB:",
-
-            error
-
-        );
-
-
-
+        console.error("Error loading Tool KB:", error);
         container.innerHTML =
-
-            "\<p>Error loading Knowledge Base articles.\</p>";
-
+            "<p>Error loading Knowledge Base articles.</p>";
     }
-
 }
-
-
-
 
 
 // ============================================================
@@ -3278,153 +3161,36 @@ async function loadIssueTypesByTool(toolId) {
 
 
 async function loadIssueTypeKnowledgeBase(
-
     issueTypeId
-
 ) {
-
-
-
     const container =
+        document.getElementById("issueTypeKnowledgeBase");
 
-        document.getElementById(
-
-            "issueTypeKnowledgeBase"
-
-        );
-
-
-
-
+    if (!container) return;
 
     container.innerHTML = "";
 
-
-
-
-
     if (!issueTypeId) {
-
-
-
         container.innerHTML =
-
-            "\<p>No Knowledge Base articles selected.\</p>";
-
-
-
+            "<p>Select an Issue Type to see related Knowledge Base articles.</p>";
         return;
-
     }
-
-
-
-
 
     try {
-
-
-
         const knowledgeBase =
+            await getIssueTypeKnowledgeBase(issueTypeId);
 
-            await getIssueTypeKnowledgeBase(
-
-                issueTypeId
-
-            );
-
-
-
-
-
-        if (
-
-            !knowledgeBase ||
-
-            knowledgeBase.length === 0
-
-        ) {
-
-
-
-            container.innerHTML =
-
-                "\<p>No Knowledge Base articles associated.\</p>";
-
-
-
-            return;
-
-        }
-
-
-
-
-
-        knowledgeBase.forEach(
-
-            kb => {
-
-
-
-                const item =
-
-                    document.createElement(
-
-                        "div"
-
-                    );
-
-
-
-
-
-                item.textContent =
-
-                    `${kb.article_number} - ${kb.title}`;
-
-
-
-
-
-                container.appendChild(
-
-                    item
-
-                );
-
-            }
-
+        renderRelatedKnowledgeBase(
+            container,
+            knowledgeBase
         );
-
-
-
-
 
     } catch (error) {
-
-
-
-        console.error(
-
-            "Error loading Issue Type KB:",
-
-            error
-
-        );
-
-
-
+        console.error("Error loading Issue Type KB:", error);
         container.innerHTML =
-
-            "\<p>Error loading Knowledge Base articles.\</p>";
-
+            "<p>Error loading Knowledge Base articles.</p>";
     }
-
 }
-
-
-
 
 
 // ============================================================
@@ -3958,153 +3724,38 @@ function loadTemplatePreview() {
 
 
 async function loadTemplateKnowledgeBase(
-
     templateId
-
 ) {
-
-
-
     const container =
+        document.getElementById("templateKnowledgeBase");
 
-        document.getElementById(
-
-            "templateKnowledgeBase"
-
-        );
-
-
-
-
+    if (!container) return;
 
     container.innerHTML = "";
 
-
-
-
-
     if (!templateId) {
-
-
-
         container.innerHTML =
-
-            "\<p>No Knowledge Base articles associated.\</p>";
-
-
-
+            "<p>Select a Troubleshooting Template to see related Knowledge Base articles.</p>";
         return;
-
     }
-
-
-
-
 
     try {
-
-
-
         const knowledgeBase =
-
             await getTroubleshootingTemplateKnowledgeBase(
-
                 templateId
-
             );
 
-
-
-
-
-        if (
-
-            !knowledgeBase ||
-
-            knowledgeBase.length === 0
-
-        ) {
-
-
-
-            container.innerHTML =
-
-                "\<p>No Knowledge Base articles associated.\</p>";
-
-
-
-            return;
-
-        }
-
-
-
-
-
-        knowledgeBase.forEach(
-
-            kb => {
-
-
-
-                const item =
-
-                    document.createElement(
-
-                        "div"
-
-                    );
-
-
-
-
-
-                item.textContent =
-
-                    `${kb.article_number} - ${kb.title}`;
-
-
-
-
-
-                container.appendChild(
-
-                    item
-
-                );
-
-            }
-
+        renderRelatedKnowledgeBase(
+            container,
+            knowledgeBase
         );
-
-
-
-
 
     } catch (error) {
-
-
-
-        console.error(
-
-            "Error loading Template KB:",
-
-            error
-
-        );
-
-
-
+        console.error("Error loading Template KB:", error);
         container.innerHTML =
-
-            "\<p>Error loading Knowledge Base articles.\</p>";
-
+            "<p>Error loading Knowledge Base articles.</p>";
     }
-
 }
-
-
-
 
 
 // ============================================================
@@ -5213,6 +4864,161 @@ async function useCurrentTemplate() {
 
 // ============================================================
 
+
+// ============================================================
+// DYNAMIC KNOWLEDGE BASE
+// ============================================================
+
+function renderRelatedKnowledgeBase(
+    container,
+    knowledgeBase
+) {
+    if (
+        !knowledgeBase ||
+        knowledgeBase.length === 0
+    ) {
+        container.innerHTML =
+            "<p>No Knowledge Base articles associated.</p>";
+        return;
+    }
+
+    const wrapper =
+        document.createElement("div");
+
+    wrapper.className =
+        "kb-related-list";
+
+    knowledgeBase.forEach(kb => {
+        const item =
+            document.createElement("div");
+
+        item.className =
+            "kb-related-item";
+
+        const info =
+            document.createElement("div");
+
+        info.className =
+            "kb-related-info";
+
+        const title =
+            document.createElement("div");
+
+        title.className =
+            "kb-related-title";
+
+        title.textContent =
+            `${kb.article_number} - ${kb.title}`;
+
+        info.appendChild(title);
+
+        const used =
+            usedKnowledgeBase.some(
+                existingKb =>
+                    existingKb.id === kb.id
+            );
+
+        const button =
+            document.createElement("button");
+
+        button.type = "button";
+        button.className =
+            "troubleshooting-template-use";
+
+        if (used) {
+            button.textContent = "Used";
+            button.disabled = true;
+        } else {
+            button.textContent = "Use";
+            button.addEventListener(
+                "click",
+                () => useKnowledgeBaseArticle(kb)
+            );
+        }
+
+        item.appendChild(info);
+        item.appendChild(button);
+        wrapper.appendChild(item);
+    });
+
+    container.appendChild(wrapper);
+}
+
+async function useKnowledgeBaseArticle(kb) {
+    if (!kb || !kb.id) {
+        return;
+    }
+
+    const alreadyUsed =
+        usedKnowledgeBase.some(
+            existingKb =>
+                existingKb.id === kb.id
+        );
+
+    if (alreadyUsed) {
+        return;
+    }
+
+    try {
+        await addTicketKnowledgeBase(
+            ticketId,
+            kb.id
+        );
+
+        usedKnowledgeBase.push(kb);
+
+        renderUsedKnowledgeBase();
+
+        await refreshKnowledgeBaseSuggestions();
+
+        showDetailNotification(
+            `Knowledge Base "${kb.title}" added.`,
+            "success"
+        );
+
+    } catch (error) {
+        console.error(
+            "Error adding Knowledge Base:",
+            error
+        );
+
+        showErrorMessage(
+            "Error adding Knowledge Base article."
+        );
+    }
+}
+
+async function refreshKnowledgeBaseSuggestions() {
+    const toolSelect =
+        document.getElementById("tool");
+
+    const issueTypeSelect =
+        document.getElementById("issueType");
+
+    const templateSelect =
+        document.getElementById(
+            "troubleshootingTemplate"
+        );
+
+    await Promise.all([
+        loadToolKnowledgeBase(
+            toolSelect?.value
+                ? Number(toolSelect.value)
+                : null
+        ),
+        loadIssueTypeKnowledgeBase(
+            issueTypeSelect?.value
+                ? Number(issueTypeSelect.value)
+                : null
+        ),
+        loadTemplateKnowledgeBase(
+            templateSelect?.value
+                ? Number(templateSelect.value)
+                : null
+        )
+    ]);
+}
+
 // RENDER USED KNOWLEDGE BASE
 
 // ============================================================
@@ -5923,6 +5729,7 @@ async function createTroubleshootingTemplateInline(
         if (troubleshootingSteps) {
             troubleshootingSteps.readOnly = false;
             troubleshootingSteps.value = "";
+            troubleshootingSteps.value = "";
             troubleshootingSteps.focus();
             markAutosaveDirty();
         }
@@ -6459,6 +6266,168 @@ function openSaveFormTemplateModal(content) {
     }, 0);
 }
 
+
+// ============================================================
+// TROUBLESHOOTING LOG
+// ============================================================
+
+
+// ============================================================
+// TROUBLESHOOTING TEMPLATE STEPS
+// ============================================================
+
+function getTroubleshootingTemplateLines() {
+    const preview =
+        document.getElementById(
+            "troubleshootingTemplatePreview"
+        );
+
+    if (!preview) {
+        return [];
+    }
+
+    return preview.value
+        .split(/\r?\n/)
+        .map(line => line.trim())
+        .filter(Boolean);
+}
+
+function appendTroubleshootingStep(step) {
+    const textarea =
+        document.getElementById(
+            "troubleshootingSteps"
+        );
+
+    if (!textarea || !step) {
+        return;
+    }
+
+    const current =
+        textarea.value.trim();
+
+    const troubleshootingStep =
+        `- ${step}`;
+
+    textarea.value =
+        current
+            ? `${current}\n${troubleshootingStep}`
+            : troubleshootingStep;
+
+    textarea.dispatchEvent(
+        new Event("input", {
+            bubbles: true
+        })
+    );
+
+    markAutosaveDirty();
+    textarea.focus();
+}
+
+function renderTroubleshootingTemplateSteps() {
+    const container =
+        document.getElementById(
+            "troubleshootingTemplateSteps"
+        );
+
+    if (!container) {
+        return;
+    }
+
+    container.innerHTML = "";
+
+    const steps =
+        getTroubleshootingTemplateLines();
+
+    if (steps.length === 0) {
+        const empty =
+            document.createElement("div");
+
+        empty.className =
+            "troubleshooting-template-empty";
+
+        empty.textContent =
+            "Select a troubleshooting template to see its steps.";
+
+        container.appendChild(empty);
+        return;
+    }
+
+    steps.forEach(step => {
+        const card =
+            document.createElement("div");
+
+        card.className =
+            "troubleshooting-template-step";
+
+        const marker =
+            document.createElement("span");
+
+        marker.className =
+            "troubleshooting-template-check";
+
+        marker.textContent = "";
+        const text =
+            document.createElement("div");
+
+        text.className =
+            "troubleshooting-template-step-text";
+
+        text.textContent = step;
+
+        const useButton =
+            document.createElement("button");
+
+        useButton.type = "button";
+        useButton.className =
+            "troubleshooting-template-use";
+
+        useButton.textContent = "Use";
+
+        useButton.addEventListener(
+            "click",
+            () => {
+                appendTroubleshootingStep(step);
+
+                useButton.textContent = "Used";
+                useButton.disabled = true;
+
+                marker.textContent = "✓";
+
+                card.classList.add("is-used");
+            }
+        );
+
+        card.appendChild(marker);
+        card.appendChild(text);
+        card.appendChild(useButton);
+
+        container.appendChild(card);
+    });
+}
+
+function setupTroubleshootingTemplateSteps() {
+    const select =
+        document.getElementById(
+            "troubleshootingTemplate"
+        );
+
+    if (!select) {
+        return;
+    }
+
+    select.addEventListener(
+        "change",
+        () => {
+            setTimeout(
+                renderTroubleshootingTemplateSteps,
+                0
+            );
+        }
+    );
+
+    renderTroubleshootingTemplateSteps();
+}
+
 function setupSaveTroubleshootingTemplateButton() {
 
     const troubleshootingSteps =
@@ -6484,7 +6453,22 @@ function setupSaveTroubleshootingTemplateButton() {
     button.style.marginTop = "10px";
     button.style.transition = "opacity 0.15s ease";
 
-    troubleshootingSteps.insertAdjacentElement("afterend", button);
+    const troubleshootingEntry =
+        document.querySelector(
+            ".troubleshooting-entry"
+        );
+
+    if (troubleshootingEntry) {
+        troubleshootingEntry.insertAdjacentElement(
+            "afterend",
+            button
+        );
+    } else {
+        troubleshootingSteps.insertAdjacentElement(
+            "afterend",
+            button
+        );
+    }
 
     // Keep the value that existed when the button was initialized.
     // The button is only enabled when the user actually changes the
@@ -6734,6 +6718,7 @@ function setupEventListeners() {
 
     setupAutosaveListeners();
     setupSaveTroubleshootingTemplateButton();
+    setupTroubleshootingTemplateSteps();
     setupSaveFormTemplateButton();
 
 
