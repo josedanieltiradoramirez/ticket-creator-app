@@ -2663,129 +2663,705 @@ async function createUserTypeFromSearch(
 
 
 async function loadLocations(
-
     currentLocationId
-
 ) {
 
-
-
     const locations =
-
         await getLocations();
 
-
-
-
-
     const locationSelect =
-
-        document.getElementById(
-
-            "location"
-
-        );
-
-
-
-
+        document.getElementById("location");
 
     locationSelect.innerHTML = "";
 
-
-
     const emptyOption =
-
         document.createElement("option");
 
-
-
     emptyOption.value = "";
+    emptyOption.textContent = "Select a Location";
 
-    emptyOption.textContent =
-
-        "Select a Location";
-
-
-
-    locationSelect.appendChild(
-
-        emptyOption
-
-    );
-
-
+    locationSelect.appendChild(emptyOption);
 
     locations.forEach(
-
         location => {
 
-
-
             const option =
+                document.createElement("option");
 
-                document.createElement(
-
-                    "option"
-
-                );
-
-
-
-
-
-            option.value =
-
-                location.id;
-
-
-
-            option.textContent =
-
-                location.name;
-
-
+            option.value = location.id;
+            option.textContent = location.name;
 
             option.dataset.code =
-
                 location.code ?? "";
 
-
-
-
-
             if (
-
-                location.id ===
-
-                currentLocationId
-
+                String(location.id) ===
+                String(currentLocationId ?? "")
             ) {
-
-
-
                 option.selected = true;
-
             }
 
-
-
-
-
-            locationSelect.appendChild(
-
-                option
-
-            );
-
+            locationSelect.appendChild(option);
         }
-
     );
 
+    setupLocationSearchDropdown(
+        locationSelect,
+        locations
+    );
 }
 
 
+// ============================================================
+// LOCATION SEARCH / QUICK CREATE
+// ============================================================
 
+function setupLocationSearchDropdown(
+    locationSelect,
+    locations
+) {
+
+    if (!locationSelect) {
+        return;
+    }
+
+    const existingWrapper =
+        locationSelect.closest(
+            ".location-search-dropdown"
+        );
+
+    if (existingWrapper) {
+
+        existingWrapper.parentNode.insertBefore(
+            locationSelect,
+            existingWrapper
+        );
+
+        existingWrapper.remove();
+    }
+
+    const wrapper =
+        document.createElement("div");
+
+    wrapper.className =
+        "tool-search-dropdown location-search-dropdown";
+
+    const input =
+        document.createElement("input");
+
+    input.type = "text";
+    input.className =
+        "tool-search-input location-search-input";
+
+    input.autocomplete = "off";
+    input.placeholder =
+        "Search or select a location...";
+
+    input.setAttribute(
+        "role",
+        "combobox"
+    );
+
+    input.setAttribute(
+        "aria-expanded",
+        "false"
+    );
+
+    const dropdown =
+        document.createElement("div");
+
+    dropdown.className =
+        "tool-search-options location-search-options";
+
+    dropdown.setAttribute(
+        "role",
+        "listbox"
+    );
+
+    locationSelect.parentNode.insertBefore(
+        wrapper,
+        locationSelect
+    );
+
+    wrapper.appendChild(input);
+    wrapper.appendChild(dropdown);
+    wrapper.appendChild(locationSelect);
+
+    locationSelect.style.display = "none";
+
+    let highlightedIndex = -1;
+    let visibleOptions = [];
+
+    function getSelectedLocationName() {
+
+        const selectedOption =
+            locationSelect.options[
+                locationSelect.selectedIndex
+            ];
+
+        return selectedOption &&
+            selectedOption.value
+            ? selectedOption.textContent.trim()
+            : "";
+    }
+
+    function syncInputWithSelect() {
+
+        input.value =
+            getSelectedLocationName();
+    }
+
+    function closeDropdown() {
+
+        dropdown.classList.remove(
+            "tool-search-options-visible"
+        );
+
+        input.setAttribute(
+            "aria-expanded",
+            "false"
+        );
+
+        highlightedIndex = -1;
+    }
+
+    function openDropdown() {
+
+        renderOptions(input.value);
+
+        dropdown.classList.add(
+            "tool-search-options-visible"
+        );
+
+        input.setAttribute(
+            "aria-expanded",
+            "true"
+        );
+    }
+
+    function selectLocation(locationId) {
+
+        locationSelect.value =
+            String(locationId);
+
+        locationSelect.dispatchEvent(
+            new Event(
+                "change",
+                {
+                    bubbles: true
+                }
+            )
+        );
+
+        syncInputWithSelect();
+        closeDropdown();
+    }
+
+    function renderOptions(
+        searchValue = ""
+    ) {
+
+        const query =
+            searchValue.trim().toLowerCase();
+
+        dropdown.innerHTML = "";
+        visibleOptions = [];
+        highlightedIndex = -1;
+
+        const matchingLocations =
+            locations.filter(
+                location => {
+
+                    const name =
+                        String(
+                            location.name ?? ""
+                        ).toLowerCase();
+
+                    const code =
+                        String(
+                            location.code ?? ""
+                        ).toLowerCase();
+
+                    return (
+                        !query ||
+                        name.includes(query) ||
+                        code.includes(query)
+                    );
+                }
+            );
+
+        matchingLocations.forEach(
+            location => {
+
+                const option =
+                    document.createElement(
+                        "button"
+                    );
+
+                option.type = "button";
+
+                option.className =
+                    "tool-search-option";
+
+                option.setAttribute(
+                    "role",
+                    "option"
+                );
+
+                option.textContent =
+                    location.code
+                        ? `${location.name} (${location.code})`
+                        : location.name;
+
+                option.addEventListener(
+                    "mousedown",
+                    event => {
+                        event.preventDefault();
+                    }
+                );
+
+                option.addEventListener(
+                    "click",
+                    () => {
+                        selectLocation(
+                            location.id
+                        );
+                    }
+                );
+
+                dropdown.appendChild(option);
+                visibleOptions.push(option);
+            }
+        );
+
+        const exactMatch =
+            locations.some(
+                location => {
+
+                    const name =
+                        String(
+                            location.name ?? ""
+                        )
+                            .trim()
+                            .toLowerCase();
+
+                    const code =
+                        String(
+                            location.code ?? ""
+                        )
+                            .trim()
+                            .toLowerCase();
+
+                    return (
+                        name === query ||
+                        code === query
+                    );
+                }
+            );
+
+        if (
+            query &&
+            !exactMatch
+        ) {
+
+            const addOption =
+                document.createElement(
+                    "button"
+                );
+
+            addOption.type = "button";
+
+            addOption.className =
+                "tool-search-option tool-search-add";
+
+            addOption.setAttribute(
+                "role",
+                "option"
+            );
+
+            addOption.innerHTML =
+                `<span class="tool-search-add-icon">+</span>` +
+                `<span>Add "${escapeNotificationHtml(searchValue.trim())}"</span>`;
+
+            addOption.addEventListener(
+                "mousedown",
+                event => {
+                    event.preventDefault();
+                }
+            );
+
+            addOption.addEventListener(
+                "click",
+                async () => {
+
+                    await createLocationFromSearch(
+                        searchValue.trim(),
+                        locations,
+                        locationSelect,
+                        input,
+                        dropdown
+                    );
+                }
+            );
+
+            dropdown.appendChild(addOption);
+            visibleOptions.push(addOption);
+        }
+
+        if (!visibleOptions.length) {
+
+            const emptyMessage =
+                document.createElement(
+                    "div"
+                );
+
+            emptyMessage.className =
+                "tool-search-empty";
+
+            emptyMessage.textContent =
+                "No locations found.";
+
+            dropdown.appendChild(emptyMessage);
+        }
+    }
+
+    async function handleKeyboard(event) {
+
+        if (event.key === "ArrowDown") {
+
+            event.preventDefault();
+
+            if (
+                !dropdown.classList.contains(
+                    "tool-search-options-visible"
+                )
+            ) {
+                openDropdown();
+            }
+
+            if (visibleOptions.length > 0) {
+
+                highlightedIndex =
+                    Math.min(
+                        highlightedIndex + 1,
+                        visibleOptions.length - 1
+                    );
+
+                visibleOptions.forEach(
+                    (option, index) => {
+
+                        option.classList.toggle(
+                            "tool-search-option-highlighted",
+                            index === highlightedIndex
+                        );
+                    }
+                );
+            }
+
+            return;
+        }
+
+        if (event.key === "ArrowUp") {
+
+            event.preventDefault();
+
+            if (visibleOptions.length > 0) {
+
+                highlightedIndex =
+                    highlightedIndex <= 0
+                        ? visibleOptions.length - 1
+                        : highlightedIndex - 1;
+
+                visibleOptions.forEach(
+                    (option, index) => {
+
+                        option.classList.toggle(
+                            "tool-search-option-highlighted",
+                            index === highlightedIndex
+                        );
+                    }
+                );
+            }
+
+            return;
+        }
+
+        if (event.key === "Enter") {
+
+            event.preventDefault();
+
+            if (
+                highlightedIndex >= 0 &&
+                visibleOptions[
+                    highlightedIndex
+                ]
+            ) {
+
+                visibleOptions[
+                    highlightedIndex
+                ].click();
+
+                return;
+            }
+
+            const typedName =
+                input.value.trim();
+
+            if (!typedName) {
+
+                selectLocation("");
+                return;
+            }
+
+            const exactLocation =
+                locations.find(
+                    location => {
+
+                        const name =
+                            String(
+                                location.name ?? ""
+                            )
+                                .trim()
+                                .toLowerCase();
+
+                        const code =
+                            String(
+                                location.code ?? ""
+                            )
+                                .trim()
+                                .toLowerCase();
+
+                        return (
+                            name ===
+                            typedName.toLowerCase() ||
+                            code ===
+                            typedName.toLowerCase()
+                        );
+                    }
+                );
+
+            if (exactLocation) {
+
+                selectLocation(
+                    exactLocation.id
+                );
+
+                return;
+            }
+
+            await createLocationFromSearch(
+                typedName,
+                locations,
+                locationSelect,
+                input,
+                dropdown
+            );
+
+            return;
+        }
+
+        if (event.key === "Escape") {
+
+            syncInputWithSelect();
+            closeDropdown();
+        }
+    }
+
+    input.addEventListener(
+        "focus",
+        openDropdown
+    );
+
+    input.addEventListener(
+        "input",
+        () => {
+            openDropdown();
+        }
+    );
+
+    input.addEventListener(
+        "keydown",
+        handleKeyboard
+    );
+
+    input.addEventListener(
+        "blur",
+        () => {
+
+            setTimeout(
+                () => {
+
+                    closeDropdown();
+
+                    if (!locationSelect.value) {
+                        input.value = "";
+                    } else {
+                        syncInputWithSelect();
+                    }
+                },
+                150
+            );
+        }
+    );
+
+    document.addEventListener(
+        "click",
+        event => {
+
+            if (
+                !wrapper.contains(
+                    event.target
+                )
+            ) {
+                closeDropdown();
+            }
+        }
+    );
+
+    locationSelect.addEventListener(
+        "change",
+        syncInputWithSelect
+    );
+
+    syncInputWithSelect();
+}
+
+
+async function createLocationFromSearch(
+    locationName,
+    locations,
+    locationSelect,
+    input,
+    dropdown
+) {
+
+    const cleanName =
+        String(
+            locationName ?? ""
+        ).trim();
+
+    if (!cleanName) {
+        return;
+    }
+
+    const existingLocation =
+        locations.find(
+            location =>
+                String(
+                    location.name ?? ""
+                )
+                    .trim()
+                    .toLowerCase() ===
+                cleanName.toLowerCase()
+        );
+
+    if (existingLocation) {
+
+        selectExistingLocation(
+            existingLocation
+        );
+
+        return;
+    }
+
+    input.disabled = true;
+
+    try {
+
+        const createdLocation =
+            await createLocation(
+                {
+                    name: cleanName,
+                    is_active: true
+                }
+            );
+
+        locations.push(
+            createdLocation
+        );
+
+        const option =
+            document.createElement(
+                "option"
+            );
+
+        option.value =
+            createdLocation.id;
+
+        option.textContent =
+            createdLocation.name;
+
+        option.dataset.code =
+            createdLocation.code ?? "";
+
+        locationSelect.appendChild(option);
+
+        locationSelect.value =
+            String(
+                createdLocation.id
+            );
+
+        locationSelect.dispatchEvent(
+            new Event(
+                "change",
+                {
+                    bubbles: true
+                }
+            )
+        );
+
+        input.value =
+            createdLocation.name;
+
+        dropdown.classList.remove(
+            "tool-search-options-visible"
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Error creating location:",
+            error
+        );
+
+        showErrorMessage(
+            error.message ||
+            "Could not create the location."
+        );
+
+    } finally {
+
+        input.disabled = false;
+        input.focus();
+    }
+
+
+    function selectExistingLocation(
+        location
+    ) {
+
+        locationSelect.value =
+            String(
+                location.id
+            );
+
+        locationSelect.dispatchEvent(
+            new Event(
+                "change",
+                {
+                    bubbles: true
+                }
+            )
+        );
+
+        input.value =
+            location.name;
+
+        dropdown.classList.remove(
+            "tool-search-options-visible"
+        );
+    }
+}
 
 
 // ============================================================
