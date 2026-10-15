@@ -5164,10 +5164,20 @@ async function copyTemplatePreview() {
 
 
 
-        await navigator.clipboard.writeText(
-
+        const text =
             preview.value
+                .split(/\r?\n/)
+                .map(line => line.trim())
+                .filter(Boolean)
+                .map(
+                    line =>
+                        `- ${line.replace(/^\s*-\s*/, "")}`
+                )
+                .join("\n");
 
+
+        await navigator.clipboard.writeText(
+            text
         );
 
 
