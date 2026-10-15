@@ -3,7 +3,7 @@ from typing import Optional
 from datetime import datetime
 
 from app.schemas.forms import FormDetailResponse
-from app.schemas.summaries import FormSummary, IssueTypeSummary, KnowledgeBaseSummary, LocationSummary, PrioritySummary, QueueSummary, TicketFormSummary, TicketStatusSummary, ToolSummary, TroubleshootingTemplateSummary
+from app.schemas.summaries import FormSummary, IssueTypeSummary, KnowledgeBaseSummary, LocationSummary, PrioritySummary, QueueSummary, TicketFormSummary, TicketStatusSummary, ToolSummary, TroubleshootingTemplateSummary, UserTypeSummary 
 
 
 
@@ -12,7 +12,7 @@ class TicketBase(BaseModel):
     title: Optional[str] = None
     tool_id: Optional[int] = None
     user_name: Optional[str] = None
-    user_type: Optional[str] = None
+    user_type_id: Optional[int] = None
     user_best_contact_number: Optional[str] = None
     user_email: Optional[str] = None
     issue_description: Optional[str] = None
@@ -20,6 +20,7 @@ class TicketBase(BaseModel):
     troubleshooting_steps: Optional[str] = None
     location_id: Optional[int] = None
     priority_id: Optional[int] = None
+    user_type_id: Optional[int] = None
 
     generated_ticket: Optional[str] = None
     generated_time_entry: Optional[str] = None
@@ -57,6 +58,7 @@ class TicketResponse(TicketBase):
 
 class TicketDetailResponse(TicketResponse):
     tool: Optional[ToolSummary] = None
+    user_type: Optional[UserTypeSummary] = None
     issue_type: Optional[IssueTypeSummary] = None
     knowledge_base: list[KnowledgeBaseSummary] = []
     troubleshooting_template: Optional[TroubleshootingTemplateSummary] = None

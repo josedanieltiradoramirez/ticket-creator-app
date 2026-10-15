@@ -15,7 +15,14 @@ class Tickets(Base):
     tool_id = Column(Integer, ForeignKey("tools.id"), nullable=True)
 
     user_name = Column(String, nullable=True)
-    user_type = Column(String, nullable=True)
+
+    # User type
+    user_type_id = Column(
+        Integer,
+        ForeignKey("user_types.id"),
+        nullable=True
+    )
+
     user_best_contact_number = Column(String, nullable=True)
     user_email = Column(String, nullable=True)
 
@@ -76,6 +83,11 @@ class Tickets(Base):
         back_populates="tickets"
     )
 
+    user_type = relationship(
+        "UserTypes",
+        back_populates="tickets"
+    )
+
     location = relationship(
         "Locations",
         back_populates="tickets"
@@ -92,7 +104,8 @@ class Tickets(Base):
     )
 
     knowledge_base = relationship(
-        "KnowledgeBase", secondary="relation_tickets_knowledge_base",
+        "KnowledgeBase",
+        secondary="relation_tickets_knowledge_base",
         back_populates="tickets"
     )
 

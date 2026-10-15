@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.models.tickets import Tickets
 from app.models.users import Users
+from app.models.user_types import UserTypes
 from app.routers.auth import get_current_user
 from app.schemas.summaries import KnowledgeBaseSummary
 from app.schemas.tickets import TicketCreate, TicketUpdate, TicketResponse, TicketDetailResponse, TicketListResponse
@@ -231,6 +232,7 @@ async def get_ticket_by_id(
         db.query(Tickets)
         .options(
             selectinload(Tickets.tool),
+            selectinload(Tickets.user_type),
             selectinload(Tickets.issue_type),
             selectinload(Tickets.knowledge_base),
             selectinload(Tickets.troubleshooting_template),

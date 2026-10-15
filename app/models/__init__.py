@@ -24,3 +24,4 @@ from .relation_queues_tools import RelationQueuesTools
 from app.models.knowledge_base_notes import KnowledgeBaseNotes
 from app.models.relation_tools_knowledge_base_notes import RelationToolsKnowledgeBaseNotes
 from app.models.relation_issue_types_knowledge_base_notes import RelationIssueTypesKnowledgeBaseNotes
+from app.models.user_types import UserTypes

@@ -1,0 +1,17 @@
+from sqlalchemy import Boolean, Column, Integer, String, ForeignKey
+from sqlalchemy.orm import relationship
+from app.core.database import Base
+
+
+class UserTypes(Base):
+    __tablename__ = "user_types"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    is_active = Column(Boolean, default=True)
+    created_by = Column(Integer, ForeignKey("users.id"), nullable=False)
+
+    tickets = relationship(
+        "Tickets",
+        back_populates="user_type"
+    )

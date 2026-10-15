@@ -132,6 +132,8 @@ async function initializeNewTicket() {
 
     await loadLocations(null);
 
+    await loadUserTypes(null);
+
     await loadTools(null);
 
 
@@ -298,6 +300,11 @@ async function loadTicket() {
 
             ticket.location_id
 
+        );
+
+        await loadUserTypes(
+            ticket.user_type_id ??
+            ticket.user_type?.id
         );
 
 
@@ -472,13 +479,24 @@ async function loadTicket() {
 
 
 
-        document.getElementById(
+        const userTypeSelect =
+            document.getElementById("userType");
 
-            "userType"
+        if (userTypeSelect) {
+            userTypeSelect.value =
+                String(
+                    ticket.user_type_id ??
+                    ticket.user_type?.id ??
+                    ""
+                );
 
-        ).value =
-
-            ticket.user_type ?? "";
+            userTypeSelect.dispatchEvent(
+                new Event(
+                    "change",
+                    { bubbles: true }
+                )
+            );
+        }
 
 
 
@@ -2290,6 +2308,467 @@ async function loadToolKnowledgeBase(
 
 
 
+
+
+// ============================================================
+// USER TYPES
+// ============================================================
+
+async function loadUserTypes(
+    currentUserTypeId
+) {
+
+    const userTypes =
+        await getUserTypes();
+
+    const userTypeSelect =
+        document.getElementById(
+            "userType"
+        );
+
+    if (!userTypeSelect) {
+        return;
+    }
+
+    userTypeSelect.innerHTML = "";
+
+    const emptyOption =
+        document.createElement("option");
+
+    emptyOption.value = "";
+    emptyOption.textContent =
+        "Select a User Type";
+
+    userTypeSelect.appendChild(
+        emptyOption
+    );
+
+    userTypes.forEach(
+        userType => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value = userType.id;
+            option.textContent = userType.name;
+
+            if (
+                String(userType.id) ===
+                String(currentUserTypeId ?? "")
+            ) {
+                option.selected = true;
+            }
+
+            userTypeSelect.appendChild(
+                option
+            );
+        }
+    );
+
+    setupUserTypeSearchDropdown(
+        userTypeSelect,
+        userTypes
+    );
+}
+
+
+function setupUserTypeSearchDropdown(
+    userTypeSelect,
+    userTypes
+) {
+
+    if (!userTypeSelect) {
+        return;
+    }
+
+    const existingWrapper =
+        userTypeSelect.closest(
+            ".user-type-search-dropdown"
+        );
+
+    if (existingWrapper) {
+        existingWrapper.parentNode.insertBefore(
+            userTypeSelect,
+            existingWrapper
+        );
+        existingWrapper.remove();
+    }
+
+    const wrapper =
+        document.createElement("div");
+
+    wrapper.className =
+        "tool-search-dropdown user-type-search-dropdown";
+
+    const input =
+        document.createElement("input");
+
+    input.type = "text";
+    input.className = "tool-search-input";
+    input.autocomplete = "off";
+    input.placeholder =
+        "Search or select a user type...";
+    input.setAttribute("role", "combobox");
+    input.setAttribute("aria-expanded", "false");
+
+    const dropdown =
+        document.createElement("div");
+
+    dropdown.className =
+        "tool-search-options";
+    dropdown.setAttribute("role", "listbox");
+
+    userTypeSelect.parentNode.insertBefore(
+        wrapper,
+        userTypeSelect
+    );
+
+    wrapper.appendChild(input);
+    wrapper.appendChild(dropdown);
+    wrapper.appendChild(userTypeSelect);
+
+    userTypeSelect.style.display = "none";
+
+    let highlightedIndex = -1;
+    let visibleOptions = [];
+
+    function selectedName() {
+        const option =
+            userTypeSelect.options[
+                userTypeSelect.selectedIndex
+            ];
+
+        return option && option.value
+            ? option.textContent.trim()
+            : "";
+    }
+
+    function syncInput() {
+        input.value = selectedName();
+    }
+
+    function closeDropdown() {
+        dropdown.classList.remove(
+            "tool-search-options-visible"
+        );
+        input.setAttribute(
+            "aria-expanded",
+            "false"
+        );
+        highlightedIndex = -1;
+    }
+
+    function openDropdown() {
+        renderOptions(input.value);
+        dropdown.classList.add(
+            "tool-search-options-visible"
+        );
+        input.setAttribute(
+            "aria-expanded",
+            "true"
+        );
+    }
+
+    function selectUserType(id) {
+        userTypeSelect.value = String(id);
+        userTypeSelect.dispatchEvent(
+            new Event("change", { bubbles: true })
+        );
+        syncInput();
+        closeDropdown();
+    }
+
+    function renderOptions(searchValue = "") {
+        const query =
+            searchValue.trim().toLowerCase();
+
+        dropdown.innerHTML = "";
+        visibleOptions = [];
+        highlightedIndex = -1;
+
+        const matches = userTypes.filter(
+            userType =>
+                !query ||
+                String(userType.name)
+                    .toLowerCase()
+                    .includes(query)
+        );
+
+        matches.forEach(userType => {
+            const option =
+                document.createElement("button");
+
+            option.type = "button";
+            option.className =
+                "tool-search-option";
+            option.setAttribute("role", "option");
+            option.textContent = userType.name;
+
+            option.addEventListener(
+                "mousedown",
+                event => event.preventDefault()
+            );
+
+            option.addEventListener(
+                "click",
+                () => selectUserType(userType.id)
+            );
+
+            dropdown.appendChild(option);
+            visibleOptions.push(option);
+        });
+
+        const exactMatch = userTypes.some(
+            userType =>
+                String(userType.name)
+                    .trim()
+                    .toLowerCase() === query
+        );
+
+        if (query && !exactMatch) {
+            const addOption =
+                document.createElement("button");
+
+            addOption.type = "button";
+            addOption.className =
+                "tool-search-option tool-search-add";
+            addOption.setAttribute("role", "option");
+            addOption.innerHTML =
+                `<span class="tool-search-add-icon">+</span>` +
+                `<span>Add "${escapeNotificationHtml(searchValue.trim())}"</span>`;
+
+            addOption.addEventListener(
+                "mousedown",
+                event => event.preventDefault()
+            );
+
+            addOption.addEventListener(
+                "click",
+                async () => {
+                    await createUserTypeFromSearch(
+                        searchValue.trim(),
+                        userTypes,
+                        userTypeSelect,
+                        input,
+                        dropdown
+                    );
+                }
+            );
+
+            dropdown.appendChild(addOption);
+            visibleOptions.push(addOption);
+        }
+
+        if (!visibleOptions.length) {
+            const empty =
+                document.createElement("div");
+            empty.className = "tool-search-empty";
+            empty.textContent =
+                "No user types found.";
+            dropdown.appendChild(empty);
+        }
+    }
+
+    async function handleKeyboard(event) {
+        if (event.key === "ArrowDown") {
+            event.preventDefault();
+            if (!dropdown.classList.contains(
+                "tool-search-options-visible"
+            )) {
+                openDropdown();
+            }
+            if (visibleOptions.length) {
+                highlightedIndex = Math.min(
+                    highlightedIndex + 1,
+                    visibleOptions.length - 1
+                );
+                visibleOptions.forEach(
+                    (option, index) =>
+                        option.classList.toggle(
+                            "tool-search-option-highlighted",
+                            index === highlightedIndex
+                        )
+                );
+            }
+            return;
+        }
+
+        if (event.key === "ArrowUp") {
+            event.preventDefault();
+            if (visibleOptions.length) {
+                highlightedIndex =
+                    highlightedIndex <= 0
+                        ? visibleOptions.length - 1
+                        : highlightedIndex - 1;
+                visibleOptions.forEach(
+                    (option, index) =>
+                        option.classList.toggle(
+                            "tool-search-option-highlighted",
+                            index === highlightedIndex
+                        )
+                );
+            }
+            return;
+        }
+
+        if (event.key === "Enter") {
+            event.preventDefault();
+
+            if (
+                highlightedIndex >= 0 &&
+                visibleOptions[highlightedIndex]
+            ) {
+                visibleOptions[highlightedIndex].click();
+                return;
+            }
+
+            const typedName = input.value.trim();
+            if (!typedName) {
+                userTypeSelect.value = "";
+                userTypeSelect.dispatchEvent(
+                    new Event("change", { bubbles: true })
+                );
+                return;
+            }
+
+            const exactUserType = userTypes.find(
+                userType =>
+                    String(userType.name)
+                        .trim()
+                        .toLowerCase() ===
+                    typedName.toLowerCase()
+            );
+
+            if (exactUserType) {
+                selectUserType(exactUserType.id);
+                return;
+            }
+
+            await createUserTypeFromSearch(
+                typedName,
+                userTypes,
+                userTypeSelect,
+                input,
+                dropdown
+            );
+            return;
+        }
+
+        if (event.key === "Escape") {
+            syncInput();
+            closeDropdown();
+        }
+    }
+
+    input.addEventListener("focus", openDropdown);
+    input.addEventListener("input", openDropdown);
+    input.addEventListener("keydown", handleKeyboard);
+
+    input.addEventListener("blur", () => {
+        setTimeout(() => {
+            closeDropdown();
+            syncInput();
+        }, 150);
+    });
+
+    document.addEventListener("click", event => {
+        if (!wrapper.contains(event.target)) {
+            closeDropdown();
+        }
+    });
+
+    userTypeSelect.addEventListener(
+        "change",
+        syncInput
+    );
+
+    syncInput();
+}
+
+
+async function createUserTypeFromSearch(
+    userTypeName,
+    userTypes,
+    userTypeSelect,
+    input,
+    dropdown
+) {
+    const cleanName =
+        String(userTypeName ?? "").trim();
+
+    if (!cleanName) {
+        return;
+    }
+
+    const existingUserType = userTypes.find(
+        userType =>
+            String(userType.name)
+                .trim()
+                .toLowerCase() ===
+            cleanName.toLowerCase()
+    );
+
+    if (existingUserType) {
+        selectExistingUserType(
+            existingUserType
+        );
+        return;
+    }
+
+    input.disabled = true;
+
+    try {
+        const createdUserType =
+            await createUserType({
+                name: cleanName,
+                is_active: true
+            });
+
+        userTypes.push(createdUserType);
+
+        const option =
+            document.createElement("option");
+        option.value = createdUserType.id;
+        option.textContent = createdUserType.name;
+        userTypeSelect.appendChild(option);
+        userTypeSelect.value =
+            String(createdUserType.id);
+
+        userTypeSelect.dispatchEvent(
+            new Event("change", { bubbles: true })
+        );
+
+        input.value = createdUserType.name;
+        dropdown.classList.remove(
+            "tool-search-options-visible"
+        );
+    } catch (error) {
+        console.error(
+            "Error creating user type:",
+            error
+        );
+        showErrorMessage(
+            error.message ||
+                "Could not create the user type."
+        );
+    } finally {
+        input.disabled = false;
+        input.focus();
+    }
+
+    function selectExistingUserType(userType) {
+        userTypeSelect.value = String(userType.id);
+        userTypeSelect.dispatchEvent(
+            new Event("change", { bubbles: true })
+        );
+        input.value = userType.name;
+        dropdown.classList.remove(
+            "tool-search-options-visible"
+        );
+    }
+}
 
 
 // ============================================================
@@ -6943,11 +7422,12 @@ function generateTicket() {
 
 
 
+    const userTypeSelect =
+        document.getElementById("userType");
+
     const userType =
-
-        document.getElementById("userType")
-
-            .value.trim();
+        userTypeSelect?.selectedOptions?.[0]?.textContent
+            ?.trim() || "";
 
 
 
@@ -7652,7 +8132,7 @@ function buildTicketData() {
         user_name: document.getElementById("userName").value,
         user_email: document.getElementById("userEmail").value,
         user_best_contact_number: document.getElementById("userPhone").value,
-        user_type: document.getElementById("userType").value,
+        user_type_id: document.getElementById("userType").value ? Number(document.getElementById("userType").value) : null,
         short_issue: document.getElementById("shortIssue").value,
         issue_description: document.getElementById("issueDescription").value,
         troubleshooting_steps: document.getElementById("troubleshootingSteps").value,

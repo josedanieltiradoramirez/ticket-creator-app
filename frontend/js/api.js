@@ -1419,6 +1419,60 @@ async function removeToolKnowledgeBaseNote(
 
 
 // ============================================================
+// USER TYPES
+// ============================================================
+
+async function getUserTypes() {
+
+    const response =
+
+        await fetch(
+            `${API_URL}/api/user-types/`,
+            {
+                headers: getAuthHeaders()
+            }
+        );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error while fetching user types"
+        );
+    }
+
+    return await response.json();
+}
+
+
+async function createUserType(userTypeData) {
+
+    const response =
+
+        await fetch(
+            `${API_URL}/api/user-types/`,
+            {
+                method: "POST",
+                headers: {
+                    ...getAuthHeaders(),
+                    "Content-Type":
+                        "application/json"
+                },
+                body: JSON.stringify(
+                    userTypeData
+                )
+            }
+        );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error creating user type"
+        );
+    }
+
+    return await response.json();
+}
+
+
+// ============================================================
 // LOCATIONS
 // ============================================================
 

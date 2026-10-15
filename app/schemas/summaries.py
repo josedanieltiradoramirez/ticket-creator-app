@@ -93,6 +93,13 @@ class LocationSummary(BaseModel):
     class Config:
         orm_mode = True
 
+class UserTypeSummary(BaseModel):
+    id: int
+    name: str
+
+    class Config:
+        orm_mode = True
+
 class PrioritySummary(BaseModel):
     id: int
     name: str
@@ -109,3 +116,4 @@ class TicketSummary(BaseModel):
 
     class Config:
             orm_mode = True
+
