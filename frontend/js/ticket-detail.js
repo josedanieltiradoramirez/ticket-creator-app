@@ -3533,23 +3533,39 @@ async function loadTroubleshootingTemplates(
 
     // Update preview
 
-
-
     loadTemplatePreview();
 
 
+    // The template is selected programmatically when an Issue Type is
+    // chosen, so no native "change" event fires. Render the steps now.
+    renderTroubleshootingTemplateSteps();
 
+
+    // Keep the visible search field synchronized with the selected template.
+    const templateSearchInput =
+        templateSelect
+            .closest(".catalog-search-dropdown")
+            ?.querySelector(".catalog-search-input");
+
+    if (templateSearchInput) {
+        const selectedOption =
+            templateSelect.options[
+                templateSelect.selectedIndex
+            ];
+
+        templateSearchInput.value =
+            selectedOption?.value
+                ? selectedOption.textContent.trim()
+                : "";
+    }
 
 
     // Update template KB
 
-
-
     await loadTemplateKnowledgeBase(
-
         templateSelect.value
-
     );
+
 
 }
 
@@ -4832,11 +4848,9 @@ async function useCurrentTemplate() {
 
         renderUsedKnowledgeBase();
 
-
-
-
-
-    } catch (error) {
+        // Refresh recommended KBs so articles added by the template
+        // are immediately marked as Used in their individual sections.
+        await refreshKnowledgeBaseSuggestions();} catch (error) {
 
 
 
@@ -5180,6 +5194,12 @@ async function removeUsedKnowledgeBase(
 
 
         renderUsedKnowledgeBase();
+
+
+        // Refresh all recommended KB sections so the removed article
+        // immediately becomes available again in Tool, Issue Type,
+        // and Troubleshooting Template.
+        await refreshKnowledgeBaseSuggestions();
 
 
 
