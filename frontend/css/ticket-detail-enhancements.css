@@ -16,13 +16,11 @@
     --td-soft: #f7f9fc;
     --td-blue: #315de8;
 
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 340px;
+    display: block;
     width: 100%;
     min-height: 100vh;
     min-width: 0;
     overflow-x: hidden;
-    align-items: stretch;
 }
 
 /* ============================================================
@@ -32,8 +30,8 @@
 .ticket-page > .ticket-main {
     width: 100%;
     min-width: 0;
-    max-width: none;
-    margin: 0;
+    max-width: 1200px;
+    margin: 0 auto;
     padding: 32px clamp(24px, 3vw, 44px) 64px;
 }
 
@@ -315,13 +313,16 @@
    ============================================================ */
 
 .ticket-page > .ticket-sidebar {
-    position: sticky;
+    position: fixed;
     top: 0;
+    right: 0;
+    bottom: 0;
 
     width: 340px;
     min-width: 0;
     max-width: 100%;
     height: 100vh;
+    max-height: 100vh;
 
     overflow-y: auto;
 
@@ -329,6 +330,8 @@
 
     background: #ffffff;
     border-left: 1px solid var(--td-border);
+
+    z-index: 20;
 }
 
 .ticket-page .sidebar-field {
@@ -1157,4 +1160,29 @@
 .ticket-page .troubleshooting-template-refresh:disabled {
     opacity: 0.55;
     cursor: wait;
+}
+
+
+/* Fixed right sidebar: reserve its width so ticket content is never hidden underneath it. */
+@media (min-width: 901px) {
+    .ticket-page {
+        padding-right: 340px;
+    }
+}
+
+
+@media (max-width: 900px) {
+    .ticket-page > .ticket-sidebar {
+        position: static;
+        width: auto;
+        height: auto;
+        max-height: none;
+        overflow-y: visible;
+        padding: 20px;
+        border-left: 0;
+    }
+
+    .ticket-page {
+        padding-right: 0;
+    }
 }
