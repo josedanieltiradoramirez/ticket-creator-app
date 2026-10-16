@@ -4758,20 +4758,6 @@ function ensureFormTemplateFieldsContainer() {
     container.className =
         "troubleshooting-template-steps";
 
-    const title =
-        document.createElement("div");
-
-    title.className =
-        "component-card-title";
-
-    title.textContent =
-        "Form Fields";
-
-    copyButton.parentNode.insertBefore(
-        title,
-        copyButton
-    );
-
     copyButton.parentNode.insertBefore(
         container,
         copyButton
@@ -4986,6 +4972,16 @@ function renderFormTemplateFields(
     container.innerHTML = "";
 
     if (!fields || fields.length === 0) {
+        const empty =
+            document.createElement("div");
+
+        empty.className =
+            "troubleshooting-template-empty";
+
+        empty.textContent =
+            "Select a form template to see its fields.";
+
+        container.appendChild(empty);
         return;
     }
 
@@ -8254,11 +8250,14 @@ function setupEventListeners() {
 
 
 
-            document.getElementById(
+            const ticketTitle = document.getElementById("ticketTitle");
+            ticketTitle.value = suggestion;
 
-                "ticketTitle"
-
-            ).value = suggestion;
+            // Programmatic changes do not trigger input listeners automatically.
+            // Dispatch the same event as user input so autosave runs immediately.
+            ticketTitle.dispatchEvent(
+                new Event("input", { bubbles: true })
+            );
 
             showSuccessMessage("Title suggestion applied.");
 
