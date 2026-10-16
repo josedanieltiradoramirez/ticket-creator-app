@@ -133,3 +133,8 @@ class Tickets(Base):
         "Users",
         back_populates="tickets"
     )
+
+    knowledge_base_notes = relationship(
+        "KnowledgeBaseNotes",
+        back_populates="source_ticket"
+    )

@@ -27,6 +27,12 @@ class KnowledgeBaseNotes(Base):
         nullable=False
     )
 
+    source_ticket_id = Column(
+        Integer,
+        ForeignKey("tickets.id"),
+        nullable=True
+    )
+
     created_at = Column(
         DateTime,
         default=datetime.utcnow,
@@ -51,3 +57,9 @@ class KnowledgeBaseNotes(Base):
         secondary="relation_issue_types_knowledge_base_notes",
         back_populates="knowledge_base_notes"
     )
+
+    source_ticket = relationship(
+        "Tickets",
+        back_populates="knowledge_base_notes"
+    )
+
