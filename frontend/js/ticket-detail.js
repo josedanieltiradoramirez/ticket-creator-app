@@ -4109,9 +4109,6 @@ async function loadTroubleshootingTemplates(
 
     // Update preview
 
-    loadTemplatePreview();
-
-
     // The template is selected programmatically when an Issue Type is
     // chosen, so no native "change" event fires. Render the steps now.
     renderTroubleshootingTemplateSteps();
@@ -4216,94 +4213,6 @@ async function loadSelectedTemplate() {
 // TEMPLATE PREVIEW
 
 // ============================================================
-
-
-
-function loadTemplatePreview() {
-
-
-
-    const templateSelect =
-
-        document.getElementById(
-
-            "troubleshootingTemplate"
-
-        );
-
-
-
-
-
-    const preview =
-
-        document.getElementById(
-
-            "troubleshootingTemplatePreview"
-
-        );
-
-
-
-
-
-    const selectedTemplateId =
-
-        templateSelect.value
-
-            ? Number(
-
-                templateSelect.value
-
-            )
-
-            : null;
-
-
-
-
-
-    const selectedTemplate =
-
-        troubleshootingTemplates.find(
-
-            template =>
-
-                template.id ===
-
-                selectedTemplateId
-
-        );
-
-
-
-
-
-    if (selectedTemplate) {
-
-
-
-        preview.value =
-
-            selectedTemplate.steps ??
-
-            selectedTemplate.generated_description ??
-
-            "";
-
-
-
-    } else {
-
-
-
-        preview.value = "";
-
-    }
-
-}
-
-
 
 
 
@@ -4739,172 +4648,452 @@ async function loadSelectedForm(
 
 
 async function loadFormPreview(
-
     formId
-
 ) {
 
-
-
-    const preview =
-
-        document.getElementById(
-
-            "formPreview"
-
-        );
-
-
-
-
-
     if (!formId) {
-
-
-
-        preview.value = "";
-
-
-
+        renderFormTemplateFields([]);
         return;
-
     }
-
-
-
-
 
     const form =
-
         forms.find(
-
             form =>
-
                 form.id ===
-
                 Number(formId)
-
         );
-
-
-
-
 
     if (!form) {
-
-
-
-        preview.value = "";
-
-
-
+        renderFormTemplateFields([]);
         return;
-
     }
 
-
-
-
-
     try {
-
-
-
         const fields =
-
             await getFormFields(
-
                 formId
-
             );
 
+        const formLines = [];
 
+        // Prefer the real Form fields when they exist. If the Form was
+        // created directly from Ticket Detail, its description is the
+        // template body and can be used as the source instead.
+        if (fields && fields.length > 0) {
+            fields.forEach(field => {
+                const label =
+                    normalizeFormFieldText(
+                        field?.label
+                    );
 
-
-
-        if (
-
-            !fields ||
-
-            fields.length === 0
-
-        ) {
-
-
-
-            preview.value =
-
-                form.description ?? "";
-
-
-
-            return;
-
+                if (label) {
+                    formLines.push(label);
+                }
+            });
         }
 
+        if (formLines.length === 0) {
+            formLines.push(
+                ...getFormDescriptionLines(
+                    form.description
+                )
+            );
+        }
 
-
-
-
-        let previewText = "";
-
-
-
-
-
-        fields.forEach(
-
-            field => {
-
-
-
-                previewText +=
-
-                    `${field.label}:\n\n`;
-
-            }
-
+        renderFormTemplateFields(
+            formLines
         );
-
-
-
-
-
-        preview.value =
-
-            previewText;
-
-
-
-
 
     } catch (error) {
 
-
-
         console.error(
-
             "Error loading Form Preview:",
-
             error
+        );
 
+        const formLines =
+            getFormDescriptionLines(
+                form.description
+            );
+
+        renderFormTemplateFields(
+            formLines
+        );
+    }
+}
+
+function getFormDescriptionLines(value) {
+    return String(value ?? "")
+        .split(/\r?\n/)
+        .map(line => normalizeFormFieldText(line))
+        .filter(Boolean);
+}
+
+function ensureFormTemplateFieldsContainer() {
+
+    const copyButton =
+        document.getElementById(
+            "copyFormButton"
+        );
+
+    if (!copyButton) {
+        return null;
+    }
+
+    let container =
+        document.getElementById(
+            "formTemplateFields"
+        );
+
+    if (container) {
+        return container;
+    }
+
+    container =
+        document.createElement("div");
+
+    container.id =
+        "formTemplateFields";
+
+    container.className =
+        "troubleshooting-template-steps";
+
+    const title =
+        document.createElement("div");
+
+    title.className =
+        "component-card-title";
+
+    title.textContent =
+        "Form Fields";
+
+    copyButton.parentNode.insertBefore(
+        title,
+        copyButton
+    );
+
+    copyButton.parentNode.insertBefore(
+        container,
+        copyButton
+    );
+
+    return container;
+}
+
+function normalizeFormFieldText(value) {
+    return String(
+        value ?? ""
+    )
+        .replace(
+            /^\s*-\s*/,
+            ""
+        )
+        .trim();
+}
+
+function normalizeFormTemplateContent(value) {
+    return String(value ?? "")
+        .split(/\r?\n/)
+        .map(line => normalizeFormFieldText(line))
+        .filter(Boolean)
+        .join("\n");
+}
+
+function getFormTemplateLineValue(value) {
+    const normalized =
+        normalizeFormFieldText(value);
+
+    if (!normalized) {
+        return "";
+    }
+
+    // A Form field normally ends in ':'. Keep it exactly once.
+    return normalized.endsWith(":")
+        ? normalized
+        : `${normalized}:`;
+}
+
+function getFormContentLines() {
+    const textarea =
+        document.getElementById(
+            "formContent"
+        );
+
+    if (!textarea) {
+        return [];
+    }
+
+    return textarea.value
+        .split(/\r?\n/)
+        .map(line => normalizeFormFieldText(line))
+        .filter(Boolean);
+}
+
+function formContentContainsField(
+    contentLine,
+    fieldLine
+) {
+    const content =
+        normalizeFormFieldText(contentLine);
+
+    const field =
+        getFormTemplateLineValue(fieldLine);
+
+    if (!content || !field) {
+        return false;
+    }
+
+    return (
+        content === field ||
+        content.startsWith(`${field} `)
+    );
+}
+
+function appendFormField(field) {
+    const textarea =
+        document.getElementById(
+            "formContent"
+        );
+
+    if (!textarea || !field) {
+        return;
+    }
+
+    const value =
+        typeof field === "string"
+            ? field
+            : field.label;
+
+    const label =
+        getFormTemplateLineValue(value);
+
+    if (!label) {
+        return;
+    }
+
+    const formField =
+        `- ${label}`;
+
+    const current =
+        textarea.value.trim();
+
+    textarea.value =
+        current
+            ? `${current}\n${formField}`
+            : formField;
+
+    textarea.dispatchEvent(
+        new Event("input", {
+            bubbles: true
+        })
+    );
+
+    markAutosaveDirty();
+    syncFormTemplateFieldCards();
+    textarea.focus();
+}
+
+function setFormTemplateCardUsed(
+    card,
+    used
+) {
+    if (!card) {
+        return;
+    }
+
+    const marker =
+        card.querySelector(
+            ".troubleshooting-template-check"
+        );
+
+    const useButton =
+        card.querySelector(
+            ".troubleshooting-template-use"
+        );
+
+    card.classList.toggle(
+        "is-used",
+        used
+    );
+
+    if (marker) {
+        marker.textContent =
+            used ? "✓" : "";
+    }
+
+    if (useButton) {
+        useButton.textContent =
+            used ? "Used" : "Use";
+        useButton.disabled = used;
+    }
+}
+
+function syncFormTemplateFieldCards() {
+    const container =
+        document.getElementById(
+            "formTemplateFields"
+        );
+
+    if (!container) {
+        return;
+    }
+
+    const contentLines =
+        getFormContentLines();
+
+    container
+        .querySelectorAll(
+            ".troubleshooting-template-step"
+        )
+        .forEach(card => {
+            const line =
+                card.dataset.formLine || "";
+
+            const matchIndex =
+                contentLines.findIndex(
+                    contentLine =>
+                        formContentContainsField(
+                            contentLine,
+                            line
+                        )
+                );
+
+            if (matchIndex >= 0) {
+                contentLines.splice(
+                    matchIndex,
+                    1
+                );
+            }
+
+            setFormTemplateCardUsed(
+                card,
+                matchIndex >= 0
+            );
+        });
+}
+
+function renderFormTemplateFields(
+    fields = []
+) {
+
+    const container =
+        ensureFormTemplateFieldsContainer();
+
+    if (!container) {
+        return;
+    }
+
+    container.innerHTML = "";
+
+    if (!fields || fields.length === 0) {
+        return;
+    }
+
+    const lines = fields
+        .map(field =>
+            typeof field === "string"
+                ? normalizeFormFieldText(field)
+                : normalizeFormFieldText(field?.label)
+        )
+        .filter(Boolean);
+
+    if (lines.length === 0) {
+        return;
+    }
+
+    lines.forEach(line => {
+        const formLine =
+            getFormTemplateLineValue(line);
+
+        if (!formLine) {
+            return;
+        }
+
+        const card =
+            document.createElement("div");
+
+        card.className =
+            "troubleshooting-template-step";
+
+        card.dataset.formLine =
+            formLine;
+
+        const marker =
+            document.createElement("span");
+
+        marker.className =
+            "troubleshooting-template-check";
+
+        const text =
+            document.createElement("div");
+
+        text.className =
+            "troubleshooting-template-step-text";
+
+        text.textContent =
+            formLine.replace(/\s*:\s*$/, ":");
+
+        const useButton =
+            document.createElement("button");
+
+        useButton.type = "button";
+        useButton.className =
+            "troubleshooting-template-use";
+        useButton.textContent = "Use";
+
+        useButton.addEventListener(
+            "click",
+            () => {
+                appendFormField(line);
+            }
+        );
+
+        card.appendChild(marker);
+        card.appendChild(text);
+        card.appendChild(useButton);
+
+        container.appendChild(card);
+    });
+
+    syncFormTemplateFieldCards();
+}
+
+function refreshFormTemplateFields() {
+
+    const formSelect =
+        document.getElementById(
+            "form"
         );
 
 
-
-
-
-        preview.value =
-
-            form.description ?? "";
-
+    if (!formSelect) {
+        return;
     }
 
+
+    loadFormPreview(
+        formSelect.value
+    );
 }
 
 
+function setupFormTemplateFieldsSync() {
+    const formContent =
+        document.getElementById(
+            "formContent"
+        );
 
+    if (!formContent) {
+        return;
+    }
 
+    formContent.addEventListener(
+        "input",
+        syncFormTemplateFieldCards
+    );
+
+    syncFormTemplateFieldCards();
+}
 
 // ============================================================
 
@@ -4916,68 +5105,55 @@ async function loadFormPreview(
 
 async function copyFormPreview() {
 
+    const formSelect =
+        document.getElementById("form");
 
-
-    const preview =
-
-        document.getElementById(
-
-            "formPreview"
-
-        );
-
-
-
-
-
-    if (!preview.value) {
-
-
-
+    if (!formSelect || !formSelect.value) {
         return;
-
     }
 
+    const form =
+        forms.find(
+            item => item.id === Number(formSelect.value)
+        );
 
+    if (!form) {
+        return;
+    }
 
-
+    let lines = [];
 
     try {
+        const fields = await getFormFields(formSelect.value);
 
-
-
-        await navigator.clipboard.writeText(
-
-            preview.value
-
-        );
-
-
-
-
-
-        showSuccessMessage("Form copied to clipboard.");
-
-
-
-
-
+        if (fields && fields.length > 0) {
+            lines = fields
+                .map(field => normalizeFormFieldText(field?.label))
+                .filter(Boolean);
+        }
     } catch (error) {
-
-
-
-        console.error(
-
-            "Error copying form:",
-
-            error
-
-        );
-
+        console.error("Error loading Form fields for copy:", error);
     }
 
-}
+    if (lines.length === 0) {
+        lines = getFormDescriptionLines(form.description);
+    }
 
+    if (lines.length === 0) {
+        return;
+    }
+
+    const content = lines
+        .map(line => `- ${getFormTemplateLineValue(line)}`)
+        .join("\n");
+
+    try {
+        await navigator.clipboard.writeText(content);
+        showSuccessMessage("Form copied to clipboard.");
+    } catch (error) {
+        console.error("Error copying form:", error);
+    }
+}
 
 
 // ============================================================
@@ -5133,82 +5309,37 @@ async function copyTimeEntryPreview() {
 
 
 async function copyTemplatePreview() {
+    const lines =
+        getSelectedTroubleshootingTemplateLines();
 
-
-
-    const preview =
-
-        document.getElementById(
-
-            "troubleshootingTemplatePreview"
-
-        );
-
-
-
-
-
-    if (!preview.value) {
-
-
-
+    if (lines.length === 0) {
         return;
-
     }
 
-
-
-
-
     try {
-
-
-
         const text =
-            preview.value
-                .split(/\r?\n/)
-                .map(line => line.trim())
-                .filter(Boolean)
+            lines
                 .map(
                     line =>
-                        `- ${line.replace(/^\s*-\s*/, "")}`
+                        `- ${normalizeTroubleshootingStep(line)}`
                 )
                 .join("\n");
-
 
         await navigator.clipboard.writeText(
             text
         );
 
-
-
-
-
-        showSuccessMessage("Template copied to clipboard.");
-
-
-
-
-
-    } catch (error) {
-
-
-
-        console.error(
-
-            "Error copying template:",
-
-            error
-
+        showSuccessMessage(
+            "Template copied to clipboard."
         );
 
+    } catch (error) {
+        console.error(
+            "Error copying template:",
+            error
+        );
     }
-
 }
-
-
-
-
 
 // ============================================================
 
@@ -6635,11 +6766,19 @@ function setupSaveFormTemplateButton() {
 
     // The current form content is the saved baseline. The button only
     // becomes available when the user changes the content.
-    let originalContent = formContent.value;
+    let originalContent =
+        normalizeFormTemplateContent(
+            formContent.value
+        );
 
     const updateButtonState = () => {
-        const currentContent = formContent.value;
-        const hasChanges = currentContent !== originalContent;
+        const currentContent =
+            normalizeFormTemplateContent(
+                formContent.value
+            );
+
+        const hasChanges =
+            currentContent !== originalContent;
 
         button.disabled = !hasChanges;
         button.style.opacity = button.disabled ? "0.5" : "1";
@@ -6649,7 +6788,10 @@ function setupSaveFormTemplateButton() {
     };
 
     button.markSaved = () => {
-        originalContent = formContent.value;
+        originalContent =
+            normalizeFormTemplateContent(
+                formContent.value
+            );
         updateButtonState();
     };
 
@@ -6661,7 +6803,10 @@ function setupSaveFormTemplateButton() {
     button.addEventListener(
         "click",
         () => {
-            const content = formContent.value.trim();
+            const content =
+                normalizeFormTemplateContent(
+                    formContent.value
+                );
 
             if (!content) {
                 return;
@@ -6882,20 +7027,129 @@ function openSaveFormTemplateModal(content) {
 // TROUBLESHOOTING TEMPLATE STEPS
 // ============================================================
 
-function getTroubleshootingTemplateLines() {
-    const preview =
+function getSelectedTroubleshootingTemplateLines() {
+    const select =
         document.getElementById(
-            "troubleshootingTemplatePreview"
+            "troubleshootingTemplate"
         );
 
-    if (!preview) {
+    if (!select || !select.value) {
         return [];
     }
 
-    return preview.value
+    const selectedTemplate =
+        troubleshootingTemplates.find(
+            template =>
+                template.id ===
+                Number(select.value)
+        );
+
+    if (!selectedTemplate) {
+        return [];
+    }
+
+    return String(
+        selectedTemplate.steps ??
+        selectedTemplate.generated_description ??
+        ""
+    )
         .split(/\r?\n/)
         .map(line => line.trim())
         .filter(Boolean);
+}
+
+function normalizeTroubleshootingStep(value) {
+    return String(value ?? "")
+        .replace(/^\s*-\s*/, "")
+        .trim();
+}
+
+function getTroubleshootingStepCounts() {
+    const textarea =
+        document.getElementById(
+            "troubleshootingSteps"
+        );
+
+    const counts = new Map();
+
+    if (!textarea) {
+        return counts;
+    }
+
+    textarea.value
+        .split(/\r?\n/)
+        .map(normalizeTroubleshootingStep)
+        .filter(Boolean)
+        .forEach(step => {
+            counts.set(
+                step,
+                (counts.get(step) || 0) + 1
+            );
+        });
+
+    return counts;
+}
+
+function syncTroubleshootingTemplateStepCards() {
+    const container =
+        document.getElementById(
+            "troubleshootingTemplateSteps"
+        );
+
+    if (!container) {
+        return;
+    }
+
+    const counts =
+        getTroubleshootingStepCounts();
+
+    container
+        .querySelectorAll(
+            ".troubleshooting-template-step"
+        )
+        .forEach(card => {
+            const step =
+                card.dataset.troubleshootingStep || "";
+
+            const remaining =
+                counts.get(step) || 0;
+
+            if (remaining > 0) {
+                counts.set(
+                    step,
+                    remaining - 1
+                );
+            }
+
+            const used =
+                remaining > 0;
+
+            const marker =
+                card.querySelector(
+                    ".troubleshooting-template-check"
+                );
+
+            const useButton =
+                card.querySelector(
+                    ".troubleshooting-template-use"
+                );
+
+            card.classList.toggle(
+                "is-used",
+                used
+            );
+
+            if (marker) {
+                marker.textContent =
+                    used ? "✓" : "";
+            }
+
+            if (useButton) {
+                useButton.textContent =
+                    used ? "Used" : "Use";
+                useButton.disabled = used;
+            }
+        });
 }
 
 function appendTroubleshootingStep(step) {
@@ -6926,6 +7180,7 @@ function appendTroubleshootingStep(step) {
     );
 
     markAutosaveDirty();
+    syncTroubleshootingTemplateStepCards();
     textarea.focus();
 }
 
@@ -6942,7 +7197,7 @@ function renderTroubleshootingTemplateSteps() {
     container.innerHTML = "";
 
     const steps =
-        getTroubleshootingTemplateLines();
+        getSelectedTroubleshootingTemplateLines();
 
     if (steps.length === 0) {
         const empty =
@@ -6979,7 +7234,11 @@ function renderTroubleshootingTemplateSteps() {
         text.className =
             "troubleshooting-template-step-text";
 
-        const displayStep = step.replace(/^\s*-\s*/, "");
+        const displayStep =
+            normalizeTroubleshootingStep(step);
+
+        card.dataset.troubleshootingStep =
+            displayStep;
 
         text.textContent = displayStep;
 
@@ -7015,54 +7274,6 @@ function renderTroubleshootingTemplateSteps() {
 }
 
 
-function setupTroubleshootingTemplateKBRefresh() {
-    const refreshButton =
-        document.getElementById(
-            "refreshTroubleshootingTemplateKB"
-        );
-
-    const select =
-        document.getElementById(
-            "troubleshootingTemplate"
-        );
-
-    if (!refreshButton || !select) {
-        return;
-    }
-
-    refreshButton.addEventListener(
-        "click",
-        async () => {
-            const templateId = select.value;
-
-            if (!templateId) {
-                return;
-            }
-
-            refreshButton.disabled = true;
-
-            try {
-                /*
-                 * Re-run the same KB loading flow used when the
-                 * troubleshooting template is selected.
-                 */
-                const event =
-                    new Event("change", {
-                        bubbles: true
-                    });
-
-                select.dispatchEvent(event);
-
-                await new Promise(
-                    resolve => setTimeout(resolve, 0)
-                );
-            } finally {
-                refreshButton.disabled = false;
-            }
-        }
-    );
-}
-
 function setupTroubleshootingTemplateSteps() {
     const select =
         document.getElementById(
@@ -7076,12 +7287,21 @@ function setupTroubleshootingTemplateSteps() {
     select.addEventListener(
         "change",
         () => {
-            setTimeout(
-                renderTroubleshootingTemplateSteps,
-                0
-            );
+            renderTroubleshootingTemplateSteps();
         }
     );
+
+    const textarea =
+        document.getElementById(
+            "troubleshootingSteps"
+        );
+
+    if (textarea) {
+        textarea.addEventListener(
+            "input",
+            syncTroubleshootingTemplateStepCards
+        );
+    }
 
     renderTroubleshootingTemplateSteps();
 }
@@ -7381,8 +7601,8 @@ function setupEventListeners() {
     setupAutosaveListeners();
     setupSaveTroubleshootingTemplateButton();
     setupTroubleshootingTemplateSteps();
-    setupTroubleshootingTemplateKBRefresh();
     setupSaveFormTemplateButton();
+    setupFormTemplateFieldsSync();
 
 
 
