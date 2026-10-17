@@ -2408,6 +2408,26 @@ async function getKnowledgeBaseNotes() {
 
 
 
+async function getKnowledgeBaseNotesByTicket(
+    ticketId
+) {
+    const response = await fetch(
+        `${API_URL}/api/knowledge_base_notes/ticket/${ticketId}`,
+        {
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error loading knowledge base notes for ticket"
+        );
+    }
+
+    return await response.json();
+}
+
+
 async function getKnowledgeBaseNote(
     noteId
 ) {

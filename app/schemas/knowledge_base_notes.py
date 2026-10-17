@@ -15,6 +15,7 @@ class KnowledgeBaseNoteCreate(BaseModel):
     category: Optional[str] = None
     is_pinned: bool = False
     is_active: bool = True
+    source_ticket_id: Optional[int] = None
 
 
 class KnowledgeBaseNoteUpdate(BaseModel):
@@ -23,6 +24,7 @@ class KnowledgeBaseNoteUpdate(BaseModel):
     category: Optional[str] = None
     is_pinned: Optional[bool] = None
     is_active: Optional[bool] = None
+    source_ticket_id: Optional[int] = None
 
 
 class KnowledgeBaseNoteResponse(BaseModel):
@@ -35,6 +37,7 @@ class KnowledgeBaseNoteResponse(BaseModel):
     created_by: int
     created_at: datetime
     updated_at: datetime
+    source_ticket_id: Optional[int] = None
 
     model_config = ConfigDict(from_attributes=True)
 

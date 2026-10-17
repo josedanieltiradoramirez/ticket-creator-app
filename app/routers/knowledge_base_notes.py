@@ -49,6 +49,36 @@ async def get_all_knowledge_base_notes(
 
 
 # =========================================================
+# GET BY TICKET
+# =========================================================
+
+@router.get(
+    "/ticket/{ticket_id}",
+    response_model=List[KnowledgeBaseNoteDetailResponse]
+)
+async def get_knowledge_base_notes_by_ticket(
+    ticket_id: int,
+    user: user_dependency,
+    db: db_dependency
+):
+    notes = (
+        db.query(KnowledgeBaseNotes)
+        .options(
+            selectinload(KnowledgeBaseNotes.tools),
+            selectinload(KnowledgeBaseNotes.issue_types)
+        )
+        .filter(
+            KnowledgeBaseNotes.source_ticket_id == ticket_id,
+            KnowledgeBaseNotes.created_by == user.id
+        )
+        .order_by(KnowledgeBaseNotes.created_at.desc())
+        .all()
+    )
+
+    return notes
+
+
+# =========================================================
 # GET BY ID
 # =========================================================
 

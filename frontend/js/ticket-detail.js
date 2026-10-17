@@ -732,6 +732,8 @@ async function loadTicket() {
 
 
 
+        await loadQuickNotes();
+
     } catch (error) {
 
 
@@ -7592,6 +7594,626 @@ function openSaveTroubleshootingTemplateModal(steps) {
     }, 0);
 }
 
+// ============================================================
+// QUICK NOTES
+// ============================================================
+
+let quickNotes = [];
+
+async function loadQuickNotes() {
+    const tbody = document.getElementById("quickNotesTableBody");
+    if (!tbody || !ticketId) return;
+
+    tbody.innerHTML = `<tr><td colspan="5" class="quick-note-empty">Loading notes…</td></tr>`;
+
+    try {
+        quickNotes = await getKnowledgeBaseNotesByTicket(ticketId);
+        renderQuickNotesTable();
+    } catch (error) {
+        console.error("Error loading Quick Notes:", error);
+        tbody.innerHTML = `<tr><td colspan="5" class="quick-note-empty">Error loading notes.</td></tr>`;
+    }
+}
+
+function renderQuickNotesTable() {
+    const tbody = document.getElementById("quickNotesTableBody");
+    if (!tbody) return;
+    tbody.innerHTML = "";
+
+    if (!quickNotes.length) {
+        tbody.innerHTML = `<tr><td colspan="5" class="quick-note-empty">No notes associated with this ticket.</td></tr>`;
+        return;
+    }
+
+    quickNotes.forEach(note => {
+        const row = document.createElement("tr");
+        row.className = "quick-note-row";
+        row.tabIndex = 0;
+        row.setAttribute("role", "button");
+        row.innerHTML = `
+            <td><div class="quick-note-title">${escapeNotificationHtml(note.title)}</div></td>
+            <td><div class="quick-note-preview">${escapeNotificationHtml(note.content)}</div></td>
+            <td><div class="quick-note-related">${renderNoteRelatedPills(note)}</div></td>
+            <td><div class="quick-note-created">${note.created_at ? escapeNotificationHtml(new Date(note.created_at).toLocaleString()) : "-"}</div></td>
+            <td class="quick-note-actions">
+                <button
+                    type="button"
+                    class="quick-note-delete-button"
+                    aria-label="Delete note"
+                    title="Delete note"
+                >
+                    Delete
+                </button>
+            </td>
+        `;
+
+        const deleteButton = row.querySelector(".quick-note-delete-button");
+        deleteButton.addEventListener("click", async event => {
+            event.preventDefault();
+            event.stopPropagation();
+
+            openQuickNoteDeleteConfirmation(note, deleteButton);
+        });
+
+        const open = () => openQuickNoteView(note.id);
+        row.addEventListener("click", open);
+        row.addEventListener("keydown", event => {
+            if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                open();
+            }
+        });
+        tbody.appendChild(row);
+    });
+}
+
+function renderNoteRelatedPills(note) {
+    const related = [];
+    (note.tools || []).forEach(tool => {
+        related.push(`<span class="quick-note-pill">Tool: ${escapeNotificationHtml(tool.name)}</span>`);
+    });
+    (note.issue_types || []).forEach(issueType => {
+        related.push(`<span class="quick-note-pill">Issue Type: ${escapeNotificationHtml(issueType.name)}</span>`);
+    });
+    return related.length ? related.join("") : "-";
+}
+
+function openQuickNoteDeleteConfirmation(note, deleteButton) {
+    const overlay = createQuickNoteOverlay();
+    const modal = document.createElement("div");
+    modal.className = "catalog-create-modal quick-note-modal quick-note-delete-modal";
+    modal.setAttribute("role", "dialog");
+    modal.setAttribute("aria-modal", "true");
+    modal.innerHTML = `
+        <div class="catalog-create-header">
+            <div>
+                <div class="catalog-create-eyebrow">Delete Note</div>
+                <h3>Delete Note?</h3>
+            </div>
+            <button type="button" class="catalog-create-close" aria-label="Close">×</button>
+        </div>
+        <div class="catalog-create-body">
+            <p class="quick-note-delete-message">
+                Are you sure you want to delete this note?
+            </p>
+        </div>
+        <div class="catalog-create-actions">
+            <button type="button" class="button button-secondary quick-note-delete-cancel">Cancel</button>
+            <button type="button" class="button quick-note-delete-confirm">Delete</button>
+        </div>
+    `;
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    const close = () => closeQuickNoteModal(overlay);
+    modal.querySelector(".catalog-create-close").addEventListener("click", close);
+    modal.querySelector(".quick-note-delete-cancel").addEventListener("click", close);
+
+    modal.querySelector(".quick-note-delete-confirm").addEventListener("click", async () => {
+        const confirmButton = modal.querySelector(".quick-note-delete-confirm");
+        confirmButton.disabled = true;
+        confirmButton.textContent = "Deleting…";
+        deleteButton.disabled = true;
+
+        try {
+            await deleteKnowledgeBaseNote(note.id);
+            quickNotes = quickNotes.filter(item => Number(item.id) !== Number(note.id));
+            close();
+            renderQuickNotesTable();
+            showDetailNotification("Note deleted successfully.", "success");
+        } catch (error) {
+            console.error("Error deleting Quick Note:", error);
+            confirmButton.disabled = false;
+            confirmButton.textContent = "Delete";
+            deleteButton.disabled = false;
+            showDetailNotification(error.message || "Error deleting note.", "error");
+        }
+    });
+}
+
+let quickNoteDraft = null;
+
+function createQuickNoteOverlay(onBackgroundClick = null) {
+    const overlay = document.createElement("div");
+    overlay.className = "catalog-create-overlay";
+    overlay.addEventListener("mousedown", event => {
+        if (event.target !== overlay) return;
+
+        if (typeof onBackgroundClick === "function") {
+            onBackgroundClick();
+            return;
+        }
+
+        overlay.remove();
+    });
+    return overlay;
+}
+
+function closeQuickNoteModal(overlay) {
+    if (overlay) overlay.remove();
+}
+
+function removeQuickNoteDraft() {
+    quickNoteDraft = null;
+    document.getElementById("quickNoteDraftTab")?.remove();
+}
+
+function renderQuickNoteDraftTab() {
+    let tab = document.getElementById("quickNoteDraftTab");
+
+    if (!quickNoteDraft) {
+        tab?.remove();
+        return;
+    }
+
+    if (!tab) {
+        tab = document.createElement("button");
+        tab.type = "button";
+        tab.id = "quickNoteDraftTab";
+        tab.className = "quick-note-draft-tab";
+        document.body.appendChild(tab);
+    }
+
+    const title = quickNoteDraft.title.trim() || "Untitled note";
+    tab.innerHTML = `
+        <span class="quick-note-draft-label">Draft</span>
+        <span class="quick-note-draft-title">${escapeNotificationHtml(title)}</span>
+        <span class="quick-note-draft-close" aria-label="Discard draft">×</span>
+    `;
+
+    tab.onclick = event => {
+        if (event.target.closest(".quick-note-draft-close")) {
+            event.preventDefault();
+            event.stopPropagation();
+            removeQuickNoteDraft();
+            return;
+        }
+
+        const draft = { ...quickNoteDraft };
+        quickNoteDraft = null;
+        tab.remove();
+        openQuickNoteEditor(draft.noteId, draft);
+    };
+}
+
+function minimizeQuickNoteEditor(overlay, noteId, isEdit, toolsField, issueTypesField) {
+    const modal = overlay?.querySelector(".quick-note-modal");
+    if (!modal) return;
+
+    quickNoteDraft = {
+        noteId: noteId || null,
+        isEdit: Boolean(isEdit),
+        title: modal.querySelector("#quickNoteTitle")?.value ?? "",
+        content: modal.querySelector("#quickNoteContent")?.value ?? "",
+        tools: toolsField?.getSelectedIds?.() ?? [],
+        issueTypes: issueTypesField?.getSelectedIds?.() ?? []
+    };
+
+    overlay.remove();
+    renderQuickNoteDraftTab();
+}
+
+async function getQuickNoteCatalogData() {
+    const [tools, issueTypes] = await Promise.all([getTools(), getIssueTypes()]);
+    return { tools, issueTypes };
+}
+
+function createQuickNoteMultiSelect({ label, items, selectedIds, createItem, itemType }) {
+    const field = document.createElement("div");
+    field.className = "quick-note-related-field";
+
+    const labelElement = document.createElement("label");
+    labelElement.textContent = label;
+    field.appendChild(labelElement);
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "tool-search-dropdown quick-note-multi-dropdown";
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.className = "tool-search-input";
+    input.autocomplete = "off";
+    input.placeholder = `Search or select ${label.toLowerCase()}...`;
+    input.setAttribute("role", "combobox");
+    input.setAttribute("aria-expanded", "false");
+
+    const dropdown = document.createElement("div");
+    dropdown.className = "tool-search-options";
+    dropdown.setAttribute("role", "listbox");
+
+    const selectedContainer = document.createElement("div");
+    selectedContainer.className = "quick-note-selected";
+
+    const hiddenSelect = document.createElement("select");
+    hiddenSelect.multiple = true;
+    hiddenSelect.style.display = "none";
+
+    items.forEach(item => {
+        const option = document.createElement("option");
+        option.value = String(item.id);
+        option.textContent = item.name;
+        option.selected = selectedIds.has(Number(item.id));
+        hiddenSelect.appendChild(option);
+    });
+
+    wrapper.appendChild(input);
+    wrapper.appendChild(dropdown);
+    wrapper.appendChild(hiddenSelect);
+    field.appendChild(wrapper);
+    field.appendChild(selectedContainer);
+
+    let currentItems = [...items];
+    let highlightedIndex = -1;
+    let visibleOptions = [];
+
+    function selectedIdsNow() {
+        return new Set(Array.from(hiddenSelect.selectedOptions).map(option => Number(option.value)));
+    }
+
+    function syncPills() {
+        const selected = selectedIdsNow();
+        selectedContainer.innerHTML = "";
+        currentItems.filter(item => selected.has(Number(item.id))).forEach(item => {
+            const pill = document.createElement("span");
+            pill.className = "quick-note-selected-pill";
+            pill.innerHTML = `${escapeNotificationHtml(item.name)} <button type="button" aria-label="Remove ${escapeNotificationHtml(item.name)}">×</button>`;
+            pill.querySelector("button").addEventListener("click", () => setSelected(item.id, false));
+            selectedContainer.appendChild(pill);
+        });
+    }
+
+    function setSelected(id, selected) {
+        const option = Array.from(hiddenSelect.options).find(item => String(item.value) === String(id));
+        if (!option) return;
+        option.selected = selected;
+        syncPills();
+        renderOptions(input.value);
+    }
+
+    function closeDropdown() {
+        dropdown.classList.remove("tool-search-options-visible");
+        input.setAttribute("aria-expanded", "false");
+        highlightedIndex = -1;
+    }
+
+    function addCatalogItem(item) {
+        if (!currentItems.some(existing => Number(existing.id) === Number(item.id))) {
+            currentItems.push(item);
+            const option = document.createElement("option");
+            option.value = String(item.id);
+            option.textContent = item.name;
+            hiddenSelect.appendChild(option);
+        }
+        setSelected(item.id, true);
+        input.value = "";
+        closeDropdown();
+    }
+
+    async function createFromSearch(name) {
+        const cleanName = String(name ?? "").trim();
+        if (!cleanName) return;
+
+        const existing = currentItems.find(item => String(item.name).trim().toLowerCase() === cleanName.toLowerCase());
+        if (existing) {
+            addCatalogItem(existing);
+            return;
+        }
+
+        input.disabled = true;
+        try {
+            const created = await createItem(cleanName);
+            if (!created) throw new Error(`Could not create ${itemType}.`);
+            addCatalogItem(created);
+            showSuccessMessage(`${itemType} "${created.name}" created successfully.`);
+        } catch (error) {
+            console.error(`Error creating ${itemType}:`, error);
+            showErrorMessage(error.message || `Could not create the ${itemType.toLowerCase()}.`);
+        } finally {
+            input.disabled = false;
+            input.focus();
+        }
+    }
+
+    function renderOptions(searchValue = "") {
+        const query = searchValue.trim().toLowerCase();
+        dropdown.innerHTML = "";
+        visibleOptions = [];
+        highlightedIndex = -1;
+        const selected = selectedIdsNow();
+
+        currentItems.filter(item => !query || String(item.name).toLowerCase().includes(query)).forEach(item => {
+            const option = document.createElement("button");
+            option.type = "button";
+            option.className = "tool-search-option";
+            option.setAttribute("role", "option");
+            option.textContent = selected.has(Number(item.id)) ? `✓ ${item.name}` : item.name;
+            option.addEventListener("mousedown", event => event.preventDefault());
+            option.addEventListener("click", () => {
+                setSelected(item.id, !selectedIdsNow().has(Number(item.id)));
+                input.value = "";
+                renderOptions("");
+            });
+            dropdown.appendChild(option);
+            visibleOptions.push(option);
+        });
+
+        const exactMatch = currentItems.some(item => String(item.name).trim().toLowerCase() === query);
+        if (query && !exactMatch) {
+            const addOption = document.createElement("button");
+            addOption.type = "button";
+            addOption.className = "tool-search-option tool-search-add";
+            addOption.setAttribute("role", "option");
+            addOption.innerHTML = `<span class="tool-search-add-icon">+</span><span>Add "${escapeNotificationHtml(searchValue.trim())}"</span>`;
+            addOption.addEventListener("mousedown", event => event.preventDefault());
+            addOption.addEventListener("click", async () => createFromSearch(searchValue));
+            dropdown.appendChild(addOption);
+            visibleOptions.push(addOption);
+        }
+
+        if (!visibleOptions.length) {
+            const empty = document.createElement("div");
+            empty.className = "tool-search-empty";
+            empty.textContent = `No ${label.toLowerCase()} found.`;
+            dropdown.appendChild(empty);
+        }
+    }
+
+    function openDropdown() {
+        renderOptions(input.value);
+        dropdown.classList.add("tool-search-options-visible");
+        input.setAttribute("aria-expanded", "true");
+    }
+
+    function handleKeyboard(event) {
+        if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+            event.preventDefault();
+            if (!dropdown.classList.contains("tool-search-options-visible")) openDropdown();
+            if (!visibleOptions.length) return;
+            highlightedIndex = event.key === "ArrowDown"
+                ? Math.min(highlightedIndex + 1, visibleOptions.length - 1)
+                : highlightedIndex <= 0 ? visibleOptions.length - 1 : highlightedIndex - 1;
+            visibleOptions.forEach((option, index) => option.classList.toggle("tool-search-option-highlighted", index === highlightedIndex));
+            return;
+        }
+
+        if (event.key === "Enter") {
+            event.preventDefault();
+            if (highlightedIndex >= 0 && visibleOptions[highlightedIndex]) {
+                visibleOptions[highlightedIndex].click();
+                return;
+            }
+            const typedName = input.value.trim();
+            if (!typedName) return;
+            const exact = currentItems.find(item => String(item.name).trim().toLowerCase() === typedName.toLowerCase());
+            if (exact) addCatalogItem(exact);
+            else createFromSearch(typedName);
+            return;
+        }
+
+        if (event.key === "Escape") {
+            input.value = "";
+            closeDropdown();
+        }
+    }
+
+    input.addEventListener("focus", openDropdown);
+    input.addEventListener("input", openDropdown);
+    input.addEventListener("keydown", handleKeyboard);
+    input.addEventListener("blur", () => setTimeout(closeDropdown, 150));
+    document.addEventListener("click", event => {
+        if (!wrapper.contains(event.target)) closeDropdown();
+    });
+
+    syncPills();
+    return { field, getSelectedIds: () => Array.from(selectedIdsNow()) };
+}
+
+async function saveQuickNoteRelations(noteId, relationEditor) {
+    const desiredTools = new Set(relationEditor.tools.getSelectedIds().map(Number));
+    const desiredIssueTypes = new Set(relationEditor.issueTypes.getSelectedIds().map(Number));
+    const [currentTools, currentIssueTypes] = await Promise.all([
+        getKnowledgeBaseNoteTools(noteId),
+        getKnowledgeBaseNoteIssueTypes(noteId)
+    ]);
+    const currentToolIds = new Set(currentTools.map(item => Number(item.id)));
+    const currentIssueTypeIds = new Set(currentIssueTypes.map(item => Number(item.id)));
+
+    await Promise.all([
+        ...[...desiredTools].filter(id => !currentToolIds.has(id)).map(id => addKnowledgeBaseNoteTool(noteId, id)),
+        ...[...currentToolIds].filter(id => !desiredTools.has(id)).map(id => removeKnowledgeBaseNoteTool(noteId, id)),
+        ...[...desiredIssueTypes].filter(id => !currentIssueTypeIds.has(id)).map(id => addKnowledgeBaseNoteIssueType(noteId, id)),
+        ...[...currentIssueTypeIds].filter(id => !desiredIssueTypes.has(id)).map(id => removeKnowledgeBaseNoteIssueType(noteId, id))
+    ]);
+}
+
+async function openQuickNoteEditor(noteId = null, draft = null) {
+    const isEdit = Boolean(noteId);
+    const note = isEdit ? await getKnowledgeBaseNote(noteId) : null;
+    const { tools, issueTypes } = await getQuickNoteCatalogData();
+    const draftTools = new Set((draft?.tools || []).map(Number));
+    const draftIssueTypes = new Set((draft?.issueTypes || []).map(Number));
+    const selectedTools = draft ? draftTools : new Set((note?.tools || []).map(item => Number(item.id)));
+    const selectedIssueTypes = draft ? draftIssueTypes : new Set((note?.issue_types || []).map(item => Number(item.id)));
+    const initialTitle = draft?.title ?? note?.title ?? "";
+    const initialContent = draft?.content ?? note?.content ?? "";
+
+    let backgroundCloseHandler = null;
+    const overlay = createQuickNoteOverlay(() => {
+        if (backgroundCloseHandler) backgroundCloseHandler();
+    });
+    const modal = document.createElement("div");
+    modal.className = "catalog-create-modal quick-note-modal";
+    modal.setAttribute("role", "dialog");
+    modal.setAttribute("aria-modal", "true");
+    modal.innerHTML = `
+        <div class="catalog-create-header">
+            <div><div class="catalog-create-eyebrow">${isEdit ? "Edit Note" : "Quick Note"}</div><h3>${isEdit ? "Edit Note" : "Add Note"}</h3></div>
+            <button type="button" class="catalog-create-close" aria-label="Close">×</button>
+        </div>
+        <div class="catalog-create-body">
+            <label for="quickNoteTitle">Title</label>
+            <input type="text" id="quickNoteTitle" class="catalog-create-name" autocomplete="off" placeholder="Enter note title" value="${escapeNotificationHtml(initialTitle)}">
+            <div class="quick-note-related-editor">
+                <div id="quickNoteToolsField"></div>
+                <div id="quickNoteIssueTypesField"></div>
+            </div>
+            <label for="quickNoteContent">Content</label>
+            <textarea id="quickNoteContent" placeholder="Write the note content...">${escapeNotificationHtml(initialContent)}</textarea>
+        </div>
+        <div class="catalog-create-actions">
+            <button type="button" class="button button-secondary quick-note-cancel">Cancel</button>
+            <button type="button" class="button button-primary quick-note-save">${isEdit ? "Save Changes" : "Add Note"}</button>
+        </div>
+    `;
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    const toolsField = createQuickNoteMultiSelect({
+        label: "Tools",
+        items: tools,
+        selectedIds: selectedTools,
+        itemType: "Tool",
+        createItem: name => createTool({ name, description: "Created from Ticket Creator", is_active: true })
+    });
+    const issueTypesField = createQuickNoteMultiSelect({
+        label: "Issue Types",
+        items: issueTypes,
+        selectedIds: selectedIssueTypes,
+        itemType: "Issue Type",
+        createItem: name => createIssueType({ name, description: "Created from Ticket Creator" })
+    });
+
+    document.getElementById("quickNoteToolsField").appendChild(toolsField.field);
+    document.getElementById("quickNoteIssueTypesField").appendChild(issueTypesField.field);
+
+    const close = () => {
+        removeQuickNoteDraft();
+        closeQuickNoteModal(overlay);
+    };
+
+    backgroundCloseHandler = () => {
+        minimizeQuickNoteEditor(
+            overlay,
+            noteId,
+            isEdit,
+            toolsField,
+            issueTypesField
+        );
+        backgroundCloseHandler = null;
+    };
+
+    modal.querySelector(".catalog-create-close").addEventListener("click", close);
+    modal.querySelector(".quick-note-cancel").addEventListener("click", close);
+
+    const saveButton = modal.querySelector(".quick-note-save");
+    saveButton.addEventListener("click", async () => {
+        const title = modal.querySelector("#quickNoteTitle").value.trim();
+        const content = modal.querySelector("#quickNoteContent").value.trim();
+        if (!title) return modal.querySelector("#quickNoteTitle").focus();
+        if (!content) return modal.querySelector("#quickNoteContent").focus();
+
+        saveButton.disabled = true;
+        saveButton.textContent = isEdit ? "Saving…" : "Adding…";
+        try {
+            const savedNote = isEdit
+                ? await updateKnowledgeBaseNote(noteId, { title, content })
+                : await createKnowledgeBaseNote({ title, content, category: null, is_pinned: false, is_active: true, source_ticket_id: Number(ticketId) });
+
+            await saveQuickNoteRelations(savedNote.id, { tools: toolsField, issueTypes: issueTypesField });
+            removeQuickNoteDraft();
+            closeQuickNoteModal(overlay);
+            await loadQuickNotes();
+            showDetailNotification(isEdit ? "Note updated successfully." : "Note added successfully.", "success");
+        } catch (error) {
+            console.error("Error saving Quick Note:", error);
+            showDetailNotification(error.message || "Error saving note.", "error");
+            saveButton.disabled = false;
+            saveButton.textContent = isEdit ? "Save Changes" : "Add Note";
+        }
+    });
+    modal.querySelector("#quickNoteTitle").focus();
+}
+
+async function openQuickNoteView(noteId) {
+    try {
+        const note = await getKnowledgeBaseNote(noteId);
+        const overlay = createQuickNoteOverlay();
+        const modal = document.createElement("div");
+        modal.className = "catalog-create-modal quick-note-modal";
+        modal.setAttribute("role", "dialog");
+        modal.setAttribute("aria-modal", "true");
+        modal.innerHTML = `
+            <div class="catalog-create-header">
+                <div><div class="catalog-create-eyebrow">Note</div><h3>${escapeNotificationHtml(note.title)}</h3></div>
+                <button type="button" class="catalog-create-close" aria-label="Close">×</button>
+            </div>
+            <div class="catalog-create-body">
+                <div class="quick-note-related-field">
+                    <label>Related</label>
+                    <div class="quick-note-related">${renderNoteRelatedPills(note)}</div>
+                </div>
+                <label>Content</label>
+                <div class="quick-note-content">${escapeNotificationHtml(note.content)}</div>
+            </div>
+            <div class="catalog-create-actions">
+                <button type="button" class="button button-secondary quick-note-close">Close</button>
+                <button type="button" class="button button-primary quick-note-edit">Edit</button>
+            </div>
+        `;
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+
+        const close = () => closeQuickNoteModal(overlay);
+        modal.querySelector(".catalog-create-close").addEventListener("click", close);
+        modal.querySelector(".quick-note-close").addEventListener("click", close);
+        modal.querySelector(".quick-note-edit").addEventListener("click", async () => {
+            close();
+            await openQuickNoteEditor(note.id);
+        });
+    } catch (error) {
+        console.error("Error loading Quick Note:", error);
+        showDetailNotification("Error loading note.", "error");
+    }
+}
+
+function setupQuickNotes() {
+    const addButton = document.getElementById("addQuickNoteButton");
+    if (!addButton || addButton.dataset.quickNotesReady === "true") return;
+    addButton.dataset.quickNotesReady = "true";
+    addButton.addEventListener("click", async () => {
+        try {
+            if (isNewTicket || !ticketId) await saveTicket({ silent: true, force: true });
+            if (!ticketId) throw new Error("Save the ticket before adding a note.");
+            await openQuickNoteEditor();
+        } catch (error) {
+            console.error("Error preparing Quick Note:", error);
+            showDetailNotification(error.message || "Could not open Add Note.", "error");
+        }
+    });
+}
+
+
 function setupEventListeners() {
 
     setupAutosaveListeners();
@@ -7599,6 +8221,7 @@ function setupEventListeners() {
     setupTroubleshootingTemplateSteps();
     setupSaveFormTemplateButton();
     setupFormTemplateFieldsSync();
+    setupQuickNotes();
 
 
 
