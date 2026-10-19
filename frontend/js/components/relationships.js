@@ -135,20 +135,20 @@ function renderRelationships({
                                             item,
                                             itemIndex
                                         ) => {
-                                            const itemName =
-                                                relationship.getItemName
-                                                    ? relationship.getItemName(
-                                                        item
-                                                    )
-                                                    : item.name ?? "-";
+                                            const itemContent =
+                                                relationship.renderItem
+                                                    ? relationship.renderItem(item)
+                                                    : escapeRelationshipHtml(
+                                                        relationship.getItemName
+                                                            ? relationship.getItemName(item)
+                                                            : item.name ?? "-"
+                                                    );
 
                                             return `
                                                 <div class="relationship-item">
 
                                                     <div class="relationship-item-name">
-                                                        ${escapeRelationshipHtml(
-                                                            itemName
-                                                        )}
+                                                        ${itemContent}
                                                     </div>
 
                                                     <div class="relationship-item-actions">

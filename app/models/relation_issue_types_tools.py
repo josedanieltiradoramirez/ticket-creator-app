@@ -1,4 +1,4 @@
-from sqlalchemy import Column, ForeignKey, Integer
+from sqlalchemy import Column, ForeignKey, Integer, String
 from app.core.database import Base
 
 class RelationIssueTypesTools(Base):
@@ -14,4 +14,9 @@ class RelationIssueTypesTools(Base):
         Integer,
         ForeignKey("tools.id"),
         primary_key=True
+    )
+
+    description = Column(
+        String(255),
+        nullable=True
     )

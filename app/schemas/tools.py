@@ -39,3 +39,8 @@ class ToolDetailResponse(ToolResponse):
     issue_types: list[IssueTypeSummary]
     troubleshooting_templates: list[TroubleshootingTemplateSummary]
     knowledge_base: list[KnowledgeBaseSummary]
+
+class ToolIssueTypeDetailsUpdate(BaseModel):
+    description: str | None = None
+    issue_type_id: int
+    routing_queue_ids: list[int] = []

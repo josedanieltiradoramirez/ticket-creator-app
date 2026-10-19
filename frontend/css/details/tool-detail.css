@@ -1,0 +1,302 @@
+/* ============================================================
+   TOOL DETAILS — ISSUE TYPE CARDS
+   ============================================================ */
+.tool-issue-type-card {
+    width: 100%;
+    box-sizing: border-box;
+
+    display: grid;
+
+    grid-template-columns:
+        2fr
+        1.5fr
+        2.5fr;
+
+    gap: 24px;
+    align-items: start;
+
+    padding: 18px 20px;
+
+    background: transparent;
+}
+
+.tool-issue-type-label {
+    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.tool-issue-type-description-text,
+.tool-issue-type-value {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #1f2937;
+}
+
+.tool-issue-type-description-text {
+    font-weight: 500;
+}
+
+.tool-issue-type-value {
+    font-weight: 500;
+}
+
+.tool-issue-type-queues {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.tool-issue-type-queue-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 9px;
+    border: 1px solid #dfe3e8;
+    border-radius: 999px;
+    background: #f8f9fa;
+    font-size: 12px;
+    line-height: 1.2;
+    color: #374151;
+}
+
+.tool-issue-type-empty {
+    font-size: 14px;
+    color: #9ca3af;
+    font-style: italic;
+}
+
+@media (max-width: 700px) {
+    .tool-issue-type-card {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+}
+
+.relationship-item:has(.tool-issue-type-card) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 24px;
+    align-items: center;
+}
+
+.relationship-item:has(.tool-issue-type-card)
+.relationship-item-name {
+    min-width: 0;
+}
+
+.relationship-item:has(.tool-issue-type-card)
+.relationship-item-actions {
+    flex-shrink: 0;
+}
+
+.tool-edit-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-height: 38px;
+    align-items: center;
+}
+
+.tool-edit-chip {
+    display: inline-flex;
+    align-items: center;
+
+    padding: 5px 10px;
+
+    border: 1px solid #dfe3e8;
+    border-radius: 999px;
+
+    background: #f8f9fa;
+
+    font-size: 13px;
+    color: #374151;
+}
+
+.tool-edit-empty {
+    font-size: 13px;
+    color: #9ca3af;
+    font-style: italic;
+}
+
+
+/* =========================================================
+   TOOL DETAIL - ROUTING QUEUE SELECTOR
+   ========================================================= */
+
+.tool-queue-dropdown {
+    position: relative;
+    width: 100%;
+}
+
+.tool-queue-dropdown-button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 10px 12px;
+
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+
+    cursor: pointer;
+    text-align: left;
+
+    font-size: 14px;
+}
+
+.tool-queue-dropdown-button:hover {
+    border-color: #9ca3af;
+}
+
+.tool-queue-dropdown-arrow {
+    font-size: 11px;
+    transition: transform 0.15s ease;
+}
+
+.tool-queue-dropdown.open
+.tool-queue-dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+
+/* =========================================================
+   DROPDOWN MENU
+   ========================================================= */
+
+.tool-queue-dropdown-menu {
+    position: absolute;
+
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+
+    z-index: 1000;
+
+    display: none;
+
+    max-height: 220px;
+    overflow-y: auto;
+
+    background: #ffffff;
+
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.tool-queue-dropdown.open
+.tool-queue-dropdown-menu {
+    display: block;
+}
+
+
+/* =========================================================
+   DROPDOWN OPTIONS
+   ========================================================= */
+
+.tool-queue-option {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 9px 12px;
+
+    border: none;
+    background: transparent;
+
+    cursor: pointer;
+
+    text-align: left;
+
+    font-size: 14px;
+}
+
+.tool-queue-option:hover {
+    background: #f3f4f6;
+}
+
+.tool-queue-option.selected {
+    background: #f3f4f6;
+    font-weight: 500;
+}
+
+
+/* =========================================================
+   SELECTED QUEUES
+   ========================================================= */
+
+.tool-queue-selected {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 6px;
+
+    margin-top: 8px;
+}
+
+
+/* =========================================================
+   QUEUE CHIPS
+   ========================================================= */
+
+.tool-queue-chip {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    padding: 5px 9px;
+
+    background: #f1f5f9;
+
+    border: 1px solid #cbd5e1;
+
+    border-radius: 999px;
+
+    font-size: 13px;
+
+    line-height: 1.2;
+}
+
+.tool-queue-chip-remove {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 17px;
+    height: 17px;
+
+    padding: 0;
+
+    border: none;
+
+    background: transparent;
+
+    color: #64748b;
+
+    border-radius: 50%;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+    line-height: 1;
+}
+
+.tool-queue-chip-remove:hover {
+    background: #e2e8f0;
+
+    color: #1f2937;
+}

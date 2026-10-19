@@ -12,6 +12,8 @@ from app.models.troubleshooting_templates import TroubleshootingTemplates
 from app.models.queues import Queues
 from app.models.knowledge_base_notes import KnowledgeBaseNotes
 from app.routers.auth import get_current_user
+from app.models.relation_issue_types_tools import RelationIssueTypesTools
+from app.schemas.tools import ToolIssueTypeDetailsUpdate
 
 from app.schemas.tools import (
     ToolCreate,
@@ -241,6 +243,7 @@ async def get_tool_issue_types(
     return tool.issue_types
 
 
+
 @router.post("/{id}/issue-types/{issue_type_id}")
 async def add_tool_issue_type(
     user: user_dependency,
@@ -290,6 +293,75 @@ async def add_tool_issue_type(
     return {
         "message": "Issue type added to tool"
     }
+
+@router.put("/{id}/issue-types/{issue_type_id}")
+async def update_tool_issue_type(
+    user: user_dependency,
+    id: int,
+    issue_type_id: int,
+    data: dict,
+    db: db_dependency
+):
+    tool = (
+        db.query(Tools)
+        .filter(
+            Tools.id == id,
+            Tools.created_by == user.id
+        )
+        .first()
+    )
+
+    if not tool:
+        raise HTTPException(
+            status_code=404,
+            detail="Tool not found"
+        )
+
+    issue_type = (
+        db.query(IssueTypes)
+        .filter(
+            IssueTypes.id == issue_type_id,
+            IssueTypes.created_by == user.id
+        )
+        .first()
+    )
+
+    if not issue_type:
+        raise HTTPException(
+            status_code=404,
+            detail="Issue type not found"
+        )
+
+    if issue_type not in tool.issue_types:
+        raise HTTPException(
+            status_code=404,
+            detail="Issue type is not associated with this Tool"
+        )
+
+    relation = (
+        db.query(RelationIssueTypesTools)
+        .filter(
+            RelationIssueTypesTools.tool_id == id,
+            RelationIssueTypesTools.issue_type_id == issue_type_id
+        )
+        .first()
+    )
+
+    if not relation:
+        raise HTTPException(
+            status_code=404,
+            detail="Tool and Issue Type relationship not found"
+        )
+
+    if "description" in data:
+        relation.description = data["description"]
+
+    db.commit()
+
+    return {
+        "message": "Tool Issue Type relationship updated successfully"
+    }
+
 
 
 @router.delete("/{id}/issue-types/{issue_type_id}")
@@ -341,6 +413,194 @@ async def remove_tool_issue_type(
 
     return {
         "message": "Issue type removed from tool"
+    }
+
+# ============================================================
+# TOOL ↔ ISSUE TYPES DETAILS
+# ============================================================
+
+@router.get("/{id}/issue-types/details")
+async def get_tool_issue_type_details(
+    user: user_dependency,
+    id: int,
+    db: db_dependency
+):
+    tool = (
+        db.query(Tools)
+        .filter(
+            Tools.id == id,
+            Tools.created_by == user.id
+        )
+        .first()
+    )
+
+    if not tool:
+        raise HTTPException(
+            status_code=404,
+            detail="Tool not found"
+        )
+
+    relationships = (
+        db.query(
+            RelationIssueTypesTools,
+            IssueTypes,
+            Queues
+        )
+        .join(
+            IssueTypes,
+            RelationIssueTypesTools.issue_type_id
+            == IssueTypes.id
+        )
+        .outerjoin(
+            IssueTypes.queues
+        )
+        .filter(
+            RelationIssueTypesTools.tool_id == id,
+            IssueTypes.created_by == user.id
+        )
+        .all()
+    )
+
+    result = {}
+
+    for relation, issue_type, queue in relationships:
+
+        if relation.issue_type_id not in result:
+            result[relation.issue_type_id] = {
+                "issue_type_id": issue_type.id,
+                "description": relation.description,
+                "issue_type": issue_type.name,
+                "routing_queue": [],
+                "routing_queue_ids": []
+            }
+
+        if queue:
+            result[
+                relation.issue_type_id
+            ]["routing_queue"].append(
+                queue.name
+            )
+
+            result[
+                relation.issue_type_id
+            ]["routing_queue_ids"].append(
+                queue.id
+            )
+
+    return list(result.values())
+
+@router.put("/{id}/issue-types/{issue_type_id}/details")
+async def update_tool_issue_type_details(
+    user: user_dependency,
+    id: int,
+    issue_type_id: int,
+    data: ToolIssueTypeDetailsUpdate,
+    db: db_dependency
+):
+    # ========================================================
+    # FIND CURRENT RELATIONSHIP
+    # ========================================================
+
+    relation = (
+        db.query(RelationIssueTypesTools)
+        .filter(
+            RelationIssueTypesTools.tool_id == id,
+            RelationIssueTypesTools.issue_type_id == issue_type_id
+        )
+        .first()
+    )
+
+    if not relation:
+        raise HTTPException(
+            status_code=404,
+            detail="Tool ↔ Issue Type relationship not found"
+        )
+
+    # ========================================================
+    # FIND NEW ISSUE TYPE
+    # ========================================================
+
+    new_issue_type = (
+        db.query(IssueTypes)
+        .filter(
+            IssueTypes.id == data.issue_type_id,
+            IssueTypes.created_by == user.id
+        )
+        .first()
+    )
+
+    if not new_issue_type:
+        raise HTTPException(
+            status_code=404,
+            detail="New Issue Type not found"
+        )
+
+    # ========================================================
+    # UPDATE DESCRIPTION
+    # ========================================================
+
+    relation.description = data.description
+
+    # ========================================================
+    # CHANGE ISSUE TYPE IF NECESSARY
+    # ========================================================
+
+    if data.issue_type_id != issue_type_id:
+
+        # Check if the new relationship already exists
+        existing_relation = (
+            db.query(RelationIssueTypesTools)
+            .filter(
+                RelationIssueTypesTools.tool_id == id,
+                RelationIssueTypesTools.issue_type_id ==
+                data.issue_type_id
+            )
+            .first()
+        )
+
+        if existing_relation:
+            raise HTTPException(
+                status_code=400,
+                detail="This Issue Type is already associated with this Tool"
+            )
+
+        # Remove old relationship
+        db.delete(relation)
+
+        db.flush()
+
+        # Create new relationship
+        relation = RelationIssueTypesTools(
+            tool_id=id,
+            issue_type_id=data.issue_type_id,
+            description=data.description
+        )
+
+        db.add(relation)
+
+    # ========================================================
+    # UPDATE ROUTING QUEUES
+    # ========================================================
+
+    queues = (
+        db.query(Queues)
+        .filter(
+            Queues.id.in_(data.routing_queue_ids),
+            Queues.created_by == user.id
+        )
+        .all()
+    )
+
+    new_issue_type.queues = queues
+
+    # ========================================================
+    # SAVE
+    # ========================================================
+
+    db.commit()
+
+    return {
+        "message": "Tool Issue Type updated successfully"
     }
 
 

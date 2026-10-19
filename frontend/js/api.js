@@ -1076,6 +1076,106 @@ async function getToolIssueTypes(toolId) {
     return await response.json();
 }
 
+async function getToolIssueTypeDetails(toolId) {
+    const response = await fetch(
+        `${API_URL}/api/tools/${toolId}/issue-types/details`,
+        {
+            headers: getAuthHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error loading tool issue type details"
+        );
+    }
+
+    return await response.json();
+}
+
+async function updateToolIssueType(
+    toolId,
+    issueTypeId,
+    data
+) {
+    const response = await fetch(
+        `${API_URL}/api/tools/${toolId}/issue-types/${issueTypeId}`,
+        {
+            method: "PUT",
+            headers: {
+                ...getAuthHeaders(),
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        }
+    );
+
+    if (!response.ok) {
+        let message =
+            "Error updating tool issue type";
+
+        try {
+            const errorData =
+                await response.json();
+
+            if (errorData.detail) {
+                message =
+                    typeof errorData.detail === "string"
+                        ? errorData.detail
+                        : JSON.stringify(
+                            errorData.detail
+                        );
+            }
+        } catch (_) {}
+
+        throw new Error(message);
+    }
+
+    return await response.json();
+}
+
+async function updateToolIssueTypeDetails(
+    toolId,
+    issueTypeId,
+    data
+) {
+    const response = await fetch(
+        `${API_URL}/api/tools/${toolId}/issue-types/${issueTypeId}/details`,
+        {
+            method: "PUT",
+            headers: {
+                ...getAuthHeaders(),
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        }
+    );
+
+    if (!response.ok) {
+        let errorMessage =
+            "Error updating Tool Issue Type details.";
+
+        try {
+            const errorData =
+                await response.json();
+
+            if (errorData?.detail) {
+                errorMessage =
+                    typeof errorData.detail === "string"
+                        ? errorData.detail
+                        : JSON.stringify(
+                            errorData.detail
+                        );
+            }
+        } catch (error) {
+            // Ignore response parsing errors
+        }
+
+        throw new Error(errorMessage);
+    }
+
+    return await response.json();
+}
 
 
 async function addToolIssueType(
@@ -1100,6 +1200,32 @@ async function addToolIssueType(
     return await response.json();
 }
 
+
+async function updateToolIssueType(
+    toolId,
+    issueTypeId,
+    data
+) {
+    const response = await fetch(
+        `${API_URL}/api/tools/${toolId}/issue-types/${issueTypeId}`,
+        {
+            method: "PUT",
+            headers: {
+                ...getAuthHeaders(),
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Error updating issue type relationship"
+        );
+    }
+
+    return await response.json();
+}
 
 
 async function removeToolIssueType(
