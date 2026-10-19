@@ -126,7 +126,7 @@ function renderToolBasicInformation() {
                 type: "boolean"
             }
         ],
-        expanded: true,
+        expanded: false,
         onSave: async (updatedData) => {
             const data = {
                 name: updatedData.name,
@@ -180,7 +180,7 @@ async function loadRelationships() {
                 // ========================================================
                 {
                     title: "Issue Types",
-                    expanded: false,
+                    expanded: true,
                     entityLabel: "Issue Type",
                     addLabel: "Add Issue Type",
                     items: issueTypes || [],
@@ -284,7 +284,7 @@ async function loadRelationships() {
                 // QUEUES
                 // ========================================================
                 {
-                    title: "Queues",
+                    title: "Routing Queues",
                     expanded: false,
                     entityLabel: "Queue",
                     addLabel: "Add Queue",
@@ -328,7 +328,7 @@ async function loadRelationships() {
                 // KNOWLEDGE BASE
                 // ========================================================
                 {
-                    title: "Knowledge Base",
+                    title: "KB Articles related to this Tool",
                     expanded: false,
                     entityLabel: "Knowledge Base",
                     addLabel: "Add Knowledge Base",
@@ -374,7 +374,7 @@ async function loadRelationships() {
                 // TROUBLESHOOTING TEMPLATES
                 // ========================================================
                 {
-                    title: "Troubleshooting Templates",
+                    title: "Troubleshooting Steps for this Tool",
                     expanded: false,
                     entityLabel:
                         "Troubleshooting Template",
@@ -424,7 +424,7 @@ async function loadRelationships() {
                 // KNOWLEDGE BASE NOTES
                 // ========================================================
                 {
-                    title: "Knowledge Base Notes",
+                    title: "Notes",
                     expanded: false,
                     entityLabel: "Knowledge Base Note",
                     addLabel: "Add Knowledge Base Note",
