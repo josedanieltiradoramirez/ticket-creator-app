@@ -395,6 +395,22 @@ async function loadRelationships() {
             );
 
 
+        // If there is only one troubleshooting template, it is displayed
+        // expanded. Preserve that state so that when a second template is
+        // added, the existing template remains expanded and the new one
+        // starts collapsed.
+        if (enrichedTroubleshootingTemplates.length === 1) {
+            const templateId =
+                enrichedTroubleshootingTemplates[0]?.id;
+
+            if (templateId != null) {
+                troubleshootingTemplateExpandedStates.set(
+                    String(templateId),
+                    true
+                );
+            }
+        }
+
         renderSpecialKnowledgeBaseNotes(knowledgeBaseNotes);
 
         const regularKnowledgeBaseNotes =
