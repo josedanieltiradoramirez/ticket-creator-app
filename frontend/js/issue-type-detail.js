@@ -1,5 +1,7 @@
 let issueTypeId = null;
 
+let troubleshootingTemplateExpandedStates = new Map();
+
 let currentIssueType = null;
 
 
@@ -95,7 +97,35 @@ renderDetailHeader({
 // RELATIONSHIPS
 // ============================================================
 
+function preserveTroubleshootingTemplateStates() {
+    const collapsibles = document.querySelectorAll(
+        ".issue-type-troubleshooting-collapsible"
+    );
+
+    collapsibles.forEach(collapsible => {
+        const templateId =
+            collapsible.dataset.troubleshootingTemplateId;
+
+        const header =
+            collapsible.querySelector(
+                ".issue-type-troubleshooting-collapsible-header"
+            );
+
+        if (!templateId || !header) {
+            return;
+        }
+
+        troubleshootingTemplateExpandedStates.set(
+            String(templateId),
+            header.getAttribute("aria-expanded") === "true"
+        );
+    });
+}
+
+
 async function loadRelationships() {
+
+    preserveTroubleshootingTemplateStates();
 
     try {
 
@@ -126,6 +156,50 @@ async function loadRelationships() {
         ]);
 
 
+        // ========================================================
+        // ENRICH TROUBLESHOOTING TEMPLATES
+        // ========================================================
+        //
+        // The Issue Type -> Troubleshooting Template relationship
+        // tells us which templates apply to this Issue Type.
+        // Each template owns its own Knowledge Base relationship,
+        // so load those KBs from the template itself.
+        //
+        // We intentionally enrich the data only for this page.
+        // Shared relationship components are left unchanged.
+        // ========================================================
+
+        const enrichedTroubleshootingTemplates =
+            await Promise.all(
+                (troubleshootingTemplates || []).map(
+                    async (template) => {
+                        try {
+                            const templateKnowledgeBase =
+                                await getTroubleshootingTemplateKnowledgeBase(
+                                    template.id
+                                );
+
+                            return {
+                                ...template,
+                                knowledge_base:
+                                    templateKnowledgeBase || []
+                            };
+                        } catch (error) {
+                            console.error(
+                                `Error loading Knowledge Base for troubleshooting template ${template.id}:`,
+                                error
+                            );
+
+                            return {
+                                ...template,
+                                knowledge_base: []
+                            };
+                        }
+                    }
+                )
+            );
+
+
         renderRelationships({
 
             containerId: "relationships",
@@ -133,11 +207,210 @@ async function loadRelationships() {
             relationships: [
 
                 // ==================================================
+                // TROUBLESHOOTING TEMPLATES
+                // ==================================================
+
+                {
+                    title: "Troubleshooting Steps",
+
+                    expanded: true,
+
+                    entityLabel: "Troubleshooting Template",
+
+                    addLabel: "Add Template",
+
+                    items:
+                        enrichedTroubleshootingTemplates,
+
+                    actions: {
+                        view: true,
+                        edit: true,
+                        remove: true,
+                        add: true,
+                        create: true
+                    },
+
+                    renderItem: (item) => {
+                        const templateName =
+                            item.name ||
+                            item.generated_description ||
+                            `Template ${item.id}`;
+
+                        const steps =
+                            item.steps ||
+                            "No troubleshooting steps available.";
+
+                        const knowledgeBases =
+                            item.knowledge_base || [];
+
+                        const knowledgeBaseHtml =
+                            knowledgeBases.length === 0
+                                ? `
+                                    <div class="issue-type-troubleshooting-empty">
+                                        No related Knowledge Base articles.
+                                    </div>
+                                `
+                                : `
+                                    <ul class="issue-type-troubleshooting-kb-list">
+                                        ${knowledgeBases
+                                            .map((knowledgeBase) => {
+                                                const articleNumber =
+                                                    knowledgeBase.article_number ||
+                                                    "";
+
+                                                const title =
+                                                    knowledgeBase.title ||
+                                                    "Untitled Knowledge Base";
+
+                                                const label = articleNumber
+                                                    ? `${articleNumber} — ${title}`
+                                                    : title;
+
+                                                return `
+                                                    <li class="issue-type-troubleshooting-kb-item">
+                                                        ${escapeRelationshipHtml(label)}
+                                                    </li>
+                                                `;
+                                            })
+                                            .join("")}
+                                    </ul>
+                                `;
+
+                        const templateContent = `
+                            <div class="issue-type-troubleshooting-template">
+
+                                <div class="issue-type-troubleshooting-block issue-type-troubleshooting-name-block">
+                                    <div class="issue-type-troubleshooting-label">
+                                        Troubleshooting Template
+                                    </div>
+
+                                    <div class="issue-type-troubleshooting-value">
+                                        ${escapeRelationshipHtml(templateName)}
+                                    </div>
+                                </div>
+
+                                <div class="issue-type-troubleshooting-block">
+                                    <div class="issue-type-troubleshooting-label">
+                                        Troubleshooting Steps
+                                    </div>
+
+                                    <div class="issue-type-troubleshooting-steps">
+                                        ${escapeRelationshipHtml(steps)}
+                                    </div>
+                                </div>
+
+                                <div class="issue-type-troubleshooting-block">
+                                    <div class="issue-type-troubleshooting-label">
+                                        Related Knowledge Base
+                                    </div>
+
+                                    ${knowledgeBaseHtml}
+                                </div>
+
+                            </div>
+                        `;
+
+                        // Keep each template independently collapsible when
+                        // the Issue Type has multiple troubleshooting templates.
+                        if (enrichedTroubleshootingTemplates.length > 1) {
+                            const isExpanded =
+                                troubleshootingTemplateExpandedStates.get(
+                                    String(item.id)
+                                ) ?? false;
+
+                            return `
+                                <div
+                                    class="issue-type-troubleshooting-collapsible"
+                                    data-troubleshooting-template-id="${item.id}"
+                                >
+                                    <button
+                                        type="button"
+                                        class="issue-type-troubleshooting-collapsible-header"
+                                        aria-expanded="${isExpanded}"
+                                    >
+                                        <span class="issue-type-troubleshooting-collapsible-icon">
+                                            ${isExpanded ? "▼" : "▶"}
+                                        </span>
+
+                                        <span class="issue-type-troubleshooting-template-name">
+                                            ${escapeRelationshipHtml(templateName)}
+                                        </span>
+                                    </button>
+
+                                    <div
+                                        class="issue-type-troubleshooting-collapsible-content ${
+                                            isExpanded
+                                                ? "issue-type-troubleshooting-expanded"
+                                                : "issue-type-troubleshooting-collapsed"
+                                        }"
+                                    >
+                                        ${templateContent}
+                                    </div>
+                                </div>
+                            `;
+                        }
+
+                        return `
+                            <div class="issue-type-troubleshooting-template-wrapper">
+                                <div class="issue-type-troubleshooting-template-name">
+                                    ${escapeRelationshipHtml(templateName)}
+                                </div>
+                                ${templateContent}
+                            </div>
+                        `;
+                    },
+
+                    onAdd: () => {
+
+                        openTroubleshootingTemplateModal();
+
+                    },
+
+                    onCreate: () => {
+
+                        openRelationshipItemModal({
+                            mode: "create",
+                            relationship:
+                                "troubleshootingTemplate"
+                        });
+
+                    },
+
+                    onView: (item) => {
+
+                        window.location.href =
+                            `troubleshooting-template-detail.html?id=${item.id}`;
+
+                    },
+
+                    onEdit: (item) => {
+
+                        openRelationshipItemModal({
+                            mode: "edit",
+                            relationship:
+                                "troubleshootingTemplate",
+                            item: item
+                        });
+
+                    },
+
+                    onRemove: (item) => {
+
+                        openRemoveRelationshipModal({
+                            relationship:
+                                "troubleshootingTemplate",
+                            item: item
+                        });
+
+                    }
+                },
+
+                // ==================================================
                 // QUEUES
                 // ==================================================
 
                 {
-                    title: "Queues",
+                    title: "Routing Queue",
 
                     expanded: false,
 
@@ -206,7 +479,7 @@ async function loadRelationships() {
                 // ==================================================
 
                 {
-                    title: "Tools",
+                    title: "Tools related to this Issue Type",
                     
                     expanded: false,
 
@@ -270,79 +543,7 @@ async function loadRelationships() {
                 },
 
 
-                // ==================================================
-                // TROUBLESHOOTING TEMPLATES
-                // ==================================================
-
-                {
-                    title: "Troubleshooting Templates",
-
-                    expanded: false,
-
-                    entityLabel: "Troubleshooting Template",
-
-                    addLabel: "Add Template",
-
-                    items:
-                        troubleshootingTemplates || [],
-
-                    actions: {
-                        view: true,
-                        edit: true,
-                        remove: true,
-                        add: true,
-                        create: true
-                    },
-
-                    getItemName: (item) =>
-                        item.name ||
-                        item.generated_description ||
-                        `Template ${item.id}`,
-
-                    onAdd: () => {
-
-                        openTroubleshootingTemplateModal();
-
-                    },
-
-                    onCreate: () => {
-
-                        openRelationshipItemModal({
-                            mode: "create",
-                            relationship:
-                                "troubleshootingTemplate"
-                        });
-
-                    },
-
-                    onView: (item) => {
-
-                        window.location.href =
-                            `troubleshooting-template-detail.html?id=${item.id}`;
-
-                    },
-
-                    onEdit: (item) => {
-
-                        openRelationshipItemModal({
-                            mode: "edit",
-                            relationship:
-                                "troubleshootingTemplate",
-                            item: item
-                        });
-
-                    },
-
-                    onRemove: (item) => {
-
-                        openRemoveRelationshipModal({
-                            relationship:
-                                "troubleshootingTemplate",
-                            item: item
-                        });
-
-                    }
-                },
+                
 
 
                 // ==================================================
@@ -350,7 +551,7 @@ async function loadRelationships() {
                 // ==================================================
 
                 {
-                    title: "Knowledge Base",
+                    title: "KB articles related to this Issue Type",
 
                     expanded: false,
 
@@ -425,7 +626,7 @@ async function loadRelationships() {
                 // ==================================================
 
                 {
-                    title: "Knowledge Base Notes",
+                    title: "Notes",
 
                     expanded: false,
 
@@ -498,6 +699,8 @@ async function loadRelationships() {
 
         });
 
+        setupTroubleshootingTemplateCollapsibles();
+
     } catch (error) {
 
         console.error(
@@ -512,6 +715,75 @@ async function loadRelationships() {
     }
 
 }
+
+function setupTroubleshootingTemplateCollapsibles() {
+
+    const collapsibles =
+        document.querySelectorAll(
+            ".issue-type-troubleshooting-collapsible"
+        );
+
+    collapsibles.forEach(collapsible => {
+
+        const header =
+            collapsible.querySelector(
+                ".issue-type-troubleshooting-collapsible-header"
+            );
+
+        const icon =
+            collapsible.querySelector(
+                ".issue-type-troubleshooting-collapsible-icon"
+            );
+
+        const content =
+            collapsible.querySelector(
+                ".issue-type-troubleshooting-collapsible-content"
+            );
+
+        if (!header || !icon || !content) {
+            return;
+        }
+
+        header.addEventListener("click", event => {
+            event.stopPropagation();
+
+            const expanded =
+                header.getAttribute("aria-expanded") === "true";
+
+            const nextExpanded = !expanded;
+
+            const templateId =
+                collapsible.dataset.troubleshootingTemplateId;
+
+            if (templateId) {
+                troubleshootingTemplateExpandedStates.set(
+                    String(templateId),
+                    nextExpanded
+                );
+            }
+
+            header.setAttribute(
+                "aria-expanded",
+                String(nextExpanded)
+            );
+
+            icon.textContent =
+                nextExpanded ? "▼" : "▶";
+
+            content.classList.toggle(
+                "issue-type-troubleshooting-expanded",
+                nextExpanded
+            );
+
+            content.classList.toggle(
+                "issue-type-troubleshooting-collapsed",
+                !nextExpanded
+            );
+        });
+
+    });
+}
+
 
 // ============================================================
 // RELATIONSHIP ITEM MODAL

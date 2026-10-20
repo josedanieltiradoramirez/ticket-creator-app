@@ -1,0 +1,192 @@
+/* ============================================================
+   ISSUE TYPE DETAILS — FORM + TROUBLESHOOTING
+   Shared visual language, scoped to this page only.
+   ============================================================ */
+
+/* ============================================================
+   SHARED FIELD LANGUAGE
+   ============================================================ */
+
+#formSection .form-section-content,
+.issue-type-troubleshooting-template {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#formSection .form-section-row,
+.issue-type-troubleshooting-block {
+    padding: 13px 0;
+    border-bottom: 1px solid #eeeeec;
+}
+
+#formSection .form-section-row:first-child,
+.issue-type-troubleshooting-block:first-child {
+    padding-top: 4px;
+}
+
+#formSection .form-section-row:last-child,
+.issue-type-troubleshooting-block:last-child {
+    border-bottom: none;
+    padding-bottom: 4px;
+}
+
+#formSection .form-section-label,
+.issue-type-troubleshooting-label {
+    margin-bottom: 6px;
+
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.4;
+
+    color: #787774;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+#formSection .form-section-value,
+.issue-type-troubleshooting-value,
+.issue-type-troubleshooting-steps {
+    font-size: 14px;
+    line-height: 1.65;
+    color: #37352f;
+    overflow-wrap: anywhere;
+}
+
+/* ============================================================
+   FORM
+   ============================================================ */
+
+#formSection .form-section-content {
+    padding: 2px 0;
+}
+
+#formSection .form-section-description {
+    white-space: pre-line;
+}
+
+#formSection .form-section-empty {
+    padding: 4px 0;
+
+    font-size: 14px;
+    line-height: 1.5;
+    color: #787774;
+    font-style: italic;
+}
+
+/* ============================================================
+   TROUBLESHOOTING TEMPLATE
+   ============================================================ */
+
+.issue-type-troubleshooting-template {
+    padding: 2px 0;
+}
+
+.issue-type-troubleshooting-name-block .issue-type-troubleshooting-value {
+    font-weight: 600;
+}
+
+.issue-type-troubleshooting-steps {
+    white-space: pre-line;
+}
+
+.issue-type-troubleshooting-kb-list {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.issue-type-troubleshooting-kb-item {
+    padding: 9px 11px;
+
+    background: #fafafa;
+    border: 1px solid #eeeeec;
+    border-radius: 6px;
+
+    font-size: 14px;
+    line-height: 1.5;
+    color: #37352f;
+    overflow-wrap: anywhere;
+}
+
+.issue-type-troubleshooting-empty {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #787774;
+    font-style: italic;
+}
+
+/* ============================================================
+   MULTIPLE TROUBLESHOOTING TEMPLATES
+   ============================================================ */
+
+.issue-type-troubleshooting-collapsible {
+    width: 100%;
+    box-sizing: border-box;
+    border-top: 1px solid #eeeeec;
+}
+
+.issue-type-troubleshooting-collapsible:first-child {
+    border-top: none;
+}
+
+.issue-type-troubleshooting-collapsible-header {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    width: 100%;
+    padding: 14px 0;
+
+    border: 0;
+    background: transparent;
+
+    color: #37352f;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.issue-type-troubleshooting-collapsible-header:hover {
+    background: #fafafa;
+}
+
+.issue-type-troubleshooting-collapsible-icon {
+    flex: 0 0 auto;
+    font-size: 10px;
+    color: #787774;
+}
+
+.issue-type-troubleshooting-collapsible-content {
+    padding: 0 0 14px 19px;
+}
+
+.issue-type-troubleshooting-collapsed {
+    display: none;
+}
+
+.issue-type-troubleshooting-expanded {
+    display: block;
+}
+
+.issue-type-troubleshooting-collapsible
+.issue-type-troubleshooting-template-name {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+@media (max-width: 700px) {
+    #formSection .form-section-row,
+    .issue-type-troubleshooting-block {
+        padding: 12px 0;
+    }
+
+    .issue-type-troubleshooting-collapsible-content {
+        padding-left: 16px;
+    }
+}
