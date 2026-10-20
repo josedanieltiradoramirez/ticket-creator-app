@@ -90,7 +90,7 @@
     box-sizing: border-box;
     width: 100%;
     min-width: 0;
-    padding: 9px 10px 9px 12px;
+    padding: 9px 10px 9px 9px;
     border: 1px solid #e7e7e3;
     border-radius: 6px;
     background: #ffffff;
@@ -99,10 +99,12 @@
 .kb-special-note-main {
     min-width: 0;
     flex: 1 1 auto;
+    margin: 0;
+    padding: 0;
 }
 
 .kb-alert-note {
-    padding-left: 13px;
+    padding-left: 10px;
     background: #fffdf3;
     border-color: #eee5c5;
     box-shadow: none;
@@ -128,6 +130,7 @@
 
 .kb-special-note-title {
     margin: 0 0 2px 0;
+    padding: 0;
     font-size: 13px;
     font-weight: 600;
     line-height: 1.35;
@@ -135,12 +138,68 @@
 }
 
 .kb-special-note-content {
+    display: block;
+    margin: 0;
+    padding: 0;
     font-size: 13px;
     font-weight: 400;
     line-height: 1.45;
     color: #4a4a4a;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
+    text-indent: 0;
+}
+
+.kb-special-note-view {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    min-width: 26px;
+    height: 26px;
+    margin: -2px -2px 0 0;
+    padding: 0 7px;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    background: transparent;
+    color: #888780;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1;
+    cursor: pointer;
+    transition:
+        background 120ms ease,
+        border-color 120ms ease,
+        color 120ms ease;
+}
+
+.kb-special-note-view:hover {
+    border-color: #dfdfda;
+    background: rgba(255, 255, 255, 0.75);
+    color: #45453f;
+}
+
+.kb-alert-note .kb-special-note-view:hover {
+    border-color: #eadfb7;
+    background: #fffaf0;
+    color: #78631c;
+}
+
+.kb-overview-note .kb-special-note-view:hover {
+    background: #f2f2f0;
+}
+
+.kb-special-note-view:focus-visible {
+    outline: 2px solid #cfcfc8;
+    outline-offset: 1px;
+}
+
+.kb-special-note-actions {
+    display: flex;
+    align-items: flex-start;
+    gap: 2px;
+    flex: 0 0 auto;
 }
 
 .kb-special-note-edit {
@@ -263,11 +322,11 @@
     }
 
     .kb-special-note {
-        padding: 9px 9px 9px 11px;
+        padding: 9px 9px 9px 8px;
     }
 
     .kb-alert-note {
-        padding-left: 12px;
+        padding-left: 9px;
     }
 
     .kb-note-item {

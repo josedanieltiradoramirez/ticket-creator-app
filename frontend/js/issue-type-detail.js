@@ -59,17 +59,30 @@ function renderSpecialKnowledgeBaseNotes(notes) {
             <path d="m13.5 8.5 2 2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
         </svg>
     `;
+    
 
-    const renderEditButton = noteId => `
-        <button
-            type="button"
-            class="kb-special-note-edit"
-            data-note-id="${noteId}"
-            aria-label="Edit knowledge base note"
-            title="Edit note"
-        >
-            ${editIcon}
-        </button>
+    const renderNoteActions = noteId => `
+        <div class="kb-special-note-actions">
+            <button
+                type="button"
+                class="kb-special-note-view"
+                data-note-id="${noteId}"
+                aria-label="View knowledge base note"
+                title="View note"
+            >
+                View
+            </button>
+
+            <button
+                type="button"
+                class="kb-special-note-edit"
+                data-note-id="${noteId}"
+                aria-label="Edit knowledge base note"
+                title="Edit note"
+            >
+                ${editIcon}
+            </button>
+        </div>
     `;
 
     if (alerts.length) {
@@ -92,13 +105,11 @@ function renderSpecialKnowledgeBaseNotes(notes) {
                     >
                         <div class="kb-special-note-main">
                             <div class="kb-special-note-title">
-                                ${escapeRelationshipHtml(note.title || "Alert")}
-                            </div>
-                            <div class="kb-special-note-content">
-                                ${escapeRelationshipHtml(note.content || "")}
+                                ${escapeRelationshipHtml(note.title || "Alert")}</div>
+                            <div class="kb-special-note-content">${escapeRelationshipHtml(note.content || "")}
                             </div>
                         </div>
-                        ${renderEditButton(note.id)}
+                        ${renderNoteActions(note.id)}
                     </article>
                 `).join("")}
             </div>
@@ -125,17 +136,28 @@ function renderSpecialKnowledgeBaseNotes(notes) {
                     >
                         <div class="kb-special-note-main">
                             ${note.title ? `<div class="kb-special-note-title">${escapeRelationshipHtml(note.title)}</div>` : ""}
-                            <div class="kb-special-note-content">
-                                ${escapeRelationshipHtml(note.content || "")}
-                            </div>
+                            <div class="kb-special-note-content">${escapeRelationshipHtml(note.content || "")}</div>
                         </div>
-                        ${renderEditButton(note.id)}
+                        ${renderNoteActions(note.id)}
                     </article>
                 `).join("")}
             </div>
         `;
         container.appendChild(section);
     }
+
+    container
+        .querySelectorAll(".kb-special-note-view")
+        .forEach(button => {
+            button.addEventListener("click", () => {
+                const noteId = Number(button.dataset.noteId);
+
+                if (!noteId) return;
+
+                window.location.href =
+                    `knowledge-base-note-detail.html?id=${noteId}`;
+            });
+        });
 
     container
         .querySelectorAll(".kb-special-note-edit")
@@ -187,12 +209,8 @@ function renderKnowledgeBaseNoteItem(item, items) {
         <div class="kb-note-item ${isPinned ? "kb-note-item-pinned" : ""}">
             ${isPinned ? `<div class="kb-note-pin" aria-hidden="true">📌</div>` : ""}
             <div class="kb-note-item-content">
-                <div class="kb-note-item-title">
-                    ${escapeRelationshipHtml(item.title || `Note ${item.id}`)}
-                </div>
-                <div class="kb-note-item-body">
-                    ${escapeRelationshipHtml(item.content || "")}
-                </div>
+                <div class="kb-note-item-title">${escapeRelationshipHtml(item.title || `Note ${item.id}`)}</div>
+                <div class="kb-note-item-body">${escapeRelationshipHtml(item.content || "")}</div>
             </div>
         </div>
     `;
@@ -4306,6 +4324,7 @@ async function openKnowledgeBaseNoteModal() {
         const availableNotes =
             notes.filter(
                 note =>
+                    isKnowledgeBaseNoteActive(note) &&
                     !assignedIds.includes(
                         note.id
                     )
