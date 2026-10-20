@@ -128,7 +128,7 @@ async function initializeNewTicket() {
 
     await loadStatuses(null);
 
-    await loadQueues(null);
+    await loadQueues(null, null);
 
     await loadLocations(null);
 
@@ -141,6 +141,8 @@ async function initializeNewTicket() {
     // Load all Issue Types
 
     await loadIssueTypes(null);
+
+    await loadRelatedKnowledgeBaseNotes(null, null);
 
 
 
@@ -288,14 +290,6 @@ async function loadTicket() {
 
 
 
-        await loadQueues(
-
-            ticket.queue_id
-
-        );
-
-
-
         await loadLocations(
 
             ticket.location_id
@@ -353,9 +347,29 @@ async function loadTicket() {
 
 
 
+        await loadQueues(
+
+            ticket.queue_id,
+
+            ticket.issue_type_id
+
+        );
+
+
+
         await loadIssueTypeKnowledgeBase(
 
             ticket.issue_type_id
+
+        );
+
+
+
+        await loadRelatedKnowledgeBaseNotes(
+
+            ticket.issue_type_id,
+
+            ticket.tool_id
 
         );
 
@@ -983,104 +997,68 @@ async function loadStatuses(
 
 
 async function loadQueues(
-
-    currentQueueId
-
+    currentQueueId,
+    issueTypeId = null
 ) {
+    let queues = [];
 
+    try {
+        if (issueTypeId) {
+            queues = await getIssueTypeQueues(issueTypeId);
+        }
 
+        if (!queues || queues.length === 0) {
+            const allQueues = await getQueues();
+            const serviceDeskQueue = allQueues.find(
+                queue =>
+                    String(queue.name ?? "").trim().toLowerCase() ===
+                    "service desk"
+            );
+            queues = serviceDeskQueue ? [serviceDeskQueue] : [];
+        }
+    } catch (error) {
+        console.error("Error loading queues:", error);
+        try {
+            const allQueues = await getQueues();
+            const serviceDeskQueue = allQueues.find(
+                queue =>
+                    String(queue.name ?? "").trim().toLowerCase() ===
+                    "service desk"
+            );
+            queues = serviceDeskQueue ? [serviceDeskQueue] : [];
+        } catch (fallbackError) {
+            console.error("Error loading Service Desk queue:", fallbackError);
+            queues = [];
+        }
+    }
 
-    const queues =
-
-        await getQueues();
-
-
-
-
-
-    const queueSelect =
-
-        document.getElementById(
-
-            "queue"
-
-        );
-
-
-
-
+    const queueSelect = document.getElementById("queue");
+    if (!queueSelect) return;
 
     queueSelect.innerHTML = "";
 
+    if (queues.length === 0) {
+        const emptyOption = document.createElement("option");
+        emptyOption.value = "";
+        emptyOption.textContent = "Select a Queue";
+        queueSelect.appendChild(emptyOption);
+        return;
+    }
 
-
-
-
-    queues.forEach(
-
-        queue => {
-
-
-
-            const option =
-
-                document.createElement(
-
-                    "option"
-
-                );
-
-
-
-
-
-            option.value =
-
-                queue.id;
-
-
-
-            option.textContent =
-
-                queue.name;
-
-
-
-
-
-            if (
-
-                queue.id ===
-
-                currentQueueId
-
-            ) {
-
-
-
-                option.selected = true;
-
-            }
-
-
-
-
-
-            queueSelect.appendChild(
-
-                option
-
-            );
-
+    queues.forEach(queue => {
+        const option = document.createElement("option");
+        option.value = queue.id;
+        option.textContent = queue.name;
+        if (currentQueueId !== null && currentQueueId !== undefined && String(queue.id) === String(currentQueueId)) {
+            option.selected = true;
         }
+        queueSelect.appendChild(option);
+    });
 
-    );
-
+    if (!queueSelect.value) {
+        queueSelect.value = String(queues[0].id);
+    }
 }
-
-
-
-
 
 // ============================================================
 
@@ -3731,6 +3709,199 @@ async function loadIssueTypesByTool(toolId) {
 }
 
 // ============================================================
+
+// ============================================================
+// KNOWLEDGE BASE NOTES — ISSUE TYPE + TOOL
+// ============================================================
+
+function getSpecialKnowledgeBaseNoteCategory(note) {
+    return String(note?.category ?? "").trim().toLowerCase();
+}
+
+function isActiveKnowledgeBaseNote(note) {
+    return note?.is_active !== false;
+}
+
+function renderRelatedKnowledgeBaseNote(note, sourceLabels = []) {
+    const category = getSpecialKnowledgeBaseNoteCategory(note);
+    const isAlert = category === "alert";
+    const isPinned = note?.is_pinned === true;
+
+    const item = document.createElement("div");
+    item.className = `kb-special-note${isAlert ? " kb-alert-note" : " kb-note-item"}`;
+    if (isPinned && !isAlert) item.classList.add("kb-note-item-pinned");
+
+    const main = document.createElement("div");
+    main.className = isAlert ? "kb-special-note-main" : "kb-note-item-content";
+
+    const title = document.createElement("div");
+    title.className = isAlert ? "kb-special-note-title" : "kb-note-item-title";
+    title.textContent = `${isAlert ? "⚠ " : isPinned ? "📌 " : ""}${note.title || "Untitled note"}`;
+
+    const content = document.createElement("div");
+    content.className = isAlert ? "kb-special-note-content" : "kb-note-item-body";
+    content.textContent = note.content || "";
+
+    main.appendChild(title);
+    main.appendChild(content);
+
+    if (sourceLabels.length) {
+        const source = document.createElement("div");
+        source.className = "quick-note-related";
+        source.style.marginTop = "5px";
+        source.textContent = sourceLabels.join(" · ");
+        main.appendChild(source);
+    }
+
+    const actions = document.createElement("div");
+    actions.className = "kb-special-note-actions";
+
+    const viewButton = document.createElement("button");
+    viewButton.type = "button";
+    viewButton.className = "kb-special-note-view";
+    viewButton.textContent = "View";
+    viewButton.title = "View note";
+    viewButton.addEventListener("click", event => {
+        event.preventDefault();
+        event.stopPropagation();
+        openRelatedKnowledgeBaseNoteView(note, sourceLabels);
+    });
+
+    actions.appendChild(viewButton);
+    item.appendChild(main);
+    item.appendChild(actions);
+    return item;
+}
+
+function openRelatedKnowledgeBaseNoteView(note, sourceLabels = []) {
+    if (!note) return;
+
+    const overlay = createQuickNoteOverlay();
+    const modal = document.createElement("div");
+    modal.className = "catalog-create-modal related-kb-note-view-modal";
+    modal.setAttribute("role", "dialog");
+    modal.setAttribute("aria-modal", "true");
+    modal.setAttribute("aria-label", note.title || "Knowledge Base Note");
+
+    const category = getSpecialKnowledgeBaseNoteCategory(note);
+    const isAlert = category === "alert";
+    const isPinned = note?.is_pinned === true;
+    const categoryLabel = isAlert ? "Alert" : isPinned ? "Pinned Note" : "Knowledge Base Note";
+
+    const sourceMarkup = sourceLabels.length
+        ? sourceLabels.map(source => `<span class="related-kb-note-source">${escapeNotificationHtml(source)}</span>`).join("")
+        : "";
+
+    modal.innerHTML = `
+        <div class="catalog-create-header related-kb-note-view-header">
+            <div>
+                <div class="catalog-create-eyebrow">${escapeNotificationHtml(categoryLabel)}</div>
+                <h3>${escapeNotificationHtml(note.title || "Untitled note")}</h3>
+            </div>
+            <button type="button" class="catalog-create-close" aria-label="Close">×</button>
+        </div>
+        <div class="related-kb-note-view-body">
+            <div class="related-kb-note-view-meta">
+                ${isAlert ? `<span class="related-kb-note-type related-kb-note-type-alert">⚠ Alert</span>` : ""}
+                ${isPinned ? `<span class="related-kb-note-type related-kb-note-type-pinned">📌 Pinned</span>` : ""}
+                ${sourceMarkup}
+            </div>
+            <div class="related-kb-note-view-label">Note</div>
+            <div class="related-kb-note-view-content">${escapeNotificationHtml(note.content || "")}</div>
+        </div>
+        <div class="catalog-create-actions related-kb-note-view-actions">
+            <button type="button" class="button button-secondary related-kb-note-close">Close</button>
+        </div>
+    `;
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    const close = () => {
+        closeQuickNoteModal(overlay);
+        document.removeEventListener("keydown", handleEscape);
+    };
+
+    const handleEscape = event => {
+        if (event.key === "Escape") close();
+    };
+
+    modal.querySelector(".catalog-create-close").addEventListener("click", close);
+    modal.querySelector(".related-kb-note-close").addEventListener("click", close);
+    overlay.addEventListener("mousedown", event => {
+        if (event.target === overlay) close();
+    });
+    document.addEventListener("keydown", handleEscape);
+
+    modal.querySelector(".catalog-create-close").focus();
+}
+
+async function loadRelatedKnowledgeBaseNotes(issueTypeId = null, toolId = null) {
+    const container = document.getElementById("relatedKnowledgeBaseNotes");
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    if (!issueTypeId && !toolId) {
+        const empty = document.createElement("p");
+        empty.textContent = "Select an Issue Type or Tool to see related notes.";
+        container.appendChild(empty);
+        return;
+    }
+
+    try {
+        const [issueTypeNotes, toolNotes] = await Promise.all([
+            issueTypeId ? getIssueTypeKnowledgeBaseNotes(issueTypeId) : [],
+            toolId ? getToolKnowledgeBaseNotes(toolId) : []
+        ]);
+
+        const notesById = new Map();
+
+        (issueTypeNotes || []).filter(isActiveKnowledgeBaseNote).forEach(note => {
+            const id = String(note.id);
+            if (!notesById.has(id)) notesById.set(id, { note, sources: [] });
+            notesById.get(id).sources.push("Issue Type");
+        });
+
+        (toolNotes || []).filter(isActiveKnowledgeBaseNote).forEach(note => {
+            const id = String(note.id);
+            if (!notesById.has(id)) notesById.set(id, { note, sources: [] });
+            notesById.get(id).sources.push("Tool");
+        });
+
+        const specialNotes = Array.from(notesById.values())
+            .filter(({ note }) => {
+                const category = getSpecialKnowledgeBaseNoteCategory(note);
+                return category === "alert" || note?.is_pinned === true;
+            })
+            .sort((a, b) => {
+                const aAlert = getSpecialKnowledgeBaseNoteCategory(a.note) === "alert";
+                const bAlert = getSpecialKnowledgeBaseNoteCategory(b.note) === "alert";
+                if (aAlert !== bAlert) return aAlert ? -1 : 1;
+                if (a.note?.is_pinned !== b.note?.is_pinned) return a.note?.is_pinned ? -1 : 1;
+                return String(a.note?.title ?? "").localeCompare(String(b.note?.title ?? ""));
+            });
+
+        if (!specialNotes.length) {
+            const empty = document.createElement("p");
+            empty.textContent = "No active pinned or alert notes associated.";
+            container.appendChild(empty);
+            return;
+        }
+
+        const wrapper = document.createElement("div");
+        wrapper.className = "kb-special-list";
+        specialNotes.forEach(({ note, sources }) => {
+            wrapper.appendChild(renderRelatedKnowledgeBaseNote(note, sources));
+        });
+        container.appendChild(wrapper);
+    } catch (error) {
+        console.error("Error loading related Knowledge Base Notes:", error);
+        const message = document.createElement("p");
+        message.textContent = "Error loading Knowledge Base Notes.";
+        container.appendChild(message);
+    }
+}
 
 // ISSUE TYPE KNOWLEDGE BASE
 
@@ -8606,6 +8777,19 @@ function setupEventListeners() {
 
             );
 
+            const issueTypeSelect =
+                document.getElementById("issueType");
+
+            const issueTypeId =
+                issueTypeSelect?.value
+                    ? Number(issueTypeSelect.value)
+                    : null;
+
+            await loadRelatedKnowledgeBaseNotes(
+                issueTypeId,
+                toolId
+            );
+
         }
 
     );
@@ -8647,18 +8831,22 @@ function setupEventListeners() {
 
 
             if (!issueTypeId) {
+                await loadQueues(null, null);
 
+                const toolSelect =
+                    document.getElementById("tool");
 
-
-
+                await loadRelatedKnowledgeBaseNotes(
+                    null,
+                    toolSelect?.value
+                        ? Number(toolSelect.value)
+                        : null
+                );
 
                 return;
-
             }
 
-
-
-
+            await loadQueues(null, issueTypeId);
 
             // Change Form Template
 
@@ -8700,6 +8888,16 @@ function setupEventListeners() {
 
                 issueTypeId
 
+            );
+
+            const toolSelect =
+                document.getElementById("tool");
+
+            await loadRelatedKnowledgeBaseNotes(
+                issueTypeId,
+                toolSelect?.value
+                    ? Number(toolSelect.value)
+                    : null
             );
 
 
