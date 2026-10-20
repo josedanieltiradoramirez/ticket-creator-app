@@ -14,7 +14,7 @@ let ticketId = params.get("id");
 
 let isNewTicket = params.get("new") === "true";
 
-let autosaveTimer = null;
+let autosaveTimer = null
 let autosaveDirty = false;
 let autosaveInProgress = false;
 
@@ -3843,11 +3843,12 @@ async function loadRelatedKnowledgeBaseNotes(issueTypeId = null, toolId = null) 
     container.innerHTML = "";
 
     if (!issueTypeId && !toolId) {
-        const empty = document.createElement("p");
-        empty.textContent = "Select an Issue Type or Tool to see related notes.";
-        container.appendChild(empty);
+        container.innerHTML = "";
+        container.style.display = "none";
         return;
     }
+
+    container.style.display = "";
 
     try {
         const [issueTypeNotes, toolNotes] = await Promise.all([
@@ -3883,11 +3884,12 @@ async function loadRelatedKnowledgeBaseNotes(issueTypeId = null, toolId = null) 
             });
 
         if (!specialNotes.length) {
-            const empty = document.createElement("p");
-            empty.textContent = "No active pinned or alert notes associated.";
-            container.appendChild(empty);
+            container.innerHTML = "";
+            container.style.display = "none";
             return;
         }
+
+        container.style.display = "";
 
         const wrapper = document.createElement("div");
         wrapper.className = "kb-special-list";

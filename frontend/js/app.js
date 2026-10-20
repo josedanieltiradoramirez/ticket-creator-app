@@ -1466,14 +1466,25 @@ quickCallForm?.addEventListener("submit", async event => {
     createQuickTicketButton.textContent = "Creating…";
     quickCallError.hidden = true;
     try {
-        const [statuses, priorities] = await Promise.all([getTicketStatuses(), getPriorities()]);
+        const [statuses, priorities, userTypes] = await Promise.all([
+            getTicketStatuses(),
+            getPriorities(),
+            getUserTypes()
+        ]);
         const statusId = findOptionId(statuses, "New");
         const priorityId = findOptionId(priorities, "Medium");
+
+        const selectedUserType = (userTypes || []).find(
+            item => String(item.name || "").trim().toLowerCase() === String(userType || "").trim().toLowerCase()
+        );
+
         const payload = {
             title: null,
             short_issue: null,
             user_name: userName || null,
-            user_type: userType || "Employee",
+            user_type_id: userType && userType !== "Other" && selectedUserType
+                ? Number(selectedUserType.id)
+                : null,
             user_best_contact_number: contactNumber || null,
             location_id: locationId ? Number(locationId) : null,
             issue_description: issueDescription || null,
