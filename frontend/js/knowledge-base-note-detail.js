@@ -205,6 +205,8 @@ function renderBasicInformation() {
         containerId:
             "basicInformation",
 
+        expanded: false,
+
         fields: [
 
             {
@@ -454,7 +456,7 @@ async function loadRelationships() {
                     "Add Tool",
 
                 expanded:
-                    true,
+                    false,
 
                 actions: {
 
@@ -549,7 +551,7 @@ async function loadRelationships() {
                     "Add Issue Type",
 
                 expanded:
-                    true,
+                    false,
 
                 actions: {
 
