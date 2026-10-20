@@ -4,6 +4,201 @@ let troubleshootingTemplateExpandedStates = new Map();
 
 let currentIssueType = null;
 
+// ============================================================
+// KNOWLEDGE BASE NOTES — SPECIAL PRESENTATION
+// ============================================================
+
+function normalizeKnowledgeBaseNoteCategory(note) {
+    return String(note?.category || "").trim().toLowerCase();
+}
+
+function isKnowledgeBaseNoteActive(note) {
+    const value = note?.is_active;
+
+    if (value === false || value === 0) return false;
+    if (typeof value === "string") {
+        const normalized = value.trim().toLowerCase();
+        return normalized !== "false" && normalized !== "0";
+    }
+
+    return true;
+}
+
+function isKnowledgeBaseNotePinned(note) {
+    const value = note?.is_pinned;
+
+    return (
+        value === true ||
+        value === 1 ||
+        String(value).trim().toLowerCase() === "true" ||
+        String(value).trim() === "1"
+    );
+}
+
+function renderSpecialKnowledgeBaseNotes(notes) {
+    const container = document.getElementById("specialKnowledgeBaseNotes");
+    if (!container) return;
+
+    const allNotes = Array.isArray(notes)
+        ? notes.filter(isKnowledgeBaseNoteActive)
+        : [];
+
+    const alerts = allNotes.filter(
+        note => normalizeKnowledgeBaseNoteCategory(note) === "alert"
+    );
+
+    const overviews = allNotes.filter(
+        note => normalizeKnowledgeBaseNoteCategory(note) === "overview"
+    );
+
+    container.innerHTML = "";
+
+    const editIcon = `
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-4-2L4 18v2Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+            <path d="m13.5 8.5 2 2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+        </svg>
+    `;
+
+    const renderEditButton = noteId => `
+        <button
+            type="button"
+            class="kb-special-note-edit"
+            data-note-id="${noteId}"
+            aria-label="Edit knowledge base note"
+            title="Edit note"
+        >
+            ${editIcon}
+        </button>
+    `;
+
+    if (alerts.length) {
+        const section = document.createElement("section");
+        section.className = "kb-special-section kb-alert-section";
+        section.innerHTML = `
+            <div class="kb-special-section-header">
+                <div class="kb-special-section-heading">
+                    <span class="kb-special-section-icon" aria-hidden="true">⚠</span>
+                    <h2>Alerts</h2>
+                </div>
+                <span class="kb-special-section-count">${alerts.length}</span>
+            </div>
+
+            <div class="kb-special-list">
+                ${alerts.map(note => `
+                    <article
+                        class="kb-special-note kb-alert-note"
+                        data-note-id="${note.id}"
+                    >
+                        <div class="kb-special-note-main">
+                            <div class="kb-special-note-title">
+                                ${escapeRelationshipHtml(note.title || "Alert")}
+                            </div>
+                            <div class="kb-special-note-content">
+                                ${escapeRelationshipHtml(note.content || "")}
+                            </div>
+                        </div>
+                        ${renderEditButton(note.id)}
+                    </article>
+                `).join("")}
+            </div>
+        `;
+        container.appendChild(section);
+    }
+
+    if (overviews.length) {
+        const section = document.createElement("section");
+        section.className = "kb-special-section kb-overview-section";
+        section.innerHTML = `
+            <div class="kb-special-section-header">
+                <div class="kb-special-section-heading">
+                    <h2>Overview</h2>
+                </div>
+                <span class="kb-special-section-count">${overviews.length}</span>
+            </div>
+
+            <div class="kb-overview-list">
+                ${overviews.map(note => `
+                    <article
+                        class="kb-special-note kb-overview-note"
+                        data-note-id="${note.id}"
+                    >
+                        <div class="kb-special-note-main">
+                            ${note.title ? `<div class="kb-special-note-title">${escapeRelationshipHtml(note.title)}</div>` : ""}
+                            <div class="kb-special-note-content">
+                                ${escapeRelationshipHtml(note.content || "")}
+                            </div>
+                        </div>
+                        ${renderEditButton(note.id)}
+                    </article>
+                `).join("")}
+            </div>
+        `;
+        container.appendChild(section);
+    }
+
+    container
+        .querySelectorAll(".kb-special-note-edit")
+        .forEach(button => {
+            button.addEventListener("click", () => {
+                const noteId = Number(button.dataset.noteId);
+                const note = allNotes.find(
+                    item => Number(item.id) === noteId
+                );
+
+                if (!note) return;
+
+                openRelationshipItemModal({
+                    mode: "edit",
+                    relationship: "knowledgeBaseNote",
+                    item: note
+                });
+            });
+        });
+}
+
+function renderKnowledgeBaseNoteItem(item, items) {
+    const isPinned = isKnowledgeBaseNotePinned(item);
+    const index = items.indexOf(item);
+    const previousIsPinned =
+        index > 0
+            ? isKnowledgeBaseNotePinned(items[index - 1])
+            : false;
+
+    let subsectionHeader = "";
+
+    if (isPinned && !previousIsPinned) {
+        subsectionHeader = `
+            <div class="kb-notes-subsection-heading kb-notes-pinned-heading">
+                <span class="kb-notes-subsection-icon" aria-hidden="true">📌</span>
+                <span>Pinned</span>
+            </div>
+        `;
+    } else if (!isPinned && previousIsPinned) {
+        subsectionHeader = `
+            <div class="kb-notes-subsection-heading kb-notes-normal-heading">
+                <span>Notes</span>
+            </div>
+        `;
+    }
+
+    return `
+        ${subsectionHeader}
+        <div class="kb-note-item ${isPinned ? "kb-note-item-pinned" : ""}">
+            ${isPinned ? `<div class="kb-note-pin" aria-hidden="true">📌</div>` : ""}
+            <div class="kb-note-item-content">
+                <div class="kb-note-item-title">
+                    ${escapeRelationshipHtml(item.title || `Note ${item.id}`)}
+                </div>
+                <div class="kb-note-item-body">
+                    ${escapeRelationshipHtml(item.content || "")}
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+
 
 // ============================================================
 // DOM CONTENT LOADED
@@ -200,6 +395,23 @@ async function loadRelationships() {
             );
 
 
+        renderSpecialKnowledgeBaseNotes(knowledgeBaseNotes);
+
+        const regularKnowledgeBaseNotes =
+            (knowledgeBaseNotes || [])
+                .filter(note => {
+                    if (!isKnowledgeBaseNoteActive(note)) return false;
+
+                    const category = normalizeKnowledgeBaseNoteCategory(note);
+                    return category !== "alert" && category !== "overview";
+                })
+                .sort((a, b) => {
+                    const aPinned = isKnowledgeBaseNotePinned(a);
+                    const bPinned = isKnowledgeBaseNotePinned(b);
+                    if (aPinned !== bPinned) return aPinned ? -1 : 1;
+                    return 0;
+                });
+
         renderRelationships({
 
             containerId: "relationships",
@@ -278,16 +490,6 @@ async function loadRelationships() {
 
                         const templateContent = `
                             <div class="issue-type-troubleshooting-template">
-
-                                <div class="issue-type-troubleshooting-block issue-type-troubleshooting-name-block">
-                                    <div class="issue-type-troubleshooting-label">
-                                        Troubleshooting Template
-                                    </div>
-
-                                    <div class="issue-type-troubleshooting-value">
-                                        ${escapeRelationshipHtml(templateName)}
-                                    </div>
-                                </div>
 
                                 <div class="issue-type-troubleshooting-block">
                                     <div class="issue-type-troubleshooting-label">
@@ -635,7 +837,7 @@ async function loadRelationships() {
                     addLabel: "Add Note",
 
                     items:
-                        knowledgeBaseNotes || [],
+                        regularKnowledgeBaseNotes,
 
                     actions: {
                         view: true,
@@ -649,6 +851,11 @@ async function loadRelationships() {
                         item.category
                             ? `${item.title} - ${item.category}`
                             : item.title || "-",
+                    renderItem: item =>
+                        renderKnowledgeBaseNoteItem(
+                            item,
+                            regularKnowledgeBaseNotes
+                        ),
 
                     onAdd: () => {
 
@@ -934,7 +1141,12 @@ function openRelationshipItemModal({
                 {
                     key: "category",
                     label: "Category",
-                    type: "text"
+                    type: "select",
+                    options: [
+                        { value: "Alert", label: "Alert" },
+                        { value: "Overview", label: "Overview" },
+                        { value: "Note", label: "Note" }
+                    ]
                 },
                 {
                     key: "is_pinned",
@@ -1024,6 +1236,45 @@ function openRelationshipItemModal({
                 escapeRelationshipModalHtml(
                     value ?? ""
                 );
+
+
+            if (
+                field.type === "select"
+            ) {
+
+                const selectedValue =
+                    value ?? "Note";
+
+                fieldsHtml += `
+
+                    <div class="form-group">
+
+                        <label
+                            for="relationshipItem_${field.key}"
+                        >
+                            ${field.label}
+                        </label>
+
+                        <select
+                            id="relationshipItem_${field.key}"
+                        >
+                            ${(field.options || []).map(option => `
+                                <option
+                                    value="${escapeRelationshipModalHtml(option.value)}"
+                                    ${String(selectedValue) === String(option.value) ? "selected" : ""}
+                                >
+                                    ${escapeRelationshipModalHtml(option.label)}
+                                </option>
+                            `).join("")}
+                        </select>
+
+                    </div>
+
+                `;
+
+                return;
+
+            }
 
 
             if (
@@ -1552,7 +1803,13 @@ function getRelationshipFieldLabel(
             "Content",
 
         category:
-            "Category"
+            "Category",
+
+        is_pinned:
+            "Pinned",
+
+        is_active:
+            "Active"
 
     };
 
