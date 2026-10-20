@@ -48,7 +48,7 @@ button {
     outline-offset: 2px;
 }
 
-.app-content > main:not(.ticket-main),
+.app-content > main.detail-page-container,
 .app-content > .list-page-container {
     width: min(100%, var(--page-max-width));
     min-height: 100vh;
@@ -117,7 +117,7 @@ button {
 }
 
 @media (max-width: 800px) {
-    .app-content > main:not(.ticket-main),
+    .app-content > main.detail-page-container,
     .app-content > .list-page-container {
         padding-top: 20px;
         padding-bottom: 32px;

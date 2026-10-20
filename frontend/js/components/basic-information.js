@@ -29,7 +29,9 @@ function renderBasicInformationComponent({
         const content = `
             <div class="basic-information">
                 <div class="basic-information-header">
-                    <div></div>
+                    <p class="basic-information-hint">
+                        Review and update this item's details.
+                    </p>
                     <div class="basic-information-actions">
                         ${
                             editMode

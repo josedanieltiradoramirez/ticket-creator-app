@@ -8,27 +8,20 @@
    ============================================================ */
 
 .relationships-add-button {
-    min-height: 34px;
-
-    padding: 6px 12px;
-
-    font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Helvetica,
-        Arial,
-        sans-serif;
-
-    font-size: 14px;
-    font-weight: 500;
-
-    color: #5f5f5f;
-
-    background: #ffffff;
-
-    border: 1px solid #d9d9d9;
-    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: 7px 12px;
+    font-family: var(--app-font, "Segoe UI", Arial, sans-serif);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1;
+    color: #ffffff;
+    background: var(--color-primary, #315de8);
+    border: 1px solid var(--color-primary, #315de8);
+    border-radius: var(--radius-sm, 6px);
+    white-space: nowrap;
 
     cursor: pointer;
 
@@ -39,9 +32,47 @@
 }
 
 .relationships-add-button:hover {
-    background: #f7f7f5;
-    border-color: #cfcfcd;
-    color: #202020;
+    background: var(--color-primary-hover, #244dcc);
+    border-color: var(--color-primary-hover, #244dcc);
+}
+
+.relationships-create-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: 7px 12px;
+    font-family: var(--app-font, "Segoe UI", Arial, sans-serif);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--color-ink, #202938);
+    background: var(--color-surface, #ffffff);
+    border: 1px solid var(--color-border-strong, #cbd3df);
+    border-radius: var(--radius-sm, 6px);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+}
+
+.relationships-create-button:hover {
+    color: var(--color-primary, #315de8);
+    background: var(--color-surface-muted, #f8f9fb);
+    border-color: var(--color-border, #e2e7ef);
+}
+
+.collapsible-section-header-actions {
+    gap: 8px;
+}
+
+.collapsible-section-header-actions button {
+    flex: 0 0 auto;
+}
+
+.collapsible-section-header-actions .relationships-add-button,
+.collapsible-section-header-actions .relationships-create-button {
+    height: 36px;
+    min-height: 36px;
 }
 
 
@@ -72,7 +103,7 @@
 
     gap: 20px;
 
-    border-bottom: 1px solid #eeeeec;
+    border-bottom: 1px solid var(--color-border, #e2e7ef);
 }
 
 
@@ -85,18 +116,12 @@
 
     padding: 10px 0;
 
-    font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Helvetica,
-        Arial,
-        sans-serif;
+    font-family: var(--app-font, "Segoe UI", Arial, sans-serif);
 
     font-size: 14px;
     line-height: 1.5;
 
-    color: #37352f;
+    color: var(--color-ink, #202938);
 
     overflow-wrap: anywhere;
 }
@@ -123,18 +148,12 @@
 .relationship-action-button {
     padding: 5px 7px;
 
-    font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Helvetica,
-        Arial,
-        sans-serif;
+    font-family: var(--app-font, "Segoe UI", Arial, sans-serif);
 
     font-size: 13px;
     font-weight: 500;
 
-    color: #787774;
+    color: var(--color-muted, #667085);
 
     background: transparent;
 
@@ -149,8 +168,8 @@
 }
 
 .relationship-action-button:hover {
-    color: #202020;
-    background: #f1f1ef;
+    color: var(--color-ink, #202938);
+    background: var(--color-surface-muted, #f8f9fb);
 }
 
 
@@ -175,17 +194,11 @@
 .relationships-empty {
     padding: 18px 0;
 
-    font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Helvetica,
-        Arial,
-        sans-serif;
+    font-family: var(--app-font, "Segoe UI", Arial, sans-serif);
 
     font-size: 14px;
 
-    color: #787774;
+    color: var(--color-muted, #667085);
 }
 
 
@@ -211,5 +224,9 @@
 
     .relationship-item-actions {
         padding-bottom: 2px;
+    }
+
+    .collapsible-section-header-actions {
+        gap: 6px;
     }
 }
