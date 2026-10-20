@@ -22,6 +22,20 @@
             <!-- Shared header, just like Tools -->
             <div id="pageHeader"></div>
 
+            <section id="activeAlertsSection" class="active-alerts-section" hidden aria-labelledby="activeAlertsHeading">
+                <button type="button" id="activeAlertsToggle" class="active-alerts-toggle" aria-expanded="false" aria-controls="activeAlertsBody">
+                    <span class="active-alerts-toggle-left">
+                        <span class="active-alerts-icon" aria-hidden="true">⚠</span>
+                        <span id="activeAlertsHeading">Active Alerts</span>
+                        <span id="activeAlertsCount" class="active-alerts-count">0</span>
+                    </span>
+                    <span id="activeAlertsChevron" class="active-alerts-chevron" aria-hidden="true">⌄</span>
+                </button>
+                <div id="activeAlertsBody" class="active-alerts-body" hidden>
+                    <div id="activeAlertsList" class="active-alerts-list"></div>
+                </div>
+            </section>
+
             <section class="list-page-section" id="ticketsSection">
 
                 <!-- Ticket actions -->

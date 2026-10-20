@@ -1546,6 +1546,117 @@ if (backToDaysButton) {
 }
 
 // =========================
+// ACTIVE ALERTS
+// =========================
+function isActiveDashboardKnowledgeBaseNote(note) {
+    const value = note?.is_active;
+    if (value === false || value === 0) return false;
+    if (typeof value === "string") {
+        const normalized = value.trim().toLowerCase();
+        return normalized !== "false" && normalized !== "0";
+    }
+    return true;
+}
+
+function getDashboardAlertSource(note) {
+    const tools = Array.isArray(note?.tools) ? note.tools : [];
+    const issueTypes = Array.isArray(note?.issue_types) ? note.issue_types : [];
+    if (!tools.length && !issueTypes.length) return { group: "general", label: "General" };
+    if (tools.length) {
+        const names = tools.map(tool => tool?.name).filter(Boolean);
+        return { group: "tool", label: names.length ? `Tool · ${names.join(", ")}` : "Tool" };
+    }
+    const names = issueTypes.map(item => item?.name).filter(Boolean);
+    return { group: "issue-type", label: names.length ? `Issue Type · ${names.join(", ")}` : "Issue Type" };
+}
+
+function getDashboardAlertSourceLabels(note) {
+    const tools = Array.isArray(note?.tools) ? note.tools : [];
+    const issueTypes = Array.isArray(note?.issue_types) ? note.issue_types : [];
+    const labels = [];
+    tools.forEach(tool => { if (tool?.name) labels.push(`Tool · ${tool.name}`); });
+    issueTypes.forEach(item => { if (item?.name) labels.push(`Issue Type · ${item.name}`); });
+    return labels.length ? labels : ["General"];
+}
+
+function escapeActiveAlertHtml(value) {
+    return String(value ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+
+function openActiveAlertView(note) {
+    if (!note) return;
+    const overlay = document.createElement("div");
+    overlay.className = "active-alert-view-overlay";
+    const modal = document.createElement("div");
+    modal.className = "active-alert-view-modal";
+    modal.setAttribute("role", "dialog");
+    modal.setAttribute("aria-modal", "true");
+    const sourceLabels = getDashboardAlertSourceLabels(note);
+    modal.innerHTML = `
+        <div class="active-alert-view-header">
+            <div><div class="active-alert-view-eyebrow">Alert</div><h2 id="activeAlertViewTitle">${escapeActiveAlertHtml(note.title || "Alert")}</h2></div>
+            <button type="button" class="active-alert-view-close" aria-label="Close">×</button>
+        </div>
+        <div class="active-alert-view-body">
+            <div class="active-alert-view-meta">
+                <span class="active-alert-view-type">⚠ Alert</span>
+                ${sourceLabels.map(label => `<span class="active-alert-view-source">${escapeActiveAlertHtml(label)}</span>`).join("")}
+            </div>
+            <div class="active-alert-view-label">Note</div>
+            <div class="active-alert-view-content">${escapeActiveAlertHtml(note.content || "")}</div>
+        </div>
+        <div class="active-alert-view-actions"><button type="button" class="active-alert-view-close-button">Close</button></div>
+    `;
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+    const close=()=>{overlay.remove();document.removeEventListener("keydown",handleEscape);};
+    const handleEscape=event=>{if(event.key==="Escape")close();};
+    modal.querySelector(".active-alert-view-close").addEventListener("click",close);
+    modal.querySelector(".active-alert-view-close-button").addEventListener("click",close);
+    overlay.addEventListener("mousedown",event=>{if(event.target===overlay)close();});
+    document.addEventListener("keydown",handleEscape);
+    modal.querySelector(".active-alert-view-close").focus();
+}
+
+function renderActiveAlerts(notes) {
+    const section=document.getElementById("activeAlertsSection");
+    const list=document.getElementById("activeAlertsList");
+    const count=document.getElementById("activeAlertsCount");
+    if(!section||!list||!count)return;
+    const alerts=(Array.isArray(notes)?notes:[]).filter(note=>isActiveDashboardKnowledgeBaseNote(note)&&String(note?.category||"").trim().toLowerCase()==="alert");
+    list.innerHTML=""; count.textContent=String(alerts.length);
+    if(!alerts.length){section.hidden=true;return;}
+    const order={general:0,tool:1,"issue-type":2};
+    alerts.sort((a,b)=>{const ag=getDashboardAlertSource(a).group,bg=getDashboardAlertSource(b).group;if(order[ag]!==order[bg])return order[ag]-order[bg];return (b?.created_at?new Date(b.created_at).getTime():0)-(a?.created_at?new Date(a.created_at).getTime():0);});
+    alerts.forEach(note=>{
+        const source=getDashboardAlertSource(note);
+        const item=document.createElement("article"); item.className="active-alert-card";
+        const main=document.createElement("div"); main.className="active-alert-card-main";
+        const title=document.createElement("div"); title.className="active-alert-card-title"; title.textContent=`⚠ ${note.title||"Alert"}`;
+        const content=document.createElement("div"); content.className="active-alert-card-content"; content.textContent=note.content||"";
+        const sourceLabel=document.createElement("div"); sourceLabel.className="active-alert-card-source"; sourceLabel.textContent=source.label;
+        main.append(title,content,sourceLabel);
+        const actions=document.createElement("div"); actions.className="active-alert-card-actions";
+        const view=document.createElement("button"); view.type="button"; view.className="active-alert-view-button"; view.textContent="View"; view.title="View alert"; view.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();openActiveAlertView(note);});
+        actions.appendChild(view); item.append(main,actions); list.appendChild(item);
+    });
+    section.hidden=false;
+}
+
+async function loadActiveAlerts() {
+    try { renderActiveAlerts(await getKnowledgeBaseNotes()); }
+    catch(error){ console.error("Error loading active alerts:",error); const section=document.getElementById("activeAlertsSection"); if(section)section.hidden=true; }
+}
+
+function setupActiveAlerts() {
+    const toggle=document.getElementById("activeAlertsToggle");
+    const body=document.getElementById("activeAlertsBody");
+    const chevron=document.getElementById("activeAlertsChevron");
+    if(!toggle||!body)return;
+    toggle.addEventListener("click",()=>{const expanded=toggle.getAttribute("aria-expanded")==="true";const next=!expanded;toggle.setAttribute("aria-expanded",String(next));body.hidden=!next;if(chevron)chevron.textContent=next?"⌃":"⌄";});
+}
+
+// =========================
 // INITIAL LOAD
 // =========================
 async function initialize() {
@@ -1557,8 +1668,9 @@ async function initialize() {
     }
 
     await Promise.all([
-        loadStatuses(), loadIssueTypes(), loadPriorities(), loadQueues(), loadTools(), loadLocations()
+        loadStatuses(), loadIssueTypes(), loadPriorities(), loadQueues(), loadTools(), loadLocations(), loadActiveAlerts()
     ]);
+    setupActiveAlerts();
     switchView("today");
 }
 
