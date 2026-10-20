@@ -6,61 +6,61 @@ const navigationItems = [
     {
         id: "tickets",
         label: "Tickets",
-        icon: "T",
+        icon: "▣",
         page: "index.html"
     },
     {
         id: "tools",
         label: "Tools",
-        icon: "T",
+        icon: "⚙",
         page: "tools.html"
     },
     {
         id: "locations",
         label: "Locations",
-        icon: "L",
+        icon: "⌖",
         page: "locations.html"
     },
     {
         id: "queues",
         label: "Queues",
-        icon: "Q",
+        icon: "☷",
         page: "queues.html"
     },
     {
         id: "wms",
         label: "WMS",
-        icon: "W",
+        icon: "▦",
         page: "warehouse-management-systems.html"
     },
     {
         id: "issue-types",
         label: "Issue Types",
-        icon: "I",
+        icon: "◈",
         page: "issue-types.html"
     },
     {
         id: "forms",
         label: "Forms",
-        icon: "F",
+        icon: "▤",
         page: "forms.html"
     },
     {
         id: "troubleshooting-templates",
         label: "Troubleshooting Templates",
-        icon: "T",
+        icon: "⌘",
         page: "troubleshooting-templates.html"
     },
     {
         id: "knowledge-base",
         label: "Knowledge Base",
-        icon: "K",
+        icon: "◉",
         page: "knowledge-base.html"
     },
     {
         id: "knowledge-base-notes",
         label: "Knowledge Base Notes",
-        icon: "N",
+        icon: "▧",
         page: "knowledge-base-notes.html"
     }
 ];
@@ -129,7 +129,12 @@ function createNavigation() {
         "Toggle navigation menu"
     );
 
-    toggleButton.innerHTML =
+    toggleButton.setAttribute(
+        "aria-expanded",
+        String(window.innerWidth > 800)
+    );
+
+    toggleButton.textContent =
         "☰";
 
 
@@ -291,6 +296,11 @@ function setupSidebar() {
 
     }
 
+    toggleButton.setAttribute(
+        "aria-expanded",
+        String(window.innerWidth > 800 && !sidebar.classList.contains("collapsed"))
+    );
+
 
     toggleButton.addEventListener(
         "click",
@@ -305,6 +315,11 @@ function setupSidebar() {
                 sidebar.classList.contains(
                     "collapsed"
                 );
+
+            toggleButton.setAttribute(
+                "aria-expanded",
+                String(window.innerWidth > 800 && !isCollapsed)
+            );
 
 
             localStorage.setItem(
@@ -352,6 +367,7 @@ function setActiveNavigationItem() {
         ) {
 
             link.classList.add("active");
+            link.setAttribute("aria-current", "page");
 
         }
 

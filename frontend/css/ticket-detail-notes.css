@@ -1,0 +1,606 @@
+/* =====================================================
+           SERVICE DESK — KNOWLEDGE BASE NOTES
+           ===================================================== */
+        #relatedKnowledgeBaseNotes {
+            padding: 0;
+        }
+
+        #relatedKnowledgeBaseNotes .kb-special-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        #relatedKnowledgeBaseNotes .kb-special-note,
+        #relatedKnowledgeBaseNotes .kb-note-item {
+            position: relative;
+            width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+            border-radius: 7px;
+            padding: 9px 10px;
+            box-shadow: none;
+            transition: border-color .15s ease, box-shadow .15s ease;
+        }
+
+        #relatedKnowledgeBaseNotes .kb-special-note:hover,
+        #relatedKnowledgeBaseNotes .kb-note-item:hover {
+            box-shadow: 0 2px 8px rgba(30, 35, 45, .05);
+        }
+
+        #relatedKnowledgeBaseNotes .kb-special-note-main,
+        #relatedKnowledgeBaseNotes .kb-note-item-content {
+            min-width: 0;
+            flex: 1 1 auto;
+        }
+
+        #relatedKnowledgeBaseNotes .kb-special-note-title,
+        #relatedKnowledgeBaseNotes .kb-note-item-title {
+            margin: 0 0 3px;
+            font-family: Inter, "Segoe UI", Arial, sans-serif;
+            font-size: 12.5px;
+            font-weight: 650;
+            line-height: 1.35;
+            letter-spacing: -.005em;
+            color: #25282d;
+        }
+
+        #relatedKnowledgeBaseNotes .kb-special-note-content,
+        #relatedKnowledgeBaseNotes .kb-note-item-body {
+            font-family: Inter, "Segoe UI", Arial, sans-serif;
+            font-size: 12px;
+            font-weight: 400;
+            line-height: 1.45;
+            color: #555a61;
+        }
+
+        #relatedKnowledgeBaseNotes .quick-note-related {
+            margin-top: 4px !important;
+            font-family: Inter, "Segoe UI", Arial, sans-serif;
+            font-size: 9.5px;
+            line-height: 1.3;
+            color: #8b9097;
+        }
+
+        #relatedKnowledgeBaseNotes .kb-special-note-actions {
+            display: flex;
+            align-items: flex-start;
+            justify-content: flex-end;
+            flex: 0 0 42px;
+            width: 42px;
+            min-width: 42px;
+            padding-top: 0;
+        }
+
+        #relatedKnowledgeBaseNotes .kb-special-note-view {
+            width: 42px;
+            min-width: 42px;
+            height: 24px;
+            margin: -1px 0 0;
+            padding: 0;
+            border-radius: 5px;
+            color: #777d85;
+            font-family: Inter, "Segoe UI", Arial, sans-serif;
+            font-size: 10.5px;
+            font-weight: 500;
+            line-height: 24px;
+            text-align: center;
+        }
+
+        #relatedKnowledgeBaseNotes .kb-special-note-view:hover {
+            background: #f5f6f7;
+            border-color: #e3e5e8;
+            color: #4f555d;
+        }
+
+        /* Expanded note modal */
+        .related-kb-note-view-modal {
+            width: min(560px, calc(100vw - 32px));
+            max-height: min(78vh, 640px);
+            padding: 0;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 18px 50px rgba(24, 30, 38, .18);
+        }
+
+        .related-kb-note-view-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 18px 20px 14px;
+            border-bottom: 1px solid #eceef0;
+        }
+
+        .related-kb-note-view-header > div {
+            min-width: 0;
+            flex: 1 1 auto;
+        }
+
+        .related-kb-note-view-header .catalog-create-eyebrow {
+            margin: 0 0 4px;
+            font-family: Inter, "Segoe UI", Arial, sans-serif;
+            font-size: 9.5px;
+            font-weight: 650;
+            line-height: 1.2;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: #89919b;
+        }
+
+        .related-kb-note-view-header h3 {
+            margin: 0;
+            font-family: Inter, "Segoe UI", Arial, sans-serif;
+            font-size: 16px;
+            font-weight: 650;
+            line-height: 1.3;
+            letter-spacing: -.01em;
+            color: #252a31;
+        }
+
+        .related-kb-note-view-header .catalog-create-close {
+            flex: 0 0 auto;
+            width: 28px;
+            height: 28px;
+            margin: -2px -2px 0 0;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            color: #77808b;
+            font-size: 20px;
+            line-height: 28px;
+        }
+
+        .related-kb-note-view-body {
+            min-height: 0;
+            overflow-y: auto;
+            padding: 16px 20px 18px;
+        }
+
+        .related-kb-note-view-meta {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 5px;
+            margin: 0 0 14px;
+        }
+
+        .related-kb-note-type,
+        .related-kb-note-source {
+            display: inline-flex;
+            align-items: center;
+            min-height: 20px;
+            box-sizing: border-box;
+            padding: 2px 7px;
+            border: 1px solid #e4e7ea;
+            border-radius: 999px;
+            background: #f8f9fa;
+            color: #727a83;
+            font-family: Inter, "Segoe UI", Arial, sans-serif;
+            font-size: 9.5px;
+            font-weight: 550;
+            line-height: 1.2;
+        }
+
+        .related-kb-note-type-alert {
+            border-color: #eadfae;
+            background: #fffaf0;
+            color: #806d28;
+        }
+
+        .related-kb-note-type-pinned {
+            border-color: #dfd9c9;
+            background: #fcfaf4;
+            color: #6f6859;
+        }
+
+        .related-kb-note-view-label {
+            margin: 0 0 6px;
+            font-family: Inter, "Segoe UI", Arial, sans-serif;
+            font-size: 9.5px;
+            font-weight: 650;
+            line-height: 1.2;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            color: #969ca4;
+        }
+
+        .related-kb-note-view-content {
+            min-height: 90px;
+            padding: 13px 14px;
+            box-sizing: border-box;
+            border: 1px solid #e6e8eb;
+            border-radius: 7px;
+            background: #fafbfc;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            font-family: Inter, "Segoe UI", Arial, sans-serif;
+            font-size: 12px;
+            font-weight: 400;
+            line-height: 1.6;
+            color: #4e555d;
+        }
+
+        .related-kb-note-view-actions {
+            display: flex;
+            justify-content: flex-end;
+            padding: 11px 20px 14px;
+            border-top: 1px solid #eceef0;
+        }
+
+        .related-kb-note-view-actions .button {
+            min-height: 30px;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-family: Inter, "Segoe UI", Arial, sans-serif;
+            font-size: 11px;
+        }
+
+        /* =====================================================
+           QUICK NOTES
+           ===================================================== */
+        .quick-notes-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .quick-notes-table-wrap {
+            overflow-x: auto;
+            border: 1px solid var(--border-color, #e5e7eb);
+            border-radius: 10px;
+        }
+
+        .quick-notes-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        .quick-notes-table th,
+        .quick-notes-table td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color, #e5e7eb);
+            vertical-align: middle;
+            font-family: "Segoe UI", Arial, sans-serif;
+            color: #273142;
+        }
+
+        .quick-notes-table th {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+
+        .quick-note-created {
+            font-size: 11px;
+            line-height: 1.35;
+            color: #6b7280;
+            white-space: nowrap;
+        }
+
+        .quick-note-actions {
+            text-align: center !important;
+            vertical-align: middle !important;
+        }
+
+        .quick-notes-table tbody tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .quick-note-row {
+            cursor: pointer;
+            transition: background .15s ease;
+        }
+
+        .quick-note-row:hover {
+            background: rgba(0, 0, 0, .025);
+        }
+
+        .quick-note-title {
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .quick-note-preview {
+            display: -webkit-box;
+            font-size: 13px;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            white-space: normal;
+            overflow-wrap: anywhere;
+        }
+
+        .quick-note-related {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .quick-note-pill {
+            display: inline-flex;
+            align-items: center;
+            max-width: 100%;
+            padding: 4px 8px;
+            border-radius: 999px;
+            background: #f1f3f5;
+            font-size: 11px;
+            line-height: 1.2;
+            overflow-wrap: anywhere;
+        }
+
+        .quick-note-empty {
+            padding: 24px;
+            text-align: center;
+            color: #6b7280;
+        }
+
+        .quick-note-modal {
+            width: min(760px, calc(100vw - 32px));
+            max-height: min(86vh, 760px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .quick-note-modal .catalog-create-body {
+            overflow-y: auto;
+            min-height: 0;
+        }
+
+        .quick-note-content {
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            max-height: 46vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        .quick-note-related-editor {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .quick-note-related-field {
+            min-width: 0;
+        }
+
+        .quick-note-related-field > label {
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .quick-note-selected {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            min-height: 28px;
+            margin-top: 7px;
+        }
+
+        .quick-note-selected-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            max-width: 100%;
+            padding: 5px 8px;
+            border-radius: 999px;
+            background: #f1f3f5;
+            font-size: 12px;
+        }
+
+        .quick-note-selected-pill button {
+            border: 0;
+            background: transparent;
+            padding: 0;
+            cursor: pointer;
+            font-size: 14px;
+            line-height: 1;
+        }
+
+        .quick-note-modal label {
+            font-size: 12px;
+        }
+
+        .quick-note-modal .catalog-create-name,
+        .quick-note-modal textarea {
+            font-family: inherit;
+            font-size: 13px;
+        }
+
+        .quick-note-modal textarea {
+            width: 100%;
+            min-height: 220px;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+
+        .quick-note-modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            padding-top: 4px;
+        }
+
+        /* Quick Note searchable fields use the same visual language as the
+           existing Tool / Location searchable fields, but keep their menu
+           scoped to the modal so it never renders as normal page content. */
+        .quick-note-modal,
+        .quick-note-modal input,
+        .quick-note-modal textarea,
+        .quick-note-modal button,
+        .quick-notes-table {
+            font-family: Inter, "Segoe UI", Arial, sans-serif;
+        }
+
+        .quick-note-multi-dropdown {
+            position: relative;
+            width: 100%;
+            z-index: 10;
+        }
+
+        .quick-note-multi-dropdown .tool-search-input {
+            width: 100%;
+            box-sizing: border-box;
+            font-family: inherit;
+            font-size: 13px;
+        }
+
+        /* Closed by default. The generic project CSS is intentionally
+           overridden here because this component is created dynamically. */
+        .quick-note-multi-dropdown .tool-search-options {
+            display: none !important;
+            position: absolute !important;
+            top: calc(100% + 4px) !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100% !important;
+            max-height: 240px !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            box-sizing: border-box !important;
+            z-index: 2000 !important;
+            margin: 0 !important;
+            padding: 4px 0 !important;
+            border: 1px solid #d8dee8 !important;
+            border-radius: 8px !important;
+            background: #ffffff !important;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, .12) !important;
+        }
+
+        .quick-note-multi-dropdown .tool-search-options.tool-search-options-visible {
+            display: block !important;
+        }
+
+        .quick-note-multi-dropdown .tool-search-option {
+            display: block !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+            padding: 8px 12px !important;
+            border: 0 !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            color: #273142 !important;
+            font-family: inherit !important;
+            font-size: 13px !important;
+            line-height: 1.35 !important;
+            text-align: left !important;
+            cursor: pointer !important;
+        }
+
+        .quick-note-multi-dropdown .tool-search-option:hover,
+        .quick-note-multi-dropdown .tool-search-option-highlighted {
+            background: #f1f4f8 !important;
+        }
+
+        .quick-note-multi-dropdown .tool-search-add {
+            font-weight: 500 !important;
+        }
+
+        .quick-note-multi-dropdown .tool-search-empty {
+            padding: 9px 12px !important;
+            color: #7a8492 !important;
+            font-size: 13px !important;
+        }
+
+        .quick-note-delete-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 64px;
+            height: 32px;
+            padding: 0 10px;
+            border: 1px solid #d9dee7;
+            border-radius: 7px;
+            background: #ffffff;
+            color: #5f6875;
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1;
+            cursor: pointer;
+            transition: background .15s ease, border-color .15s ease, color .15s ease;
+        }
+
+        .quick-note-delete-button:hover {
+            background: #fff5f4;
+            border-color: #e2a39d;
+            color: #b42318;
+        }
+
+        .quick-note-delete-button:disabled {
+            opacity: .55;
+            cursor: wait;
+        }
+
+        .quick-note-draft-tab {
+            position: fixed;
+            right: 22px;
+            bottom: 22px;
+            z-index: 1500;
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            max-width: min(320px, calc(100vw - 44px));
+            padding: 9px 12px;
+            border: 1px solid #d9dee7;
+            border-radius: 10px;
+            background: #ffffff;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, .12);
+            color: #263244;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .quick-note-draft-tab:hover {
+            box-shadow: 0 10px 28px rgba(15, 23, 42, .16);
+        }
+
+        .quick-note-draft-label {
+            flex: 0 0 auto;
+            padding: 3px 7px;
+            border-radius: 999px;
+            background: #eef1f5;
+            color: #5b6573;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+
+        .quick-note-draft-title {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .quick-note-draft-close {
+            flex: 0 0 auto;
+            margin-left: 2px;
+            color: #7b8491;
+            font-size: 17px;
+            line-height: 1;
+        }
+
+        .quick-note-draft-close:hover {
+            color: #263244;
+        }
+
+        @media (max-width: 700px) {
+            .quick-note-related-editor {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-notes-table {
+                min-width: 620px;
+            }
+        }

@@ -9,7 +9,7 @@
 ============================================================ */
 
 .list-page-section {
-    margin-bottom: 24px;
+    margin-bottom: 28px;
 }
 
 
@@ -22,9 +22,9 @@
     align-items: center;
     justify-content: space-between;
 
-    gap: 16px;
+    gap: 12px;
 
-    margin-bottom: 14px;
+    margin-bottom: 16px;
 }
 
 
@@ -42,16 +42,16 @@
     width: 100%;
     box-sizing: border-box;
 
-    min-height: 38px;
+    min-height: 40px;
 
     padding: 8px 12px;
 
-    border: 1px solid #d2d2d2;
-    border-radius: 6px;
+    border: 1px solid var(--color-border-strong, #cbd3df);
+    border-radius: var(--radius-sm, 6px);
 
     background: #fff;
 
-    color: #333;
+    color: var(--color-ink, #202938);
 
     font-family: inherit;
     font-size: 14px;
@@ -65,16 +65,13 @@
 
 
 .list-page-search input:focus {
-    border-color: #999;
-
-    box-shadow:
-        0 0 0 3px
-        rgba(0, 0, 0, 0.05);
+    border-color: var(--color-primary, #315de8);
+    box-shadow: 0 0 0 3px rgb(49 93 232 / 12%);
 }
 
 
 .list-page-search input::placeholder {
-    color: #999;
+    color: var(--color-muted, #667085);
 }
 
 
@@ -92,20 +89,20 @@
 
     flex-shrink: 0;
 
-    min-height: 36px;
+    min-height: 38px;
 
     padding: 8px 14px;
 
-    border: 1px solid #333;
-    border-radius: 6px;
+    border: 1px solid var(--color-primary, #315de8);
+    border-radius: var(--radius-sm, 6px);
 
-    background: #333;
+    background: var(--color-primary, #315de8);
 
     color: #fff;
 
     font-family: inherit;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
 
     line-height: 1.2;
 
@@ -119,9 +116,8 @@
 
 
 .list-page-create-button:hover {
-    background: #222;
-
-    border-color: #222;
+    background: var(--color-primary-hover, #244dcc);
+    border-color: var(--color-primary-hover, #244dcc);
 }
 
 
@@ -141,8 +137,8 @@
 
     overflow-x: auto;
 
-    border: 1px solid #e1e1e1;
-    border-radius: 8px;
+    border: 1px solid var(--color-border, #e2e7ef);
+    border-radius: var(--radius-md, 10px);
 
     background: #fff;
 }
@@ -162,19 +158,21 @@
 
 
 .list-page-table thead {
-    background: #f7f7f7;
+    background: var(--color-surface-muted, #f8f9fb);
 }
 
 
 .list-page-table th {
     padding: 12px 14px;
 
-    border-bottom: 1px solid #dedede;
+    border-bottom: 1px solid var(--color-border, #e2e7ef);
 
-    color: #555;
+    color: var(--color-muted, #667085);
 
-    font-size: 12px;
-    font-weight: 600;
+    font-size: 11px;
+    font-weight: 650;
+    letter-spacing: .045em;
+    text-transform: uppercase;
 
     text-align: left;
 
@@ -185,9 +183,9 @@
 .list-page-table td {
     padding: 13px 14px;
 
-    border-bottom: 1px solid #eeeeee;
+    border-bottom: 1px solid var(--color-border, #e2e7ef);
 
-    color: #333;
+    color: var(--color-ink, #202938);
 
     vertical-align: middle;
 }
@@ -205,7 +203,7 @@
 
 
 .list-page-table tbody tr:hover {
-    background: #fafafa;
+    background: var(--color-surface-muted, #f8f9fb);
 }
 
 
@@ -214,7 +212,7 @@
 ============================================================ */
 
 .list-page-primary-value {
-    color: #222;
+    color: var(--color-ink, #202938);
 
     font-weight: 500;
 }
@@ -292,12 +290,12 @@
 
     padding: 6px 10px;
 
-    border: 1px solid #d2d2d2;
-    border-radius: 5px;
+    border: 1px solid var(--color-border-strong, #cbd3df);
+    border-radius: var(--radius-sm, 6px);
 
     background: #fff;
 
-    color: #333;
+    color: var(--color-ink, #202938);
 
     font-family: inherit;
     font-size: 13px;
@@ -313,9 +311,8 @@
 
 
 .list-page-action-button:hover {
-    background: #f5f5f5;
-
-    border-color: #bdbdbd;
+    background: var(--color-surface-muted, #f8f9fb);
+    border-color: var(--color-border-strong, #cbd3df);
 }
 
 
@@ -345,7 +342,9 @@
 ============================================================ */
 
 .list-page-empty-state {
-    padding: 42px 24px;
+    padding: 48px 24px;
+    border: 1px dashed var(--color-border-strong, #cbd3df);
+    background: var(--color-surface, #fff);
 
     text-align: center;
 }
@@ -354,7 +353,7 @@
 .list-page-empty-title {
     margin-bottom: 6px;
 
-    color: #444;
+    color: var(--color-ink, #202938);
 
     font-size: 15px;
     font-weight: 600;
@@ -362,7 +361,7 @@
 
 
 .list-page-empty-description {
-    color: #888;
+    color: var(--color-muted, #667085);
 
     font-size: 13px;
 
@@ -418,13 +417,12 @@
 
     padding: 9px 11px;
 
-    border: 1px solid #d0d0d0;
-
-    border-radius: 6px;
+    border: 1px solid var(--color-border-strong, #cbd3df);
+    border-radius: var(--radius-sm, 6px);
 
     background: #fff;
 
-    color: #333;
+    color: var(--color-ink, #202938);
 
     font-family: inherit;
     font-size: 14px;
@@ -455,17 +453,14 @@
 .list-page-form-group input:focus,
 .list-page-form-group textarea:focus,
 .list-page-form-group select:focus {
-    border-color: #999;
-
-    box-shadow:
-        0 0 0 3px
-        rgba(0, 0, 0, 0.05);
+    border-color: var(--color-primary, #315de8);
+    box-shadow: 0 0 0 3px rgb(49 93 232 / 12%);
 }
 
 
 .list-page-form-group input::placeholder,
 .list-page-form-group textarea::placeholder {
-    color: #999;
+    color: var(--color-muted, #667085);
 }
 
 
