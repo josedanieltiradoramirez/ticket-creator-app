@@ -1,0 +1,138 @@
+/* Shared visual foundation for every page. Page-specific styles can build on these tokens. */
+:root {
+    color-scheme: light;
+    --app-font: Inter, "Segoe UI", Arial, sans-serif;
+    --color-canvas: #f5f6f8;
+    --color-surface: #ffffff;
+    --color-surface-muted: #f8f9fb;
+    --color-ink: #202938;
+    --color-muted: #667085;
+    --color-border: #e2e7ef;
+    --color-border-strong: #cbd3df;
+    --color-primary: #315de8;
+    --color-primary-hover: #244dcc;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --shadow-card: 0 1px 3px rgb(16 24 40 / 5%);
+    --page-gutter: clamp(18px, 3vw, 36px);
+    --page-max-width: 1440px;
+}
+
+html {
+    min-width: 320px;
+    background: var(--color-canvas);
+}
+
+body {
+    min-height: 100vh;
+    font-family: var(--app-font);
+    color: var(--color-ink);
+    background: var(--color-canvas);
+    -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+button {
+    color: inherit;
+}
+
+:where(button, a, input, select, textarea):focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+.app-content > main,
+.app-content > .list-page-container {
+    width: min(100%, var(--page-max-width));
+    min-height: 100vh;
+    margin-inline: auto;
+    padding: 28px var(--page-gutter) 48px;
+}
+
+.list-page-container {
+    max-width: var(--page-max-width);
+}
+
+.list-page-section {
+    margin-bottom: 28px;
+}
+
+.list-page-table-container {
+    overflow: auto;
+    border-color: var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+}
+
+.list-page-table thead {
+    background: var(--color-surface-muted);
+}
+
+.list-page-table th {
+    color: var(--color-muted);
+    font-size: 11px;
+    font-weight: 650;
+    letter-spacing: .045em;
+    text-transform: uppercase;
+}
+
+.list-page-table td {
+    color: var(--color-ink);
+}
+
+.list-page-create-button,
+.detail-header-action-button {
+    min-height: 38px;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+}
+
+.list-page-create-button {
+    border-color: var(--color-primary);
+    background: var(--color-primary);
+}
+
+.list-page-create-button:hover {
+    border-color: var(--color-primary-hover);
+    background: var(--color-primary-hover);
+}
+
+.page-header,
+.detail-page-header {
+    margin-bottom: 28px;
+    border-color: var(--color-border);
+}
+
+.page-header-title,
+.detail-page-title {
+    color: var(--color-ink);
+    letter-spacing: -.025em;
+}
+
+.page-header-description,
+.detail-page-description,
+.detail-page-type {
+    color: var(--color-muted);
+}
+
+.ticket-section,
+.list-page-empty-state {
+    border-color: var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+}
+
+@media (max-width: 800px) {
+    .app-content > main,
+    .app-content > .list-page-container {
+        padding-top: 20px;
+        padding-bottom: 32px;
+    }
+}
