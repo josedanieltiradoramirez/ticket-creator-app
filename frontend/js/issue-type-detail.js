@@ -1048,8 +1048,7 @@ function openRelationshipItemModal({
                 {
                     key: "description",
                     label: "Description",
-                    type: "textarea",
-                    required: true
+                    type: "textarea"
                 },
                 {
                     key: "is_active",
@@ -1072,8 +1071,7 @@ function openRelationshipItemModal({
                 {
                     key: "description",
                     label: "Description",
-                    type: "textarea",
-                    required: true
+                    type: "textarea"
                 },
                 {
                     key: "access_request",
@@ -1107,7 +1105,6 @@ function openRelationshipItemModal({
                     key: "generated_description",
                     label: "Description",
                     type: "textarea",
-                    required: true
                 },
                 {
                     key: "steps",
@@ -1131,7 +1128,6 @@ function openRelationshipItemModal({
                     key: "article_number",
                     label: "Article Number",
                     type: "text",
-                    required: true
                 },
                 {
                     key: "title",
@@ -1143,13 +1139,11 @@ function openRelationshipItemModal({
                     key: "url",
                     label: "URL",
                     type: "text",
-                    required: true
                 },
                 {
                     key: "description",
                     label: "Description",
-                    type: "textarea",
-                    required: true
+                    type: "textarea"
                 }
             ]
         },
@@ -1565,15 +1559,11 @@ async function saveRelationshipItem({
 
         troubleshootingTemplate: [
             "name",
-            "generated_description",
-            "steps",
-            "is_active"
+            "steps"
         ],
 
         knowledgeBase: [
-            "article_number",
             "title",
-            "url",
             "description"
         ],
 
@@ -1634,13 +1624,11 @@ async function saveRelationshipItem({
     const requiredFields = {
 
         queue: [
-            "name",
-            "description"
+            "name"
         ],
 
         tool: [
-            "name",
-            "description"
+            "name"
         ],
 
         troubleshootingTemplate: [
@@ -1649,10 +1637,7 @@ async function saveRelationshipItem({
         ],
 
         knowledgeBase: [
-            "article_number",
-            "title",
-            "url",
-            "description"
+            "title"
         ],
 
         knowledgeBaseNote: [

@@ -238,6 +238,7 @@ function renderTemplateModal(template = null) {
                     id="templateName"
                     name="name"
                     value="${escapeTemplateAttribute(template?.name ?? "")}"
+                    required
                 >
             </div>
 
@@ -249,7 +250,6 @@ function renderTemplateModal(template = null) {
                     id="generatedDescription"
                     name="generated_description"
                     rows="4"
-                    required
                 >${escapeTemplateHtml(template?.generated_description ?? "")}</textarea>
             </div>
 
@@ -355,12 +355,9 @@ async function saveTemplate(event) {
             .checked
     };
 
-    if (
-        !templateData.generated_description.trim() ||
-        !templateData.steps.trim()
-    ) {
+    if (!templateData.name || !templateData.steps.trim()) {
         showWarningMessage(
-            "Please complete the generated description and troubleshooting steps."
+            "A template name and troubleshooting steps are required."
         );
         return;
     }

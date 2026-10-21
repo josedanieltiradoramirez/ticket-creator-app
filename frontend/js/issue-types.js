@@ -652,7 +652,6 @@ function renderIssueTypeFormModal({
                 <textarea
                     id="issueTypeDescription"
                     rows="5"
-                    required
                 >${escapeIssueTypeHtml(
                     issueType?.description || ""
                 )}</textarea>
@@ -676,7 +675,6 @@ function renderIssueTypeFormModal({
                     value="${escapeIssueTypeAttribute(
                         issueType?.category || ""
                     )}"
-                    required
                 >
 
             </div>
@@ -907,7 +905,7 @@ async function saveIssueType(
         category:
             document.getElementById(
                 "issueTypeCategory"
-            ).value.trim(),
+            ).value.trim() || "General",
 
         display_name:
             document.getElementById(
@@ -940,11 +938,7 @@ async function saveIssueType(
     };
 
 
-    if (
-        !issueTypeData.name ||
-        !issueTypeData.description ||
-        !issueTypeData.category
-    ) {
+    if (!issueTypeData.name) {
 
         showWarningMessage(
             "Please complete all required fields."

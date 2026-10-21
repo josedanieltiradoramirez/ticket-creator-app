@@ -230,7 +230,6 @@ function renderKnowledgeBaseModal(item = null) {
                     id="articleNumber"
                     name="article_number"
                     value="${escapeKnowledgeBaseAttribute(item?.article_number ?? "")}"
-                    required
                 >
             </div>
 
@@ -252,7 +251,6 @@ function renderKnowledgeBaseModal(item = null) {
                     id="knowledgeBaseUrl"
                     name="url"
                     value="${escapeKnowledgeBaseAttribute(item?.url ?? "")}"
-                    required
                 >
             </div>
 
@@ -262,7 +260,6 @@ function renderKnowledgeBaseModal(item = null) {
                     id="knowledgeBaseDescription"
                     name="description"
                     rows="5"
-                    required
                 >${escapeKnowledgeBaseHtml(item?.description ?? "")}</textarea>
             </div>
 
@@ -349,17 +346,12 @@ async function saveKnowledgeBaseItem(event) {
             .trim()
     };
 
-    if (
-        !itemData.article_number ||
-        !itemData.title ||
-        !itemData.url ||
-        !itemData.description
-    ) {
-        showWarningMessage("Please complete all required fields.");
+    if (!itemData.title) {
+        showWarningMessage("Title is required.");
         return;
     }
 
-    if (!getSafeKnowledgeBaseUrl(itemData.url)) {
+    if (itemData.url && !getSafeKnowledgeBaseUrl(itemData.url)) {
         showWarningMessage("Please enter a valid HTTP or HTTPS URL.");
         return;
     }

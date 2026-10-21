@@ -287,6 +287,19 @@ async def add_tool_issue_type(
         }
 
     tool.issue_types.append(issue_type)
+    db.flush()
+
+    relation = (
+        db.query(RelationIssueTypesTools)
+        .filter(
+            RelationIssueTypesTools.tool_id == id,
+            RelationIssueTypesTools.issue_type_id == issue_type_id
+        )
+        .first()
+    )
+
+    if relation:
+        relation.description = issue_type.description
 
     db.commit()
 

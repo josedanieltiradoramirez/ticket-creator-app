@@ -340,7 +340,6 @@ function renderToolFormModal({ mode, tool }) {
                 <textarea
                     id="toolDescription"
                     rows="5"
-                    required
                 >${escapeToolHtml(tool?.description || "")}</textarea>
             </div>
 
@@ -438,9 +437,9 @@ async function saveTool(event) {
                 .checked
     };
 
-    if (!toolData.name || !toolData.description) {
+    if (!toolData.name) {
         showWarningMessage(
-            "Please complete all required fields."
+            "Tool name is required."
         );
         return;
     }

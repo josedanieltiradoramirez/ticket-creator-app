@@ -229,7 +229,6 @@ function renderQueueFormModal(queue = null) {
                     id="queueDescription"
                     name="description"
                     rows="4"
-                    required
                 >${escapeQueueHtml(queue?.description ?? "")}</textarea>
             </div>
 
@@ -306,8 +305,8 @@ async function saveQueue(event) {
         is_active: document.getElementById("queueActive").checked
     };
 
-    if (!queueData.name || !queueData.description) {
-        showWarningMessage("Please complete all required fields.");
+    if (!queueData.name) {
+        showWarningMessage("Queue name is required.");
         return;
     }
 

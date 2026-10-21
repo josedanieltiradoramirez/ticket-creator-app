@@ -6310,7 +6310,9 @@ function setupGenericSearchDropdowns() {
             create: async (name, description) =>
                 createIssueType({
                     name,
-                    description: description || "Created from Ticket Creator"
+                    description: description || "Created from Ticket Creator",
+                    category: "General",
+                    is_active: true
                 })
         },
 
@@ -6332,7 +6334,8 @@ function setupGenericSearchDropdowns() {
             create: async (name, description) =>
                 createForm({
                     name,
-                    description: description || "Created from Ticket Creator"
+                    description: description || "Created from Ticket Creator",
+                    is_active: true
                 })
         }
     ];
@@ -6812,24 +6815,6 @@ function openCatalogCreateModal(config, initialName, onCreated) {
             if (!name) {
                 nameInput.focus();
                 return;
-            }
-
-            if (isLocation) {
-
-                if (!cityInput.value.trim()) {
-                    cityInput.focus();
-                    return;
-                }
-
-                if (!stateInput.value.trim()) {
-                    stateInput.focus();
-                    return;
-                }
-
-                if (!codeInput.value.trim()) {
-                    codeInput.focus();
-                    return;
-                }
             }
 
             submitButton.disabled = true;

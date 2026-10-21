@@ -19,6 +19,10 @@ function renderModal({
         return;
     }
 
+    container.classList.add("modal");
+    container.setAttribute("role", "dialog");
+    container.setAttribute("aria-modal", "true");
+
     // ========================================================
     // RENDER
     // ========================================================
@@ -28,7 +32,7 @@ function renderModal({
 
             <div class="modal-header">
 
-                <h3>
+                <h3 class="modal-title">
                     ${escapeModalHtml(title)}
                 </h3>
 
@@ -36,6 +40,7 @@ function renderModal({
                     type="button"
                     class="modal-close"
                     data-modal-close
+                    aria-label="Close dialog"
                 >
                     ×
                 </button>

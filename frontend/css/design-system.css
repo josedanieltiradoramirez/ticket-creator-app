@@ -116,10 +116,428 @@ button {
     outline-offset: 2px;
 }
 
+/* Shared modal foundation */
+.modal {
+    z-index: 1200;
+    padding: clamp(14px, 3vw, 28px);
+    background: rgb(20 28 42 / 48%);
+    backdrop-filter: blur(3px);
+}
+
+.modal.hidden,
+.modal[hidden] {
+    display: none !important;
+}
+
+.modal .modal-content {
+    width: min(100%, 600px);
+    max-height: min(88vh, 820px);
+    padding: clamp(20px, 3vw, 28px);
+    overflow: auto;
+    color: var(--color-ink);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 24px 70px rgb(16 24 40 / 22%);
+}
+
+.modal .modal-header {
+    position: sticky;
+    top: calc(-1 * clamp(20px, 3vw, 28px));
+    z-index: 1;
+    min-height: 42px;
+    margin: calc(-1 * clamp(20px, 3vw, 28px)) calc(-1 * clamp(20px, 3vw, 28px)) 22px;
+    padding: 18px clamp(20px, 3vw, 28px) 14px;
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.modal .modal-header h1,
+.modal .modal-header h2,
+.modal .modal-header h3 {
+    margin: 0;
+    color: var(--color-ink);
+    font: 650 19px/1.35 var(--app-font);
+    letter-spacing: -.02em;
+}
+
+.modal .modal-close {
+    width: 34px;
+    height: 34px;
+    color: var(--color-muted);
+    background: var(--color-surface-muted);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+}
+
+.modal .modal-close:hover {
+    color: var(--color-ink);
+    background: #eef2f8;
+    border-color: var(--color-border-strong);
+}
+
+.modal .modal-body,
+.modal .modal-body form {
+    display: block;
+    width: 100%;
+}
+
+.modal .form-group,
+.modal .list-page-form-group {
+    display: grid;
+    gap: 7px;
+    width: 100%;
+    margin: 0 0 17px;
+}
+
+.modal .form-group label,
+.modal .list-page-form-group label {
+    margin: 0;
+    color: #344054;
+    font: 600 13px/1.4 var(--app-font);
+}
+
+.modal .form-group input:not([type="checkbox"]),
+.modal .form-group select,
+.modal .form-group textarea,
+.modal .list-page-form-group input:not([type="checkbox"]),
+.modal .list-page-form-group select,
+.modal .list-page-form-group textarea {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    min-height: 42px;
+    padding: 9px 12px;
+    color: var(--color-ink);
+    font: 400 14px/1.45 var(--app-font);
+    background-color: #fff;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    box-shadow: 0 1px 2px rgb(16 24 40 / 4%);
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.modal .form-group select,
+.modal .list-page-form-group select {
+    padding-right: 36px;
+    cursor: pointer;
+}
+
+.modal .form-group textarea,
+.modal .list-page-form-group textarea {
+    min-height: 104px;
+    resize: vertical;
+}
+
+.modal .form-group input:focus,
+.modal .form-group select:focus,
+.modal .form-group textarea:focus,
+.modal .list-page-form-group input:focus,
+.modal .list-page-form-group select:focus,
+.modal .list-page-form-group textarea:focus {
+    border-color: var(--color-primary);
+    outline: 0;
+    box-shadow: 0 0 0 3px rgb(49 93 232 / 14%);
+}
+
+.modal .checkbox-group,
+.modal .list-page-checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    width: 100%;
+    margin: 4px 0 16px;
+}
+
+.modal .checkbox-group input[type="checkbox"],
+.modal .list-page-checkbox-group input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    position: relative;
+    flex: 0 0 17px;
+    width: 17px;
+    height: 17px;
+    margin: 0;
+    padding: 0;
+    background: #fff;
+    border: 1px solid var(--color-border-strong);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: border-color .15s ease, background-color .15s ease;
+}
+
+.modal .checkbox-group input[type="checkbox"]:checked,
+.modal .list-page-checkbox-group input[type="checkbox"]:checked {
+    background: #edf2ff;
+    border-color: var(--color-primary);
+}
+
+.modal .checkbox-group input[type="checkbox"]:checked::after,
+.modal .list-page-checkbox-group input[type="checkbox"]:checked::after {
+    position: absolute;
+    top: 1px;
+    left: 5px;
+    width: 4px;
+    height: 8px;
+    border: solid var(--color-primary);
+    border-width: 0 2px 2px 0;
+    content: "";
+    transform: rotate(45deg);
+}
+
+.modal .checkbox-group input[type="checkbox"]:focus-visible,
+.modal .list-page-checkbox-group input[type="checkbox"]:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+.modal .checkbox-group label,
+.modal .list-page-checkbox-group label {
+    margin: 0;
+    color: #344054;
+    font: 500 13px/1.4 var(--app-font);
+    cursor: pointer;
+}
+
+.modal .modal-actions {
+    position: sticky;
+    bottom: calc(-1 * clamp(20px, 3vw, 28px));
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin: 22px calc(-1 * clamp(20px, 3vw, 28px)) calc(-1 * clamp(20px, 3vw, 28px));
+    padding: 14px clamp(20px, 3vw, 28px) clamp(18px, 2.5vw, 24px);
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+}
+
+.modal .modal-actions button {
+    min-height: 38px;
+    padding: 8px 15px;
+    color: #475467;
+    font: 600 13px/1 var(--app-font);
+    background: #fff;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+}
+
+.modal .modal-actions button:hover {
+    color: var(--color-ink);
+    background: var(--color-surface-muted);
+    border-color: #aeb9ca;
+}
+
+.modal .modal-actions button.primary-button,
+.modal .modal-actions button:last-child:not(.modal-action-danger):not(.danger-button):not(.form-detail-danger-button):not(.list-page-remove-button) {
+    color: #fff;
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.modal .modal-actions button.primary-button:hover,
+.modal .modal-actions button:last-child:not(.modal-action-danger):not(.danger-button):not(.form-detail-danger-button):not(.list-page-remove-button):hover {
+    background: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
+}
+
+.modal .modal-actions button:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+}
+
+.catalog-create-overlay {
+    z-index: 1200;
+    padding: clamp(14px, 3vw, 28px);
+    background: rgb(20 28 42 / 48%);
+    backdrop-filter: blur(3px);
+}
+
+.catalog-create-modal {
+    width: min(600px, 100%);
+    max-height: min(88vh, 820px);
+    overflow: auto;
+    color: var(--color-ink);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    box-shadow: 0 24px 70px rgb(16 24 40 / 22%);
+}
+
+.catalog-create-header {
+    padding: 18px clamp(20px, 3vw, 28px) 14px;
+    border-color: var(--color-border);
+}
+
+.catalog-create-eyebrow {
+    color: var(--color-muted);
+}
+
+.catalog-create-header h3 {
+    color: var(--color-ink);
+    font: 650 19px/1.35 var(--app-font);
+    letter-spacing: -.02em;
+}
+
+.catalog-create-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    background: var(--color-surface-muted);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+}
+
+.catalog-create-body {
+    gap: 7px;
+    padding: 18px clamp(20px, 3vw, 28px) 22px;
+}
+
+.catalog-create-body label {
+    margin: 8px 0 0;
+    color: #344054;
+    font: 600 13px/1.4 var(--app-font);
+}
+
+.catalog-create-body input,
+.catalog-create-body select,
+.catalog-create-body textarea {
+    min-height: 42px;
+    padding: 9px 12px;
+    color: var(--color-ink);
+    font: 400 14px/1.45 var(--app-font);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    box-shadow: 0 1px 2px rgb(16 24 40 / 4%);
+}
+
+.catalog-create-body textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+.catalog-create-body input:focus,
+.catalog-create-body select:focus,
+.catalog-create-body textarea:focus {
+    border-color: var(--color-primary);
+    outline: 0;
+    box-shadow: 0 0 0 3px rgb(49 93 232 / 14%);
+}
+
+.catalog-create-actions {
+    padding: 14px clamp(20px, 3vw, 28px) 18px;
+    background: var(--color-surface);
+    border-color: var(--color-border);
+}
+
+.catalog-create-actions button {
+    min-height: 38px;
+    padding: 8px 15px;
+    font: 600 13px/1 var(--app-font);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+}
+
+.catalog-create-actions .button-secondary {
+    color: #475467;
+    background: #fff;
+    border: 1px solid var(--color-border-strong);
+}
+
+.catalog-create-actions .button-primary {
+    color: #fff;
+    background: var(--color-primary);
+    border: 1px solid var(--color-primary);
+}
+
+.catalog-create-actions .button-primary:hover {
+    background: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
+}
+
+.catalog-create-actions .quick-note-delete-confirm {
+    color: #fff;
+    background: #b42318;
+    border: 1px solid #b42318;
+}
+
+.quick-call-overlay {
+    z-index: 1200;
+    background: rgb(20 28 42 / 48%);
+    backdrop-filter: blur(3px);
+}
+
+.quick-call-modal {
+    border-color: var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 24px 70px rgb(16 24 40 / 22%);
+}
+
+.quick-call-header {
+    border-color: var(--color-border);
+}
+
+.quick-call-header h2 {
+    color: var(--color-ink);
+    font-family: var(--app-font);
+}
+
+.quick-call-field label {
+    color: #344054;
+    font: 600 13px/1.4 var(--app-font);
+}
+
+.quick-call-field input,
+.quick-call-field select,
+.quick-call-field textarea,
+.quick-call-combobox-input {
+    min-height: 42px;
+    padding: 9px 12px;
+    color: var(--color-ink);
+    font: 400 14px/1.45 var(--app-font);
+    border-color: var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    box-shadow: 0 1px 2px rgb(16 24 40 / 4%);
+}
+
+.quick-call-field textarea {
+    min-height: 104px;
+}
+
+.quick-call-field input:focus,
+.quick-call-field select:focus,
+.quick-call-field textarea:focus,
+.quick-call-combobox-input:focus {
+    border-color: var(--color-primary);
+    outline: 0;
+    box-shadow: 0 0 0 3px rgb(49 93 232 / 14%);
+}
+
+.quick-call-actions button {
+    min-height: 38px;
+    padding: 8px 15px;
+    border-radius: var(--radius-sm);
+    font: 600 13px/1 var(--app-font);
+}
+
 @media (max-width: 800px) {
     .app-content > main.detail-page-container,
     .app-content > .list-page-container {
         padding-top: 20px;
         padding-bottom: 32px;
+    }
+}
+
+@media (max-width: 540px) {
+    .modal .modal-content {
+        max-height: 92vh;
+    }
+
+    .modal .modal-actions {
+        flex-wrap: wrap;
     }
 }

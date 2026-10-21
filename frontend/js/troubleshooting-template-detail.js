@@ -139,8 +139,7 @@ function renderTemplateBasicInformation() {
             {
                 key: "generated_description",
                 label: "Description",
-                type: "textarea",
-                required: true
+                type: "textarea"
             },
             {
                 key: "steps",
@@ -174,13 +173,6 @@ function renderTemplateBasicInformation() {
             if (!data.name) {
                 showWarningMessage(
                     "Name is required."
-                );
-                return;
-            }
-
-            if (!data.generated_description) {
-                showWarningMessage(
-                    "Description is required."
                 );
                 return;
             }
@@ -593,8 +585,7 @@ async function openRelationshipItemModal({
                 {
                     key: "description",
                     label: "Description",
-                    type: "textarea",
-                    required: true
+                    type: "textarea"
                 },
                 {
                     key: "form_template_id",
@@ -604,8 +595,7 @@ async function openRelationshipItemModal({
                 {
                     key: "category",
                     label: "Category",
-                    type: "text",
-                    required: true
+                    type: "text"
                 },
                 {
                     key: "display_name",
@@ -639,8 +629,7 @@ async function openRelationshipItemModal({
                 {
                     key: "description",
                     label: "Description",
-                    type: "textarea",
-                    required: true
+                    type: "textarea"
                 },
                 {
                     key: "is_active",
@@ -658,8 +647,7 @@ async function openRelationshipItemModal({
                 {
                     key: "article_number",
                     label: "Article Number",
-                    type: "text",
-                    required: true
+                    type: "text"
                 },
                 {
                     key: "title",
@@ -670,14 +658,12 @@ async function openRelationshipItemModal({
                 {
                     key: "url",
                     label: "URL",
-                    type: "text",
-                    required: true
+                    type: "text"
                 },
                 {
                     key: "description",
                     label: "Description",
-                    type: "textarea",
-                    required: true
+                    type: "textarea"
                 }
             ]
         }
@@ -886,30 +872,22 @@ async function saveRelationshipItem() {
         ],
 
         knowledgeBase: [
-            "article_number",
             "title",
-            "url",
             "description"
         ]
     };
 
     const requiredFields = {
         issueType: [
-            "name",
-            "description",
-            "category"
+            "name"
         ],
 
         tool: [
-            "name",
-            "description"
+            "name"
         ],
 
         knowledgeBase: [
-            "article_number",
-            "title",
-            "url",
-            "description"
+            "title"
         ]
     };
 
@@ -935,6 +913,15 @@ async function saveRelationshipItem() {
             data[field] =
                 input.value.trim();
         }
+    }
+
+    if (currentRelationship === "issueType" && !data.category) {
+        data.category = "General";
+    }
+
+    if (currentRelationship === "knowledgeBase") {
+        data.article_number ||= "";
+        data.url ||= "";
     }
 
     for (

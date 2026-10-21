@@ -225,7 +225,6 @@ function renderFormModal(form = null) {
                     id="formDescription"
                     name="description"
                     rows="6"
-                    required
                 >${escapeFormHtml(form?.description ?? "")}</textarea>
             </div>
 
@@ -298,11 +297,11 @@ async function saveForm(event) {
 
     const formData = {
         name: document.getElementById("formName").value.trim(),
-        description: document.getElementById("formDescription").value.trim(),
+        description: document.getElementById("formDescription").value.trim() || "",
         is_active: document.getElementById("formIsActive").checked
     };
 
-    if (!formData.name || !formData.description) {
+    if (!formData.name) {
         showWarningMessage("Please complete all required fields.");
         return;
     }

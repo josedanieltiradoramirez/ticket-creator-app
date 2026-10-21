@@ -940,7 +940,7 @@ async function saveRelationshipItem({
             const category =
                 document.getElementById(
                     "relationshipItem_category"
-                )?.value.trim() || "";
+                )?.value.trim() || "General";
 
             const displayName =
                 document.getElementById(

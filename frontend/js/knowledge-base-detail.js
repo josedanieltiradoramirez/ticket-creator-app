@@ -702,14 +702,12 @@ function openRelationshipItemModal({
                 {
                     key: "description",
                     label: "Description",
-                    type: "textarea",
-                    required: true
+                    type: "textarea"
                 },
                 {
                     key: "category",
                     label: "Category",
-                    type: "text",
-                    required: true
+                    type: "text"
                 },
                 {
                     key: "display_name",
@@ -748,8 +746,7 @@ function openRelationshipItemModal({
                 {
                     key: "description",
                     label: "Description",
-                    type: "textarea",
-                    required: true
+                    type: "textarea"
                 },
                 {
                     key: "is_active",
@@ -774,7 +771,6 @@ function openRelationshipItemModal({
                     key: "generated_description",
                     label: "Description",
                     type: "textarea",
-                    required: true
                 },
                 {
                     key: "steps",
@@ -966,22 +962,26 @@ async function saveRelationshipItem({
 
     const requiredFields = {
         issueType: [
-            "name",
-            "description",
-            "category"
+            "name"
         ],
 
         tool: [
-            "name",
-            "description"
+            "name"
         ],
 
         troubleshootingTemplate: [
             "name",
-            "generated_description",
             "steps"
         ]
     };
+
+    if (relationship === "issueType" && !data.category) {
+        data.category = "General";
+    }
+
+    if (relationship === "troubleshootingTemplate") {
+        data.generated_description ||= "";
+    }
 
     for (
         const field of

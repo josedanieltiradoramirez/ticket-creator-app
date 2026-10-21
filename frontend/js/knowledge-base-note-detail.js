@@ -1239,6 +1239,10 @@ async function saveRelationshipItem({
             null;
     }
 
+    if (relationship === "issueType" && !payload.category) {
+        payload.category = "General";
+    }
+
     const saveButton =
         modal.querySelector(
             "#relationshipItemSaveButton"

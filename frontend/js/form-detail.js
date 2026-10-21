@@ -1620,6 +1620,8 @@ function openCreateIssueTypeModal() {
 
                 rows="5"
 
+                required
+
             ></textarea>
 
 
@@ -2074,7 +2076,7 @@ async function saveCreatedIssueType() {
 
     const category =
 
-        categoryInput.value.trim();
+        categoryInput.value.trim() || "General";
 
 
 

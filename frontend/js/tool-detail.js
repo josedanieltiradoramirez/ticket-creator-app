@@ -735,18 +735,13 @@ async function openRelationshipItemModal({
                 },
                 {
                     key: "form_template_id",
-                    label: "Form Template ID",
-                    type: "text"
+                    label: "Form Template",
+                    type: "form-select"
                 },
                 {
                     key: "category",
                     label: "Category",
-                    type: "select",
-                    options: [
-                        { value: "Alert", label: "Alert" },
-                        { value: "Overview", label: "Overview" },
-                        { value: "Note", label: "Note" }
-                    ]
+                    type: "text"
                 },
                 {
                     key: "display_name",
@@ -805,8 +800,7 @@ async function openRelationshipItemModal({
                 {
                     key: "article_number",
                     label: "Article Number",
-                    type: "text",
-                    required: true
+                    type: "text"
                 },
                 {
                     key: "title",
@@ -817,8 +811,7 @@ async function openRelationshipItemModal({
                 {
                     key: "url",
                     label: "URL",
-                    type: "text",
-                    required: true
+                    type: "text"
                 },
                 {
                     key: "description",
@@ -846,8 +839,7 @@ async function openRelationshipItemModal({
                 {
                     key: "generated_description",
                     label: "Description",
-                    type: "textarea",
-                    required: true
+                    type: "textarea"
                 },
                 {
                     key: "steps",
@@ -913,12 +905,29 @@ async function openRelationshipItemModal({
 
     const config = configs[relationship];
 
-    
     if (!config) {
         showErrorMessage(
             `Unsupported relationship: ${relationship}.`
         );
         return;
+    }
+
+    let activeForms = [];
+
+    if (
+        relationship === "issueType" &&
+        mode === "create"
+    ) {
+        try {
+            const forms = await getForms();
+            activeForms = (forms || []).filter(
+                form => form.is_active !== false
+            );
+        } catch (error) {
+            console.error("Error loading active forms:", error);
+            showErrorMessage("Failed to load active forms.");
+            return;
+        }
     }
 
     let allIssueTypes = [];
@@ -1088,6 +1097,26 @@ async function openRelationshipItemModal({
                                 ${String(selectedValue).toLowerCase() === String(option.value).toLowerCase() ? "selected" : ""}
                             >
                                 ${escapeToolHtml(option.label)}
+                            </option>
+                        `).join("")}
+                    </select>
+                </div>
+            `;
+
+            return;
+        }
+
+        if (field.type === "form-select") {
+            fieldsHtml += `
+                <div class="form-group">
+                    <label for="relationshipItem_${field.key}">
+                        ${escapeToolHtml(field.label)}
+                    </label>
+                    <select id="relationshipItem_${field.key}">
+                        <option value="">No Form</option>
+                        ${activeForms.map(form => `
+                            <option value="${Number(form.id)}">
+                                ${escapeToolHtml(form.name || `Form ${form.id}`)}
                             </option>
                         `).join("")}
                     </select>
@@ -1747,6 +1776,12 @@ async function saveRelationshipItem({
                     element.value.trim();
             }
         });
+
+        if (relationship === "issueType" && mode === "create") {
+            data.description = document
+                .getElementById("relationshipItem_description")
+                ?.value.trim() || "";
+        }
     }
 
     // ========================================================
@@ -1756,15 +1791,9 @@ async function saveRelationshipItem({
     const requiredFields = {
         issueType: ["name"],
         queue: ["name"],
-        knowledgeBase: [
-            "article_number",
-            "title",
-            "url",
-            "description"
-        ],
+        knowledgeBase: ["title"],
         troubleshootingTemplate: [
             "name",
-            "generated_description",
             "steps"
         ],
         knowledgeBaseNote: [
@@ -1772,6 +1801,21 @@ async function saveRelationshipItem({
             "content"
         ]
     };
+
+    if (relationship === "issueType" && mode === "create" && !data.category) {
+        data.category = "General";
+    }
+
+    if (relationship === "issueType" && mode === "create") {
+        data.form_template_id = data.form_template_id
+            ? Number(data.form_template_id)
+            : null;
+    }
+
+    if (relationship === "knowledgeBase" && mode === "create") {
+        data.article_number ||= "";
+        data.url ||= "";
+    }
 
     // Issue Type relationship edit has no required
     // relationship fields. Description may be empty.

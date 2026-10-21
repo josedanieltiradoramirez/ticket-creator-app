@@ -534,7 +534,6 @@ function renderLocationFormModal({
                     value="${escapeLocationAttribute(
                         location?.city || ""
                     )}"
-                    required
                 >
             </div>
 
@@ -552,7 +551,6 @@ function renderLocationFormModal({
                     value="${escapeLocationAttribute(
                         location?.state || ""
                     )}"
-                    required
                 >
             </div>
 
@@ -570,7 +568,6 @@ function renderLocationFormModal({
                     value="${escapeLocationAttribute(
                         location?.code || ""
                     )}"
-                    required
                 >
             </div>
 
@@ -745,10 +742,7 @@ async function saveLocation(event) {
     };
 
     if (
-        !locationData.name ||
-        !locationData.city ||
-        !locationData.state ||
-        !locationData.code
+        !locationData.name
     ) {
         showWarningMessage(
             "Please complete all required fields."

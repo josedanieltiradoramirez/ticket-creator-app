@@ -5,7 +5,7 @@
 const relationshipItemOrderByContainer = new WeakMap();
 
 function getRelationshipItemKey(item, index) {
-    const id = item?.id;
+    const id = item?.id ?? item?.issue_type_id;
     return id === null || id === undefined || id === ""
         ? `item-index:${index}`
         : `item-id:${id}`;
@@ -32,9 +32,28 @@ function preserveRelationshipAppendOrder(container, relationship, relationshipIn
     );
     const orderedKeys = previousOrder.filter(key => incomingByKey.has(key));
     const orderedKeySet = new Set(orderedKeys);
-    const newItems = sortRecordsById(incomingItems.filter((item, index) =>
-        !orderedKeySet.has(getRelationshipItemKey(item, index))
-    ));
+    const newItems = incomingItems
+        .map((item, index) => ({ item, index }))
+        .filter(({ item, index }) =>
+            !orderedKeySet.has(getRelationshipItemKey(item, index))
+        )
+        .sort((left, right) => {
+            const leftId = Number(
+                left.item?.id ?? left.item?.issue_type_id
+            );
+            const rightId = Number(
+                right.item?.id ?? right.item?.issue_type_id
+            );
+            const bothNumeric =
+                Number.isFinite(leftId) && Number.isFinite(rightId);
+
+            if (bothNumeric && leftId !== rightId) {
+                return leftId - rightId;
+            }
+
+            return left.index - right.index;
+        })
+        .map(({ item }) => item);
 
     newItems.forEach(item => {
         const originalIndex = incomingItems.indexOf(item);

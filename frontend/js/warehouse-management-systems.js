@@ -227,7 +227,6 @@ function renderWmsFormModal(wms = null) {
                     id="wmsDescription"
                     name="description"
                     rows="4"
-                    required
                 >${escapeWmsHtml(wms?.description ?? "")}</textarea>
             </div>
 
@@ -293,7 +292,7 @@ async function saveWms(event) {
         description: document.getElementById("wmsDescription").value.trim()
     };
 
-    if (!wmsData.name || !wmsData.description) {
+    if (!wmsData.name) {
         showWarningMessage("Please complete all required fields.");
         return;
     }
