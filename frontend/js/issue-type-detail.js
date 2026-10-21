@@ -3,6 +3,7 @@ let issueTypeId = null;
 let troubleshootingTemplateExpandedStates = new Map();
 
 let currentIssueType = null;
+let currentKnowledgeBaseNotes = [];
 
 // ============================================================
 // KNOWLEDGE BASE NOTES — SPECIAL PRESENTATION
@@ -42,6 +43,7 @@ function renderSpecialKnowledgeBaseNotes(notes) {
     const allNotes = Array.isArray(notes)
         ? notes.filter(isKnowledgeBaseNoteActive)
         : [];
+    currentKnowledgeBaseNotes = Array.isArray(notes) ? notes : [];
 
     const alerts = allNotes.filter(
         note => normalizeKnowledgeBaseNoteCategory(note) === "alert"
@@ -63,6 +65,16 @@ function renderSpecialKnowledgeBaseNotes(notes) {
 
     const renderNoteActions = noteId => `
         <div class="kb-special-note-actions">
+            <button
+                type="button"
+                class="kb-special-note-preview"
+                data-note-id="${noteId}"
+                aria-label="Preview knowledge base note"
+                title="Preview note"
+            >
+                Preview
+            </button>
+
             <button
                 type="button"
                 class="kb-special-note-view"
@@ -160,6 +172,19 @@ function renderSpecialKnowledgeBaseNotes(notes) {
         });
 
     container
+        .querySelectorAll(".kb-special-note-preview")
+        .forEach(button => {
+            button.addEventListener("click", () => {
+                const noteId = Number(button.dataset.noteId);
+                const note = allNotes.find(
+                    item => Number(item.id) === noteId
+                );
+
+                if (note) openKnowledgeBaseNotePreview(note);
+            });
+        });
+
+    container
         .querySelectorAll(".kb-special-note-edit")
         .forEach(button => {
             button.addEventListener("click", () => {
@@ -175,6 +200,53 @@ function renderSpecialKnowledgeBaseNotes(notes) {
                     relationship: "knowledgeBaseNote",
                     item: note
                 });
+            });
+        });
+}
+
+function openKnowledgeBaseNotePreview(note) {
+    const modal = document.getElementById("knowledgeBaseNotePreviewModal");
+    if (!modal || !note) return;
+
+    const category = normalizeKnowledgeBaseNoteCategory(note) || "note";
+    const content = `
+        <div class="kb-note-preview-meta">
+            <span>${escapeRelationshipHtml(category)}</span>
+            ${isKnowledgeBaseNotePinned(note) ? `<span class="kb-note-preview-pinned">Pinned</span>` : ""}
+        </div>
+        <div class="kb-note-preview-content">${escapeRelationshipHtml(note.content || "")}</div>
+    `;
+
+    renderModal({
+        containerId: "knowledgeBaseNotePreviewModal",
+        title: note.title || "Knowledge Base Note",
+        content,
+        onClose: closeKnowledgeBaseNotePreview
+    });
+
+    modal.classList.remove("hidden");
+}
+
+function closeKnowledgeBaseNotePreview() {
+    const modal = document.getElementById("knowledgeBaseNotePreviewModal");
+    if (!modal) return;
+
+    modal.classList.add("hidden");
+    modal.innerHTML = "";
+}
+
+function setupRelationshipNotePreviewButtons() {
+    document
+        .querySelectorAll("#relationships .kb-note-preview-button")
+        .forEach(button => {
+            button.addEventListener("click", event => {
+                event.stopPropagation();
+                const noteId = Number(button.dataset.noteId);
+                const note = currentKnowledgeBaseNotes.find(
+                    item => Number(item.id) === noteId
+                );
+
+                if (note) openKnowledgeBaseNotePreview(note);
             });
         });
 }
@@ -211,6 +283,14 @@ function renderKnowledgeBaseNoteItem(item, items) {
             <div class="kb-note-item-content">
                 <div class="kb-note-item-title">${escapeRelationshipHtml(item.title || `Note ${item.id}`)}</div>
                 <div class="kb-note-item-body">${escapeRelationshipHtml(item.content || "")}</div>
+                <button
+                    type="button"
+                    class="kb-note-preview-button"
+                    data-note-id="${Number(item.id)}"
+                    aria-label="Preview ${escapeRelationshipHtml(item.title || `Note ${item.id}`)}"
+                >
+                    Preview
+                </button>
             </div>
         </div>
     `;
@@ -871,6 +951,10 @@ async function loadRelationships() {
                     items:
                         regularKnowledgeBaseNotes,
 
+                    sortItems: (left, right) =>
+                        Number(isKnowledgeBaseNotePinned(right)) -
+                        Number(isKnowledgeBaseNotePinned(left)),
+
                     actions: {
                         view: true,
                         edit: true,
@@ -938,6 +1022,7 @@ async function loadRelationships() {
 
         });
 
+        setupRelationshipNotePreviewButtons();
         setupTroubleshootingTemplateCollapsibles();
 
     } catch (error) {

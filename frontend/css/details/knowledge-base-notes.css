@@ -85,20 +85,27 @@
 .kb-special-note {
     position: relative;
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 10px;
     box-sizing: border-box;
     width: 100%;
+    height: 88px;
+    min-height: 88px;
     min-width: 0;
     padding: 9px 10px 9px 9px;
+    overflow: hidden;
     border: 1px solid #e7e7e3;
     border-radius: 6px;
     background: #ffffff;
 }
 
 .kb-special-note-main {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 4px;
     min-width: 0;
     flex: 1 1 auto;
+    max-height: 100%;
     margin: 0;
     padding: 0;
 }
@@ -129,16 +136,22 @@
 }
 
 .kb-special-note-title {
+    min-width: 0;
     margin: 0 0 2px 0;
     padding: 0;
+    overflow: hidden;
     font-size: 13px;
     font-weight: 600;
     line-height: 1.35;
     color: #292929;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .kb-special-note-content {
-    display: block;
+    display: -webkit-box;
+    min-width: 0;
+    overflow: hidden;
     margin: 0;
     padding: 0;
     font-size: 13px;
@@ -148,9 +161,12 @@
     white-space: pre-wrap;
     overflow-wrap: anywhere;
     text-indent: 0;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
 }
 
-.kb-special-note-view {
+.kb-special-note-view,
+.kb-special-note-preview {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -174,31 +190,35 @@
         color 120ms ease;
 }
 
-.kb-special-note-view:hover {
+.kb-special-note-view:hover,
+.kb-special-note-preview:hover {
     border-color: #dfdfda;
     background: rgba(255, 255, 255, 0.75);
     color: #45453f;
 }
 
-.kb-alert-note .kb-special-note-view:hover {
+.kb-alert-note .kb-special-note-view:hover,
+.kb-alert-note .kb-special-note-preview:hover {
     border-color: #eadfb7;
     background: #fffaf0;
     color: #78631c;
 }
 
-.kb-overview-note .kb-special-note-view:hover {
+.kb-overview-note .kb-special-note-view:hover,
+.kb-overview-note .kb-special-note-preview:hover {
     background: #f2f2f0;
 }
 
-.kb-special-note-view:focus-visible {
+.kb-special-note-view:focus-visible,
+.kb-special-note-preview:focus-visible {
     outline: 2px solid #cfcfc8;
     outline-offset: 1px;
 }
 
 .kb-special-note-actions {
     display: flex;
-    align-items: flex-start;
-    gap: 2px;
+    align-items: center;
+    gap: 1px;
     flex: 0 0 auto;
 }
 
@@ -271,14 +291,21 @@
     border-top: 1px solid #eeeeee;
 }
 
+.relationships-list .kb-notes-subsection-heading {
+    display: none;
+}
+
 .kb-note-item {
+    position: relative;
     display: flex;
-    align-items: flex-start;
-    gap: 9px;
+    align-items: center;
     box-sizing: border-box;
     width: 100%;
-    margin: 0 0 8px 0;
+    height: 88px;
+    min-height: 88px;
+    margin: 0;
     padding: 10px 12px;
+    overflow: hidden;
     border: 1px solid #e8e8e8;
     border-radius: 7px;
     background: #ffffff;
@@ -289,6 +316,10 @@
     background: #fcfbf7;
 }
 
+.relationships-list .kb-note-pin {
+    display: none;
+}
+
 .kb-note-pin {
     flex: 0 0 auto;
     padding-top: 1px;
@@ -297,21 +328,114 @@
 }
 
 .kb-note-item-content {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 5px;
+    width: 100%;
     min-width: 0;
+    padding-right: 72px;
+    max-height: 100%;
 }
 
 .kb-note-item-title {
-    margin: 0 0 3px 0;
+    position: relative;
+    min-width: 0;
+    margin: 0;
+    padding-right: 0;
+    overflow: hidden;
     font-size: 13px;
     font-weight: 600;
     line-height: 1.4;
     color: #292929;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kb-note-item-pinned .kb-note-item-title {
+    padding-right: 58px;
+}
+
+.kb-note-item-pinned .kb-note-item-title::after {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    padding: 2px 6px;
+    border: 1px solid #e7e3d8;
+    border-radius: 999px;
+    background: #f7f5ef;
+    color: #77715f;
+    content: "Pinned";
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 1.2;
+    transform: translateY(-50%);
 }
 
 .kb-note-item-body {
+    display: -webkit-box;
+    min-width: 0;
+    overflow: hidden;
     font-size: 14px;
     line-height: 1.5;
     color: #4b4b4b;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+.kb-note-preview-button {
+    position: absolute;
+    right: 9px;
+    bottom: 8px;
+    min-height: 25px;
+    padding: 3px 7px;
+    border: 1px solid #e2e7ef;
+    border-radius: 5px;
+    background: #fff;
+    color: #667085;
+    font: 600 10px/1.2 var(--app-font, "Segoe UI", Arial, sans-serif);
+    cursor: pointer;
+}
+
+.kb-note-preview-button:hover {
+    border-color: #cbd3df;
+    background: #f8f9fb;
+    color: #202938;
+}
+
+.kb-note-preview-button:focus-visible {
+    outline: 2px solid var(--color-primary, #315de8);
+    outline-offset: 2px;
+}
+
+.kb-note-preview-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+    color: #667085;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.kb-note-preview-pinned {
+    padding: 3px 7px;
+    border: 1px solid #e7e3d8;
+    border-radius: 999px;
+    background: #f7f5ef;
+    color: #77715f;
+    font-size: 10px;
+    text-transform: none;
+}
+
+.kb-note-preview-content {
+    max-height: min(60vh, 520px);
+    overflow: auto;
+    color: #344054;
+    font-size: 14px;
+    line-height: 1.65;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
 }

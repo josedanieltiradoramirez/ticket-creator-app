@@ -88,6 +88,10 @@ function renderRelationships({
             relationship,
             relationshipIndex
         );
+
+        if (typeof relationship.sortItems === "function") {
+            relationship.items.sort(relationship.sortItems);
+        }
     });
 
     // ========================================================
