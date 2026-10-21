@@ -51,7 +51,7 @@ function setupEventListeners() {
 
 async function loadKnowledgeBase() {
     try {
-        knowledgeBaseItems = await getKnowledgeBaseItems() || [];
+        knowledgeBaseItems = sortRecordsById(await getKnowledgeBaseItems());
         renderKnowledgeBase();
     } catch (error) {
         console.error("Error loading knowledge base:", error);

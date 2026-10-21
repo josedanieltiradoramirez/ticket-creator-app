@@ -75,7 +75,7 @@ function setupEventListeners() {
 
 async function loadTools() {
     try {
-        tools = await getTools() || [];
+        tools = sortRecordsById(await getTools());
         renderTools();
     } catch (error) {
         console.error(

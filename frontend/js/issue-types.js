@@ -103,11 +103,9 @@ async function loadIssueTypes() {
             getForms()
         ]);
 
-        issueTypes =
-            loadedIssueTypes || [];
+        issueTypes = sortRecordsById(loadedIssueTypes);
 
-        forms =
-            loadedForms || [];
+        forms = sortRecordsById(loadedForms);
 
         renderIssueTypes();
 

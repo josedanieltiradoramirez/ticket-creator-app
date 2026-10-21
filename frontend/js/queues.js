@@ -57,7 +57,7 @@ function setupQueueEventListeners() {
 
 async function loadQueues() {
     try {
-        queues = await getQueues() || [];
+        queues = sortRecordsById(await getQueues());
         renderQueues();
     } catch (error) {
         console.error("Error loading queues:", error);

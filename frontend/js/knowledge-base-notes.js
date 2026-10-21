@@ -51,7 +51,7 @@ function setupEventListeners() {
 
 async function loadNotes() {
     try {
-        knowledgeBaseNotes = await getKnowledgeBaseNotes() || [];
+        knowledgeBaseNotes = sortRecordsById(await getKnowledgeBaseNotes());
         renderNotes();
     } catch (error) {
         console.error("Error loading Knowledge Base Notes:", error);

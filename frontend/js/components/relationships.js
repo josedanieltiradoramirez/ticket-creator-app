@@ -2,6 +2,51 @@
 // RELATIONSHIPS COMPONENT
 // ============================================================
 
+const relationshipItemOrderByContainer = new WeakMap();
+
+function getRelationshipItemKey(item, index) {
+    const id = item?.id;
+    return id === null || id === undefined || id === ""
+        ? `item-index:${index}`
+        : `item-id:${id}`;
+}
+
+function preserveRelationshipAppendOrder(container, relationship, relationshipIndex) {
+    let containerOrder = relationshipItemOrderByContainer.get(container);
+
+    if (!containerOrder) {
+        containerOrder = new Map();
+        relationshipItemOrderByContainer.set(container, containerOrder);
+    }
+
+    const relationshipKey = `${relationshipIndex}:${relationship.title || relationship.entityLabel || ""}`;
+    const incomingItems = Array.isArray(relationship.items)
+        ? relationship.items
+        : [];
+    const previousOrder = containerOrder.get(relationshipKey) || [];
+    const incomingByKey = new Map(
+        incomingItems.map((item, index) => [
+            getRelationshipItemKey(item, index),
+            item
+        ])
+    );
+    const orderedKeys = previousOrder.filter(key => incomingByKey.has(key));
+    const orderedKeySet = new Set(orderedKeys);
+    const newItems = sortRecordsById(incomingItems.filter((item, index) =>
+        !orderedKeySet.has(getRelationshipItemKey(item, index))
+    ));
+
+    newItems.forEach(item => {
+        const originalIndex = incomingItems.indexOf(item);
+        const key = getRelationshipItemKey(item, originalIndex);
+        orderedKeys.push(key);
+        incomingByKey.set(key, item);
+    });
+
+    containerOrder.set(relationshipKey, orderedKeys);
+    return orderedKeys.map(key => incomingByKey.get(key));
+}
+
 function renderRelationships({
     containerId,
     relationships,
@@ -17,6 +62,14 @@ function renderRelationships({
 
         return;
     }
+
+    relationships.forEach((relationship, relationshipIndex) => {
+        relationship.items = preserveRelationshipAppendOrder(
+            container,
+            relationship,
+            relationshipIndex
+        );
+    });
 
     // ========================================================
     // RENDER RELATIONSHIP CONTAINERS

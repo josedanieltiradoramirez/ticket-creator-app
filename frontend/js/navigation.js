@@ -65,6 +65,44 @@ const navigationItems = [
     }
 ];
 
+function sortRecordsById(records) {
+    if (!Array.isArray(records)) {
+        return [];
+    }
+
+    return records
+        .map((record, index) => ({ record, index }))
+        .sort((left, right) => {
+            const leftId = left.record?.id;
+            const rightId = right.record?.id;
+            const leftNumber = Number(leftId);
+            const rightNumber = Number(rightId);
+            const bothNumeric =
+                leftId !== null && leftId !== undefined && leftId !== "" &&
+                rightId !== null && rightId !== undefined && rightId !== "" &&
+                Number.isFinite(leftNumber) && Number.isFinite(rightNumber);
+
+            if (bothNumeric && leftNumber !== rightNumber) {
+                return leftNumber - rightNumber;
+            }
+
+            if (leftId !== rightId) {
+                const comparison = String(leftId ?? "").localeCompare(
+                    String(rightId ?? ""),
+                    undefined,
+                    { numeric: true, sensitivity: "base" }
+                );
+
+                if (comparison !== 0) {
+                    return comparison;
+                }
+            }
+
+            return left.index - right.index;
+        })
+        .map(({ record }) => record);
+}
+
 function createReturnUrl(targetUrl) {
     const target = new URL(targetUrl, window.location.href);
     const returnTo = `${window.location.pathname}${window.location.search}${window.location.hash}`;

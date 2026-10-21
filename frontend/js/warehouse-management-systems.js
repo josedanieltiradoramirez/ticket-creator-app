@@ -57,8 +57,9 @@ function setupWmsEventListeners() {
 
 async function loadWms() {
     try {
-        warehouseManagementSystems =
-            await getWarehouseManagementSystems() || [];
+        warehouseManagementSystems = sortRecordsById(
+            await getWarehouseManagementSystems()
+        );
 
         renderWms();
     } catch (error) {

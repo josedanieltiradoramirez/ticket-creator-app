@@ -51,7 +51,7 @@ function setupEventListeners() {
 
 async function loadForms() {
     try {
-        forms = await getForms() || [];
+        forms = sortRecordsById(await getForms());
         renderForms();
     } catch (error) {
         console.error("Error loading forms:", error);

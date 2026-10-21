@@ -51,8 +51,9 @@ function setupEventListeners() {
 
 async function loadTemplates() {
     try {
-        troubleshootingTemplates =
-            await getTroubleshootingTemplates() || [];
+        troubleshootingTemplates = sortRecordsById(
+            await getTroubleshootingTemplates()
+        );
 
         renderTemplates();
     } catch (error) {

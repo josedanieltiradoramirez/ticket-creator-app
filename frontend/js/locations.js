@@ -93,7 +93,7 @@ function setupLocationEventListeners() {
 
 async function loadLocations() {
     try {
-        locations = await getLocations() || [];
+        locations = sortRecordsById(await getLocations());
 
         renderLocations();
     } catch (error) {
@@ -115,8 +115,9 @@ async function loadLocations() {
 
 async function loadWarehouseManagementSystems() {
     try {
-        warehouseManagementSystems =
-            await getWarehouseManagementSystems() || [];
+        warehouseManagementSystems = sortRecordsById(
+            await getWarehouseManagementSystems()
+        );
     } catch (error) {
         console.error(
             "Error loading Warehouse Management Systems:",
