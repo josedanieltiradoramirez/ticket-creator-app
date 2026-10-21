@@ -55,9 +55,7 @@ function renderPageHeader() {
             back: true,
             edit: false
         },
-        onBack: () => {
-            window.location.href = "index.html";
-        }
+        onBack: () => { navigateBack("index.html"); }
     });
 }
 
@@ -406,7 +404,7 @@ function setupLocationRowActionListeners() {
 
 function openLocationDetail(locationId) {
     window.location.href =
-        `location-detail.html?id=${locationId}`;
+        createReturnUrl(`location-detail.html?id=${locationId}`);
 }
 
 

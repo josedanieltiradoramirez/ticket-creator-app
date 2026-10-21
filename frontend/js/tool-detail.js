@@ -155,7 +155,7 @@ function renderSpecialKnowledgeBaseNotes(notes) {
                 if (!noteId) return;
 
                 window.location.href =
-                    `knowledge-base-note-detail.html?id=${noteId}`;
+                    createReturnUrl(`knowledge-base-note-detail.html?id=${noteId}`);
             });
         });
 
@@ -287,9 +287,7 @@ function renderToolHeader() {
         type: "Tool",
         title: currentTool.name,
         description: currentTool.description,
-        onBack: () => {
-            window.location.href = "tools.html";
-        }
+        onBack: () => { navigateBack("tools.html"); }
     });
 }
 
@@ -490,7 +488,7 @@ async function loadRelationships() {
                     },
                     onView: item => {
                         window.location.href =
-                            `issue-type-detail.html?id=${item.issue_type_id}`;
+                            createReturnUrl(`issue-type-detail.html?id=${item.issue_type_id}`);
                     },
                     onEdit: item => {
                         openRelationshipItemModal({
@@ -534,7 +532,7 @@ async function loadRelationships() {
                     },
                     onView: item => {
                         window.location.href =
-                            `queue-detail.html?id=${item.id}`;
+                            createReturnUrl(`queue-detail.html?id=${item.id}`);
                     },
                     onEdit: item => {
                         openRelationshipItemModal({
@@ -580,7 +578,7 @@ async function loadRelationships() {
                     },
                     onView: item => {
                         window.location.href =
-                            `knowledge-base-detail.html?id=${item.id}`;
+                            createReturnUrl(`knowledge-base-detail.html?id=${item.id}`);
                     },
                     onEdit: item => {
                         openRelationshipItemModal({
@@ -629,7 +627,7 @@ async function loadRelationships() {
                     },
                     onView: item => {
                         window.location.href =
-                            `troubleshooting-template-detail.html?id=${item.id}`;
+                            createReturnUrl(`troubleshooting-template-detail.html?id=${item.id}`);
                     },
                     onEdit: item => {
                         openRelationshipItemModal({
@@ -679,7 +677,7 @@ async function loadRelationships() {
                     },
                     onView: item => {
                         window.location.href =
-                            `knowledge-base-note-detail.html?id=${item.id}`;
+                            createReturnUrl(`knowledge-base-note-detail.html?id=${item.id}`);
                     },
                     onEdit: item => {
                         openRelationshipItemModal({

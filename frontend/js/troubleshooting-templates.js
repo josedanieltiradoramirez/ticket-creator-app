@@ -27,9 +27,7 @@ function renderPageHeader() {
             back: true,
             edit: false
         },
-        onBack: () => {
-            window.location.href = "index.html";
-        }
+        onBack: () => { navigateBack("index.html"); }
     });
 }
 
@@ -189,7 +187,7 @@ function renderTemplates() {
 
 function openTemplateDetail(templateId) {
     window.location.href =
-        `troubleshooting-template-detail.html?id=${templateId}`;
+        createReturnUrl(`troubleshooting-template-detail.html?id=${templateId}`);
 }
 
 // ============================================================

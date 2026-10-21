@@ -27,9 +27,7 @@ function renderPageHeader() {
             back: true,
             edit: false
         },
-        onBack: () => {
-            window.location.href = "index.html";
-        }
+        onBack: () => { navigateBack("index.html"); }
     });
 }
 
@@ -173,7 +171,7 @@ function renderForms() {
 // ============================================================
 
 function openFormDetail(formId) {
-    window.location.href = `form-detail.html?id=${formId}`;
+    window.location.href = createReturnUrl(`form-detail.html?id=${formId}`);
 }
 
 // ============================================================

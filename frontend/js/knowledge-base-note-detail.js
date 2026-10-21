@@ -185,11 +185,7 @@ function renderNoteDetailHeader() {
             edit: false
         },
 
-        onBack: () => {
-
-            window.location.href =
-                "knowledge-base-notes.html";
-        }
+        onBack: () => { navigateBack("knowledge-base-notes.html"); }
     });
 }
 
@@ -484,7 +480,7 @@ async function loadRelationships() {
                     (item) => {
 
                         window.location.href =
-                            `tool-detail.html?id=${item.id}`;
+                            createReturnUrl(`tool-detail.html?id=${item.id}`);
                     },
 
                 onEdit:
@@ -579,7 +575,7 @@ async function loadRelationships() {
                     (item) => {
 
                         window.location.href =
-                            `issue-type-detail.html?id=${item.id}`;
+                            createReturnUrl(`issue-type-detail.html?id=${item.id}`);
                     },
 
                 onEdit:

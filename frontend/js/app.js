@@ -118,7 +118,7 @@ function appendTicketRow(container, ticket) {
     row.classList.add("ticket-row");
     row.innerHTML = ticketRowMarkup(ticket);
     row.addEventListener("click", () => {
-        window.location.href = `ticket-detail.html?id=${ticket.id}`;
+        window.location.href = createReturnUrl(`ticket-detail.html?id=${ticket.id}`);
     });
     row.querySelector(".ticket-row-view")?.addEventListener("click", event => {
         event.stopPropagation();
@@ -126,7 +126,7 @@ function appendTicketRow(container, ticket) {
     });
     row.querySelector(".ticket-row-open")?.addEventListener("click", event => {
         event.stopPropagation();
-        window.location.href = `ticket-detail.html?id=${ticket.id}`;
+        window.location.href = createReturnUrl(`ticket-detail.html?id=${ticket.id}`);
     });
     container.appendChild(row);
 }
@@ -503,7 +503,7 @@ function createTodayTicketCard(ticket) {
     openButton.textContent = 'Open';
     openButton.setAttribute('aria-label', `Open ticket ${ticket.ticket_number || ''}`);
     openButton.addEventListener('click', () => {
-        window.location.href = `ticket-detail.html?id=${ticket.id}`;
+        window.location.href = createReturnUrl(`ticket-detail.html?id=${ticket.id}`);
     });
 
     const deleteButton = document.createElement('button');
@@ -1133,7 +1133,7 @@ function renderTicketView(ticket) {
     ticketViewSubtitle.textContent = ticket.ticket_number ? `Ticket ${ticket.ticket_number}` : "Ticket overview";
     ticketViewOpenFull.disabled = false;
     ticketViewOpenFull.onclick = () => {
-        window.location.href = `ticket-detail.html?id=${ticket.id}`;
+        window.location.href = createReturnUrl(`ticket-detail.html?id=${ticket.id}`);
     };
 
     const overview = document.createElement("section");
@@ -1496,7 +1496,7 @@ quickCallForm?.addEventListener("submit", async event => {
         discardQuickCallDraft();
         showNotification("Ticket created. Opening details…", "success");
         if (created?.id) {
-            window.location.href = `ticket-detail.html?id=${created.id}`;
+            window.location.href = createReturnUrl(`ticket-detail.html?id=${created.id}`);
         } else {
             await Promise.all([loadTodayTickets(), loadPendingTickets()]);
             if (activeView === "all") await loadAllTickets();
@@ -1531,7 +1531,7 @@ document.addEventListener("keydown", event => {
 // NEW TICKET — AVAILABLE IN EVERY TAB
 // =========================
 document.getElementById("newTicketButton")?.addEventListener("click", () => {
-    window.location.href = "ticket-detail.html?new=true";
+    window.location.href = createReturnUrl("ticket-detail.html?new=true");
 });
 
 document.querySelectorAll(".tickets-tab").forEach(tab => {

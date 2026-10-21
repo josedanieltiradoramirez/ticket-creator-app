@@ -76,10 +76,7 @@ function renderKnowledgeBase() {
             back: true,
             edit: false
         },
-        onBack: () => {
-            window.location.href =
-                "knowledge-base.html";
-        }
+        onBack: () => { navigateBack("knowledge-base.html"); }
     });
 
     renderBasicInformation();
@@ -284,7 +281,7 @@ function renderRelationshipsComponent() {
 
                 onView: (item) => {
                     window.location.href =
-                        `issue-type-detail.html?id=${item.id}`;
+                        createReturnUrl(`issue-type-detail.html?id=${item.id}`);
                 },
 
                 onEdit: (item) => {
@@ -340,7 +337,7 @@ function renderRelationshipsComponent() {
 
                 onView: (item) => {
                     window.location.href =
-                        `tool-detail.html?id=${item.id}`;
+                        createReturnUrl(`tool-detail.html?id=${item.id}`);
                 },
 
                 onEdit: (item) => {
@@ -400,7 +397,7 @@ function renderRelationshipsComponent() {
 
                 onView: (item) => {
                     window.location.href =
-                        `troubleshooting-template-detail.html?id=${item.id}`;
+                        createReturnUrl(`troubleshooting-template-detail.html?id=${item.id}`);
                 },
 
                 onEdit: (item) => {

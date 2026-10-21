@@ -90,10 +90,7 @@ function renderLocationHeader() {
             back: true,
             edit: false
         },
-        onBack: () => {
-            window.location.href =
-                "locations.html";
-        }
+        onBack: () => { navigateBack("locations.html"); }
     });
 }
 

@@ -66,9 +66,7 @@ function renderQueueDetailHeader() {
             back: true,
             edit: false
         },
-        onBack: () => {
-            window.location.href = "queues.html";
-        },
+        onBack: () => { navigateBack("queues.html"); },
         onEdit: () => {
             window.location.href = `queues.html?edit=${queueId}`;
         }
@@ -198,7 +196,7 @@ async function loadRelationships() {
                     },
                     onView: (item) => {
                         window.location.href =
-                            `issue-type-detail.html?id=${item.id}`;
+                            createReturnUrl(`issue-type-detail.html?id=${item.id}`);
                     },
                     onEdit: (item) => {
                         openRelationshipItemModal({
@@ -242,7 +240,7 @@ async function loadRelationships() {
                     },
                     onView: (item) => {
                         window.location.href =
-                            `tool-detail.html?id=${item.id}`;
+                            createReturnUrl(`tool-detail.html?id=${item.id}`);
                     },
                     onEdit: (item) => {
                         openRelationshipItemModal({
@@ -278,7 +276,7 @@ async function loadRelationships() {
                         `Ticket ${item.id}`,
                     onView: (item) => {
                         window.location.href =
-                            `ticket-detail.html?id=${item.id}`;
+                            createReturnUrl(`ticket-detail.html?id=${item.id}`);
                     }
                 }
             ]

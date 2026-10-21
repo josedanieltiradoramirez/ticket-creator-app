@@ -110,10 +110,7 @@ function renderTemplateHeader() {
             back: true,
             edit: false
         },
-        onBack: () => {
-            window.location.href =
-                "troubleshooting-templates.html";
-        }
+        onBack: () => { navigateBack("troubleshooting-templates.html"); }
     });
 }
 
@@ -275,7 +272,7 @@ function renderTemplateRelationships() {
 
                 onView: (item) => {
                     window.location.href =
-                        `issue-type-detail.html?id=${item.id}`;
+                        createReturnUrl(`issue-type-detail.html?id=${item.id}`);
                 },
 
                 onEdit: (item) => {
@@ -332,7 +329,7 @@ function renderTemplateRelationships() {
 
                 onView: (item) => {
                     window.location.href =
-                        `tool-detail.html?id=${item.id}`;
+                        createReturnUrl(`tool-detail.html?id=${item.id}`);
                 },
 
                 onEdit: (item) => {
@@ -391,7 +388,7 @@ function renderTemplateRelationships() {
 
                 onView: (item) => {
                     window.location.href =
-                        `knowledge-base-detail.html?id=${item.id}`;
+                        createReturnUrl(`knowledge-base-detail.html?id=${item.id}`);
                 },
 
                 onEdit: (item) => {

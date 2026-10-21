@@ -155,7 +155,7 @@ function renderSpecialKnowledgeBaseNotes(notes) {
                 if (!noteId) return;
 
                 window.location.href =
-                    `knowledge-base-note-detail.html?id=${noteId}`;
+                    createReturnUrl(`knowledge-base-note-detail.html?id=${noteId}`);
             });
         });
 
@@ -278,9 +278,7 @@ renderDetailHeader({
             title: currentIssueType.name,
             description: currentIssueType.description,
 
-            onBack: () => {
-                window.location.href = "issue-types.html";
-            }
+            onBack: () => { navigateBack("issue-types.html"); }
         });
 
         renderBasicInformation(
@@ -615,7 +613,7 @@ async function loadRelationships() {
                     onView: (item) => {
 
                         window.location.href =
-                            `troubleshooting-template-detail.html?id=${item.id}`;
+                            createReturnUrl(`troubleshooting-template-detail.html?id=${item.id}`);
 
                     },
 
@@ -685,7 +683,7 @@ async function loadRelationships() {
                     onView: (item) => {
 
                         window.location.href =
-                            `queue-detail.html?id=${item.id}`;
+                            createReturnUrl(`queue-detail.html?id=${item.id}`);
 
                     },
 
@@ -754,7 +752,7 @@ async function loadRelationships() {
                     onView: (item) => {
 
                         window.location.href =
-                            `tool-detail.html?id=${item.id}`;
+                            createReturnUrl(`tool-detail.html?id=${item.id}`);
 
                     },
 
@@ -830,7 +828,7 @@ async function loadRelationships() {
                     onView: (item) => {
 
                         window.location.href =
-                            `knowledge-base-detail.html?id=${item.id}`;
+                            createReturnUrl(`knowledge-base-detail.html?id=${item.id}`);
 
                     },
 
@@ -910,7 +908,7 @@ async function loadRelationships() {
                     onView: (item) => {
 
                         window.location.href =
-                            `knowledge-base-note-detail.html?id=${item.id}`;
+                            createReturnUrl(`knowledge-base-note-detail.html?id=${item.id}`);
 
                     },
 
@@ -2223,9 +2221,7 @@ function renderBasicInformation(issueType) {
                     type: "Issue Type",
                     title: currentIssueType.name,
                     description: currentIssueType.description,
-                    onBack: () => {
-                        window.location.href = "issue-types.html";
-                    }
+                    onBack: () => { navigateBack("issue-types.html"); }
                 });
 
                 showSuccessMessage(

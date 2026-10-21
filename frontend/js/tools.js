@@ -37,9 +37,7 @@ function renderPageHeader() {
             back: true,
             edit: false
         },
-        onBack: () => {
-            window.location.href = "index.html";
-        }
+        onBack: () => { navigateBack("index.html"); }
     });
 }
 
@@ -621,7 +619,7 @@ function closeModal() {
 
 function openToolDetail(toolId) {
     window.location.href =
-        `tool-detail.html?id=${toolId}`;
+        createReturnUrl(`tool-detail.html?id=${toolId}`);
 }
 
 

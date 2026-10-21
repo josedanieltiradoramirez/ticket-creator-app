@@ -65,6 +65,69 @@ const navigationItems = [
     }
 ];
 
+function createReturnUrl(targetUrl) {
+    const target = new URL(targetUrl, window.location.href);
+    const returnTo = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+
+    target.searchParams.set("returnTo", returnTo);
+    return target.href;
+}
+
+function navigateBack(fallbackUrl = "index.html") {
+    const requestedReturnTo = new URLSearchParams(
+        window.location.search
+    ).get("returnTo");
+
+    if (requestedReturnTo) {
+        try {
+            const returnToUrl = new URL(
+                requestedReturnTo,
+                window.location.href
+            );
+
+            if (
+                returnToUrl.origin === window.location.origin &&
+                returnToUrl.href !== window.location.href
+            ) {
+                const referrerUrl = document.referrer
+                    ? new URL(document.referrer, window.location.href)
+                    : null;
+
+                if (referrerUrl?.href === returnToUrl.href) {
+                    window.history.back();
+                } else {
+                    window.location.assign(returnToUrl.href);
+                }
+
+                return;
+            }
+        } catch (error) {
+            console.warn("Could not resolve the requested return page:", error);
+        }
+    }
+
+    const referrer = document.referrer;
+
+    if (referrer) {
+        try {
+            const previousUrl = new URL(referrer, window.location.href);
+            const currentUrl = new URL(window.location.href);
+
+            if (
+                previousUrl.origin === currentUrl.origin &&
+                previousUrl.href !== currentUrl.href
+            ) {
+                window.history.back();
+                return;
+            }
+        } catch (error) {
+            console.warn("Could not resolve the previous page:", error);
+        }
+    }
+
+    window.location.assign(fallbackUrl);
+}
+
 
 /* ============================================================
    CREATE NAVIGATION

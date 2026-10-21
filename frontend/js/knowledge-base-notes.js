@@ -27,9 +27,7 @@ function renderPageHeader() {
             back: true,
             edit: false
         },
-        onBack: () => {
-            window.location.href = "index.html";
-        }
+        onBack: () => { navigateBack("index.html"); }
     });
 }
 
@@ -185,7 +183,7 @@ function renderNotes() {
 
 function openNoteDetail(noteId) {
     window.location.href =
-        `knowledge-base-note-detail.html?id=${noteId}`;
+        createReturnUrl(`knowledge-base-note-detail.html?id=${noteId}`);
 }
 
 // ============================================================

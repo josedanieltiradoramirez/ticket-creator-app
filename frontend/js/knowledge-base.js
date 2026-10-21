@@ -27,9 +27,7 @@ function renderPageHeader() {
             back: true,
             edit: false
         },
-        onBack: () => {
-            window.location.href = "index.html";
-        }
+        onBack: () => { navigateBack("index.html"); }
     });
 }
 
@@ -186,7 +184,7 @@ function renderKnowledgeBase() {
 
 function openKnowledgeBaseDetail(knowledgeBaseId) {
     window.location.href =
-        `knowledge-base-detail.html?id=${knowledgeBaseId}`;
+        createReturnUrl(`knowledge-base-detail.html?id=${knowledgeBaseId}`);
 }
 
 // ============================================================

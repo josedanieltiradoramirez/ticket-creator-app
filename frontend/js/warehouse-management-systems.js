@@ -33,9 +33,7 @@ function renderPageHeader() {
             back: true,
             edit: false
         },
-        onBack: () => {
-            window.location.href = "index.html";
-        }
+        onBack: () => { navigateBack("index.html"); }
     });
 }
 
@@ -172,7 +170,7 @@ function renderWms() {
 
 function openWmsDetail(wmsId) {
     window.location.href =
-        `warehouse-management-system-detail.html?id=${wmsId}`;
+        createReturnUrl(`warehouse-management-system-detail.html?id=${wmsId}`);
 }
 
 // ============================================================

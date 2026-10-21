@@ -43,12 +43,7 @@ function renderPageHeader() {
             back: true,
             edit: false
         },
-        onBack: () => {
-
-            window.location.href =
-                "index.html";
-
-        }
+        onBack: () => { navigateBack("index.html"); }
     });
 
 }
@@ -1267,7 +1262,7 @@ function openIssueTypeDetail(
 ) {
 
     window.location.href =
-        `issue-type-detail.html?id=${issueTypeId}`;
+        createReturnUrl(`issue-type-detail.html?id=${issueTypeId}`);
 
 }
 

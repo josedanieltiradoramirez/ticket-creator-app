@@ -8435,7 +8435,7 @@ function setupEventListeners() {
                 return;
             }
 
-            window.location.href = "index.html";
+            navigateBack("index.html");
         }
     );
 
@@ -9874,10 +9874,25 @@ async function saveTicket(options = {}) {
             ticketId = createdTicket.id;
             isNewTicket = false;
 
+            const currentReturnTo = new URLSearchParams(
+                window.location.search
+            ).get("returnTo");
+            const createdTicketUrl = new URL(
+                `ticket-detail.html?id=${createdTicket.id}`,
+                window.location.href
+            );
+
+            if (currentReturnTo) {
+                createdTicketUrl.searchParams.set(
+                    "returnTo",
+                    currentReturnTo
+                );
+            }
+
             window.history.replaceState(
                 {},
                 "",
-                `ticket-detail.html?id=${createdTicket.id}`
+                `${createdTicketUrl.pathname}${createdTicketUrl.search}`
             );
 
             autosaveDirty = false;

@@ -256,17 +256,7 @@ function renderFormHeader() {
 
 
 
-        onBack: () => {
-
-
-
-            window.location.href =
-
-                "forms.html";
-
-
-
-        }
+        onBack: () => { navigateBack("forms.html"); }
 
 
 
@@ -800,7 +790,7 @@ function renderRelatedIssueTypes() {
 
                         window.location.href =
 
-                            `issue-type-detail.html?id=${issueType.id}`;
+                            createReturnUrl(`issue-type-detail.html?id=${issueType.id}`);
 
 
 
