@@ -8405,6 +8405,8 @@ function setupEventListeners() {
             }
 
             try {
+                await waitForTicketSave();
+
                 if (autosaveDirty) {
                     await saveTicket({
                         silent: true,
@@ -8444,7 +8446,7 @@ function setupEventListeners() {
 
         "click",
 
-        saveTicket
+        () => saveTicket({ force: true })
 
     );
 
@@ -9831,7 +9833,13 @@ async function saveTicket(options = {}) {
 
     const { silent = false, force = false } = options;
 
-    if (autosaveInProgress) return;
+    if (autosaveInProgress) {
+        if (silent) return;
+
+        await waitForTicketSave();
+        return saveTicket({ silent: false, force: true });
+    }
+
     if (!force && !autosaveDirty) return;
 
     if (autosaveTimer) {
@@ -9914,5 +9922,11 @@ async function saveTicket(options = {}) {
             saveButton.disabled = false;
             saveButton.textContent = originalSaveText;
         }
+    }
+}
+
+async function waitForTicketSave() {
+    while (autosaveInProgress) {
+        await new Promise(resolve => setTimeout(resolve, 25));
     }
 }

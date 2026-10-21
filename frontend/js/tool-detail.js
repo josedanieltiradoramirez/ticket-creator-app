@@ -209,11 +209,13 @@ function openKnowledgeBaseNotePreview(note) {
     if (!modal || !note) return;
 
     const category = normalizeKnowledgeBaseNoteCategory(note) || "note";
+    const isAlert = category === "alert";
     const content = `
         <div class="kb-note-preview-meta">
-            <span>${escapeRelationshipHtml(category)}</span>
-            ${isKnowledgeBaseNotePinned(note) ? `<span class="kb-note-preview-pinned">Pinned</span>` : ""}
+            ${isAlert ? `<span class="kb-note-preview-type kb-note-preview-type-alert">⚠ Alert</span>` : `<span class="kb-note-preview-type">${escapeRelationshipHtml(category)}</span>`}
+            ${isKnowledgeBaseNotePinned(note) ? `<span class="kb-note-preview-pinned">📌 Pinned</span>` : ""}
         </div>
+        <div class="kb-note-preview-label">Note</div>
         <div class="kb-note-preview-content">${escapeRelationshipHtml(note.content || "")}</div>
     `;
 

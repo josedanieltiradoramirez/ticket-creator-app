@@ -457,3 +457,12 @@
         padding: 9px 10px;
     }
 }
+
+/* Shared knowledge base note preview, matched to the Ticket Detail modal. */
+.kb-note-preview-meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 14px}
+.kb-note-preview-type,.kb-note-preview-pinned{display:inline-flex;align-items:center;min-height:20px;padding:2px 8px;border:1px solid #e4e7ea;border-radius:999px;background:#f8f9fa;color:#727a83;font-size:10px;font-weight:550;line-height:1.2;text-transform:capitalize}
+.kb-note-preview-type-alert{border-color:#eadfae;background:#fffaf0;color:#806d28;text-transform:none}
+.kb-note-preview-pinned{border-color:#dfd9c9;background:#fcfaf4;color:#6f6859;text-transform:none}
+.kb-note-preview-label{margin:0 0 6px;color:#969ca4;font-size:10px;font-weight:650;line-height:1.2;letter-spacing:.06em;text-transform:uppercase}
+.kb-note-preview-content{min-height:90px;max-height:min(50vh,380px);overflow:auto;padding:13px 14px;box-sizing:border-box;border:1px solid #e6e8eb;border-radius:7px;background:#fafbfc;color:#4e555d;font-family:Inter,"Segoe UI",Arial,sans-serif;font-size:12px;font-weight:400;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}
+#knowledgeBaseNotePreviewModal .modal-content{width:min(560px,calc(100vw - 32px));max-height:min(78vh,640px);overflow:auto;border-radius:12px}

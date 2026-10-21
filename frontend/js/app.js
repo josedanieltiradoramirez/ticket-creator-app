@@ -1637,7 +1637,7 @@ function renderActiveAlerts(notes) {
         const sourceLabel=document.createElement("div"); sourceLabel.className="active-alert-card-source"; sourceLabel.textContent=source.label;
         main.append(title,content,sourceLabel);
         const actions=document.createElement("div"); actions.className="active-alert-card-actions";
-        const view=document.createElement("button"); view.type="button"; view.className="active-alert-view-button"; view.textContent="View"; view.title="View alert"; view.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();openActiveAlertView(note);});
+        const view=document.createElement("button"); view.type="button"; view.className="active-alert-view-button"; view.textContent="Preview"; view.title="Preview alert"; view.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();openActiveAlertView(note);});
         actions.appendChild(view); item.append(main,actions); list.appendChild(item);
     });
     section.hidden=false;
