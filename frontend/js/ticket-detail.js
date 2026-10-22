@@ -152,6 +152,8 @@ async function initializeNewTicket() {
 
     await loadTroubleshootingTemplates();
 
+    setupGenericSearchDropdowns();
+
 
 
 
@@ -6464,11 +6466,19 @@ function setupGenericSearchDropdown(select, config) {
             visibleOptions.push(button);
         });
 
+        const matchingOption = options[0] || null;
         const exactMatch = allOptions.some(option =>
             option.textContent.trim().toLowerCase() === query
         );
 
-        if (query && !exactMatch) {
+        if (matchingOption) {
+            highlightedIndex = 0;
+            visibleOptions[0]?.classList.add(
+                "catalog-search-option-highlighted"
+            );
+        }
+
+        if (query && !matchingOption && !exactMatch) {
             const addOption = document.createElement("button");
             addOption.type = "button";
             addOption.className = "catalog-search-option catalog-search-add";
@@ -6552,12 +6562,12 @@ function setupGenericSearchDropdown(select, config) {
                 return;
             }
 
-            const exact = getOptions().find(option =>
-                option.textContent.trim().toLowerCase() === value.toLowerCase()
+            const matchingOption = getOptions().find(option =>
+                option.textContent.trim().toLowerCase().includes(value.toLowerCase())
             );
 
-            if (exact) {
-                selectValue(exact.value);
+            if (matchingOption) {
+                selectValue(matchingOption.value);
                 return;
             }
 
