@@ -415,6 +415,10 @@ async function loadTicket() {
 
         );
 
+        // Apply the searchable catalog controls after their options are loaded
+        // for existing tickets as well as newly created tickets.
+        setupGenericSearchDropdowns();
+
 
 
 
@@ -6286,20 +6290,6 @@ function updateTitleSuggestion() {
 function setupGenericSearchDropdowns() {
 
     const configs = [
-
-        {
-            id: "location",
-            label: "Location",
-            create: async (name, description, extraData = {}) =>
-                createLocation({
-                    name,
-                    city: extraData.city || "",
-                    state: extraData.state || "",
-                    code: extraData.code || name,
-                    is_active: true,
-                    warehouse_management_system_id: null
-                })
-        },
 
         {
             id: "queue",
