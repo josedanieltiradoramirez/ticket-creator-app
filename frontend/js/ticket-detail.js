@@ -4307,6 +4307,12 @@ async function loadTroubleshootingTemplates(
             selectedOption?.value
                 ? selectedOption.textContent.trim()
                 : "";
+
+        // Refresh the custom list after the native options are replaced for
+        // a new Issue Type, so its search results stay in sync with the select.
+        templateSearchInput.dispatchEvent(
+            new Event("input", { bubbles: true })
+        );
     }
 
 
@@ -4362,12 +4368,6 @@ async function loadSelectedTemplate() {
             )
 
             : null;
-
-
-
-
-
-    loadTemplatePreview();
 
 
 
