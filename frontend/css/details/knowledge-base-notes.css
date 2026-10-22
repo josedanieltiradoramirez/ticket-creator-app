@@ -351,26 +351,6 @@
     white-space: nowrap;
 }
 
-.kb-note-item-pinned .kb-note-item-title {
-    padding-right: 58px;
-}
-
-.kb-note-item-pinned .kb-note-item-title::after {
-    position: absolute;
-    top: 50%;
-    right: 0;
-    padding: 2px 6px;
-    border: 1px solid #e7e3d8;
-    border-radius: 999px;
-    background: #f7f5ef;
-    color: #77715f;
-    content: "Pinned";
-    font-size: 10px;
-    font-weight: 600;
-    line-height: 1.2;
-    transform: translateY(-50%);
-}
-
 .kb-note-item-body {
     display: -webkit-box;
     min-width: 0;

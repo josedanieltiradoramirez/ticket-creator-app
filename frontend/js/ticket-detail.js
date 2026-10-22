@@ -3742,7 +3742,6 @@ function renderRelatedKnowledgeBaseNote(note, sourceLabels = []) {
 
     const content = document.createElement("div");
     content.className = isAlert ? "kb-special-note-content" : "kb-note-item-body";
-    content.textContent = note.content || "";
 
     main.appendChild(title);
     main.appendChild(content);
@@ -3757,6 +3756,13 @@ function renderRelatedKnowledgeBaseNote(note, sourceLabels = []) {
 
     const actions = document.createElement("div");
     actions.className = "kb-special-note-actions";
+
+    if (isPinned && !isAlert) {
+        const pinnedLabel = document.createElement("span");
+        pinnedLabel.className = "kb-note-pinned-label";
+        pinnedLabel.textContent = "Pinned";
+        actions.appendChild(pinnedLabel);
+    }
 
     const viewButton = document.createElement("button");
     viewButton.type = "button";
@@ -7889,6 +7895,12 @@ function openQuickNoteDeleteConfirmation(note, deleteButton) {
             quickNotes = quickNotes.filter(item => Number(item.id) !== Number(note.id));
             close();
             renderQuickNotesTable();
+            const issueTypeSelect = document.getElementById("issueType");
+            const toolSelect = document.getElementById("tool");
+            await loadRelatedKnowledgeBaseNotes(
+                issueTypeSelect?.value ? Number(issueTypeSelect.value) : null,
+                toolSelect?.value ? Number(toolSelect.value) : null
+            );
             showDetailNotification("Note deleted successfully.", "success");
         } catch (error) {
             console.error("Error deleting Quick Note:", error);
@@ -7974,6 +7986,7 @@ function minimizeQuickNoteEditor(overlay, noteId, isEdit, toolsField, issueTypes
         isEdit: Boolean(isEdit),
         title: modal.querySelector("#quickNoteTitle")?.value ?? "",
         content: modal.querySelector("#quickNoteContent")?.value ?? "",
+        isPinned: modal.querySelector("#quickNotePinned")?.checked ?? false,
         tools: toolsField?.getSelectedIds?.() ?? [],
         issueTypes: issueTypesField?.getSelectedIds?.() ?? []
     };
@@ -8225,6 +8238,7 @@ async function openQuickNoteEditor(noteId = null, draft = null) {
     const selectedIssueTypes = draft ? draftIssueTypes : new Set((note?.issue_types || []).map(item => Number(item.id)));
     const initialTitle = draft?.title ?? note?.title ?? "";
     const initialContent = draft?.content ?? note?.content ?? "";
+    const initialIsPinned = draft?.isPinned ?? (note?.is_pinned === true);
 
     let backgroundCloseHandler = null;
     const overlay = createQuickNoteOverlay(() => {
@@ -8246,6 +8260,10 @@ async function openQuickNoteEditor(noteId = null, draft = null) {
                 <div id="quickNoteToolsField"></div>
                 <div id="quickNoteIssueTypesField"></div>
             </div>
+            <label class="quick-note-pin-option">
+                <input type="checkbox" id="quickNotePinned" ${initialIsPinned ? "checked" : ""}>
+                <span>Pin this note</span>
+            </label>
             <label for="quickNoteContent">Content</label>
             <textarea id="quickNoteContent" placeholder="Write the note content...">${escapeNotificationHtml(initialContent)}</textarea>
         </div>
@@ -8298,6 +8316,7 @@ async function openQuickNoteEditor(noteId = null, draft = null) {
     saveButton.addEventListener("click", async () => {
         const title = modal.querySelector("#quickNoteTitle").value.trim();
         const content = modal.querySelector("#quickNoteContent").value.trim();
+        const isPinned = modal.querySelector("#quickNotePinned").checked;
         if (!title) return modal.querySelector("#quickNoteTitle").focus();
         if (!content) return modal.querySelector("#quickNoteContent").focus();
 
@@ -8305,13 +8324,21 @@ async function openQuickNoteEditor(noteId = null, draft = null) {
         saveButton.textContent = isEdit ? "Saving…" : "Adding…";
         try {
             const savedNote = isEdit
-                ? await updateKnowledgeBaseNote(noteId, { title, content })
-                : await createKnowledgeBaseNote({ title, content, category: null, is_pinned: false, is_active: true, source_ticket_id: Number(ticketId) });
+                ? await updateKnowledgeBaseNote(noteId, { title, content, is_pinned: isPinned })
+                : await createKnowledgeBaseNote({ title, content, category: null, is_pinned: isPinned, is_active: true, source_ticket_id: Number(ticketId) });
 
             await saveQuickNoteRelations(savedNote.id, { tools: toolsField, issueTypes: issueTypesField });
             removeQuickNoteDraft();
             closeQuickNoteModal(overlay);
-            await loadQuickNotes();
+            const issueTypeSelect = document.getElementById("issueType");
+            const toolSelect = document.getElementById("tool");
+            await Promise.all([
+                loadQuickNotes(),
+                loadRelatedKnowledgeBaseNotes(
+                    issueTypeSelect?.value ? Number(issueTypeSelect.value) : null,
+                    toolSelect?.value ? Number(toolSelect.value) : null
+                )
+            ]);
             showDetailNotification(isEdit ? "Note updated successfully." : "Note added successfully.", "success");
         } catch (error) {
             console.error("Error saving Quick Note:", error);
