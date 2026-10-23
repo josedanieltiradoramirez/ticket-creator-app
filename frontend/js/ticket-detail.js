@@ -347,6 +347,12 @@ async function loadTicket() {
 
         );
 
+        // Tool change events refresh Issue Type recommendations while editing.
+        // Apply the same recommendation ordering when opening an existing ticket.
+        await loadIssueTypesByTool(
+            ticket.tool_id
+        );
+
 
 
         await loadQueues(
@@ -8429,7 +8435,9 @@ async function openQuickNoteEditor(noteId = null, draft = null) {
         createItem: async name => {
             const created = await createIssueType({
                 name,
-                description: "Created from Ticket Creator"
+                description: "Created from Ticket Creator",
+                category: "General",
+                is_active: true
             });
             await refreshMainTicketCatalogs({ issueTypes: true });
             return created;
