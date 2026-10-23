@@ -1650,7 +1650,9 @@ async function saveRelationshipItem({
         ],
 
         knowledgeBase: [
+            "article_number",
             "title",
+            "url",
             "description"
         ],
 
@@ -1701,6 +1703,11 @@ async function saveRelationshipItem({
 
         }
 
+    }
+
+    if (relationship === "knowledgeBase" && mode === "create") {
+        data.article_number ||= "";
+        data.url ||= "";
     }
 
 
