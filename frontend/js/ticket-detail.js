@@ -9174,6 +9174,12 @@ function generateTicket() {
 
             .value.trim();
 
+    const secondaryContact = document.getElementById("secondaryContact").value.trim();
+    const preferredContactMethod = document.getElementById("preferredContactMethod").value.trim();
+    const bestContactHours = document.getElementById("bestContactHours").value.trim();
+    const deviceName = document.getElementById("deviceName").value.trim();
+    const employeeId = document.getElementById("employeeId").value.trim();
+
 
 
     const shortIssue =
@@ -9422,6 +9428,12 @@ function generateTicket() {
 
     }
 
+    if (secondaryContact) userInformation.push(`Secondary Contact: ${secondaryContact}`);
+    if (preferredContactMethod) userInformation.push(`Preferred Contact Method: ${preferredContactMethod}`);
+    if (bestContactHours) userInformation.push(`Best Contact Hours: ${bestContactHours}`);
+    if (deviceName) userInformation.push(`Device Name: ${deviceName}`);
+    if (employeeId) userInformation.push(`Employee ID: ${employeeId}`);
+
 
 
 
@@ -9616,6 +9628,12 @@ function generateTimeEntry() {
 
             .value.trim();
 
+    const secondaryContact = document.getElementById("secondaryContact").value.trim();
+    const preferredContactMethod = document.getElementById("preferredContactMethod").value.trim();
+    const bestContactHours = document.getElementById("bestContactHours").value.trim();
+    const deviceName = document.getElementById("deviceName").value.trim();
+    const employeeId = document.getElementById("employeeId").value.trim();
+
 
 
     const formContent =
@@ -9667,6 +9685,12 @@ function generateTimeEntry() {
         details.push(`Email Address: ${userEmail}`);
 
     }
+
+    if (secondaryContact) details.push(`Secondary Contact: ${secondaryContact}`);
+    if (preferredContactMethod) details.push(`Preferred Contact Method: ${preferredContactMethod}`);
+    if (bestContactHours) details.push(`Best Contact Hours: ${bestContactHours}`);
+    if (deviceName) details.push(`Device Name: ${deviceName}`);
+    if (employeeId) details.push(`Employee ID: ${employeeId}`);
 
 
 
