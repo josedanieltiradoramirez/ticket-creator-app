@@ -583,6 +583,11 @@ async function loadTicket() {
 
             ticket.form_content ?? "";
 
+        syncFormTemplateFieldCards();
+        document
+            .getElementById("saveFormTemplateButton")
+            ?.markSaved?.();
+
 
 
         // ====================================================
@@ -600,6 +605,11 @@ async function loadTicket() {
         ).value =
 
             ticket.troubleshooting_steps ?? "";
+
+        syncTroubleshootingTemplateStepCards();
+        document
+            .getElementById("saveTroubleshootingTemplateButton")
+            ?.markSaved?.();
 
 
 
