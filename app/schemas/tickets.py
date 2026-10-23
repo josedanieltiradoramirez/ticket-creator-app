@@ -15,6 +15,11 @@ class TicketBase(BaseModel):
     user_type_id: Optional[int] = None
     user_best_contact_number: Optional[str] = None
     user_email: Optional[str] = None
+    secondary_contact: Optional[str] = None
+    preferred_contact_method: Optional[str] = None
+    best_contact_hours: Optional[str] = None
+    device_name: Optional[str] = None
+    employee_id: Optional[str] = None
     issue_description: Optional[str] = None
     short_issue: Optional[str] = None
     troubleshooting_steps: Optional[str] = None

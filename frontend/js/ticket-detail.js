@@ -495,6 +495,17 @@ async function loadTicket() {
 
             ticket.user_best_contact_number ?? "";
 
+        document.getElementById("secondaryContact").value =
+            ticket.secondary_contact ?? "";
+        document.getElementById("preferredContactMethod").value =
+            ticket.preferred_contact_method ?? "";
+        document.getElementById("bestContactHours").value =
+            ticket.best_contact_hours ?? "";
+        document.getElementById("deviceName").value =
+            ticket.device_name ?? "";
+        document.getElementById("employeeId").value =
+            ticket.employee_id ?? "";
+
 
 
 
@@ -9802,7 +9813,8 @@ function setupAutosaveListeners() {
 
     const editableFields = [
         "ticketNumber", "ticketTitle", "userName", "userEmail",
-        "userPhone", "userType", "shortIssue", "issueDescription",
+        "userPhone", "secondaryContact", "preferredContactMethod",
+        "bestContactHours", "deviceName", "employeeId", "userType", "shortIssue", "issueDescription",
         "troubleshootingSteps", "additionalNotes", "formContent",
         "isRouted", "form", "tool", "location", "priority",
         "issueType", "troubleshootingTemplate", "status", "queue"
@@ -9836,6 +9848,11 @@ function buildTicketData() {
         user_name: document.getElementById("userName").value,
         user_email: document.getElementById("userEmail").value,
         user_best_contact_number: document.getElementById("userPhone").value,
+        secondary_contact: document.getElementById("secondaryContact").value,
+        preferred_contact_method: document.getElementById("preferredContactMethod").value,
+        best_contact_hours: document.getElementById("bestContactHours").value,
+        device_name: document.getElementById("deviceName").value,
+        employee_id: document.getElementById("employeeId").value,
         user_type_id: document.getElementById("userType").value ? Number(document.getElementById("userType").value) : null,
         short_issue: document.getElementById("shortIssue").value,
         issue_description: document.getElementById("issueDescription").value,

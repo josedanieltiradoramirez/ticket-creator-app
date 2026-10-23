@@ -25,6 +25,11 @@ class Tickets(Base):
 
     user_best_contact_number = Column(String, nullable=True)
     user_email = Column(String, nullable=True)
+    secondary_contact = Column(String, nullable=True)
+    preferred_contact_method = Column(String, nullable=True)
+    best_contact_hours = Column(String, nullable=True)
+    device_name = Column(String, nullable=True)
+    employee_id = Column(String, nullable=True)
 
     issue_description = Column(Text, nullable=True)
     short_issue = Column(String, nullable=True)
