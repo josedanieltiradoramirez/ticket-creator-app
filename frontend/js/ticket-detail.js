@@ -891,6 +891,11 @@ async function loadPriorities(
 
     );
 
+    const clearPriorityOption = document.createElement("option");
+    clearPriorityOption.value = "";
+    clearPriorityOption.textContent = "Clear selection";
+    prioritySelect.appendChild(clearPriorityOption);
+
 }
 
 
@@ -998,6 +1003,11 @@ async function loadStatuses(
         }
 
     );
+
+    const clearStatusOption = document.createElement("option");
+    clearStatusOption.value = "";
+    clearStatusOption.textContent = "Clear selection";
+    statusSelect.appendChild(clearStatusOption);
 
 }
 
@@ -1456,6 +1466,17 @@ function setupToolSearchDropdown(
         visibleOptions = [];
 
         highlightedIndex = -1;
+
+        if (toolSelect.value) {
+            const clearOption = document.createElement("button");
+            clearOption.type = "button";
+            clearOption.className = "tool-search-option tool-search-clear";
+            clearOption.textContent = "Clear selection";
+            clearOption.addEventListener("mousedown", event => event.preventDefault());
+            clearOption.addEventListener("click", () => selectTool(""));
+            dropdown.appendChild(clearOption);
+            visibleOptions.push(clearOption);
+        }
 
 
 
@@ -2383,6 +2404,23 @@ function setupUserTypeSearchDropdown(
         visibleOptions = [];
         highlightedIndex = -1;
 
+        if (userTypeSelect.value) {
+            const clearOption = document.createElement("button");
+            clearOption.type = "button";
+            clearOption.className = "tool-search-option tool-search-clear";
+            clearOption.textContent = "Clear selection";
+            clearOption.addEventListener(
+                "mousedown",
+                event => event.preventDefault()
+            );
+            clearOption.addEventListener(
+                "click",
+                () => selectUserType("")
+            );
+            dropdown.appendChild(clearOption);
+            visibleOptions.push(clearOption);
+        }
+
         const matches = userTypes.filter(
             userType =>
                 !query ||
@@ -2888,6 +2926,23 @@ function setupLocationSearchDropdown(
         dropdown.innerHTML = "";
         visibleOptions = [];
         highlightedIndex = -1;
+
+        if (locationSelect.value) {
+            const clearOption = document.createElement("button");
+            clearOption.type = "button";
+            clearOption.className = "tool-search-option tool-search-clear";
+            clearOption.textContent = "Clear selection";
+            clearOption.addEventListener(
+                "mousedown",
+                event => event.preventDefault()
+            );
+            clearOption.addEventListener(
+                "click",
+                () => selectLocation("")
+            );
+            dropdown.appendChild(clearOption);
+            visibleOptions.push(clearOption);
+        }
 
         const matchingLocations =
             locations.filter(
@@ -3515,6 +3570,30 @@ async function loadIssueTypes(
 
     );
 
+}
+
+async function refreshMainTicketCatalogs({ tools = false, issueTypes = false } = {}) {
+    const toolSelect = document.getElementById("tool");
+    const issueTypeSelect = document.getElementById("issueType");
+    const selectedToolId = toolSelect?.value ? Number(toolSelect.value) : null;
+    const selectedIssueTypeId = issueTypeSelect?.value
+        ? Number(issueTypeSelect.value)
+        : null;
+
+    try {
+        if (tools) {
+            await loadTools(selectedToolId);
+        }
+
+        if (issueTypes) {
+            await loadIssueTypes(selectedIssueTypeId);
+        }
+
+        await loadIssueTypesByTool(selectedToolId);
+        issueTypeSelect?._catalogSearchSync?.();
+    } catch (error) {
+        console.error("Error refreshing ticket catalogs after creation:", error);
+    }
 }
 
 
@@ -6452,6 +6531,17 @@ function setupGenericSearchDropdown(select, config) {
         visibleOptions = [];
         highlightedIndex = -1;
 
+        if (select.value) {
+            const clearOption = document.createElement("button");
+            clearOption.type = "button";
+            clearOption.className = "catalog-search-option catalog-search-clear";
+            clearOption.textContent = "Clear selection";
+            clearOption.addEventListener("mousedown", event => event.preventDefault());
+            clearOption.addEventListener("click", () => selectValue(""));
+            dropdown.appendChild(clearOption);
+            visibleOptions.push(clearOption);
+        }
+
         // Search ALL options. Related/All is presentation only.
         const allOptions = getOptions();
 
@@ -8321,14 +8411,29 @@ async function openQuickNoteEditor(noteId = null, draft = null) {
         items: tools,
         selectedIds: selectedTools,
         itemType: "Tool",
-        createItem: name => createTool({ name, description: "Created from Ticket Creator", is_active: true })
+        createItem: async name => {
+            const created = await createTool({
+                name,
+                description: "Created from Ticket Creator",
+                is_active: true
+            });
+            await refreshMainTicketCatalogs({ tools: true });
+            return created;
+        }
     });
     const issueTypesField = createQuickNoteMultiSelect({
         label: "Issue Types",
         items: issueTypes,
         selectedIds: selectedIssueTypes,
         itemType: "Issue Type",
-        createItem: name => createIssueType({ name, description: "Created from Ticket Creator" })
+        createItem: async name => {
+            const created = await createIssueType({
+                name,
+                description: "Created from Ticket Creator"
+            });
+            await refreshMainTicketCatalogs({ issueTypes: true });
+            return created;
+        }
     });
 
     document.getElementById("quickNoteToolsField").appendChild(toolsField.field);

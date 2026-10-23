@@ -626,6 +626,11 @@
     background: #f2f5fa;
 }
 
+.ticket-page .tool-search-clear {
+    border-bottom: 1px solid #edf0f5;
+    color: #667085;
+}
+
 .ticket-page .tool-search-add {
     margin-top: 4px;
     border-top: 1px solid #edf0f5;
@@ -758,6 +763,11 @@
 .ticket-page .catalog-search-option:hover,
 .ticket-page .catalog-search-option-highlighted {
     background: #f2f5fa;
+}
+
+.ticket-page .catalog-search-clear {
+    border-bottom: 1px solid #edf0f5;
+    color: #667085;
 }
 
 .ticket-page .catalog-search-add {
