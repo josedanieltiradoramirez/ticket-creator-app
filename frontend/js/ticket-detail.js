@@ -1075,6 +1075,8 @@ async function loadQueues(
     if (!queueSelect.value) {
         queueSelect.value = String(queues[0].id);
     }
+
+    queueSelect._catalogSearchSync?.();
 }
 
 // ============================================================
@@ -1383,11 +1385,11 @@ function setupToolSearchDropdown(
 
 
 
-    function openDropdown() {
+    function openDropdown(searchValue = input.value) {
 
         renderOptions(
 
-            input.value
+            searchValue
 
         );
 
@@ -1863,8 +1865,21 @@ function setupToolSearchDropdown(
 
         "focus",
 
-        openDropdown
+        () => {
+            input.select();
+            openDropdown("");
+        }
 
+    );
+
+    input.addEventListener(
+        "click",
+        () => {
+            input.select();
+            if (!dropdown.classList.contains("tool-search-options-visible")) {
+                openDropdown("");
+            }
+        }
     );
 
 
@@ -2340,8 +2355,8 @@ function setupUserTypeSearchDropdown(
         highlightedIndex = -1;
     }
 
-    function openDropdown() {
-        renderOptions(input.value);
+    function openDropdown(searchValue = input.value) {
+        renderOptions(searchValue);
         dropdown.classList.add(
             "tool-search-options-visible"
         );
@@ -2542,8 +2557,17 @@ function setupUserTypeSearchDropdown(
         }
     }
 
-    input.addEventListener("focus", openDropdown);
-    input.addEventListener("input", openDropdown);
+    input.addEventListener("focus", () => {
+        input.select();
+        openDropdown("");
+    });
+    input.addEventListener("click", () => {
+        input.select();
+        if (!dropdown.classList.contains("tool-search-options-visible")) {
+            openDropdown("");
+        }
+    });
+    input.addEventListener("input", () => openDropdown(input.value));
     input.addEventListener("keydown", handleKeyboard);
 
     input.addEventListener("blur", () => {
@@ -2822,9 +2846,9 @@ function setupLocationSearchDropdown(
         highlightedIndex = -1;
     }
 
-    function openDropdown() {
+    function openDropdown(searchValue = input.value) {
 
-        renderOptions(input.value);
+        renderOptions(searchValue);
 
         dropdown.classList.add(
             "tool-search-options-visible"
@@ -3166,13 +3190,23 @@ function setupLocationSearchDropdown(
 
     input.addEventListener(
         "focus",
-        openDropdown
+        () => {
+            input.select();
+            openDropdown("");
+        }
     );
+
+    input.addEventListener("click", () => {
+        input.select();
+        if (!dropdown.classList.contains("tool-search-options-visible")) {
+            openDropdown("");
+        }
+    });
 
     input.addEventListener(
         "input",
         () => {
-            openDropdown();
+            openDropdown(input.value);
         }
     );
 
@@ -3504,9 +3538,12 @@ async function loadIssueTypesByTool(toolId) {
 
 
     if (!toolId) {
-
+        const selectedIssueTypeId = issueTypeSelect.value
+            ? Number(issueTypeSelect.value)
+            : null;
+        await loadIssueTypes(selectedIssueTypeId);
+        issueTypeSelect._catalogSearchSync?.();
         return;
-
     }
 
 
@@ -3706,6 +3743,8 @@ async function loadIssueTypesByTool(toolId) {
                 currentIssueTypeId;
 
         }
+
+        issueTypeSelect._catalogSearchSync?.();
 
 
 
@@ -4313,28 +4352,8 @@ async function loadTroubleshootingTemplates(
 
 
     // Keep the visible search field synchronized with the selected template.
-    const templateSearchInput =
-        templateSelect
-            .closest(".catalog-search-dropdown")
-            ?.querySelector(".catalog-search-input");
-
-    if (templateSearchInput) {
-        const selectedOption =
-            templateSelect.options[
-                templateSelect.selectedIndex
-            ];
-
-        templateSearchInput.value =
-            selectedOption?.value
-                ? selectedOption.textContent.trim()
-                : "";
-
-        // Refresh the custom list after the native options are replaced for
-        // a new Issue Type, so its search results stay in sync with the select.
-        templateSearchInput.dispatchEvent(
-            new Event("input", { bubbles: true })
-        );
-    }
+    // Sync without dispatching input, which would reopen the dropdown.
+    templateSelect._catalogSearchSync?.();
 
 
     // Update template KB
@@ -4793,9 +4812,10 @@ async function loadForms(
 
 
 
+    // Keep the visible custom control in sync with the selection above.
+    formSelect._catalogSearchSync?.();
+
     // Update preview
-
-
 
     await loadSelectedForm(
 
@@ -6521,8 +6541,8 @@ function setupGenericSearchDropdown(select, config) {
         }
     }
 
-    function openDropdown() {
-        renderOptions(input.value);
+    function openDropdown(searchValue = input.value) {
+        renderOptions(searchValue);
         dropdown.classList.add("catalog-search-options-visible");
         input.setAttribute("aria-expanded", "true");
     }
@@ -6598,8 +6618,21 @@ function setupGenericSearchDropdown(select, config) {
         }
     }
 
-    input.addEventListener("focus", openDropdown);
-    input.addEventListener("input", openDropdown);
+    input.addEventListener("focus", () => {
+        // Show every option when opening, even when a related item is already
+        // selected. Selecting the text lets typing immediately start a search.
+        input.select();
+        openDropdown("");
+    });
+    input.addEventListener("click", () => {
+        // Keep the selected label replaceable after the mouse click; otherwise
+        // the browser moves the caret and the search gets appended to it.
+        input.select();
+        if (!dropdown.classList.contains("catalog-search-options-visible")) {
+            openDropdown("");
+        }
+    });
+    input.addEventListener("input", () => openDropdown(input.value));
     input.addEventListener("keydown", handleKeyboard);
 
     input.addEventListener("blur", () => {
@@ -6610,6 +6643,13 @@ function setupGenericSearchDropdown(select, config) {
     });
 
     select.addEventListener("change", syncInput);
+
+    // Option loaders can change the hidden native select programmatically.
+    // Keep the custom input synchronized and closed without firing input.
+    select._catalogSearchSync = () => {
+        syncInput();
+        closeDropdown();
+    };
 
     syncInput();
 }
@@ -8843,6 +8883,16 @@ function setupEventListeners() {
 
         async (event) => {
 
+            document
+                .querySelectorAll(".catalog-search-options-visible")
+                .forEach(dropdown => {
+                    dropdown.classList.remove("catalog-search-options-visible");
+                    dropdown
+                        .closest(".catalog-search-dropdown")
+                        ?.querySelector(".catalog-search-input")
+                        ?.setAttribute("aria-expanded", "false");
+                });
+
 
 
             const issueTypeId =
@@ -8859,6 +8909,8 @@ function setupEventListeners() {
 
             if (!issueTypeId) {
                 await loadQueues(null, null);
+                await loadForms(null, null);
+                await loadTroubleshootingTemplates(null, null);
 
                 const toolSelect =
                     document.getElementById("tool");
