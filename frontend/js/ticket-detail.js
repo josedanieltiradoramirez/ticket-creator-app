@@ -19,7 +19,6 @@ let autosaveDirty = false;
 let autosaveInProgress = false;
 
 // ID of a Troubleshooting Template created directly from Ticket Detail.
-let newlyCreatedTroubleshootingTemplateId = null;
 
 
 let troubleshootingTemplates = [];
@@ -6250,6 +6249,7 @@ function setupGenericSearchDropdowns() {
         {
             id: "troubleshootingTemplate",
             label: "Troubleshooting Template",
+            allowQuickCreate: false,
             create: async (name, description) =>
                 createTroubleshootingTemplate({
                     name,
@@ -6262,6 +6262,7 @@ function setupGenericSearchDropdowns() {
         {
             id: "form",
             label: "Form",
+            allowQuickCreate: false,
             create: async (name, description) =>
                 createForm({
                     name,
@@ -6418,7 +6419,12 @@ function setupGenericSearchDropdown(select, config) {
             );
         }
 
-        if (query && !matchingOption && !exactMatch) {
+        if (
+            config.allowQuickCreate !== false &&
+            query &&
+            !matchingOption &&
+            !exactMatch
+        ) {
             const addOption = document.createElement("button");
             addOption.type = "button";
             addOption.className = "catalog-search-option catalog-search-add";
@@ -6511,18 +6517,20 @@ function setupGenericSearchDropdown(select, config) {
                 return;
             }
 
-            await openCatalogCreateModal(
-                config,
-                value,
-                async result => {
-                    await refreshGenericDropdown(
-                        select,
-                        input,
-                        dropdown,
-                        result
-                    );
-                }
-            );
+            if (config.allowQuickCreate !== false) {
+                await openCatalogCreateModal(
+                    config,
+                    value,
+                    async result => {
+                        await refreshGenericDropdown(
+                            select,
+                            input,
+                            dropdown,
+                            result
+                        );
+                    }
+                );
+            }
         }
 
         if (event.key === "Escape") {
@@ -6567,76 +6575,6 @@ function setupGenericSearchDropdown(select, config) {
     syncInput();
 }
 
-async function createTroubleshootingTemplateInline(
-    config,
-    name,
-    select,
-    input,
-    dropdown
-) {
-
-    const cleanName = name.trim();
-
-    if (!cleanName) {
-        return;
-    }
-
-    try {
-
-        const created = await config.create(
-            cleanName,
-            "Created from Ticket Creator"
-        );
-
-        if (!created) {
-            return;
-        }
-
-        await refreshGenericDropdown(
-            select,
-            input,
-            dropdown,
-            created
-        );
-
-        // A newly created template starts without troubleshooting steps.
-        // Unlock the existing ticket field so the user can enter the steps
-        // directly in Ticket Detail. No modal is required.
-        newlyCreatedTroubleshootingTemplateId = created.id;
-
-        const troubleshootingSteps =
-            document.getElementById("troubleshootingSteps");
-
-        if (troubleshootingSteps) {
-            troubleshootingSteps.readOnly = false;
-            troubleshootingSteps.value = "";
-            troubleshootingSteps.value = "";
-            troubleshootingSteps.focus();
-            markAutosaveDirty();
-        }
-
-        showDetailNotification(
-            `Troubleshooting Template "${cleanName}" created. Add the troubleshooting steps below.`,
-            "success"
-        );
-
-        return created;
-
-    } catch (error) {
-
-        console.error(
-            "Error creating Troubleshooting Template:",
-            error
-        );
-
-        showDetailNotification(
-            "Error creating Troubleshooting Template.",
-            "error"
-        );
-    }
-}
-
-
 async function refreshGenericDropdown(select, input, dropdown, createdItem) {
 
     if (!createdItem) return;
@@ -6674,6 +6612,11 @@ function openCatalogCreateModal(config, initialName, onCreated) {
 
         const isLocation = config.id === "location";
         const isTroubleshooting = config.id === "troubleshootingTemplate";
+        const isIssueType = config.id === "issueType";
+        const selectedToolId =
+            document.getElementById("tool")?.value
+                ? Number(document.getElementById("tool").value)
+                : null;
 
         modal.innerHTML = `
             <div class="catalog-create-header">
@@ -6730,6 +6673,17 @@ function openCatalogCreateModal(config, initialName, onCreated) {
 
                 `}
 
+                ${isIssueType ? `
+                    <label class="catalog-create-link-option">
+                        <input
+                            type="checkbox"
+                            class="catalog-create-link-tool"
+                            ${selectedToolId ? "" : "disabled"}
+                        >
+                        <span>Link this Issue Type to the selected Tool</span>
+                    </label>
+                ` : ""}
+
             </div>
 
             <div class="catalog-create-actions">
@@ -6759,6 +6713,7 @@ function openCatalogCreateModal(config, initialName, onCreated) {
         const cityInput = modal.querySelector(".catalog-create-city");
         const stateInput = modal.querySelector(".catalog-create-state");
         const codeInput = modal.querySelector(".catalog-create-code");
+        const linkToolCheckbox = modal.querySelector(".catalog-create-link-tool");
 
         const closeButton = modal.querySelector(".catalog-create-close");
         const cancelButton = modal.querySelector(".catalog-create-cancel");
@@ -6815,6 +6770,10 @@ function openCatalogCreateModal(config, initialName, onCreated) {
                             : "",
                         {}
                     );
+                }
+
+                if (isIssueType && linkToolCheckbox?.checked && selectedToolId) {
+                    await addToolIssueType(selectedToolId, created.id);
                 }
 
                 overlay.remove();
@@ -6947,6 +6906,9 @@ function setupSaveFormTemplateButton() {
 
 function openSaveFormTemplateModal(content) {
 
+    const selectedIssueTypeId =
+        document.getElementById("issueType")?.value || "";
+
     const overlay = document.createElement("div");
     overlay.className = "catalog-create-overlay";
 
@@ -6983,6 +6945,11 @@ function openSaveFormTemplateModal(content) {
                 placeholder="Enter template name"
             >
 
+            <label class="catalog-create-link-option">
+                <input type="checkbox" id="saveFormTemplateLinkIssueType" ${selectedIssueTypeId ? "" : "disabled"}>
+                <span>Link this Form to the selected Issue Type</span>
+            </label>
+
         </div>
 
         <div class="catalog-create-actions">
@@ -7018,6 +6985,8 @@ function openSaveFormTemplateModal(content) {
 
     const submitButton =
         modal.querySelector(".catalog-create-submit");
+    const linkIssueTypeCheckbox =
+        modal.querySelector("#saveFormTemplateLinkIssueType");
 
     const close = () => {
         overlay.remove();
@@ -7038,6 +7007,10 @@ function openSaveFormTemplateModal(content) {
 
         if (!name) {
             nameInput.focus();
+            return;
+        }
+
+        if (linkIssueTypeCheckbox.checked && !selectedIssueTypeId) {
             return;
         }
 
@@ -7066,6 +7039,14 @@ function openSaveFormTemplateModal(content) {
                 issueTypeSelect?.value
                     ? Number(issueTypeSelect.value)
                     : null;
+
+            if (linkIssueTypeCheckbox.checked) {
+                const issueType = await getIssueType(issueTypeId);
+                await updateIssueType(issueTypeId, {
+                    ...issueType,
+                    form_template_id: created.id
+                });
+            }
 
             const formSelect =
                 document.getElementById("form");
@@ -7526,6 +7507,9 @@ function setupSaveTroubleshootingTemplateButton() {
 
 function openSaveTroubleshootingTemplateModal(steps) {
 
+    const selectedIssueTypeId =
+        document.getElementById("issueType")?.value || "";
+
     const overlay = document.createElement("div");
     overlay.className = "catalog-create-overlay";
 
@@ -7562,6 +7546,11 @@ function openSaveTroubleshootingTemplateModal(steps) {
                 placeholder="Enter template name"
             >
 
+            <label class="catalog-create-link-option">
+                <input type="checkbox" id="saveTroubleshootingTemplateLinkIssueType" ${selectedIssueTypeId ? "" : "disabled"}>
+                <span>Link this template to the selected Issue Type</span>
+            </label>
+
         </div>
 
         <div class="catalog-create-actions">
@@ -7597,6 +7586,8 @@ function openSaveTroubleshootingTemplateModal(steps) {
 
     const submitButton =
         modal.querySelector(".catalog-create-submit");
+    const linkIssueTypeCheckbox =
+        modal.querySelector("#saveTroubleshootingTemplateLinkIssueType");
 
     const close = () => {
         overlay.remove();
@@ -7617,6 +7608,10 @@ function openSaveTroubleshootingTemplateModal(steps) {
 
         if (!name) {
             nameInput.focus();
+            return;
+        }
+
+        if (linkIssueTypeCheckbox.checked && !selectedIssueTypeId) {
             return;
         }
 
@@ -7646,6 +7641,13 @@ function openSaveTroubleshootingTemplateModal(steps) {
                 issueTypeSelect?.value
                     ? Number(issueTypeSelect.value)
                     : null;
+
+            if (linkIssueTypeCheckbox.checked) {
+                await addIssueTypeTroubleshootingTemplate(
+                    issueTypeId,
+                    created.id
+                );
+            }
 
             const troubleshootingTemplateSelect =
                 document.getElementById("troubleshootingTemplate");

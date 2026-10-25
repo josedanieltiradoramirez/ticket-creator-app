@@ -867,6 +867,25 @@
     font-weight: 600;
 }
 
+.catalog-create-body .catalog-create-link-option {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-top: 12px;
+    cursor: pointer;
+}
+
+.catalog-create-link-option input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: #315de8;
+}
+
+.catalog-create-link-option input[type="checkbox"]:disabled {
+    cursor: not-allowed;
+}
+
 .catalog-create-body input,
 .catalog-create-body textarea {
     width: 100%;
