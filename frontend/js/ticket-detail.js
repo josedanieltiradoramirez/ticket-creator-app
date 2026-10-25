@@ -18,6 +18,14 @@ let autosaveTimer = null
 let autosaveDirty = false;
 let autosaveInProgress = false;
 
+function markTicketDashboardForRefresh() {
+    try {
+        sessionStorage.setItem("ticketsDashboardNeedsRefresh", "1");
+    } catch (error) {
+        console.warn("Could not flag the tickets dashboard for refresh:", error);
+    }
+}
+
 // ID of a Troubleshooting Template created directly from Ticket Detail.
 
 
@@ -126,6 +134,15 @@ async function initializeNewTicket() {
     }
 
     await loadStatuses(null);
+
+    const statusSelect = document.getElementById("status");
+    const newStatusOption = Array.from(statusSelect.options).find(
+        option => option.textContent.trim().toLowerCase() === "new"
+    );
+
+    if (newStatusOption) {
+        statusSelect.value = newStatusOption.value;
+    }
 
     await loadQueues(null, null);
 
@@ -9924,6 +9941,7 @@ async function saveTicket(options = {}) {
 
             ticketId = createdTicket.id;
             isNewTicket = false;
+            markTicketDashboardForRefresh();
 
             const currentReturnTo = new URLSearchParams(
                 window.location.search
@@ -9957,6 +9975,7 @@ async function saveTicket(options = {}) {
 
         await updateTicket(ticketId, ticketData);
         autosaveDirty = false;
+        markTicketDashboardForRefresh();
 
         if (!silent) {
             showDetailNotification("Ticket updated successfully.", "success");

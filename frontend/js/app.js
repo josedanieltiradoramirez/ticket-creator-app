@@ -1015,6 +1015,17 @@ function switchView(view) {
     if (view === "all") loadAllTickets();
 }
 
+function refreshActiveTicketView() {
+    if (activeView === "today") {
+        loadTodayTickets();
+        loadPendingTickets();
+    } else if (activeView === "by-day") {
+        loadTicketsByDay();
+    } else if (activeView === "all") {
+        loadAllTickets();
+    }
+}
+
 // =========================
 // PAGINATION
 // =========================
@@ -1766,6 +1777,26 @@ async function initialize() {
     ]);
     setupActiveAlerts();
     switchView("today");
+    try {
+        sessionStorage.removeItem("ticketsDashboardNeedsRefresh");
+    } catch (error) {
+        console.warn("Could not clear the tickets dashboard refresh flag:", error);
+    }
 }
 
 initialize();
+
+window.addEventListener("pageshow", event => {
+    if (!event.persisted) return;
+
+    try {
+        if (sessionStorage.getItem("ticketsDashboardNeedsRefresh") !== "1") {
+            return;
+        }
+        sessionStorage.removeItem("ticketsDashboardNeedsRefresh");
+    } catch (error) {
+        console.warn("Could not check the tickets dashboard refresh flag:", error);
+    }
+
+    refreshActiveTicketView();
+});
