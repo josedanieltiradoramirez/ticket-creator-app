@@ -1547,6 +1547,7 @@
 .quick-call-combobox-option { display:block; width:100%; padding:9px 10px; border:0; border-radius:5px; background:transparent; color:#333; text-align:left; font:inherit; font-size:13px; cursor:pointer; }
 .quick-call-combobox-option:hover,.quick-call-combobox-option.is-active { background:#f1f5f9; color:#1f2937; }
 .quick-call-combobox-option[aria-selected="true"] { font-weight:650; }
+.quick-call-combobox-custom-option { margin-top:4px; border-top:1px solid #edf0f5; color:#315de8; font-weight:600; }
 .quick-call-no-results { padding:9px 10px; color:#737373; font-size:12px; }
 .quick-call-native-select { position:absolute !important; width:1px !important; height:1px !important; padding:0 !important; margin:-1px !important; overflow:hidden !important; clip:rect(0,0,0,0) !important; white-space:nowrap !important; border:0 !important; }
 .quick-call-minimized { position:fixed; z-index:1100; right:22px; bottom:22px; display:flex; align-items:center; gap:12px; width:min(470px,calc(100vw - 28px)); box-sizing:border-box; padding:14px; border:1px solid #e5e7eb; border-radius:12px; background:#fff; box-shadow:0 12px 36px rgb(15 23 42 / 18%); }

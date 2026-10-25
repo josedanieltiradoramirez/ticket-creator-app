@@ -1249,6 +1249,7 @@ const quickCallError = document.getElementById("quickCallError");
 const quickCallMinimized = document.getElementById("quickCallMinimized");
 const createQuickTicketButton = document.getElementById("createQuickTicketButton");
 let quickCallLocationsLoaded = false;
+let quickCallUserTypesLoaded = false;
 
 function openQuickCallModal() {
     if (!quickCallModal) return;
@@ -1257,6 +1258,7 @@ function openQuickCallModal() {
     quickCallError.hidden = true;
     quickCallError.textContent = "";
     if (!quickCallLocationsLoaded) loadQuickCallLocations();
+    if (!quickCallUserTypesLoaded) loadQuickCallUserTypes();
     document.getElementById("quickUserName")?.focus();
 }
 
@@ -1274,9 +1276,17 @@ function discardQuickCallDraft() {
     quickCallForm?.reset();
     if (quickCallLocation) quickCallLocation.value = "";
     const employeeSelect = document.getElementById("quickEmployeeType");
-    if (employeeSelect) employeeSelect.value = "Employee";
-    document.getElementById("quickEmployeeTypeSearch").value = "Employee";
+    if (employeeSelect) {
+        employeeSelect._customValue = "";
+        employeeSelect.value = Array.from(employeeSelect.options)
+            .find(option => option.textContent.trim().toLowerCase() === "employee")?.value || "";
+    }
+    document.getElementById("quickEmployeeTypeSearch").value =
+        employeeSelect?.selectedOptions?.[0]?.textContent || "";
     document.getElementById("quickLocationSearch").value = "";
+    if (quickCallLocation) quickCallLocation._customValue = "";
+    refreshQuickCallCombobox("quickEmployeeType");
+    refreshQuickCallCombobox("quickLocation");
     document.querySelectorAll(".quick-call-combobox-options").forEach(list => list.hidden = true);
     document.querySelectorAll(".quick-call-combobox-input").forEach(input => input.setAttribute("aria-expanded", "false"));
     if (quickCallError) {
@@ -1290,8 +1300,18 @@ function refreshQuickCallCombobox(selectId) {
     const input = document.querySelector(`.quick-call-combobox[data-select-id="${selectId}"] .quick-call-combobox-input`);
     const list = document.getElementById(selectId === "quickLocation" ? "quickLocationOptions" : "quickEmployeeTypeOptions");
     if (!select || !input || !list) return;
+    renderQuickCallOptions(selectId, input.value === select._customValue ? "" : input.value);
+}
+
+function renderQuickCallOptions(selectId, query = "") {
+    const select = document.getElementById(selectId);
+    const input = document.querySelector(`.quick-call-combobox[data-select-id="${selectId}"] .quick-call-combobox-input`);
+    const list = document.getElementById(selectId === "quickLocation" ? "quickLocationOptions" : "quickEmployeeTypeOptions");
+    if (!select || !input || !list) return;
     list.innerHTML = "";
-    Array.from(select.options).filter(option => option.value !== "").forEach(option => {
+    const normalizedQuery = query.trim().toLowerCase();
+    const options = Array.from(select.options).filter(option => option.value !== "");
+    options.filter(option => !normalizedQuery || option.textContent.toLowerCase().includes(normalizedQuery)).forEach(option => {
         const item = document.createElement("button");
         item.type = "button";
         item.className = "quick-call-combobox-option";
@@ -1303,28 +1323,33 @@ function refreshQuickCallCombobox(selectId) {
         item.addEventListener("click", () => selectQuickCallOption(selectId, option.value));
         list.appendChild(item);
     });
+
+    const hasExactMatch = options.some(option => option.textContent.trim().toLowerCase() === normalizedQuery);
+    if (normalizedQuery && !hasExactMatch) {
+        const customOption = document.createElement("button");
+        customOption.type = "button";
+        customOption.className = "quick-call-combobox-option quick-call-combobox-custom-option";
+        customOption.textContent = `Use "${query.trim()}" for this ticket`;
+        customOption.addEventListener("mousedown", event => event.preventDefault());
+        customOption.addEventListener("click", () => selectQuickCallCustomValue(selectId, query));
+        list.appendChild(customOption);
+    }
+
+    if (!list.children.length) {
+        const empty = document.createElement("div");
+        empty.className = "quick-call-no-results";
+        empty.textContent = "No matching options";
+        list.appendChild(empty);
+    }
 }
 
 function showQuickCallOptions(selectId, query = "") {
     const input = document.querySelector(`.quick-call-combobox[data-select-id="${selectId}"] .quick-call-combobox-input`);
     const list = document.getElementById(selectId === "quickLocation" ? "quickLocationOptions" : "quickEmployeeTypeOptions");
     if (!input || !list) return;
-    const normalizedQuery = query.trim().toLowerCase();
-    let visibleItems = 0;
-    list.querySelectorAll(".quick-call-combobox-option").forEach(item => {
-        const matches = item.textContent.toLowerCase().includes(normalizedQuery);
-        item.hidden = !matches;
-        if (matches) visibleItems += 1;
-    });
+    renderQuickCallOptions(selectId, query);
     list.hidden = false;
     input.setAttribute("aria-expanded", "true");
-    list.querySelectorAll(".quick-call-no-results").forEach(node => node.remove());
-    if (!visibleItems) {
-        const empty = document.createElement("div");
-        empty.className = "quick-call-no-results";
-        empty.textContent = "No matching options";
-        list.appendChild(empty);
-    }
 }
 
 function selectQuickCallOption(selectId, value) {
@@ -1334,12 +1359,26 @@ function selectQuickCallOption(selectId, value) {
     if (!select || !input || !list) return;
     const option = Array.from(select.options).find(item => item.value === String(value));
     if (!option) return;
+    select._customValue = "";
     select.value = option.value;
     input.value = option.textContent;
     list.hidden = true;
     input.setAttribute("aria-expanded", "false");
     list.querySelectorAll(".quick-call-combobox-option").forEach(item => item.setAttribute("aria-selected", item.dataset.value === option.value ? "true" : "false"));
     input.focus();
+}
+
+function selectQuickCallCustomValue(selectId, value) {
+    const select = document.getElementById(selectId);
+    const input = document.querySelector(`.quick-call-combobox[data-select-id="${selectId}"] .quick-call-combobox-input`);
+    const list = document.getElementById(selectId === "quickLocation" ? "quickLocationOptions" : "quickEmployeeTypeOptions");
+    const customValue = String(value ?? "").trim();
+    if (!select || !input || !list || !customValue) return;
+    select.value = "";
+    select._customValue = customValue;
+    input.value = customValue;
+    list.hidden = true;
+    input.setAttribute("aria-expanded", "false");
 }
 
 function initializeQuickCallCombobox(selectId, defaultValue = "") {
@@ -1349,10 +1388,22 @@ function initializeQuickCallCombobox(selectId, defaultValue = "") {
     if (!select || !input || !list) return;
     refreshQuickCallCombobox(selectId);
     if (defaultValue) selectQuickCallOption(selectId, defaultValue);
-    input.addEventListener("focus", () => showQuickCallOptions(selectId, input.value === select.options[select.selectedIndex]?.textContent ? "" : input.value));
+    input.addEventListener("focus", () => {
+        input.select();
+        showQuickCallOptions(selectId, "");
+    });
     input.addEventListener("input", () => {
-        // Clear the submitted value until the user chooses a real matching option.
-        select.value = "";
+        const typedValue = input.value.trim();
+        const exactMatch = Array.from(select.options).find(option =>
+            option.value && option.textContent.trim().toLowerCase() === typedValue.toLowerCase()
+        );
+        if (exactMatch) {
+            select.value = exactMatch.value;
+            select._customValue = "";
+        } else {
+            select.value = "";
+            select._customValue = typedValue;
+        }
         showQuickCallOptions(selectId, input.value);
     });
     input.addEventListener("keydown", event => {
@@ -1372,11 +1423,18 @@ function initializeQuickCallCombobox(selectId, defaultValue = "") {
             visible.forEach(item => item.classList.remove("is-active"));
             const previous = visible[Math.max(index - 1, 0)];
             if (previous) { previous.classList.add("is-active"); previous.scrollIntoView({block:"nearest"}); }
-        } else if (event.key === "Enter" && !list.hidden) {
+        } else if (event.key === "Enter") {
             const candidate = active || visible[0];
             if (candidate) {
                 event.preventDefault();
-                selectQuickCallOption(selectId, candidate.dataset.value);
+                if (candidate.dataset.value) {
+                    selectQuickCallOption(selectId, candidate.dataset.value);
+                } else if (input.value.trim()) {
+                    selectQuickCallCustomValue(selectId, input.value);
+                }
+            } else if (input.value.trim()) {
+                event.preventDefault();
+                selectQuickCallCustomValue(selectId, input.value);
             }
         } else if (event.key === "Escape" && !list.hidden) {
             event.preventDefault();
@@ -1389,15 +1447,17 @@ function initializeQuickCallCombobox(selectId, defaultValue = "") {
             if (!list.contains(document.activeElement)) {
                 list.hidden = true;
                 input.setAttribute("aria-expanded", "false");
-                // Restore the selected label if the typed text wasn't a valid option.
-                const selected = Array.from(select.options).find(option => option.value === select.value);
-                input.value = selected ? selected.textContent : "";
+                if (select.value) {
+                    input.value = select.selectedOptions[0]?.textContent || "";
+                } else if (select._customValue) {
+                    input.value = select._customValue;
+                }
             }
         }, 100);
     });
 }
 
-initializeQuickCallCombobox("quickEmployeeType", "Employee");
+initializeQuickCallCombobox("quickEmployeeType");
 initializeQuickCallCombobox("quickLocation");
 document.addEventListener("click", event => {
     document.querySelectorAll(".quick-call-combobox").forEach(combo => {
@@ -1449,6 +1509,42 @@ async function loadQuickCallLocations() {
     }
 }
 
+async function loadQuickCallUserTypes() {
+    const select = document.getElementById("quickEmployeeType");
+    if (!select) return;
+    select.disabled = true;
+    select.innerHTML = '<option value="">Loading employee types...</option>';
+    try {
+        const userTypes = await getUserTypes();
+        select.innerHTML = '<option value="">Select employee type</option>';
+        (userTypes || []).forEach(userType => {
+            const option = document.createElement("option");
+            option.value = String(userType.id);
+            option.textContent = userType.name;
+            select.appendChild(option);
+        });
+        const defaultEmployee = Array.from(select.options).find(option =>
+            option.textContent.trim().toLowerCase() === "employee"
+        );
+        if (defaultEmployee) {
+            select.value = defaultEmployee.value;
+            document.getElementById("quickEmployeeTypeSearch").value = defaultEmployee.textContent;
+        } else {
+            document.getElementById("quickEmployeeTypeSearch").value = "";
+        }
+        quickCallUserTypesLoaded = true;
+        refreshQuickCallCombobox("quickEmployeeType");
+    } catch (error) {
+        console.error("Could not load employee types for quick ticket:", error);
+        select.innerHTML = '<option value="">Employee types unavailable</option>';
+        refreshQuickCallCombobox("quickEmployeeType");
+        quickCallError.textContent = "Employee types could not be loaded. You can still enter a custom type for this ticket.";
+        quickCallError.hidden = false;
+    } finally {
+        select.disabled = false;
+    }
+}
+
 function findOptionId(items, expectedName) {
     const item = (items || []).find(entry => String(entry.name || "").trim().toLowerCase() === expectedName.toLowerCase());
     return item ? Number(item.id) : null;
@@ -1457,36 +1553,34 @@ function findOptionId(items, expectedName) {
 quickCallForm?.addEventListener("submit", async event => {
     event.preventDefault();
     const userName = document.getElementById("quickUserName").value.trim();
-    const userType = document.getElementById("quickEmployeeType").value;
+    const userTypeSelect = document.getElementById("quickEmployeeType");
+    const userType = userTypeSelect.value;
+    const userTypeOther = userTypeSelect._customValue || null;
     const contactNumber = document.getElementById("quickContactNumber").value.trim();
     const locationId = quickCallLocation.value;
+    const locationOther = quickCallLocation._customValue || null;
     const issueDescription = document.getElementById("quickIssueDescription").value.trim();
 
     createQuickTicketButton.disabled = true;
     createQuickTicketButton.textContent = "Creating…";
     quickCallError.hidden = true;
     try {
-        const [statuses, priorities, userTypes] = await Promise.all([
+        const [statuses, priorities] = await Promise.all([
             getTicketStatuses(),
-            getPriorities(),
-            getUserTypes()
+            getPriorities()
         ]);
         const statusId = findOptionId(statuses, "New");
         const priorityId = findOptionId(priorities, "Medium");
-
-        const selectedUserType = (userTypes || []).find(
-            item => String(item.name || "").trim().toLowerCase() === String(userType || "").trim().toLowerCase()
-        );
 
         const payload = {
             title: null,
             short_issue: null,
             user_name: userName || null,
-            user_type_id: userType && userType !== "Other" && selectedUserType
-                ? Number(selectedUserType.id)
-                : null,
+            user_type_id: userType ? Number(userType) : null,
+            user_type_other: userTypeOther,
             user_best_contact_number: contactNumber || null,
             location_id: locationId ? Number(locationId) : null,
+            location_other: locationOther,
             issue_description: issueDescription || null,
             status_id: statusId,
             priority_id: priorityId,
