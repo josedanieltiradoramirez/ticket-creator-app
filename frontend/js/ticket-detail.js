@@ -294,13 +294,15 @@ async function loadTicket() {
 
         await loadLocations(
 
-            ticket.location_id
+            ticket.location_id,
+            ticket.location_other
 
         );
 
         await loadUserTypes(
             ticket.user_type_id ??
-            ticket.user_type?.id
+            ticket.user_type?.id,
+            ticket.user_type_other
         );
 
 
@@ -2247,7 +2249,8 @@ async function loadToolKnowledgeBase(
 // ============================================================
 
 async function loadUserTypes(
-    currentUserTypeId
+    currentUserTypeId,
+    customUserTypeValue = null
 ) {
 
     const userTypes =
@@ -2301,14 +2304,16 @@ async function loadUserTypes(
 
     setupUserTypeSearchDropdown(
         userTypeSelect,
-        userTypes
+        userTypes,
+        customUserTypeValue
     );
 }
 
 
 function setupUserTypeSearchDropdown(
     userTypeSelect,
-    userTypes
+    userTypes,
+    customUserTypeValue = null
 ) {
 
     if (!userTypeSelect) {
@@ -2362,11 +2367,17 @@ function setupUserTypeSearchDropdown(
     wrapper.appendChild(userTypeSelect);
 
     userTypeSelect.style.display = "none";
+    userTypeSelect._customValue =
+        String(customUserTypeValue ?? "").trim();
 
     let highlightedIndex = -1;
     let visibleOptions = [];
 
     function selectedName() {
+        if (userTypeSelect._customValue) {
+            return userTypeSelect._customValue;
+        }
+
         const option =
             userTypeSelect.options[
                 userTypeSelect.selectedIndex
@@ -2404,7 +2415,21 @@ function setupUserTypeSearchDropdown(
     }
 
     function selectUserType(id) {
+        userTypeSelect._customValue = "";
         userTypeSelect.value = String(id);
+        userTypeSelect.dispatchEvent(
+            new Event("change", { bubbles: true })
+        );
+        syncInput();
+        closeDropdown();
+    }
+
+    function selectCustomUserType(value) {
+        const customValue = String(value ?? "").trim();
+        if (!customValue) return;
+
+        userTypeSelect.value = "";
+        userTypeSelect._customValue = customValue;
         userTypeSelect.dispatchEvent(
             new Event("change", { bubbles: true })
         );
@@ -2420,7 +2445,7 @@ function setupUserTypeSearchDropdown(
         visibleOptions = [];
         highlightedIndex = -1;
 
-        if (userTypeSelect.value) {
+        if (userTypeSelect.value || userTypeSelect._customValue) {
             const clearOption = document.createElement("button");
             clearOption.type = "button";
             clearOption.className = "tool-search-option tool-search-clear";
@@ -2486,7 +2511,7 @@ function setupUserTypeSearchDropdown(
             addOption.setAttribute("role", "option");
             addOption.innerHTML =
                 `<span class="tool-search-add-icon">+</span>` +
-                `<span>Add "${escapeNotificationHtml(searchValue.trim())}"</span>`;
+                `<span>Use "${escapeNotificationHtml(searchValue.trim())}" for this ticket</span>`;
 
             addOption.addEventListener(
                 "mousedown",
@@ -2495,15 +2520,7 @@ function setupUserTypeSearchDropdown(
 
             addOption.addEventListener(
                 "click",
-                async () => {
-                    await createUserTypeFromSearch(
-                        searchValue.trim(),
-                        userTypes,
-                        userTypeSelect,
-                        input,
-                        dropdown
-                    );
-                }
+                () => selectCustomUserType(searchValue)
             );
 
             dropdown.appendChild(addOption);
@@ -2575,6 +2592,7 @@ function setupUserTypeSearchDropdown(
 
             const typedName = input.value.trim();
             if (!typedName) {
+                userTypeSelect._customValue = "";
                 userTypeSelect.value = "";
                 userTypeSelect.dispatchEvent(
                     new Event("change", { bubbles: true })
@@ -2595,13 +2613,7 @@ function setupUserTypeSearchDropdown(
                 return;
             }
 
-            await createUserTypeFromSearch(
-                typedName,
-                userTypes,
-                userTypeSelect,
-                input,
-                dropdown
-            );
+            selectCustomUserType(typedName);
             return;
         }
 
@@ -2637,95 +2649,14 @@ function setupUserTypeSearchDropdown(
         }
     });
 
-    userTypeSelect.addEventListener(
-        "change",
-        syncInput
-    );
+    userTypeSelect.addEventListener("change", () => {
+        if (userTypeSelect.value) {
+            userTypeSelect._customValue = "";
+        }
+        syncInput();
+    });
 
     syncInput();
-}
-
-
-async function createUserTypeFromSearch(
-    userTypeName,
-    userTypes,
-    userTypeSelect,
-    input,
-    dropdown
-) {
-    const cleanName =
-        String(userTypeName ?? "").trim();
-
-    if (!cleanName) {
-        return;
-    }
-
-    const existingUserType = userTypes.find(
-        userType =>
-            String(userType.name)
-                .trim()
-                .toLowerCase() ===
-            cleanName.toLowerCase()
-    );
-
-    if (existingUserType) {
-        selectExistingUserType(
-            existingUserType
-        );
-        return;
-    }
-
-    input.disabled = true;
-
-    try {
-        const createdUserType =
-            await createUserType({
-                name: cleanName,
-                is_active: true
-            });
-
-        userTypes.push(createdUserType);
-
-        const option =
-            document.createElement("option");
-        option.value = createdUserType.id;
-        option.textContent = createdUserType.name;
-        userTypeSelect.appendChild(option);
-        userTypeSelect.value =
-            String(createdUserType.id);
-
-        userTypeSelect.dispatchEvent(
-            new Event("change", { bubbles: true })
-        );
-
-        input.value = createdUserType.name;
-        dropdown.classList.remove(
-            "tool-search-options-visible"
-        );
-    } catch (error) {
-        console.error(
-            "Error creating user type:",
-            error
-        );
-        showErrorMessage(
-            error.message ||
-                "Could not create the user type."
-        );
-    } finally {
-        input.disabled = false;
-        input.focus();
-    }
-
-    function selectExistingUserType(userType) {
-        userTypeSelect.value = String(userType.id);
-        userTypeSelect.dispatchEvent(
-            new Event("change", { bubbles: true })
-        );
-        input.value = userType.name;
-        dropdown.classList.remove(
-            "tool-search-options-visible"
-        );
-    }
 }
 
 
@@ -2738,7 +2669,8 @@ async function createUserTypeFromSearch(
 
 
 async function loadLocations(
-    currentLocationId
+    currentLocationId,
+    customLocationValue = null
 ) {
 
     const locations =
@@ -2782,7 +2714,8 @@ async function loadLocations(
 
     setupLocationSearchDropdown(
         locationSelect,
-        locations
+        locations,
+        customLocationValue
     );
 }
 
@@ -2793,7 +2726,8 @@ async function loadLocations(
 
 function setupLocationSearchDropdown(
     locationSelect,
-    locations
+    locations,
+    customLocationValue = null
 ) {
 
     if (!locationSelect) {
@@ -2863,11 +2797,16 @@ function setupLocationSearchDropdown(
     wrapper.appendChild(locationSelect);
 
     locationSelect.style.display = "none";
+    locationSelect._customValue =
+        String(customLocationValue ?? "").trim();
 
     let highlightedIndex = -1;
     let visibleOptions = [];
 
     function getSelectedLocationName() {
+        if (locationSelect._customValue) {
+            return locationSelect._customValue;
+        }
 
         const selectedOption =
             locationSelect.options[
@@ -2915,6 +2854,7 @@ function setupLocationSearchDropdown(
     }
 
     function selectLocation(locationId) {
+        locationSelect._customValue = "";
 
         locationSelect.value =
             String(locationId);
@@ -2932,6 +2872,19 @@ function setupLocationSearchDropdown(
         closeDropdown();
     }
 
+    function selectCustomLocation(value) {
+        const customValue = String(value ?? "").trim();
+        if (!customValue) return;
+
+        locationSelect.value = "";
+        locationSelect._customValue = customValue;
+        locationSelect.dispatchEvent(
+            new Event("change", { bubbles: true })
+        );
+        syncInputWithSelect();
+        closeDropdown();
+    }
+
     function renderOptions(
         searchValue = ""
     ) {
@@ -2943,7 +2896,7 @@ function setupLocationSearchDropdown(
         visibleOptions = [];
         highlightedIndex = -1;
 
-        if (locationSelect.value) {
+        if (locationSelect.value || locationSelect._customValue) {
             const clearOption = document.createElement("button");
             clearOption.type = "button";
             clearOption.className = "tool-search-option tool-search-clear";
@@ -3073,7 +3026,7 @@ function setupLocationSearchDropdown(
 
             addOption.innerHTML =
                 `<span class="tool-search-add-icon">+</span>` +
-                `<span>Add "${escapeNotificationHtml(searchValue.trim())}"</span>`;
+                `<span>Use "${escapeNotificationHtml(searchValue.trim())}" for this ticket</span>`;
 
             addOption.addEventListener(
                 "mousedown",
@@ -3084,16 +3037,7 @@ function setupLocationSearchDropdown(
 
             addOption.addEventListener(
                 "click",
-                async () => {
-
-                    await createLocationFromSearch(
-                        searchValue.trim(),
-                        locations,
-                        locationSelect,
-                        input,
-                        dropdown
-                    );
-                }
+                () => selectCustomLocation(searchValue)
             );
 
             dropdown.appendChild(addOption);
@@ -3201,6 +3145,7 @@ function setupLocationSearchDropdown(
 
             if (!typedName) {
 
+                locationSelect._customValue = "";
                 selectLocation("");
                 return;
             }
@@ -3241,13 +3186,7 @@ function setupLocationSearchDropdown(
                 return;
             }
 
-            await createLocationFromSearch(
-                typedName,
-                locations,
-                locationSelect,
-                input,
-                dropdown
-            );
+            selectCustomLocation(typedName);
 
             return;
         }
@@ -3295,7 +3234,10 @@ function setupLocationSearchDropdown(
 
                     closeDropdown();
 
-                    if (!locationSelect.value) {
+                    if (
+                        !locationSelect.value &&
+                        !locationSelect._customValue
+                    ) {
                         input.value = "";
                     } else {
                         syncInputWithSelect();
@@ -3320,149 +3262,14 @@ function setupLocationSearchDropdown(
         }
     );
 
-    locationSelect.addEventListener(
-        "change",
-        syncInputWithSelect
-    );
+    locationSelect.addEventListener("change", () => {
+        if (locationSelect.value) {
+            locationSelect._customValue = "";
+        }
+        syncInputWithSelect();
+    });
 
     syncInputWithSelect();
-}
-
-
-async function createLocationFromSearch(
-    locationName,
-    locations,
-    locationSelect,
-    input,
-    dropdown
-) {
-
-    const cleanName =
-        String(
-            locationName ?? ""
-        ).trim();
-
-    if (!cleanName) {
-        return;
-    }
-
-    const existingLocation =
-        locations.find(
-            location =>
-                String(
-                    location.name ?? ""
-                )
-                    .trim()
-                    .toLowerCase() ===
-                cleanName.toLowerCase()
-        );
-
-    if (existingLocation) {
-
-        selectExistingLocation(
-            existingLocation
-        );
-
-        return;
-    }
-
-    input.disabled = true;
-
-    try {
-
-        const createdLocation =
-            await createLocation(
-                {
-                    name: cleanName,
-                    is_active: true
-                }
-            );
-
-        locations.push(
-            createdLocation
-        );
-
-        const option =
-            document.createElement(
-                "option"
-            );
-
-        option.value =
-            createdLocation.id;
-
-        option.textContent =
-            createdLocation.name;
-
-        option.dataset.code =
-            createdLocation.code ?? "";
-
-        locationSelect.appendChild(option);
-
-        locationSelect.value =
-            String(
-                createdLocation.id
-            );
-
-        locationSelect.dispatchEvent(
-            new Event(
-                "change",
-                {
-                    bubbles: true
-                }
-            )
-        );
-
-        input.value =
-            createdLocation.name;
-
-        dropdown.classList.remove(
-            "tool-search-options-visible"
-        );
-
-    } catch (error) {
-
-        console.error(
-            "Error creating location:",
-            error
-        );
-
-        showErrorMessage(
-            error.message ||
-            "Could not create the location."
-        );
-
-    } finally {
-
-        input.disabled = false;
-        input.focus();
-    }
-
-
-    function selectExistingLocation(
-        location
-    ) {
-
-        locationSelect.value =
-            String(
-                location.id
-            );
-
-        locationSelect.dispatchEvent(
-            new Event(
-                "change",
-                {
-                    bubbles: true
-                }
-            )
-        );
-
-        input.value =
-            location.name;
-
-        dropdown.classList.remove(
-            "tool-search-options-visible"
-        );
-    }
 }
 
 
@@ -6341,7 +6148,7 @@ function updateTitleSuggestion() {
 
     const locationCode =
 
-        selectedLocation?.dataset.code ?? "";
+        locationSelect._customValue || selectedLocation?.dataset.code || "";
 
 
 
@@ -9316,8 +9123,8 @@ function generateTicket() {
         document.getElementById("userType");
 
     const userType =
-        userTypeSelect?.selectedOptions?.[0]?.textContent
-            ?.trim() || "";
+        userTypeSelect?._customValue ||
+        userTypeSelect?.selectedOptions?.[0]?.textContent?.trim() || "";
 
 
 
@@ -9447,7 +9254,11 @@ function generateTicket() {
 
 
 
-    if (locationValue) {
+    if (locationSelect._customValue) {
+
+        affectedLocation = locationSelect._customValue;
+
+    } else if (locationValue) {
 
 
 
@@ -10053,6 +9864,7 @@ function buildTicketData() {
         device_name: document.getElementById("deviceName").value,
         employee_id: document.getElementById("employeeId").value,
         user_type_id: document.getElementById("userType").value ? Number(document.getElementById("userType").value) : null,
+        user_type_other: document.getElementById("userType")._customValue || null,
         short_issue: document.getElementById("shortIssue").value,
         issue_description: document.getElementById("issueDescription").value,
         troubleshooting_steps: document.getElementById("troubleshootingSteps").value,
@@ -10064,6 +9876,7 @@ function buildTicketData() {
         form_template_id: document.getElementById("form").value ? Number(document.getElementById("form").value) : null,
         tool_id: document.getElementById("tool").value ? Number(document.getElementById("tool").value) : null,
         location_id: document.getElementById("location").value ? Number(document.getElementById("location").value) : null,
+        location_other: document.getElementById("location")._customValue || null,
         priority_id: document.getElementById("priority").value ? Number(document.getElementById("priority").value) : null,
         issue_type_id: document.getElementById("issueType").value ? Number(document.getElementById("issueType").value) : null,
         troubleshooting_template_id: document.getElementById("troubleshootingTemplate").value ? Number(document.getElementById("troubleshootingTemplate").value) : null,

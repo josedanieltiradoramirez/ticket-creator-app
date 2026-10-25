@@ -13,6 +13,7 @@ class TicketBase(BaseModel):
     tool_id: Optional[int] = None
     user_name: Optional[str] = None
     user_type_id: Optional[int] = None
+    user_type_other: Optional[str] = None
     user_best_contact_number: Optional[str] = None
     user_email: Optional[str] = None
     secondary_contact: Optional[str] = None
@@ -24,6 +25,7 @@ class TicketBase(BaseModel):
     short_issue: Optional[str] = None
     troubleshooting_steps: Optional[str] = None
     location_id: Optional[int] = None
+    location_other: Optional[str] = None
     priority_id: Optional[int] = None
     user_type_id: Optional[int] = None
 

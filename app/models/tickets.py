@@ -22,6 +22,7 @@ class Tickets(Base):
         ForeignKey("user_types.id"),
         nullable=True
     )
+    user_type_other = Column(String, nullable=True)
 
     user_best_contact_number = Column(String, nullable=True)
     user_email = Column(String, nullable=True)
@@ -36,6 +37,7 @@ class Tickets(Base):
     troubleshooting_steps = Column(Text, nullable=True)
 
     location_id = Column(Integer, ForeignKey("locations.id"), nullable=True)
+    location_other = Column(String, nullable=True)
     priority_id = Column(Integer, ForeignKey("priorities.id"), nullable=True)
 
     ## Ticket generation
