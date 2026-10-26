@@ -1,14 +1,46 @@
-const API_URL = "http://127.0.0.1:8000";
+const localHost = ["localhost", "127.0.0.1", "::1"].includes(window.location.hostname);
+const localApiHost = window.location.hostname || "127.0.0.1";
+const defaultApiUrl = localHost || window.location.protocol === "file:"
+    ? `http://${localApiHost}:8000`
+    : window.location.origin;
+const API_URL = String(window.TICKET_CREATOR_API_URL || defaultApiUrl).replace(/\/+$/, "");
+
+// The production frontend and API share an origin. Include cookies for local
+// development too, where the frontend and API can use different localhost ports.
+const nativeFetch = window.fetch.bind(window);
+window.fetch = (input, init = {}) => {
+    const requestInit = { ...init };
+    const method = String(requestInit.method || input?.method || "GET").toUpperCase();
+    if (["POST", "PUT", "PATCH", "DELETE"].includes(method)) {
+        const csrfCookie = document.cookie
+            .split(";")
+            .map(cookie => cookie.trim())
+            .find(cookie => cookie.startsWith("csrf_token="));
+        if (csrfCookie) {
+            const headers = new Headers(requestInit.headers || {});
+            headers.set("X-CSRF-Token", csrfCookie.slice("csrf_token=".length));
+            requestInit.headers = headers;
+        }
+    }
+    return nativeFetch(input, {
+        ...requestInit,
+        credentials: "include"
+    });
+};
+
+try {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("token");
+} catch (error) {
+    // Storage may be unavailable in restricted browser contexts.
+}
 
 // ============================================================
 // AUTHORIZATION
 // ============================================================
 
 function getAuthHeaders() {
-    return {
-        "Authorization":
-            `Bearer ${localStorage.getItem("access_token")}`
-    };
+    return {};
 }
 
 
@@ -207,6 +239,16 @@ async function login(username, password) {
         throw new Error(message);
     }
 
+    return await response.json();
+}
+
+async function logout() {
+    const response = await fetch(`${API_URL}/api/auth/logout`, {
+        method: "POST"
+    });
+    if (!response.ok) {
+        throw new Error("Could not end the session.");
+    }
     return await response.json();
 }
 

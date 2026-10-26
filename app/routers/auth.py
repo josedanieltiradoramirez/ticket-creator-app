@@ -1,7 +1,8 @@
 import os
+import secrets
 
-from fastapi import APIRouter, Depends, HTTPException, Request
-from pydantic import BaseModel
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from pydantic import BaseModel, Field
 from app.models.users import Users
 from passlib.context import CryptContext
 from sqlalchemy import or_
@@ -23,26 +24,34 @@ router = APIRouter(
     tags=['auth']
 )
 
-SECRET_KEY = os.getenv("SECRET_KEY", "CHANGE_ME")
+SECRET_KEY = os.getenv("SECRET_KEY", "").strip()
+if len(SECRET_KEY) < 32 or SECRET_KEY == "CHANGE_ME":
+    raise RuntimeError(
+        "SECRET_KEY must be configured with at least 32 characters before starting the app."
+    )
+
+COOKIE_SECURE = os.getenv(
+    "COOKIE_SECURE",
+    "true"
+).strip().lower() in {"1", "true", "yes", "on"}
+ACCESS_TOKEN_MINUTES = 30
 ALGORITHM = "HS256"
 
 
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_bearer = OAuth2PasswordBearer(tokenUrl="/api/auth/token")
+oauth2_bearer = OAuth2PasswordBearer(
+    tokenUrl="/api/auth/token",
+    auto_error=False
+)
 
 class CreateUserRequest(BaseModel):
     username: str
     email: str
     first_name: str
     last_name: str
-    password: str
+    password: str = Field(min_length=12)
     role: Optional[str] = "user"
     phone_number: Optional[str] = ""
-
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-
 
 db_dependency = Annotated[Session, Depends(get_db)]
 
@@ -66,13 +75,20 @@ def create_access_token(username: str, user_id: int, role: str, expires_delta: t
     encode.update({'exp': expires})
     return jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
 
-async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)], db: db_dependency):
+async def get_current_user(
+    request: Request,
+    token: Annotated[Optional[str], Depends(oauth2_bearer)],
+    db: db_dependency
+):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail='Could not validate credentials',
         headers={"WWW-Authenticate": "Bearer"}
     )
     try:
+        token = token or request.cookies.get("access_token")
+        if not token:
+            raise credentials_exception
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get('sub')
         user_id: int = payload.get('id')
@@ -90,8 +106,23 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)], db: db
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-async def create_user(db: db_dependency,
-                      create_user_request: CreateUserRequest):
+async def create_user(
+    user: Annotated[Users, Depends(get_current_user)],
+    db: db_dependency,
+    create_user_request: CreateUserRequest
+):
+    if user.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only administrators can create users."
+        )
+
+    if create_user_request.role not in {"user", "admin"}:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Role must be either 'user' or 'admin'."
+        )
+
     existing_user = db.query(Users).filter(Users.username == create_user_request.username).first()
     if existing_user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='This username already exists.')
@@ -134,12 +165,57 @@ async def create_user(db: db_dependency,
         'is_active': create_user_model.is_active,
     }
 
-@router.post("/token", response_model = Token)
-async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-                                 db: db_dependency):
+@router.post("/token")
+async def login_for_access_token(
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+    response: Response,
+    db: db_dependency
+):
     user = authenticate_user(form_data.username, form_data.password, db)
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Could not validate credentials')
     
-    token = create_access_token(user.username, user.id, user.role, timedelta(minutes=30))
-    return {'access_token': token, 'token_type': 'bearer'}
+    token = create_access_token(
+        user.username,
+        user.id,
+        user.role,
+        timedelta(minutes=ACCESS_TOKEN_MINUTES)
+    )
+    response.set_cookie(
+        key="access_token",
+        value=token,
+        max_age=ACCESS_TOKEN_MINUTES * 60,
+        httponly=True,
+        secure=COOKIE_SECURE,
+        samesite="lax",
+        path="/"
+    )
+    response.set_cookie(
+        key="csrf_token",
+        value=secrets.token_urlsafe(32),
+        max_age=ACCESS_TOKEN_MINUTES * 60,
+        httponly=False,
+        secure=COOKIE_SECURE,
+        samesite="lax",
+        path="/"
+    )
+    return {"message": "Login successful"}
+
+
+@router.post("/logout")
+async def logout(response: Response):
+    response.delete_cookie(
+        key="access_token",
+        httponly=True,
+        secure=COOKIE_SECURE,
+        samesite="lax",
+        path="/"
+    )
+    response.delete_cookie(
+        key="csrf_token",
+        httponly=False,
+        secure=COOKIE_SECURE,
+        samesite="lax",
+        path="/"
+    )
+    return {"message": "Logged out"}

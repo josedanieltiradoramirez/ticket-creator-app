@@ -16,10 +16,7 @@ if (loginForm) {
 
         try {
 
-            const data = await login(username, password);
-
-            // Save JWT
-            localStorage.setItem("access_token", data.access_token);
+            await login(username, password);
 
             // Go to the main screen
             window.location.href = "index.html";

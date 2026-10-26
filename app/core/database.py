@@ -4,9 +4,11 @@ from sqlalchemy.ext.declarative import declarative_base
 from dotenv import load_dotenv
 import os
 
-load_dotenv(override=True)
+load_dotenv(override=False)
 
 SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
+if not SQLALCHEMY_DATABASE_URL:
+    raise RuntimeError("DATABASE_URL must be configured before starting the app.")
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 

@@ -1,8 +1,10 @@
 import app.models
 
+import os
+import hmac
 from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import RedirectResponse, FileResponse
+from fastapi.responses import RedirectResponse, FileResponse, JSONResponse
 from pathlib import Path
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -14,16 +16,56 @@ from app.core.database import engine
 from app.core.database import Base
 
 
-app = FastAPI()
+docs_enabled = os.getenv("ENABLE_API_DOCS", "false").strip().lower() in {"1", "true", "yes", "on"}
+app = FastAPI(
+    docs_url="/docs" if docs_enabled else None,
+    redoc_url="/redoc" if docs_enabled else None,
+    openapi_url="/openapi.json" if docs_enabled else None
+)
 
 FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
+CORS_ORIGINS = [
+    origin.strip().rstrip("/")
+    for origin in os.getenv(
+        "CORS_ORIGINS",
+        "http://127.0.0.1:5500,http://localhost:5500,http://127.0.0.1:8000,http://localhost:8000"
+    ).split(",")
+    if origin.strip()
+]
+
+if "*" in CORS_ORIGINS:
+    raise RuntimeError("CORS_ORIGINS must list explicit origins; wildcard origins are not allowed.")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=CORS_ORIGINS,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type", "X-CSRF-Token"],
+    allow_credentials=True,
 )
+
+
+@app.middleware("http")
+async def protect_cookie_authenticated_writes(request: Request, call_next):
+    if (
+        request.method.upper() in {"POST", "PUT", "PATCH", "DELETE"}
+        and request.cookies.get("access_token")
+    ):
+        cookie_token = request.cookies.get("csrf_token", "")
+        header_token = request.headers.get("x-csrf-token", "")
+        if (
+            not cookie_token
+            or not header_token
+            or not hmac.compare_digest(
+                cookie_token.encode("utf-8"),
+                header_token.encode("utf-8")
+            )
+        ):
+            return JSONResponse(
+                status_code=403,
+                content={"detail": "CSRF validation failed."}
+            )
+    return await call_next(request)
 
 app.include_router(tickets.router, prefix="/api")
 app.include_router(users.router, prefix="/api")

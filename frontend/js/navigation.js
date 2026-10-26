@@ -496,19 +496,14 @@ function setupNavigationLogout() {
 
     logoutButton.addEventListener(
         "click",
-        () => {
-
-            localStorage.removeItem(
-                "token"
-            );
-
-            localStorage.removeItem(
-                "access_token"
-            );
-
-            window.location.href =
-                "login.html";
-
+        async () => {
+            try {
+                await logout();
+            } catch (error) {
+                console.error("Could not clear the login cookie:", error);
+            } finally {
+                window.location.href = "login.html";
+            }
         }
     );
 
