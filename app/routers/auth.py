@@ -53,12 +53,72 @@ class CreateUserRequest(BaseModel):
     role: Optional[str] = "user"
     phone_number: Optional[str] = ""
 
+
+class RegisterUserRequest(BaseModel):
+    username: str = Field(min_length=3, max_length=64)
+    email: str = Field(min_length=5, max_length=255)
+    first_name: str = Field(min_length=1, max_length=100)
+    last_name: str = Field(min_length=1, max_length=100)
+    password: str = Field(min_length=12, max_length=72)
+
 db_dependency = Annotated[Session, Depends(get_db)]
 
 ## templates = Jinja2Templates(directory="templates")
 
 
 ### Endpoints ###
+@router.post("/register", status_code=status.HTTP_201_CREATED)
+async def register_user(
+    registration: RegisterUserRequest,
+    db: db_dependency
+):
+    username = registration.username.strip()
+    email = registration.email.strip().lower()
+    first_name = registration.first_name.strip()
+    last_name = registration.last_name.strip()
+
+    if not all((username, email, first_name, last_name)):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Please complete all required fields."
+        )
+    if len(registration.password.encode("utf-8")) > 72:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Password must be no longer than 72 UTF-8 bytes."
+        )
+
+    existing_user = db.query(Users).filter(
+        or_(Users.username == username, Users.email == email)
+    ).first()
+    if existing_user:
+        if existing_user.username == username:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="This username is already registered.")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="This email is already registered.")
+
+    new_user = Users(
+        username=username,
+        email=email,
+        first_name=first_name,
+        last_name=last_name,
+        role="user",
+        hashed_password=bcrypt_context.hash(registration.password),
+        is_active=True,
+        phone_number=""
+    )
+    db.add(new_user)
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="That username or email is already registered."
+        )
+
+    return {"message": "Account created. You can now sign in."}
+
+
 def authenticate_user(username: str, password: str, db):
     user = db.query(Users).filter(
         or_(Users.username == username, Users.email == username)

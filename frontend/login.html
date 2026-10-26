@@ -3,39 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Login - Ticket Creator</title>
-
+    <meta name="theme-color" content="#f5f6f8">
+    <title>Sign in | Ticket Creator</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/design-system.css">
+    <link rel="stylesheet" href="css/auth.css">
 </head>
+<body class="auth-page">
+    <main class="auth-shell">
+        <aside class="auth-brand-panel" aria-label="Ticket Creator">
+            <a class="auth-brand" href="login.html" aria-label="Ticket Creator home">
+                <span class="auth-brand-mark" aria-hidden="true">
+                    <svg viewBox="0 0 32 32" fill="none">
+                        <path d="M8 7.5h16a2 2 0 0 1 2 2v4a3 3 0 0 0 0 5v4a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-4a3 3 0 0 0 0-5v-4a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8"/>
+                        <path d="M13 12h7M13 16h7M13 20h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    </svg>
+                </span>
+                <span>Ticket Creator</span>
+            </a>
 
-<body>
+            <div class="auth-brand-copy">
+                <span class="auth-eyebrow">SUPPORT WORKSPACE</span>
+                <h1>Keep every request<br>moving forward.</h1>
+                <p>A clear place to create, track, and manage support tickets with your team.</p>
+            </div>
 
-    <h1>Ticket Creator</h1>
+            <div class="auth-brand-footer">
+                <span class="auth-status-dot" aria-hidden="true"></span>
+                Your team workspace, all in one place
+            </div>
+            <div class="auth-orbit auth-orbit-one" aria-hidden="true"></div>
+            <div class="auth-orbit auth-orbit-two" aria-hidden="true"></div>
+        </aside>
 
-    <form id="loginForm">
+        <section class="auth-form-panel" aria-labelledby="loginTitle">
+            <div class="auth-form-wrap">
+                <div class="auth-mobile-brand" aria-hidden="true">
+                    <span class="auth-brand-mark">
+                        <svg viewBox="0 0 32 32" fill="none">
+                            <path d="M8 7.5h16a2 2 0 0 1 2 2v4a3 3 0 0 0 0 5v4a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-4a3 3 0 0 0 0-5v-4a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8"/>
+                            <path d="M13 12h7M13 16h7M13 20h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                        </svg>
+                    </span>
+                    <span>Ticket Creator</span>
+                </div>
 
-        <div>
-            <label for="username">Username or Email</label>
-            <input type="text" id="username" required>
-        </div>
+                <div class="auth-heading">
+                    <span class="auth-kicker">WELCOME BACK</span>
+                    <h2 id="loginTitle">Sign in to your account</h2>
+                    <p>Enter your details to access your workspace.</p>
+                </div>
 
-        <div>
-            <label for="password">Password</label>
-            <input type="password" id="password" required>
-        </div>
+                <form id="loginForm" class="auth-form">
+                    <div class="auth-field">
+                        <label for="username">Username or email</label>
+                        <input type="text" id="username" name="username" autocomplete="username" placeholder="you@company.com" required>
+                    </div>
+                    <div class="auth-field">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" autocomplete="current-password" placeholder="Enter your password" required>
+                    </div>
+                    <button class="auth-submit" type="submit">
+                        <span>Sign in</span>
+                        <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h12M10 4l6 6-6 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                </form>
 
-        <button type="submit">
-            Login
-        </button>
-
-    </form>
-
-    <p id="loginMessage"></p>
-
+                <p id="loginMessage" class="auth-message" role="alert" aria-live="polite"></p>
+                <p class="auth-switch">New to Ticket Creator? <a href="register.html">Create an account</a></p>
+                <p class="auth-legal">By signing in, you agree to use this workspace responsibly.</p>
+            </div>
+        </section>
+    </main>
     <script src="js/api.js"></script>
     <script src="js/app.js"></script>
-
 </body>
 </html>

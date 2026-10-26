@@ -234,10 +234,9 @@ function renderLocations() {
                 "list-page-hidden"
             );
 
-            const message =
-                emptyState.querySelector(
-                    ".list-page-empty-message"
-                );
+            const message = emptyState.querySelector(
+                ".list-page-empty-description"
+            );
 
             if (message) {
                 message.textContent =

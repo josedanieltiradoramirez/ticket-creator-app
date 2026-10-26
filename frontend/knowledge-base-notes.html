@@ -42,15 +42,6 @@
                     </button>
                 </div>
 
-                <div
-                    id="notesEmptyState"
-                    class="list-page-empty-state list-page-hidden"
-                >
-                    <p class="list-page-empty-message">
-                        No Knowledge Base Notes found.
-                    </p>
-                </div>
-
                 <div class="list-page-table-container">
                     <table class="list-page-table">
                         <thead>
@@ -65,6 +56,14 @@
 
                         <tbody id="notesTableBody"></tbody>
                     </table>
+
+                    <div
+                        id="notesEmptyState"
+                        class="list-page-empty-state list-page-hidden"
+                    >
+                        <div class="list-page-empty-title">No Knowledge Base Notes found</div>
+                        <div class="list-page-empty-description">There are no knowledge base notes matching your search.</div>
+                    </div>
                 </div>
             </section>
         </main>

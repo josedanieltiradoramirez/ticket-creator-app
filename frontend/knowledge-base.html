@@ -42,15 +42,6 @@
                     </button>
                 </div>
 
-                <div
-                    id="knowledgeBaseEmptyState"
-                    class="list-page-empty-state list-page-hidden"
-                >
-                    <p class="list-page-empty-message">
-                        No Knowledge Base articles found.
-                    </p>
-                </div>
-
                 <div class="list-page-table-container">
                     <table class="list-page-table">
                         <thead>
@@ -65,6 +56,14 @@
 
                         <tbody id="knowledgeBaseTableBody"></tbody>
                     </table>
+
+                    <div
+                        id="knowledgeBaseEmptyState"
+                        class="list-page-empty-state list-page-hidden"
+                    >
+                        <div class="list-page-empty-title">No Knowledge Base Articles found</div>
+                        <div class="list-page-empty-description">There are no knowledge base articles matching your search.</div>
+                    </div>
                 </div>
             </section>
         </main>

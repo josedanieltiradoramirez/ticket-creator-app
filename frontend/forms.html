@@ -42,15 +42,6 @@
                     </button>
                 </div>
 
-                <div
-                    id="formsEmptyState"
-                    class="list-page-empty-state list-page-hidden"
-                >
-                    <p class="list-page-empty-message">
-                        No forms found.
-                    </p>
-                </div>
-
                 <div class="list-page-table-container">
                     <table class="list-page-table">
                         <thead>
@@ -64,6 +55,14 @@
 
                         <tbody id="formsTableBody"></tbody>
                     </table>
+
+                    <div
+                        id="formsEmptyState"
+                        class="list-page-empty-state list-page-hidden"
+                    >
+                        <div class="list-page-empty-title">No Forms found</div>
+                        <div class="list-page-empty-description">There are no forms matching your search.</div>
+                    </div>
                 </div>
             </section>
         </main>

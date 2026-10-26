@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f5f6f8">
+    <title>Create account | Ticket Creator</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/design-system.css">
+    <link rel="stylesheet" href="css/auth.css">
+</head>
+<body class="auth-page">
+    <main class="auth-shell auth-shell-register">
+        <aside class="auth-brand-panel" aria-label="Ticket Creator">
+            <a class="auth-brand" href="login.html" aria-label="Ticket Creator home">
+                <span class="auth-brand-mark" aria-hidden="true">
+                    <svg viewBox="0 0 32 32" fill="none">
+                        <path d="M8 7.5h16a2 2 0 0 1 2 2v4a3 3 0 0 0 0 5v4a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-4a3 3 0 0 0 0-5v-4a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8"/>
+                        <path d="M13 12h7M13 16h7M13 20h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    </svg>
+                </span>
+                <span>Ticket Creator</span>
+            </a>
+            <div class="auth-brand-copy">
+                <span class="auth-eyebrow">A BETTER WAY TO SUPPORT</span>
+                <h1>Start with a<br>clearer workspace.</h1>
+                <p>Create your account to join your team's support workflow.</p>
+            </div>
+            <div class="auth-brand-footer"><span class="auth-status-dot" aria-hidden="true"></span>Your account will have standard user access</div>
+            <div class="auth-orbit auth-orbit-one" aria-hidden="true"></div>
+            <div class="auth-orbit auth-orbit-two" aria-hidden="true"></div>
+        </aside>
+
+        <section class="auth-form-panel" aria-labelledby="registerTitle">
+            <div class="auth-form-wrap auth-form-wrap-register">
+                <div class="auth-mobile-brand" aria-hidden="true">
+                    <span class="auth-brand-mark"><svg viewBox="0 0 32 32" fill="none"><path d="M8 7.5h16a2 2 0 0 1 2 2v4a3 3 0 0 0 0 5v4a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-4a3 3 0 0 0 0-5v-4a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8"/><path d="M13 12h7M13 16h7M13 20h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+                    <span>Ticket Creator</span>
+                </div>
+                <div class="auth-heading">
+                    <span class="auth-kicker">GET STARTED</span>
+                    <h2 id="registerTitle">Create your account</h2>
+                    <p>Set up your details to join the workspace.</p>
+                </div>
+
+                <form id="registerForm" class="auth-form auth-register-form">
+                    <div class="auth-field-row">
+                        <div class="auth-field"><label for="firstName">First name</label><input id="firstName" name="first_name" autocomplete="given-name" required maxlength="100" placeholder="Alex"></div>
+                        <div class="auth-field"><label for="lastName">Last name</label><input id="lastName" name="last_name" autocomplete="family-name" required maxlength="100" placeholder="Morgan"></div>
+                    </div>
+                    <div class="auth-field"><label for="newUsername">Username</label><input id="newUsername" name="username" autocomplete="username" required minlength="3" maxlength="64" placeholder="alex.morgan"></div>
+                    <div class="auth-field"><label for="email">Work email</label><input id="email" name="email" type="email" autocomplete="email" required maxlength="255" placeholder="you@company.com"></div>
+                    <div class="auth-field"><label for="newPassword">Password</label><input id="newPassword" name="password" type="password" autocomplete="new-password" required minlength="12" maxlength="72" placeholder="At least 12 characters"><span class="auth-field-hint">Use 12–72 characters.</span></div>
+                    <div class="auth-field"><label for="confirmPassword">Confirm password</label><input id="confirmPassword" name="confirm_password" type="password" autocomplete="new-password" required minlength="12" maxlength="72" placeholder="Enter your password again"></div>
+                    <button class="auth-submit" type="submit"><span>Create account</span><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h12M10 4l6 6-6 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                </form>
+                <p id="registerMessage" class="auth-message" role="alert" aria-live="polite"></p>
+                <p class="auth-switch">Already have an account? <a href="login.html">Sign in</a></p>
+                <p class="auth-legal">New accounts are created with standard user access.</p>
+            </div>
+        </section>
+    </main>
+    <script src="js/api.js"></script>
+    <script src="js/register.js"></script>
+</body>
+</html>

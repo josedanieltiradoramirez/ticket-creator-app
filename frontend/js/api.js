@@ -242,6 +242,33 @@ async function login(username, password) {
     return await response.json();
 }
 
+async function registerAccount(accountData) {
+    const response = await fetch(`${API_URL}/api/auth/register`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(accountData)
+    });
+
+    if (!response.ok) {
+        let message = "Unable to create your account.";
+        try {
+            const errorData = await response.json();
+            if (errorData.detail) {
+                message = typeof errorData.detail === "string"
+                    ? errorData.detail
+                    : JSON.stringify(errorData.detail);
+            }
+        } catch (error) {
+            // Keep the default message if the server did not return JSON.
+        }
+        throw new Error(message);
+    }
+
+    return await response.json();
+}
+
 async function logout() {
     const response = await fetch(`${API_URL}/api/auth/logout`, {
         method: "POST"
