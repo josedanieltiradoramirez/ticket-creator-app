@@ -16,3 +16,5 @@ htmlcov/
 *.pfx
 *.key
 credentials.json
+*.sql
+*.log

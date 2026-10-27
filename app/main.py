@@ -87,7 +87,7 @@ app.include_router(user_types.router, prefix="/api")
 
 @app.get("/")
 async def serve_index():
-    return FileResponse(FRONTEND_DIR / "index.html")
+    return RedirectResponse(url="/login.html", status_code=302)
 
 
 @app.get("/{file_path:path}")
