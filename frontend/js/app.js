@@ -144,11 +144,18 @@ function renderTickets(tickets, container = ticketsContainer) {
 }
 
 async function getAllTicketsForDate(dateString) {
+    const [year, month, day] = dateString.split("-").map(Number);
+    const localDayStart = new Date(year, month - 1, day);
+    const localDayEnd = new Date(year, month - 1, day + 1);
+    const dateBounds = {
+        ticket_date_start: localDayStart.toISOString(),
+        ticket_date_end: localDayEnd.toISOString()
+    };
     const results = [];
     let page = 1;
     let pages = 1;
     do {
-        const response = await getTickets(page, 100, { ticket_date: dateString });
+        const response = await getTickets(page, 100, dateBounds);
         results.push(...(response.items || []));
         pages = response.pages || 0;
         page += 1;

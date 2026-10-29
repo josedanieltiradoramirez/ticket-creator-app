@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from math import ceil
 from typing import List, Optional
 from typing import Annotated
@@ -32,6 +32,8 @@ async def get_tickets(
     user: user_dependency,
     db: db_dependency,
     ticket_date: Optional[date] = Query(None),
+    ticket_date_start: Optional[datetime] = Query(None),
+    ticket_date_end: Optional[datetime] = Query(None),
     issue_type_id: Optional[int] = Query(None),
     status_id: Optional[int] = Query(None),
     priority_id: Optional[int] = Query(None),
@@ -49,7 +51,12 @@ async def get_tickets(
         .filter(Tickets.created_by == user.id)
     )
 
-    if ticket_date:
+    if ticket_date_start is not None and ticket_date_end is not None:
+        query = query.filter(
+            Tickets.created_at >= ticket_date_start,
+            Tickets.created_at < ticket_date_end
+        )
+    elif ticket_date:
         query = query.filter(
             Tickets.created_at >= ticket_date,
             Tickets.created_at < ticket_date + timedelta(days=1)
