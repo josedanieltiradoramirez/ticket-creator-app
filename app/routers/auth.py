@@ -9,6 +9,7 @@ from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from app.core.database import SessionLocal
+from app.core.default_catalogs import ensure_default_catalog_data
 from typing import Annotated
 from starlette import status
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
@@ -108,6 +109,8 @@ async def register_user(
     )
     db.add(new_user)
     try:
+        db.flush()
+        ensure_default_catalog_data(db, new_user.id)
         db.commit()
     except IntegrityError:
         db.rollback()
@@ -234,6 +237,9 @@ async def login_for_access_token(
     user = authenticate_user(form_data.username, form_data.password, db)
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Could not validate credentials')
+
+    if ensure_default_catalog_data(db, user.id):
+        db.commit()
     
     token = create_access_token(
         user.username,
