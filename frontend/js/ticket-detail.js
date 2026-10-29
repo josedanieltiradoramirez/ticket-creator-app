@@ -9438,6 +9438,7 @@ function generateTicket() {
     if (bestContactHours) userInformation.push(`Best Contact Hours: ${bestContactHours}`);
     if (deviceName) userInformation.push(`Device Name: ${deviceName}`);
     if (employeeId) userInformation.push(`Employee ID: ${employeeId}`);
+    if (shortIssue) userInformation.push(`Short Description: ${shortIssue}`);
 
 
 
@@ -9464,22 +9465,6 @@ function generateTicket() {
         sections.push(
 
             userInformation.join("\n")
-
-        );
-
-    }
-
-
-
-
-
-    if (shortIssue) {
-
-
-
-        sections.push(
-
-            `Short Description:\n${shortIssue}`
 
         );
 
@@ -9639,6 +9624,25 @@ function generateTimeEntry() {
     const deviceName = document.getElementById("deviceName").value.trim();
     const employeeId = document.getElementById("employeeId").value.trim();
 
+    const getSelectedFieldText = (selectId) => {
+        const select = document.getElementById(selectId);
+        if (!select) return "";
+        if (select._customValue) return String(select._customValue).trim();
+        if (!select.value) return "";
+        return select.selectedOptions?.[0]?.textContent?.trim() || "";
+    };
+
+    const userType = getSelectedFieldText("userType");
+    const priority = getSelectedFieldText("priority");
+    const locationSelect = document.getElementById("location");
+    const selectedLocation = locationSelect?.selectedOptions?.[0];
+    const locationName = getSelectedFieldText("location");
+    const locationCode = selectedLocation?.dataset.code?.trim() || "";
+    const affectedLocation = locationSelect?._customValue
+        ? String(locationSelect._customValue).trim()
+        : [locationName, locationCode].filter(Boolean).join(". ");
+    const shortIssue = document.getElementById("shortIssue").value.trim();
+
 
 
     const formContent =
@@ -9661,6 +9665,9 @@ function generateTimeEntry() {
 
     const details = [];
 
+    if (priority) details.push(`Ticket Priority: ${priority}`);
+    if (userType) details.push(`User Type: ${userType}`);
+
 
 
 
@@ -9669,6 +9676,10 @@ function generateTimeEntry() {
 
         details.push(`Name: ${userName}`);
 
+    }
+
+    if (affectedLocation) {
+        details.push(`Affected Location: ${affectedLocation}`);
     }
 
 
@@ -9703,9 +9714,11 @@ function generateTimeEntry() {
 
     if (formContent) {
 
-        details.push(`Form:\n${formContent}`);
+        details.push(`Specific Information:\n${formContent}`);
 
     }
+
+    if (shortIssue) details.push(`Short Description: ${shortIssue}`);
 
 
 
